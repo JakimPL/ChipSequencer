@@ -41,10 +41,15 @@ subroutine:
     ret
 
 increment_timer:
-; Initialize index and frequency
+    xor eax, eax
     xor edx, edx
+.load_frequency:
+    lea ebx, [frequency_data]
+    mov al, [pitch]
+    shl al, 2
+    add ebx, eax
+    mov ebx, [ebx]
     mov eax, [index]
-    mov ebx, [frequency]
 
 ; Increment index by frequency
     add eax, ebx
@@ -57,3 +62,4 @@ increment_timer:
 .done:
     mov [index], eax
     ret
+

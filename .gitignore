@@ -2,6 +2,7 @@
 *.com
 *.EXE
 *.exe
+*.wav
 
 bin/*
 .idea/*
