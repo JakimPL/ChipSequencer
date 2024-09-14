@@ -1,0 +1,6 @@
+*.COM
+*.com
+*.EXE
+*.exe
+
+bin/*
