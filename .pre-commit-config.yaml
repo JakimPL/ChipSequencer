@@ -3,15 +3,17 @@ repos:
     rev: v4.6.0
     hooks:
       - id: trailing-whitespace
+        types: [text]
   - repo: local
     hooks:
       - id: nasmfmt-hook
         name: nasmfmt formatting
         entry: nasmfmt
         language: system
-        types: [asm]
+        files: \.asm$
+        types: [text]
         args:
           [
-            "-ii 4",
-            "-ci 30"
+            "-ii", "4",
+            "-ci", "30"
           ]
