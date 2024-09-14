@@ -25,9 +25,15 @@ start:
     out 0x21, al             ; Write back to PIC
 
 .main_loop:
-    jmp .main_loop
-    cmp word [index], 0xFFFE
+    cmp byte [calculate], 1
+    jne .main_loop
 
+    call subroutine
+    call increment_timer
+    mov byte [calculate], 0
+    jmp .main_loop
+
+.exit:
     cli
     mov al, 0x36             ; Reset PIT to a known state (optional)
     out 0x43, al
@@ -50,12 +56,8 @@ isr:
     push cx
     push dx
 
-    call subroutine
-    call increment_timer
-
-; Send End of Interrupt (EOI) signal to PIC (Programmable Interrupt Controller)
-    mov al, 0x20
-    out 0x20, al
+    call play_sound
+    mov byte [calculate], 1
 
     pop dx
     pop cx
@@ -67,6 +69,8 @@ isr:
     %include "SRC\SOUND.ASM"
 
     section .data
+calculate:
+    db 1
 port:
     dw 0x022C
 divisor:
@@ -77,5 +81,7 @@ dividend:
     dd 0x71AE0000
 index:
     dd 0
+sound:
+    db 0
 volume:
-    dw 0x7FFF
+    dw 0x0FFF
