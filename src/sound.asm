@@ -41,11 +41,10 @@ subroutine:
     ret
 
 increment_timer:
-    xor eax, eax
     xor edx, edx
 .load_frequency:
     lea ebx, [frequency_data]
-    mov al, [pitch]
+    movzx eax, byte [pitch]
     shl al, 2
     add ebx, eax
     mov ebx, [ebx]
