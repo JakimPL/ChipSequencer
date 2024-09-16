@@ -44,9 +44,12 @@ calculate_ticks_per_beat:
     section .data
 bpm:
     dw 240
+ticks_per_beat:
+    dw 0
+
+; Instruments
 note_count:
     db 6
-
 sequence:
     db 0x30, 1
     db 0x32, 1
@@ -54,10 +57,7 @@ sequence:
     db 0x37, 1
     db 0x33, 1
     db 0x32, 2
-
 current_note:
     db 0
 remaining_ticks:
-    dw 0
-ticks_per_beat:
     dw 0

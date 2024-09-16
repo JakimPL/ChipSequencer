@@ -34,8 +34,7 @@ main_loop:
 
     call step
     call increment_timer
-    call adsr
-    call subroutine
+    call play_sample
 
     mov byte [calculate], 0
     jmp main_loop
@@ -72,6 +71,7 @@ isr:
     pop ax
     iret
 
+    %include "SRC\INSTR.ASM"
     %include "SRC\SOUND.ASM"
     %include "SRC\ADSR.ASM"
     %include "SRC\SEQUENCE.ASM"
