@@ -79,10 +79,8 @@ index:
     dd 0
 sound:
     db 0
-base_volume:
-    dw 0x0FFF
 volume:
-    dw 0x0FFF
+    dw 0x0000
 
 frequency_data:
     dd 0x0015D3A7

@@ -1,7 +1,10 @@
     section .text
 
 adsr:
-; If mode == 0: attack
+; If mode == 4: exit
+    cmp byte [mode], 4
+    jge .done
+
     xor edx, edx
     movzx eax, byte [mode]
     call [phases + eax * 2]
@@ -35,11 +38,8 @@ adsr:
     ret
 
 interpolate:
-; Interpolates linearly between two values:
-; upper part of EBX and the lower part of EBX
+; Interpolates linearly between two values: BX and CX into AX
     movzx eax, bx
-    mov ecx, ebx
-    shl ecx, 16
     sub ax, cx
     mov ecx, [global_timer]
     mul ecx
@@ -50,28 +50,21 @@ interpolate:
     ret
 
 attack:
-; volume = timer / attack_time
-    mov eax, [global_timer]
-    mov ecx, [dividend]
-    shr ecx, 16
-    div ecx
-    shr eax, 1
+    mov bx, 0x0000
+    mov cx, [base_volume]
+    call interpolate
     ret
 decay:
-; volume = 0x8000 + global_timer * (sustain_level - 0x8000) / dividend
-    mov bx, [sustain_level]
-    shl bx, 16
-    add bx, 0x8000
+    mov bx, [base_volume]
+    mov cx, [sustain_level]
     call interpolate
     ret
 hold:
     mov ax, [sustain_level]
     ret
 release:
-; volume = sustain_level - global_timer / dividend
-    xor bx, bx
-    shl bx, 16
-    add bx, [sustain_level]
+    mov bx, [sustain_level]
+    xor cx, cx
     call interpolate
     ret
 
@@ -89,10 +82,12 @@ phases:
     dw hold
     dw release
 
+base_volume:
+    dw 0x7FFF                ; range 0x0000 - 0x7FFF
 sustain_level:
-    dw 0x1000
+    dw 0x0FFF
 timers:
-    dw 15                    ; attack:  0.015 seconds
-    dw 150                   ; decay:   0.15 seconds
-    dw 1500                  ; hold:   1.5 seconds
-    dw 500                   ; release: 0.5 seconds
+    dw 25                    ; attack
+    dw 475                   ; decay
+    dw 500                   ; hold
+    dw 1000                  ; release
