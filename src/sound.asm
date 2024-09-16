@@ -72,7 +72,7 @@ reduce:
 port:
     dw 0x022C
 pitch:
-    db 0x14
+    db 0x25
 dividend:
     dd 0x71AE0000
 index:

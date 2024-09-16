@@ -26,16 +26,18 @@ start:
     and al, 0xFE             ; Clear mask for IRQ0 (unmask)
     out 0x21, al             ; Write back to PIC
 
-.main_loop:
+    call calculate_ticks_per_beat
+
+main_loop:
     cmp byte [calculate], 1
-    jne .main_loop
+    jne main_loop
 
     call increment_timer
     call adsr
     call subroutine
 
     mov byte [calculate], 0
-    jmp .main_loop
+    jmp main_loop
 
 .exit:
     cli
@@ -60,6 +62,33 @@ isr:
     push cx
     push dx
 
+; Handle timing for sequencer
+    dec word [remaining_ticks]
+    jnz .play_sound
+
+.load_next_note:
+    movzx eax, byte [current_note]
+    movzx ebx, byte [note_count]
+    cmp ax, bx
+    jl .next_note
+    mov byte [current_note], 0
+
+.next_note:
+; Reset ADSR timers
+    mov word [global_timer], 0
+    mov byte [mode], 0
+
+    lea si, [sequence + eax * 2]
+    mov al, [si]
+    mov [pitch], al
+    mov al, [si+1]
+    movzx ax, al
+    movzx ebx, word [ticks_per_beat]
+    imul ax, bx
+    mov [remaining_ticks], ax
+    inc byte [current_note]
+
+.play_sound:
     call play_sound
     mov byte [calculate], 1
 
@@ -67,11 +96,11 @@ isr:
     pop cx
     pop bx
     pop ax
-
     iret
 
     %include "SRC\SOUND.ASM"
     %include "SRC\ADSR.ASM"
+    %include "SRC\SEQUENCE.ASM"
 
     section .data
 calculate:
