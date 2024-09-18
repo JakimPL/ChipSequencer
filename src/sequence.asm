@@ -1,15 +1,15 @@
     section .text
 step:
 ; Handle timing for sequencer
-    cmp word [remaining_ticks], 0
+    cmp word [sequences], 0
     jnz .done
 
 .load_next_note:
-    movzx eax, byte [current_note]
-    cmp al, byte [note_count]
+    movzx eax, byte [sequences + 2]
+    cmp al, byte [sequences + 3]
     jl .next_note
     mov al, 0
-    mov byte [current_note], 0
+    mov byte [sequences + 2], 0
 
 .next_note:
 ; Reset ADSR timers
@@ -17,18 +17,18 @@ step:
     mov byte [envelopes], 0
 
 ; Load the note and calculate the remaining ticks
-    lea si, [sequence + eax * 2]
+    lea si, [sequences + 4 + eax * 2]
     mov al, [si]
     mov [pitch], al
-    mov al, [si+1]
+    mov al, [si + 1]
     movzx ax, al
     movzx ebx, word [ticks_per_beat]
     imul ax, bx
-    mov [remaining_ticks], ax
-    inc byte [current_note]
+    mov [sequences], ax
+    inc byte [sequences + 2]
 
 .done:
-    dec word [remaining_ticks]
+    dec word [sequences]
     ret
 
 calculate_ticks_per_beat:
@@ -48,16 +48,14 @@ ticks_per_beat:
     dw 0
 
 ; Sequences
-note_count:
-    db 6
-sequence:
+sequences:
+    dw 0                     ; remaining_ticks
+    db 0                     ; current_note
+    db 6                     ; note_count
+; notes
     db 0x30, 1
     db 0x32, 1
     db 0x34, 2
     db 0x37, 1
     db 0x33, 1
     db 0x32, 2
-current_note:
-    db 0
-remaining_ticks:
-    dw 0
