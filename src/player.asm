@@ -75,6 +75,7 @@ isr:
     %include "SRC\SOUND.ASM"
     %include "SRC\ADSR.ASM"
     %include "SRC\SEQUENCE.ASM"
+; %include "SRC\MIXER.ASM"
 
     section .data
 calculate:

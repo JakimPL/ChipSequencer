@@ -193,3 +193,8 @@ frequency_data:
     dd 0x748A7B12
     dd 0x7B788802
     dd 0x82D01286
+
+; Instruments table
+instruments:
+    db 0                     ; envelope_index
+    db 0                     ; sequence_index

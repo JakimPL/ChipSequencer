@@ -13,8 +13,8 @@ step:
 
 .next_note:
 ; Reset ADSR timers
-    mov word [global_timer], 0
-    mov byte [mode], 0
+    mov word [envelopes + 1], 0
+    mov byte [envelopes], 0
 
 ; Load the note and calculate the remaining ticks
     lea si, [sequence + eax * 2]
@@ -47,7 +47,7 @@ bpm:
 ticks_per_beat:
     dw 0
 
-; Instruments
+; Sequences
 note_count:
     db 6
 sequence:
