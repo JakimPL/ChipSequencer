@@ -5,12 +5,26 @@ load_offsets:
 ; Load the instrument
     movzx bx, byte [current_instrument]
     imul bx, INSTRUMENT_SIZE
-    mov bx, [instruments + bx]
+    mov bl, [instruments + bx]
 ; Load the envelope
     imul bx, ENVELOPE_SIZE
     lea ecx, [envelopes + bx]
     mov dword [envelope_offset], ecx
-
+; Load the sequence
+    lea ecx, [sequences]
+    movzx bx, byte [current_instrument]
+    mov bl, [instruments + bx + 1]
+    cmp bl, 0
+    jz .done
+.find_sequence:
+    movzx eax, byte [ecx]
+    imul eax, 2
+    add ecx, eax
+    inc ecx
+    dec bl
+    jnz .find_sequence
+.done:
+    mov dword [sequence_offset], ecx
     ret
 
 play_sample:
@@ -220,4 +234,4 @@ sequence_offset:
 ; Instruments table
 instruments:
     db 0                     ; envelope_index
-    db 0                     ; sequence_index
+    db 1                     ; sequence_index
