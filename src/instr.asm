@@ -1,7 +1,7 @@
     %define INSTRUMENT_SIZE 2
 
     section .text
-load_envelope:
+load_offsets:
 ; Load the instrument
     movzx bx, byte [current_instrument]
     imul bx, INSTRUMENT_SIZE
@@ -9,7 +9,8 @@ load_envelope:
 ; Load the envelope
     imul bx, ENVELOPE_SIZE
     lea ecx, [envelopes + bx]
-    mov dword [instrument_offset], ecx
+    mov dword [envelope_offset], ecx
+
     ret
 
 play_sample:
@@ -211,10 +212,12 @@ current_instrument:
     db 0
 instrument_count:
     db 1
-instrument_offset:
+envelope_offset:
+    dd 0
+sequence_offset:
     dd 0
 
 ; Instruments table
 instruments:
-    db 1                     ; envelope_index
+    db 0                     ; envelope_index
     db 0                     ; sequence_index
