@@ -1,4 +1,17 @@
+    %define INSTRUMENT_SIZE 2
+
     section .text
+load_envelope:
+; Load the instrument
+    movzx bx, byte [current_instrument]
+    imul bx, INSTRUMENT_SIZE
+    mov bx, [instruments + bx]
+; Load the envelope
+    imul bx, ENVELOPE_SIZE
+    lea ecx, [envelopes + bx]
+    mov dword [instrument_offset], ecx
+    ret
+
 play_sample:
     call adsr
     call oscillator
@@ -194,7 +207,14 @@ frequency_data:
     dd 0x7B788802
     dd 0x82D01286
 
+current_instrument:
+    db 0
+instrument_count:
+    db 1
+instrument_offset:
+    dd 0
+
 ; Instruments table
 instruments:
-    db 0                     ; envelope_index
+    db 1                     ; envelope_index
     db 0                     ; sequence_index

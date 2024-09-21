@@ -12,9 +12,7 @@ step:
     mov byte [sequences + 2], 0
 
 .next_note:
-; Reset ADSR timers
-    mov word [envelopes + 1], 0
-    mov byte [envelopes], 0
+    call reset_envelope
 
 ; Load the note and calculate the remaining ticks
     lea si, [sequences + 4 + eax * 2]

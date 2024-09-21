@@ -71,10 +71,10 @@ isr:
     pop ax
     iret
 
-    %include "SRC\INSTR.ASM"
     %include "SRC\SOUND.ASM"
     %include "SRC\ADSR.ASM"
     %include "SRC\SEQUENCE.ASM"
+    %include "SRC\INSTR.ASM"
 ; %include "SRC\MIXER.ASM"
 
     section .data
