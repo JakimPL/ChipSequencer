@@ -5,16 +5,15 @@ load_offsets:
     imul bx, INSTRUMENT_SIZE
     lea ecx, [instruments + bx]
     mov dword [instrument_offset], ecx
-    mov bl, [instruments + INSTRUMENT_ENVELOPE_INDEX + bx]
+    mov bl, [ecx + INSTRUMENT_ENVELOPE_INDEX]
 ; Load the envelope
     imul bx, ENVELOPE_SIZE
     lea ecx, [envelopes + bx]
     mov dword [envelope_offset], ecx
 ; Load the sequence
     lea ecx, [sequences]
-    movzx bx, byte [current_instrument]
-    imul bx, INSTRUMENT_SIZE
-    mov bl, [instruments + INSTRUMENT_SEQUENCE_INDEX + bx]
+    mov ebx, [instrument_offset]
+    mov bl, [ebx + INSTRUMENT_SEQUENCE_INDEX]
     cmp bl, 0
     jz .done
 .find_sequence:

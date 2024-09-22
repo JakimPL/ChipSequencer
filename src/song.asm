@@ -30,12 +30,14 @@ instruments:
     db 1                     ; sequence_index
     db 0                     ; sequence_current_note
     db 0                     ; oscillator_index
+    db 0                     ; transpose
 ; Instrument 2
     db 1                     ; envelope_index
     db 0                     ; envelope_mode
     db 0                     ; sequence_index
     db 0                     ; sequence_current_note
     db 0                     ; oscillator_index
+    db 0                     ; transpose
 
 sequences:
 ; Sequence 1

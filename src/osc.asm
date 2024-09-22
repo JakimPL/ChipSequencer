@@ -31,6 +31,8 @@ increment_timer:
     movzx ecx, byte [current_instrument]
     lea ebx, [frequency_data]
     movzx eax, byte [pitch + ecx]
+    mov edx, [instrument_offset]
+    add al, [edx + INSTRUMENT_TRANSPOSE]
     shl al, 2
     add ebx, eax
     mov ebx, [ebx]
