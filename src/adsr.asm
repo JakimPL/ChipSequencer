@@ -2,8 +2,8 @@
     section .text
 adsr:
     call load_offsets
-    mov eax, [envelope_offset]
-    movzx eax, byte [eax + ENVELOPE_MODE]
+    mov eax, [instrument_offset]
+    movzx eax, byte [eax + INSTRUMENT_ENVELOPE_MODE]
 
 ; If mode == 4: exit
     cmp al, 4
@@ -19,27 +19,27 @@ adsr:
     xor edx, edx
 
 ; Load the divisor
+    mov eax, [instrument_offset]
+    movzx ebx, byte [eax + INSTRUMENT_ENVELOPE_MODE]
     mov eax, [envelope_offset]
-    movzx ebx, byte [eax + ENVELOPE_MODE]
     movzx ecx, word [eax + ENVELOPE_ATTACK + 2 * ebx]
     mov eax, [magic_constant]
     div ecx
 
 .increment_timer:
-    mov ecx, [envelope_offset]
-    add dword [ecx + ENVELOPE_GLOBAL_TIMER], eax
+    mov ebx, [instrument_offset]
+    add dword [ebx + INSTRUMENT_ENVELOPE_TIMER], eax
+    mov eax, [ebx + INSTRUMENT_ENVELOPE_TIMER]
 
-    mov eax, [ecx + ENVELOPE_GLOBAL_TIMER]
     call reduce
-    mov ecx, [envelope_offset]
-    mov [ecx + ENVELOPE_GLOBAL_TIMER], eax
+    mov [ebx + INSTRUMENT_ENVELOPE_TIMER], eax
 
     jc .increment_mode
     ret
 
 .increment_mode:
-    mov ecx, [envelope_offset]
-    inc byte [ecx]
+    mov ecx, [instrument_offset]
+    inc byte [ecx + INSTRUMENT_ENVELOPE_MODE]
 
 .done:
     ret
@@ -48,8 +48,8 @@ interpolate:
 ; Interpolates linearly between two values: BX and CX into AX
     movzx eax, bx
     sub eax, ecx
-    mov ecx, [envelope_offset]
-    mov ecx, [ecx + ENVELOPE_GLOBAL_TIMER]
+    mov ecx, [instrument_offset]
+    mov ecx, [ecx + INSTRUMENT_ENVELOPE_TIMER]
 
     imul ecx
     idiv dword [dividend]
@@ -82,9 +82,9 @@ release:
     ret
 
 reset_envelope:
-    mov ecx, [envelope_offset]
-    mov byte [ecx + ENVELOPE_MODE], 0
-    mov dword [ecx + ENVELOPE_GLOBAL_TIMER], 0
+    mov ecx, [instrument_offset]
+    mov byte [ecx + INSTRUMENT_ENVELOPE_MODE], 0
+    mov dword [ecx + INSTRUMENT_ENVELOPE_TIMER], 0
     ret
 
     section .data
@@ -99,8 +99,6 @@ phases:
 
 envelopes:
 ; Envelope 1
-    db 0                     ; mode
-    dd 0                     ; global_timer
     dw 0x7FFF                ; base_volume
     dw 0x2FFF                ; sustain_level
     dw 125                   ; attack
@@ -109,8 +107,6 @@ envelopes:
     dw 1000                  ; release
 
 ; Envelope 2
-    db 0                     ; mode
-    dd 0                     ; global_timer
     dw 0x2FFF                ; base_volume
     dw 0x2FFF                ; sustain_level
     dw 250                   ; attack
