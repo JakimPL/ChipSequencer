@@ -1,6 +1,10 @@
+    %define INSTRUMENTS 1
+    %define ENVELOPES 2
+    %define SEQUENCES 2
+
     section .data
 bpm:
-    dw 240
+    dw 360
 
 envelopes:
 ; Envelope 1
@@ -23,7 +27,6 @@ instruments:
 ; Instrument 1
     db 1                     ; envelope_index
     db 0                     ; envelope_mode
-    dd 0                     ; envelope_timer
     db 1                     ; sequence_index
     dd 0                     ; sequence_remaining_ticks
     db 0                     ; sequence_current_note
@@ -44,11 +47,16 @@ sequences:
 ; Sequence 2
     db 8                     ; note_count
 ; notes
-    db 0x30, 3
-    db 0x33, 1
-    db 0x30, 2
-    db 0x33, 1
-    db 0x30, 1
-    db 0x33, 1
-    db 0x36, 1
-    db 0x2F, 6
+    db 0x10, 1
+    db 0x10, 1
+    db 0x1C, 1
+    db 0x10, 1
+    db 0x1C, 1
+    db 0x1F, 1
+    db 0x10, 1
+    db 0x1C, 1
+
+    section .bss
+    envelope_timer resd INSTRUMENTS
+    sequence_timer resd INSTRUMENTS
+    oscillator_timer resd INSTRUMENTS

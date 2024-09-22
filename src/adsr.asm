@@ -27,12 +27,12 @@ adsr:
     div ecx
 
 .increment_timer:
-    mov ebx, [instrument_offset]
-    add dword [ebx + INSTRUMENT_ENVELOPE_TIMER], eax
-    mov eax, [ebx + INSTRUMENT_ENVELOPE_TIMER]
+    movzx ebx, byte [current_instrument]
+    add dword [envelope_timer + 4 * ebx], eax
+    mov eax, [envelope_timer + 4 * ebx]
 
     call reduce
-    mov [ebx + INSTRUMENT_ENVELOPE_TIMER], eax
+    mov [envelope_timer + 4 * ebx], eax
 
     jc .increment_mode
     ret
@@ -48,8 +48,8 @@ interpolate:
 ; Interpolates linearly between two values: BX and CX into AX
     movzx eax, bx
     sub eax, ecx
-    mov ecx, [instrument_offset]
-    mov ecx, [ecx + INSTRUMENT_ENVELOPE_TIMER]
+    movzx ecx, byte [current_instrument]
+    mov ecx, [envelope_timer + 4 * ecx]
 
     imul ecx
     idiv dword [dividend]
@@ -84,7 +84,8 @@ release:
 reset_envelope:
     mov ecx, [instrument_offset]
     mov byte [ecx + INSTRUMENT_ENVELOPE_MODE], 0
-    mov dword [ecx + INSTRUMENT_ENVELOPE_TIMER], 0
+    movzx ecx, byte [current_instrument]
+    mov dword [envelope_timer + 4 * ecx], 0
     ret
 
     section .data
