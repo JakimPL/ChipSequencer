@@ -3,7 +3,7 @@
 oscillator:
     movzx eax, byte [current_instrument]
     mov eax, [oscillator_timer + 4 * eax]
-    mov ecx, DIVIDEND
+    mov ecx, [dividend]
     shr ecx, 1
     mov ebx, eax
     cmp eax, ecx
@@ -30,7 +30,7 @@ increment_timer:
 .load_frequency:
     movzx ecx, byte [current_instrument]
     lea ebx, [frequency_data]
-    movzx eax, byte [pitch + 4 * ecx]
+    movzx eax, byte [pitch + ecx]
     shl al, 2
     add ebx, eax
     mov ebx, [ebx]

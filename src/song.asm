@@ -1,4 +1,4 @@
-    %define INSTRUMENTS 1
+    %define INSTRUMENTS 2
     %define ENVELOPES 2
     %define SEQUENCES 2
 
@@ -18,7 +18,7 @@ envelopes:
 ; Envelope 2
     dw 0x2FFF                ; base_volume
     dw 0x2FFF                ; sustain_level
-    dw 250                   ; attack
+    dw 125                   ; attack
     dw 250                   ; decay
     dw 250                   ; hold
     dw 250                   ; release
@@ -28,6 +28,12 @@ instruments:
     db 1                     ; envelope_index
     db 0                     ; envelope_mode
     db 1                     ; sequence_index
+    db 0                     ; sequence_current_note
+    db 0                     ; oscillator_index
+; Instrument 2
+    db 0                     ; envelope_index
+    db 0                     ; envelope_mode
+    db 0                     ; sequence_index
     db 0                     ; sequence_current_note
     db 0                     ; oscillator_index
 

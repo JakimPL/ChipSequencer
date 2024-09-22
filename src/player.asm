@@ -30,6 +30,8 @@ start:
 
     mov byte [current_instrument], 0
     call reset_instrument
+    mov byte [current_instrument], 1
+    call reset_instrument
     call calculate_ticks_per_beat
 
 main_loop:
