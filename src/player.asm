@@ -29,6 +29,7 @@ start:
     out 0x21, al             ; Write back to PIC
 
     mov byte [current_instrument], 0
+    call reset_instrument
     call calculate_ticks_per_beat
 
 main_loop:

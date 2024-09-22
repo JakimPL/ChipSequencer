@@ -28,10 +28,8 @@ instruments:
     db 1                     ; envelope_index
     db 0                     ; envelope_mode
     db 1                     ; sequence_index
-    dd 0                     ; sequence_remaining_ticks
     db 0                     ; sequence_current_note
     db 0                     ; oscillator_index
-    dd 0                     ; oscillator_timer
     db 0                     ; oscillator_pitch
 
 sequences:

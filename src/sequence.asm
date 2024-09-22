@@ -2,8 +2,9 @@
 step:
 ; Handle timing for sequencer
     call load_offsets
-    mov ecx, [instrument_offset + INSTRUMENT_SEQUENCE_REMAINING_TICKS]
-    cmp dword [ecx], 0
+    movzx ecx, byte [current_instrument]
+    mov ecx, [sequence_timer + 4 * ecx]
+    cmp dword [sequence_timer], 0
     jnz .done
 
 .load_next_note:
@@ -27,15 +28,16 @@ step:
     movzx ax, al
     movzx ebx, word [ticks_per_beat]
     imul eax, ebx
-    mov ecx, [instrument_offset + INSTRUMENT_SEQUENCE_REMAINING_TICKS]
-    mov [ecx], eax
+
+    movzx ecx, byte [current_instrument]
+    mov [sequence_timer + 4 * ecx], eax
 
     mov ebx, [instrument_offset]
     inc byte [ebx + INSTRUMENT_SEQUENCE_CURRENT_NOTE]
 
 .done:
-    mov ecx, [instrument_offset + INSTRUMENT_SEQUENCE_REMAINING_TICKS]
-    dec dword [ecx]
+    movzx ecx, byte [current_instrument]
+    dec dword [sequence_timer + 4 * ecx]
     ret
 
 calculate_ticks_per_beat:

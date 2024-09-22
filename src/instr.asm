@@ -27,6 +27,13 @@ load_offsets:
     mov dword [sequence_offset], ecx
     ret
 
+reset_instrument:
+    movzx ecx, byte [current_instrument]
+    mov dword [envelope_timer + 4 * ecx], 0
+    mov dword [sequence_timer + 4 * ecx], 0
+    mov dword [oscillator_timer + 4 * ecx], 0
+    ret
+
 play_sample:
     call adsr
     call oscillator
