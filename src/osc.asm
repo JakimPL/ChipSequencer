@@ -53,8 +53,6 @@ reduce:
     ret
 
     section .data
-pitch:
-    db 0
 index:
     dd 0
 frequency_data:
@@ -186,3 +184,7 @@ frequency_data:
     dd 0x748A7B12
     dd 0x7B788802
     dd 0x82D01286
+
+    section .bss
+    pitch resb 1
+    volume resw 1

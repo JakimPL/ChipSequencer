@@ -96,20 +96,3 @@ phases:
     dw decay
     dw hold
     dw release
-
-envelopes:
-; Envelope 1
-    dw 0x7FFF                ; base_volume
-    dw 0x2FFF                ; sustain_level
-    dw 125                   ; attack
-    dw 25                    ; decay
-    dw 500                   ; hold
-    dw 1000                  ; release
-
-; Envelope 2
-    dw 0x2FFF                ; base_volume
-    dw 0x2FFF                ; sustain_level
-    dw 250                   ; attack
-    dw 250                   ; decay
-    dw 250                   ; hold
-    dw 250                   ; release

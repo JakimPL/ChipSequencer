@@ -48,31 +48,5 @@ calculate_ticks_per_beat:
     mov [ticks_per_beat], ax
     ret
 
-    section .data
-bpm:
-    dw 240
-ticks_per_beat:
-    dw 0
-
-; Sequences
-sequences:
-; Sequence 1
-    db 6                     ; note_count
-; notes
-    db 0x30, 1
-    db 0x32, 1
-    db 0x34, 2
-    db 0x37, 1
-    db 0x33, 1
-    db 0x32, 2
-; Sequence 2
-    db 8                     ; note_count
-; notes
-    db 0x30, 3
-    db 0x33, 1
-    db 0x30, 2
-    db 0x33, 1
-    db 0x30, 1
-    db 0x33, 1
-    db 0x36, 1
-    db 0x2F, 6
+    section .bss
+    ticks_per_beat resw 1

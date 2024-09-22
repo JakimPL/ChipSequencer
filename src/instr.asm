@@ -35,27 +35,9 @@ play_sample:
     mov [sound], al
     ret
 
-current_instrument:
-    db 0
-instrument_count:
-    db 1
-instrument_offset:
-    dd 0
-envelope_offset:
-    dd 0
-sequence_offset:
-    dd 0
-oscillator_offset:
-    dd 0
-
-; Instruments table
-instruments:
-    db 1                     ; envelope_index
-    db 0                     ; envelope_mode
-    dd 0                     ; envelope_timer
-    db 1                     ; sequence_index
-    dd 0                     ; sequence_remaining_ticks
-    db 0                     ; sequence_current_note
-    db 0                     ; oscillator_index
-    dd 0                     ; oscillator_timer
-    db 0                     ; oscillator_pitch
+    section .bss
+    current_instrument resb 1
+    instrument_offset resd 1
+    envelope_offset resd 1
+    sequence_offset resd 1
+    oscillator_offset resd 1

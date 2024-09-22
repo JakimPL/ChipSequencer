@@ -28,6 +28,7 @@ start:
     and al, 0xFE             ; Clear mask for IRQ0 (unmask)
     out 0x21, al             ; Write back to PIC
 
+    mov byte [current_instrument], 0
     call calculate_ticks_per_beat
 
 main_loop:
@@ -79,6 +80,7 @@ isr:
     %include "SRC\ADSR.ASM"
     %include "SRC\SEQUENCE.ASM"
     %include "SRC\INSTR.ASM"
+    %include "SRC\SONG.ASM"
 ; %include "SRC\MIXER.ASM"
 
     section .data

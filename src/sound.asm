@@ -18,7 +18,6 @@ port:
     dw 0x022C
 dividend:
     dd 0x71AE0000
-sound:
-    db 0
-volume:
-    dw 0x0000
+
+    section .bss
+    sound resb 1
