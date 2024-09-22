@@ -27,6 +27,18 @@ load_offsets:
     mov dword [sequence_offset], ecx
     ret
 
+reset_instruments:
+    mov bl, INSTRUMENTS
+.reset_loop:
+    cmp bl, 0
+    jz .done
+    mov byte [current_instrument], bl
+    call reset_instrument
+    dec bl
+    jnz .reset_loop
+.done:
+    ret
+
 reset_instrument:
     movzx ecx, byte [current_instrument]
     mov dword [envelope_timer + 4 * ecx], 0
@@ -35,12 +47,9 @@ reset_instrument:
     mov byte [pitch + ecx], 0
     ret
 
-play_sample:
+play_instrument:
     call adsr
     call oscillator
-.cast_to_8_bit:
-    mov al, ah
-    mov [sound], al
     ret
 
     section .bss

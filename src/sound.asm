@@ -1,5 +1,6 @@
     %define PORT 0x022C
 
+    section .text
 play_sound:
     mov dx, 22ch
     mov al, 10h
@@ -21,4 +22,4 @@ dividend:
     dd 0x71AE0000
 
     section .bss
-    sound resb 1
+    sound resd 1

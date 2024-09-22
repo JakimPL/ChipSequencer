@@ -1,21 +1,32 @@
     section .text
 
 mix:
-    mov cx, [instrument_count]
     xor ax, ax
-    mov di, sound_buffer
+    mov [sound], ax
+    mov cl, INSTRUMENTS
 .mix_loop:
-    cmp cx, 0
-    je .done
+    cmp cl, 0
+    je .cast_to_8_bit
 
-; Mix current instrument’s sound sample
-    mov al, [sound_sample]
-    add [di], al
+    dec cl
+    mov [current_instrument], cl
 
-; Move to next instrument
-    add si, instrument_size
-    dec cx
+    call step
+    call increment_timer
+    call play_instrument
+
+    add ax, [sound]
+    mov [sound], ax
+
+    mov cl, [current_instrument]
     jmp .mix_loop
+
+.cast_to_8_bit:
+    mov ax, [sound]
+    shr ax, 2
+    mov al, ah
+    mov [sound], al
+    ret
 
 .done:
     ret

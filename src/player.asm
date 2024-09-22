@@ -28,19 +28,14 @@ start:
     and al, 0xFE             ; Clear mask for IRQ0 (unmask)
     out 0x21, al             ; Write back to PIC
 
-    mov byte [current_instrument], 1
-    call reset_instrument
-    mov byte [current_instrument], 0
-    call reset_instrument
+    call reset_instruments
     call calculate_ticks_per_beat
 
 main_loop:
     cmp byte [calculate], 1
     jne main_loop
 
-    call step
-    call increment_timer
-    call play_sample
+    call mix
 
     mov byte [calculate], 0
     jmp main_loop
@@ -78,13 +73,13 @@ isr:
     iret
 
     %include "SRC\CONST.ASM"
+    %include "SRC\SONG.ASM"
     %include "SRC\SOUND.ASM"
     %include "SRC\OSC.ASM"
     %include "SRC\ADSR.ASM"
     %include "SRC\SEQUENCE.ASM"
     %include "SRC\INSTR.ASM"
-    %include "SRC\SONG.ASM"
-; %include "SRC\MIXER.ASM"
+    %include "SRC\MIXER.ASM"
 
     section .data
 calculate:
