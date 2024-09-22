@@ -28,9 +28,9 @@ start:
     and al, 0xFE             ; Clear mask for IRQ0 (unmask)
     out 0x21, al             ; Write back to PIC
 
-    mov byte [current_instrument], 0
-    call reset_instrument
     mov byte [current_instrument], 1
+    call reset_instrument
+    mov byte [current_instrument], 0
     call reset_instrument
     call calculate_ticks_per_beat
 

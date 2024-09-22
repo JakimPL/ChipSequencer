@@ -3,8 +3,7 @@ step:
 ; Handle timing for sequencer
     call load_offsets
     movzx ecx, byte [current_instrument]
-    mov ecx, [sequence_timer + 4 * ecx]
-    cmp dword [sequence_timer], 0
+    cmp dword [sequence_timer + 4 * ecx], 0
     jnz .done
 
 .load_next_note:
@@ -23,7 +22,8 @@ step:
     mov ecx, [sequence_offset]
     lea si, [ecx + SEQUENCE_NOTES + eax * 2]
     mov al, [si]
-    mov [pitch], al
+    movzx ecx, byte [current_instrument]
+    mov [pitch + ecx], al
     mov al, [si + 1]
     movzx ax, al
     movzx ebx, word [ticks_per_beat]

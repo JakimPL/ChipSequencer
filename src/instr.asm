@@ -32,6 +32,7 @@ reset_instrument:
     mov dword [envelope_timer + 4 * ecx], 0
     mov dword [sequence_timer + 4 * ecx], 0
     mov dword [oscillator_timer + 4 * ecx], 0
+    mov byte [pitch + ecx], 0
     ret
 
 play_sample:
