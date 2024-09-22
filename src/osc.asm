@@ -1,8 +1,9 @@
     section .text
 
 oscillator:
-    mov eax, [index]
-    mov ecx, [dividend]
+    movzx eax, byte [current_instrument]
+    mov eax, [oscillator_timer + 4 * eax]
+    mov ecx, DIVIDEND
     shr ecx, 1
     mov ebx, eax
     cmp eax, ecx
@@ -27,17 +28,18 @@ oscillator:
 increment_timer:
     xor edx, edx
 .load_frequency:
+    movzx ecx, byte [current_instrument]
     lea ebx, [frequency_data]
-    movzx eax, byte [pitch]
+    movzx eax, byte [pitch + 4 * ecx]
     shl al, 2
     add ebx, eax
     mov ebx, [ebx]
-    mov eax, [index]
+    mov eax, [oscillator_timer + 4 * ecx]
 
 ; Increment index by frequency
     add eax, ebx
     call reduce
-    mov [index], eax
+    mov [oscillator_timer + 4 * ecx], eax
     ret
 
 reduce:
@@ -53,8 +55,6 @@ reduce:
     ret
 
     section .data
-index:
-    dd 0
 frequency_data:
     dd 0x0015D3A7
     dd 0x00171FE9
@@ -186,5 +186,4 @@ frequency_data:
     dd 0x82D01286
 
     section .bss
-    pitch resb 1
     volume resw 1

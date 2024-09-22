@@ -30,7 +30,6 @@ instruments:
     db 1                     ; sequence_index
     db 0                     ; sequence_current_note
     db 0                     ; oscillator_index
-    db 0                     ; oscillator_pitch
 
 sequences:
 ; Sequence 1
@@ -58,3 +57,4 @@ sequences:
     envelope_timer resd INSTRUMENTS
     sequence_timer resd INSTRUMENTS
     oscillator_timer resd INSTRUMENTS
+    pitch resb INSTRUMENTS

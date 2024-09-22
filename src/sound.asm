@@ -1,3 +1,5 @@
+    %define PORT 0x022C
+
 play_sound:
     mov dx, 22ch
     mov al, 10h
@@ -5,7 +7,7 @@ play_sound:
 
 ; Play sound
     mov al, [sound]
-    mov dx, [port]
+    mov dx, PORT
     out dx, al
 
 ; Send End of Interrupt (EOI) signal to PIC (Programmable Interrupt Controller)
@@ -14,8 +16,7 @@ play_sound:
     ret
 
     section .data
-port:
-    dw 0x022C
+
 dividend:
     dd 0x71AE0000
 
