@@ -1,3 +1,5 @@
+    %define DIVISOR 0x29
+
     bits 16
     org 100h
 
@@ -8,7 +10,7 @@ start:
     mov al, 0x36             ; Command byte: binary, mode 2 (rate generator), LSB/MSB
     out 0x43, al             ; Send to the PIT command register
 
-    mov al, [divisor]        ; 29102 Hz
+    mov al, DIVISOR          ; 29102 Hz
     out 0x40, al             ; Set low byte (LSB)
     mov al, ah
     out 0x40, al             ; Set high byte (MSB)
@@ -71,7 +73,9 @@ isr:
     pop ax
     iret
 
+    %include "SRC\CONST.ASM"
     %include "SRC\SOUND.ASM"
+    %include "SRC\OSC.ASM"
     %include "SRC\ADSR.ASM"
     %include "SRC\SEQUENCE.ASM"
     %include "SRC\INSTR.ASM"
@@ -80,5 +84,3 @@ isr:
     section .data
 calculate:
     db 1
-divisor:
-    db 0x29

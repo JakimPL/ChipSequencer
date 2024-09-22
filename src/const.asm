@@ -1,0 +1,17 @@
+; Envelope
+    %define ENVELOPE_SIZE 17
+    %define ENVELOPE_MODE 0
+    %define ENVELOPE_GLOBAL_TIMER 1
+    %define ENVELOPE_BASE_VOLUME 5
+    %define ENVELOPE_SUSTAIN_LEVEL 7
+    %define ENVELOPE_ATTACK 9
+
+; Sequence
+    %define SEQUENCE_NOTES 1
+
+; Instrument
+    %define INSTRUMENT_SIZE 25
+    %define INSTRUMENT_ENVELOPE_INDEX 0
+    %define INSTRUMENT_SEQUENCE_INDEX 6
+    %define INSTRUMENT_SEQUENCE_REMAINING_TICKS 7
+    %define INSTRUMENT_SEQUENCE_CURRENT_NOTE 11

@@ -1,9 +1,3 @@
-    %define ENVELOPE_SIZE 17
-    %define ENVELOPE_MODE 0
-    %define ENVELOPE_GLOBAL_TIMER 1
-    %define ENVELOPE_BASE_VOLUME 5
-    %define ENVELOPE_SUSTAIN_LEVEL 7
-    %define ENVELOPE_ATTACK 9
 
     section .text
 adsr:
