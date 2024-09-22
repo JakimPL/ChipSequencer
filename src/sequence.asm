@@ -7,12 +7,13 @@ step:
     jnz .done
 
 .load_next_note:
-    movzx eax, byte [current_note]
+    mov ebx, [instrument_offset]
+    movzx eax, byte [ebx + INSTRUMENT_SEQUENCE_CURRENT_NOTE]
     mov ecx, [sequence_offset]
     cmp al, byte [ecx]
     jl .next_note
     mov al, 0
-    mov byte [current_note], 0
+    mov byte [ebx + INSTRUMENT_SEQUENCE_CURRENT_NOTE], 0
 
 .next_note:
     call reset_envelope
@@ -28,7 +29,9 @@ step:
     imul eax, ebx
     mov ecx, [instrument_offset + INSTRUMENT_SEQUENCE_REMAINING_TICKS]
     mov [ecx], eax
-    inc byte [current_note]
+
+    mov ebx, [instrument_offset]
+    inc byte [ebx + INSTRUMENT_SEQUENCE_CURRENT_NOTE]
 
 .done:
     mov ecx, [instrument_offset + INSTRUMENT_SEQUENCE_REMAINING_TICKS]
@@ -50,11 +53,6 @@ bpm:
     dw 240
 ticks_per_beat:
     dw 0
-
-remaining_ticks:
-    dd 0
-current_note:
-    db 0
 
 ; Sequences
 sequences:
