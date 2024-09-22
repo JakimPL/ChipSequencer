@@ -1,3 +1,5 @@
+    %define SEQUENCE_NOTES 1
+
     section .text
 step:
 ; Handle timing for sequencer
@@ -18,7 +20,7 @@ step:
 
 ; Load the note and calculate the remaining ticks
     mov ecx, [sequence_offset]
-    lea si, [ecx + 1 + eax * 2]
+    lea si, [ecx + SEQUENCE_NOTES + eax * 2]
     mov al, [si]
     mov [pitch], al
     mov al, [si + 1]

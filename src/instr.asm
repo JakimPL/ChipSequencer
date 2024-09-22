@@ -233,5 +233,5 @@ sequence_offset:
 
 ; Instruments table
 instruments:
-    db 0                     ; envelope_index
-    db 1                     ; sequence_index
+    db 1                     ; envelope_index
+    db 0                     ; sequence_index
