@@ -30,6 +30,8 @@ start:
 
     call reset_instruments
     call calculate_ticks_per_beat
+    mov dword [sequence_timer], 0
+    mov dword [sequence_timer + 4], 0
 
 main_loop:
     cmp byte [calculate], 1

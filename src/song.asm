@@ -8,15 +8,15 @@ bpm:
 
 envelopes:
 ; Envelope 1
-    dw 0x3FFF                ; base_volume
-    dw 0x1FFF                ; sustain_level
+    dw 0x4F00                ; base_volume
+    dw 0x4F00                ; sustain_level
     dw 125                   ; attack
     dw 25                    ; decay
     dw 500                   ; hold
     dw 1000                  ; release
 
 ; Envelope 2
-    dw 0x3FFF                ; base_volume
+    dw 0x7FFF                ; base_volume
     dw 0x2FFF                ; sustain_level
     dw 125                   ; attack
     dw 250                   ; decay
@@ -24,16 +24,16 @@ envelopes:
     dw 250                   ; release
 
 instruments:
-; Instrument 2
-    db 0                     ; envelope_index
-    db 0                     ; envelope_mode
-    db 0                     ; sequence_index
-    db 0                     ; sequence_current_note
-    db 0                     ; oscillator_index
 ; Instrument 1
     db 0                     ; envelope_index
     db 0                     ; envelope_mode
     db 1                     ; sequence_index
+    db 0                     ; sequence_current_note
+    db 0                     ; oscillator_index
+; Instrument 2
+    db 1                     ; envelope_index
+    db 0                     ; envelope_mode
+    db 0                     ; sequence_index
     db 0                     ; sequence_current_note
     db 0                     ; oscillator_index
 

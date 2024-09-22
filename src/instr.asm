@@ -13,6 +13,7 @@ load_offsets:
 ; Load the sequence
     lea ecx, [sequences]
     movzx bx, byte [current_instrument]
+    imul bx, INSTRUMENT_SIZE
     mov bl, [instruments + INSTRUMENT_SEQUENCE_INDEX + bx]
     cmp bl, 0
     jz .done
@@ -35,7 +36,7 @@ reset_instruments:
     mov byte [current_instrument], bl
     call reset_instrument
     dec bl
-    jnz .reset_loop
+    jmp .reset_loop
 .done:
     ret
 
