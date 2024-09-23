@@ -1,12 +1,7 @@
-
     section .text
 adsr:
     movzx eax, byte [current_channel]
     movzx eax, byte [envelope_mode + eax]
-
-; If mode == 4: exit
-    cmp al, 4
-    jne .done
 
     xor edx, edx
     call [phases + eax * 2]
@@ -78,6 +73,9 @@ release:
     xor cx, cx
     call interpolate
     ret
+note_cut:
+    mov ax, 0
+    ret
 
 reset_envelope:
     movzx ecx, byte [current_channel]
@@ -86,8 +84,8 @@ reset_envelope:
     ret
 
 set_release:
-    movzx eax, byte [current_channel]
-    mov byte [envelope_mode + eax], 3
+    movzx ecx, byte [current_channel]
+    mov byte [envelope_mode + ecx], RELEASE
     ret
 
     section .data
@@ -99,3 +97,4 @@ phases:
     dw decay
     dw hold
     dw release
+    dw note_cut

@@ -26,6 +26,7 @@ mix:
 .cast_to_8_bit:
     mov eax, [sound]
     mov ecx, CHANNELS
+    cdq
     div ecx
     mov al, ah
     mov [sound], al

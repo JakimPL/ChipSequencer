@@ -4,6 +4,13 @@
     %define ENVELOPE_SUSTAIN_LEVEL 2
     %define ENVELOPE_ATTACK 4
 
+; Phases
+    %define ATTACK 0
+    %define DECAY 1
+    %define HOLD 2
+    %define RELEASE 3
+    %define NOTE_CUT 4
+
 ; Sequence
     %define SEQUENCE_NOTES 1
 
