@@ -1,4 +1,4 @@
-    %define CHANNELS 3
+    %define CHANNELS 1
     %define ENVELOPES 2
     %define SEQUENCES 2
 
@@ -32,7 +32,7 @@ envelopes:
 channels:
 ; Channel 0
     db 0                     ; envelope_index
-    db 0                     ; order_index
+    db 1                     ; order_index
     db 0                     ; oscillator_index
     db 0                     ; transpose
 ; Channel 1
@@ -40,11 +40,6 @@ channels:
     db 1                     ; order_index
     db 0                     ; oscillator_index
     db 0                     ; transpose
-; Channel 2
-    db 2                     ; envelope_index
-    db 1                     ; order_index
-    db 0                     ; oscillator_index
-    db 12                    ; transpose
 
 sequences:
 ; Sequence 0
@@ -59,21 +54,19 @@ sequences:
 ; Sequence 1
     db 16                    ; data_size = 2 * note_count
 ; notes
-    db 0x10, 1
-    db 0x10, 1
     db 0x1C, 1
     db 0x10, 1
-    db 0x1C, 1
-    db 0x1F, 1
     db 0x10, 1
-    db 0x1C, 1
+    db 0x10, 1
+    db 0x10, 1
+    db 0x10, 1
+    db 0x10, 1
+    db 0x10, 1
 ; Sequence 2
-    db 8                     ; data_size = 2 * note_count
+    db 4                     ; data_size = 2 * note_count
 ; notes
-    db 0x34, 4
-    db 0x33, 2
-    db 0x2F, 1
-    db 0x37, 1
+    db 0x3B, 1
+    db 0xFF, 7
 
 orders:
 ; Order 0
@@ -81,7 +74,7 @@ orders:
     db 1, 1, 1, 1
 ; Order 1
     db 4                     ; order_length
-    db 2, 0, 0, 0
+    db 2, 2, 2, 2
 
     section .bss
     envelope_timer resd CHANNELS

@@ -28,11 +28,11 @@ oscillator:
 increment_timer:
 ; Load the frequency
     movzx ecx, byte [current_channel]
-    lea ebx, [frequencies]
     movzx eax, byte [pitch + ecx]
     mov edx, [channel_offset]
     add al, [edx + CHANNEL_TRANSPOSE]
     shl al, 2
+    lea ebx, [frequencies]
     add ebx, eax
     mov ebx, [ebx]
     mov eax, [oscillator_timer + 4 * ecx]

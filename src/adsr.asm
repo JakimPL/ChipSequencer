@@ -6,7 +6,7 @@ adsr:
 
 ; If mode == 4: exit
     cmp al, 4
-    jge .done
+    jne .done
 
     xor edx, edx
     call [phases + eax * 2]
@@ -83,6 +83,11 @@ reset_envelope:
     movzx ecx, byte [current_channel]
     mov byte [envelope_mode + ecx], 0
     mov dword [envelope_timer + 4 * ecx], 0
+    ret
+
+set_release:
+    movzx eax, byte [current_channel]
+    mov byte [envelope_mode + eax], 3
     ret
 
     section .data

@@ -45,7 +45,7 @@ main_loop:
 
 .no_key:
     cmp byte [calculate], 1
-    jne main_loop
+    jnz main_loop
 
     call mix
 
