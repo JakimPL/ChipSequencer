@@ -25,10 +25,18 @@ load_offsets:
     imul bx, ENVELOPE_SIZE
     lea ecx, [envelopes + bx]
     mov dword [envelope_offset], ecx
+; Load the order
+    lea ecx, [orders]
+    mov ebx, [channel_offset]
+    mov bl, [CHANNEL_ORDER_INDEX + ebx]
+    call load_item
+    mov dword [order_offset], ecx
 ; Load the sequence
     lea ecx, [sequences]
-    mov ebx, [channel_offset]
-    mov bl, [ebx + CHANNEL_SEQUENCE_INDEX]
+    movzx bx, byte [current_channel]
+    movzx ebx, byte [current_order + bx]
+    add ebx, [order_offset]
+    mov bl, [ORDER_SEQUENCES + ebx]
     call load_item
     mov dword [sequence_offset], ecx
     ret
@@ -65,5 +73,6 @@ play_channel:
     current_channel resb 1
     channel_offset resd 1
     envelope_offset resd 1
+    order_offset resd 1
     sequence_offset resd 1
     oscillator_offset resd 1

@@ -26,12 +26,12 @@ envelopes:
 channels:
 ; Channel 1
     db 0                     ; envelope_index
-    db 1                     ; sequence_index
+    db 0                     ; order_index
     db 0                     ; oscillator_index
     db 0                     ; transpose
 ; Channel 2
     db 1                     ; envelope_index
-    db 0                     ; sequence_index
+    db 1                     ; order_index
     db 0                     ; oscillator_index
     db 0                     ; transpose
 
