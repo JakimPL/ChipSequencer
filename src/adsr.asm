@@ -2,8 +2,8 @@
     section .text
 adsr:
     call load_offsets
-    mov eax, [channel_offset]
-    movzx eax, byte [eax + CHANNEL_ENVELOPE_MODE]
+    movzx eax, byte [current_channel]
+    movzx eax, byte [envelope_mode + eax]
 
 ; If mode == 4: exit
     cmp al, 4
@@ -19,8 +19,8 @@ adsr:
     xor edx, edx
 
 ; Load the divisor
-    mov eax, [channel_offset]
-    movzx ebx, byte [eax + CHANNEL_ENVELOPE_MODE]
+    movzx eax, byte [current_channel]
+    movzx ebx, byte [envelope_mode + eax]
     mov eax, [envelope_offset]
     movzx ecx, word [eax + ENVELOPE_ATTACK + 2 * ebx]
     mov eax, [magic_constant]
@@ -38,8 +38,7 @@ adsr:
     ret
 
 .increment_mode:
-    mov ecx, [channel_offset]
-    inc byte [ecx + CHANNEL_ENVELOPE_MODE]
+    inc byte [envelope_mode + ebx]
 
 .done:
     ret
@@ -82,9 +81,8 @@ release:
     ret
 
 reset_envelope:
-    mov ecx, [channel_offset]
-    mov byte [ecx + CHANNEL_ENVELOPE_MODE], 0
     movzx ecx, byte [current_channel]
+    mov byte [envelope_mode + ecx], 0
     mov dword [envelope_timer + 4 * ecx], 0
     ret
 

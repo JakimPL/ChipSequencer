@@ -61,9 +61,21 @@ sequences:
     db 0x10, 1
     db 0x1C, 1
 
+orders:
+; Order 1
+    db 4                     ; order_length
+    db 0, 0, 1, 1
+; Order 2
+    db 4                     ; order_length
+    db 1, 1, 0, 0
+
     section .bss
     envelope_timer resd CHANNELS
     sequence_timer resd CHANNELS
     oscillator_timer resd CHANNELS
     pitch resb CHANNELS
 
+    envelope_mode resb CHANNELS
+    current_order resb CHANNELS
+    current_sequence resb CHANNELS
+    sequence_current_note resb CHANNELS

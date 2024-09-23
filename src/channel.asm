@@ -45,6 +45,9 @@ reset_channel:
     mov dword [sequence_timer + 4 * ecx], 0
     mov dword [oscillator_timer + 4 * ecx], 0
     mov byte [pitch + ecx], 0
+    mov byte [envelope_mode + ecx], 0
+    mov byte [current_order + ecx], 0
+    mov byte [sequence_current_note + ecx], 0
     ret
 
 play_channel:
