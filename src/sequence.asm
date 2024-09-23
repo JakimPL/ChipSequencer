@@ -7,13 +7,13 @@ step:
     jnz .done
 
 .load_next_note:
-    mov ebx, [channel_offset]
-    movzx eax, byte [ebx + CHANNEL_SEQUENCE_CURRENT_NOTE]
+    movzx ebx, byte [current_channel]
+    movzx eax, byte [sequence_current_note + ebx]
     mov ecx, [sequence_offset]
     cmp al, byte [ecx]
     jl .next_note
     mov al, 0
-    mov byte [ebx + CHANNEL_SEQUENCE_CURRENT_NOTE], 0
+    mov byte [sequence_current_note + ebx], 0
 
 .next_note:
     call reset_envelope
@@ -31,12 +31,9 @@ step:
 
     movzx ecx, byte [current_channel]
     mov [sequence_timer + 4 * ecx], eax
-
-    mov ebx, [channel_offset]
-    inc byte [ebx + CHANNEL_SEQUENCE_CURRENT_NOTE]
+    inc byte [sequence_current_note + ecx]
 
 .done:
-    movzx ecx, byte [current_channel]
     dec dword [sequence_timer + 4 * ecx]
     ret
 
