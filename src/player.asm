@@ -90,6 +90,7 @@ isr:
     %include "SRC\OSC.ASM"
     %include "SRC\ADSR.ASM"
     %include "SRC\SEQUENCE.ASM"
+    %include "SRC\ORDER.ASM"
     %include "SRC\CHANNEL.ASM"
     %include "SRC\MIXER.ASM"
 

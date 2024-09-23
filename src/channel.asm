@@ -15,23 +15,23 @@ load_item:
     ret
 
 load_offsets:
-; Load the channel
+.load_channel:
     movzx bx, byte [current_channel]
     imul bx, CHANNEL_SIZE
     lea ecx, [channels + bx]
     mov dword [channel_offset], ecx
     mov bl, [ecx + CHANNEL_ENVELOPE_INDEX]
-; Load the envelope
+.load_envelope:
     imul bx, ENVELOPE_SIZE
     lea ecx, [envelopes + bx]
     mov dword [envelope_offset], ecx
-; Load the order
+.load_order:
     lea ecx, [orders]
     mov ebx, [channel_offset]
     mov bl, [CHANNEL_ORDER_INDEX + ebx]
     call load_item
     mov dword [order_offset], ecx
-; Load the sequence
+.load_sequence:
     lea ecx, [sequences]
     movzx bx, byte [current_channel]
     movzx ebx, byte [current_order + bx]
