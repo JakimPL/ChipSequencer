@@ -11,6 +11,7 @@ mix:
     dec cl
     mov [current_channel], cl
 
+    call load_offsets
     call step
     call increment_timer
     call play_channel

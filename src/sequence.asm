@@ -1,7 +1,6 @@
     section .text
 step:
 ; Handle timing for sequencer
-    call load_offsets
     movzx ecx, byte [current_channel]
     cmp dword [sequence_timer + 4 * ecx], 0
     jnz .done

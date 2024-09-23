@@ -1,7 +1,6 @@
 
     section .text
 adsr:
-    call load_offsets
     movzx eax, byte [current_channel]
     movzx eax, byte [envelope_mode + eax]
 

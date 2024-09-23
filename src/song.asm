@@ -10,7 +10,7 @@ envelopes:
 ; Envelope 1
     dw 0x4F00                ; base_volume
     dw 0x4F00                ; sustain_level
-    dw 125                   ; attack
+    dw 25                    ; attack
     dw 25                    ; decay
     dw 500                   ; hold
     dw 1000                  ; release
