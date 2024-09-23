@@ -29,7 +29,7 @@ start:
     out 0x21, al             ; Write back to PIC
 
     call initialize_frequencies
-    call reset_instruments
+    call reset_channels
     call calculate_ticks_per_beat
 
 main_loop:
@@ -79,7 +79,7 @@ isr:
     %include "SRC\OSC.ASM"
     %include "SRC\ADSR.ASM"
     %include "SRC\SEQUENCE.ASM"
-    %include "SRC\INSTR.ASM"
+    %include "SRC\CHANNEL.ASM"
     %include "SRC\MIXER.ASM"
 
     section .data

@@ -1,7 +1,7 @@
     section .text
 
 oscillator:
-    movzx eax, byte [current_instrument]
+    movzx eax, byte [current_channel]
     mov eax, [oscillator_timer + 4 * eax]
     mov ecx, [dividend]
     shr ecx, 1
@@ -27,11 +27,11 @@ oscillator:
 
 increment_timer:
 ; Load the frequency
-    movzx ecx, byte [current_instrument]
+    movzx ecx, byte [current_channel]
     lea ebx, [frequencies]
     movzx eax, byte [pitch + ecx]
-    mov edx, [instrument_offset]
-    add al, [edx + INSTRUMENT_TRANSPOSE]
+    mov edx, [channel_offset]
+    add al, [edx + CHANNEL_TRANSPOSE]
     shl al, 2
     add ebx, eax
     mov ebx, [ebx]

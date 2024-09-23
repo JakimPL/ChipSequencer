@@ -1,4 +1,4 @@
-    %define INSTRUMENTS 2
+    %define CHANNELS 2
     %define ENVELOPES 2
     %define SEQUENCES 2
 
@@ -23,15 +23,15 @@ envelopes:
     dw 250                   ; hold
     dw 250                   ; release
 
-instruments:
-; Instrument 1
+channels:
+; Channel 1
     db 0                     ; envelope_index
     db 0                     ; envelope_mode
     db 1                     ; sequence_index
     db 0                     ; sequence_current_note
     db 0                     ; oscillator_index
     db 0                     ; transpose
-; Instrument 2
+; Channel 2
     db 1                     ; envelope_index
     db 0                     ; envelope_mode
     db 0                     ; sequence_index
@@ -62,7 +62,8 @@ sequences:
     db 0x1C, 1
 
     section .bss
-    envelope_timer resd INSTRUMENTS
-    sequence_timer resd INSTRUMENTS
-    oscillator_timer resd INSTRUMENTS
-    pitch resb INSTRUMENTS
+    envelope_timer resd CHANNELS
+    sequence_timer resd CHANNELS
+    oscillator_timer resd CHANNELS
+    pitch resb CHANNELS
+

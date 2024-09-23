@@ -2,8 +2,8 @@
     section .text
 adsr:
     call load_offsets
-    mov eax, [instrument_offset]
-    movzx eax, byte [eax + INSTRUMENT_ENVELOPE_MODE]
+    mov eax, [channel_offset]
+    movzx eax, byte [eax + CHANNEL_ENVELOPE_MODE]
 
 ; If mode == 4: exit
     cmp al, 4
@@ -19,15 +19,15 @@ adsr:
     xor edx, edx
 
 ; Load the divisor
-    mov eax, [instrument_offset]
-    movzx ebx, byte [eax + INSTRUMENT_ENVELOPE_MODE]
+    mov eax, [channel_offset]
+    movzx ebx, byte [eax + CHANNEL_ENVELOPE_MODE]
     mov eax, [envelope_offset]
     movzx ecx, word [eax + ENVELOPE_ATTACK + 2 * ebx]
     mov eax, [magic_constant]
     div ecx
 
 .increment_timer:
-    movzx ebx, byte [current_instrument]
+    movzx ebx, byte [current_channel]
     add dword [envelope_timer + 4 * ebx], eax
     mov eax, [envelope_timer + 4 * ebx]
 
@@ -38,8 +38,8 @@ adsr:
     ret
 
 .increment_mode:
-    mov ecx, [instrument_offset]
-    inc byte [ecx + INSTRUMENT_ENVELOPE_MODE]
+    mov ecx, [channel_offset]
+    inc byte [ecx + CHANNEL_ENVELOPE_MODE]
 
 .done:
     ret
@@ -48,7 +48,7 @@ interpolate:
 ; Interpolates linearly between two values: BX and CX into AX
     movzx eax, bx
     sub eax, ecx
-    movzx ecx, byte [current_instrument]
+    movzx ecx, byte [current_channel]
     mov ecx, [envelope_timer + 4 * ecx]
 
     imul ecx
@@ -82,9 +82,9 @@ release:
     ret
 
 reset_envelope:
-    mov ecx, [instrument_offset]
-    mov byte [ecx + INSTRUMENT_ENVELOPE_MODE], 0
-    movzx ecx, byte [current_instrument]
+    mov ecx, [channel_offset]
+    mov byte [ecx + CHANNEL_ENVELOPE_MODE], 0
+    movzx ecx, byte [current_channel]
     mov dword [envelope_timer + 4 * ecx], 0
     ret
 
