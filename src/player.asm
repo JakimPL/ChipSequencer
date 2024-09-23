@@ -33,6 +33,17 @@ start:
     call calculate_ticks_per_beat
 
 main_loop:
+.check_esc:
+    mov ah, 0x01
+    int 0x16
+    jz .no_key
+
+    mov ah, 0x00
+    int 0x16
+    cmp al, 0x1B
+    je .exit
+
+.no_key:
     cmp byte [calculate], 1
     jne main_loop
 
