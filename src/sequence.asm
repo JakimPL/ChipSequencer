@@ -10,7 +10,10 @@ step:
     movzx ebx, byte [current_channel]
     movzx eax, byte [sequence_current_note + ebx]
     mov ecx, [sequence_offset]
-    cmp al, byte [ecx]
+; Check if the sequence has ended (divided by 2 because each note is 2 bytes)
+    mov cl, byte [ecx]
+    shr cl, 1
+    cmp al, byte cl
     jl .next_note
     mov al, 0
     mov byte [sequence_current_note + ebx], 0

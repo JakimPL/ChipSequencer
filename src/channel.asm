@@ -1,4 +1,19 @@
     section .text
+load_item:
+; Arguments:
+; ECX - beginning offset (sequence)
+; BL  - element index
+    cmp bl, 0
+    jz .done
+.find_data:
+    movzx eax, byte [ecx]
+    add ecx, eax
+    inc ecx
+    dec bl
+    jnz .find_data
+.done:
+    ret
+
 load_offsets:
 ; Load the channel
     movzx bx, byte [current_channel]
@@ -14,16 +29,7 @@ load_offsets:
     lea ecx, [sequences]
     mov ebx, [channel_offset]
     mov bl, [ebx + CHANNEL_SEQUENCE_INDEX]
-    cmp bl, 0
-    jz .done
-.find_sequence:
-    movzx eax, byte [ecx]
-    imul eax, 2
-    add ecx, eax
-    inc ecx
-    dec bl
-    jnz .find_sequence
-.done:
+    call load_item
     mov dword [sequence_offset], ecx
     ret
 

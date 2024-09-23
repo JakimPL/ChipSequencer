@@ -37,7 +37,7 @@ channels:
 
 sequences:
 ; Sequence 1
-    db 6                     ; note_count
+    db 12                    ; note_count
 ; notes
     db 0x28, 1
     db 0x2A, 1
@@ -46,7 +46,7 @@ sequences:
     db 0x2A, 1
     db 0x28, 2
 ; Sequence 2
-    db 8                     ; note_count
+    db 16                    ; note_count
 ; notes
     db 0x10, 1
     db 0x10, 1
