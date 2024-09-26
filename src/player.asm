@@ -85,6 +85,7 @@ isr:
     iret
 
     %include "SRC\CONST.ASM"
+    %include "SRC\MATH.ASM"
     %include "SRC\SONG.ASM"
     %include "SRC\SOUND.ASM"
     %include "SRC\OSC.ASM"

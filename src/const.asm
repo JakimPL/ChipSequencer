@@ -23,3 +23,6 @@
     %define CHANNEL_ORDER_INDEX 1
     %define CHANNEL_OSCILLATOR_INDEX 2
     %define CHANNEL_TRANSPOSE 3
+
+; Oscillators
+    %define BASE_VOLUME 0x8000

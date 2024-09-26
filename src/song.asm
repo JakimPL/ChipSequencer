@@ -9,7 +9,7 @@ bpm:
 envelopes:
 ; Envelope 0
     dw 0x7F00                ; base_volume
-    dw 0x4F00                ; sustain_level
+    dw 0x6F00                ; sustain_level
     dw 25                    ; attack
     dw 25                    ; decay
     dw 500                   ; hold
@@ -33,7 +33,7 @@ channels:
 ; Channel 0
     db 0                     ; envelope_index
     db 0                     ; order_index
-    db 0                     ; oscillator_index
+    db 1                     ; oscillator_index
     db 0                     ; transpose
 ; Channel 1
     db 1                     ; envelope_index
@@ -63,13 +63,14 @@ channels:
 
 sequences:
 ; Sequence 0
-    db 14                    ; data_size = 2 * note_count
+    db 16                    ; data_size = 2 * note_count
 ; notes
-    db 0x3C, 2
-    db 0x36, 2
-    db 0x33, 2
-    db 0x32, 2
-    db 0x30, 6
+    db 0x3C, 3
+    db 0x36, 3
+    db 0x33, 3
+    db 0x32, 3
+    db 0x30, 1
+    db 0xFF, 1
     db 0x30, 1
     db 0x2E, 1
 ; Sequence 1

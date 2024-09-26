@@ -1,28 +1,8 @@
     section .text
-
 oscillator:
-    movzx eax, byte [current_channel]
-    mov eax, [oscillator_timer + 4 * eax]
-    mov ecx, [dividend]
-    shr ecx, 1
-    mov ebx, eax
-    cmp eax, ecx
-
-    jl .low_value
-    jmp .high_value
-
-.low_value:
-    mov ax, 0x8000
-    mov bx, [volume]
-    add ax, bx
-    jmp .done
-
-.high_value:
-    mov ax, 0x8000
-    mov bx, [volume]
-    sub ax, bx
-
-.done:
+    mov eax, [channel_offset]
+    movzx eax, byte [CHANNEL_OSCILLATOR_INDEX + eax]
+    call [oscillators + 2 * eax]
     ret
 
 increment_timer:
@@ -74,6 +54,10 @@ initialize_frequencies:
     jnz .loop
     ret
 
+; Oscillators
+    %include "SRC\OSC\SQUARE.ASM"
+    %include "SRC\OSC\SAW.ASM"
+
     section .data
 frequency_data:
     dd 0x454BB03A
@@ -88,6 +72,10 @@ frequency_data:
     dd 0x748A7B12
     dd 0x7B788802
     dd 0x82D01286
+
+oscillators:
+    dw square
+    dw saw
 
     section .bss
     volume resw 1

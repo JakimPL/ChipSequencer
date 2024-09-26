@@ -4,6 +4,11 @@ adsr:
     movzx eax, byte [envelope_mode + eax]
 
     xor edx, edx
+.prepare_interpolation_points:
+    movzx ecx, byte [current_channel]
+    lea si, [envelope_timer + 4 * ecx]
+    lea di, [dividend]
+.phase:
     call [phases + eax * 2]
 
 .set_volume:
@@ -35,20 +40,6 @@ adsr:
     inc byte [envelope_mode + ebx]
 
 .done:
-    ret
-
-interpolate:
-; Interpolates linearly between two values: BX and CX into AX
-    movzx eax, bx
-    sub eax, ecx
-    movzx ecx, byte [current_channel]
-    mov ecx, [envelope_timer + 4 * ecx]
-
-    imul ecx
-    idiv dword [dividend]
-
-    neg ax
-    add ax, bx
     ret
 
 attack:
