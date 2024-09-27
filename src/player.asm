@@ -1,5 +1,4 @@
     %define DIRECT_MODE 1
-    %define DIVISOR 0x29
 
     bits 16
     org 100h
@@ -25,25 +24,16 @@ main_loop:
 .no_key:
     cmp byte [calculate], 1
     jnz main_loop
-
     call mix
-
     mov byte [calculate], 0
     jmp main_loop
 
 .exit:
     call terminate
 
-; Return to DOS
+.return_to_dos:
     mov ah, 0x4C
     int 0x21
-
-isr:
-    pusha
-    call play_sound
-    mov byte [calculate], 1
-    popa
-    iret
 
     %include "SRC\CONST.ASM"
     %include "SRC\MATH.ASM"
@@ -55,7 +45,7 @@ isr:
     %include "SRC\CHANNEL.ASM"
     %include "SRC\MIXER.ASM"
 
-    %ifdef DIRECT_MODE
+    %if DIRECT_MODE
     %include "SRC\DRIVER\DIRECT.ASM"
     %else
     %include "SRC\DRIVER\SB16.ASM"

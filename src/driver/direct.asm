@@ -1,4 +1,6 @@
     %define PORT 0x022C
+    %define DIVISOR 0x29
+
     section .text
 initialize:
 .set_timer:
@@ -53,3 +55,10 @@ play_sound:
     mov al, 0x20
     out 0x20, al
     ret
+
+isr:
+    pusha
+    call play_sound
+    mov byte [calculate], 1
+    popa
+    iret
