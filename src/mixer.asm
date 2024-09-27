@@ -6,7 +6,7 @@ mix:
     mov cl, CHANNELS
 .mix_loop:
     cmp cl, 0
-    je .cast_to_8_bit
+    je .normalize
 
     dec cl
     mov [current_channel], cl
@@ -23,13 +23,12 @@ mix:
     mov cl, [current_channel]
     jmp .mix_loop
 
-.cast_to_8_bit:
+.normalize:
     mov eax, [sound]
     mov ecx, CHANNELS
     cdq
     div ecx
-    mov al, ah
-    mov [sound], al
+    mov [sound], ax
     ret
 
 .done:
