@@ -26,3 +26,11 @@
 
 ; Oscillators
     %define BASE_VOLUME 0x8000
+    %define OSCILLATOR_INDEX 1
+
+; Square wave
+    %define OSCILLATOR_SQUARE_PARAMETERS 1
+    %define OSCILLATOR_SQUARE_DUTY_CYCLE 2
+
+; Saw wave
+    %define OSCILLATOR_SAW_PARAMETERS 0

@@ -66,7 +66,7 @@ sequences:
     db 16                    ; data_size = 2 * note_count
 ; notes
     db 0x3C, 3
-    db 0x36, 3
+    db 0x35, 3
     db 0x33, 3
     db 0x32, 3
     db 0x30, 1
@@ -130,6 +130,15 @@ orders:
 ; Order 5
     db 1                     ; order_length
     db 7
+
+oscillators:
+; Oscillator 0
+    db 2                     ; oscillator_size
+    db 0                     ; generator_index
+    db 0x20                  ; duty_cycle
+; Oscillator 1
+    db 1                     ; oscillator_size
+    db 1                     ; generator_index
 
     section .bss
     envelope_timer resd CHANNELS

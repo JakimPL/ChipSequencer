@@ -39,6 +39,12 @@ load_offsets:
     mov bl, [ORDER_SEQUENCES + ebx]
     call load_item
     mov dword [sequence_offset], ecx
+.load_oscillator:
+    lea ecx, [oscillators]
+    mov ebx, [channel_offset]
+    mov bl, [CHANNEL_OSCILLATOR_INDEX + ebx]
+    call load_item
+    mov dword [oscillator_offset], ecx
     ret
 
 reset_channels:

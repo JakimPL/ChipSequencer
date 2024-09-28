@@ -1,14 +1,13 @@
-    %define OSC_SQUARE_PARAMETERS 1
-    %define OSC_SQUARE_DUTY_CYCLE 0
-
     section .text
 square:
     movzx eax, byte [current_channel]
     mov eax, [oscillator_timer + 4 * eax]
     mov ecx, [dividend]
 .duty_cycle:
+    mov ebx, [oscillator_offset]
+    movzx ebx, byte [OSCILLATOR_SQUARE_DUTY_CYCLE + ebx]
     shr ecx, 8
-    imul ecx, 0x80
+    imul ecx, ebx
     mov ebx, eax
     cmp eax, ecx
 

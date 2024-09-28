@@ -1,8 +1,8 @@
     section .text
 oscillator:
-    mov eax, [channel_offset]
-    movzx eax, byte [CHANNEL_OSCILLATOR_INDEX + eax]
-    call [oscillators + 2 * eax]
+    mov eax, [oscillator_offset]
+    movzx eax, byte [OSCILLATOR_INDEX + eax]
+    call [oscillators_table + 2 * eax]
     ret
 
 increment_timer:
@@ -73,7 +73,7 @@ frequency_data:
     dd 0x7B788802
     dd 0x82D01286
 
-oscillators:
+oscillators_table:
     dw square
     dw saw
 
