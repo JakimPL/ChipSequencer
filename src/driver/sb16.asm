@@ -1,7 +1,7 @@
     %define SB_BASE 0x0220
     %define SB_IRQ 7
     %define SB_DMA 1
-    %define SOUND_SIZE 0x2000
+    %define SOUND_SIZE 0xC000
 
     section .text
 initialize:
@@ -128,16 +128,18 @@ exit_auto_init:
     ret
 
 install_isr:
-    cli                      ; Clear interrupts while setting vector
-    xor ax, ax               ; Segment for IVT (0000h)
+    cli
+    xor ax, ax
     mov es, ax
-    mov ax, [es:8*4]
+
+    mov ax, [es:4 * 0x0F]
     mov [old_int_offset], ax
-    mov ax, [es:8*4+2]
+    mov ax, [es:4 * 0x0F + 2]
     mov [old_int_seg], ax
-    mov word [es:8*4], isr   ; Set ISR offset at INT 08h (IRQ0)
-    mov word [es:8*4+2], cs  ; Set ISR segment
-    sti                      ; Enable interrupts
+
+    mov word [es:4 * 0x0F], isr
+    mov word [es:4 * 0x0F + 2], cs
+    sti
     ret
 
 uninstall_isr:
@@ -152,36 +154,36 @@ uninstall_isr:
     ret
 
 program_dma:
-    mov dx, 0x0A             ; write single mask register
-    mov al, 0x05             ; disable DMA channel 1
+    mov dx, 0x0A             ; Write single mask register
+    mov al, 0x05             ; Disable DMA channel 1
     out dx, al
 
-    mov dx, 0x0C             ; clear byte pointer flip flop
-    mov al, 0                ; any value
+    mov dx, 0x0C             ; Clear byte pointer flip-flop
+    mov al, 0                ; Any value
     out dx, al
 
-    mov dx, 0x0B             ; write mode register
-    mov al, 0x59             ; auto-init playback
+    mov dx, 0x0B             ; Write mode register
+    mov al, 0x59             ; Auto-init playback
     out dx, al
 
-    mov dx, 0x03             ; channel 1 count
+    mov dx, 0x03             ; Channel 1 count
     mov al, (SOUND_SIZE - 1) & 0xFF
-    out dx, al               ; low byte
+    out dx, al               ; Low byte
     mov al, (SOUND_SIZE - 1) >> 8
-    out dx, al               ; high byte
+    out dx, al               ; High byte
 
-    mov dx, 2                ; channel 1 address
+    mov dx, 2                ; Channel 1 address
     mov ax, [dma_offset]
-    out dx, al               ; low byte
+    out dx, al               ; Low byte
     mov al, ah
-    out dx, al               ; high byte
+    out dx, al               ; High byte
 
-    mov dx, 0x83             ; page register for 8-bit DMA channel 1
+    mov dx, 0x83             ; Page register for 8-bit DMA channel 1
     mov al, [dma_page]
     out dx, al
 
-    mov dx, 0x0A             ; write single mask register
-    mov al, 1                ; enable DMA channel 1
+    mov dx, 0x0A             ; Write single mask register
+    mov al, 1                ; Enable DMA channel 1
     out dx, al
 
     ret
@@ -211,24 +213,29 @@ sound_driver_step:
     cmp byte [calculate], 1
     jne .not_ready
 
+    mov cx, SOUND_SIZE / 2
     mov di, buffer
-    mov cx, SOUND_SIZE
+    cmp byte [buffer_half], 0
+    je .fill_buffer
+    add di, SOUND_SIZE / 2
 .fill_buffer:
     cmp cx, 0
-    je .fill_done
+    je .finish
 
     pusha
     call mix
     popa
+
     mov ax, [sound]
     mov al, ah               ; Cast to 8-bit
-
     mov [di], al
+
     inc di
     dec cx
     jmp .fill_buffer
-.fill_done:
+.finish:
     mov byte [calculate], 0
+    xor byte [buffer_half], 1
 .not_ready:
     ret
 
@@ -245,6 +252,7 @@ isr:
     pusha
     call play_sound
     mov byte [calculate], 1
+
     popa
     iret
 
@@ -258,6 +266,8 @@ old_int_offset:
     dw 0
 old_int_seg:
     dw 0
+buffer_half:
+    db 0
 
     section .bss
 buffer:

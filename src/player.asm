@@ -25,7 +25,6 @@ main_loop:
     cmp byte [calculate], 1
     jnz main_loop
     call sound_driver_step
-    mov byte [calculate], 0
     jmp main_loop
 
 .exit:

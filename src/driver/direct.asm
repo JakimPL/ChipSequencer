@@ -58,6 +58,7 @@ play_sound:
 
 sound_driver_step:
     call mix
+    mov byte [calculate], 0
     ret
 
 isr:
