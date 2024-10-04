@@ -47,13 +47,17 @@ play_sound:
 
 ; Play sound
     mov ax, [sound]
-    mov al, ah
+    mov al, ah               ; Cast to 8-bit
     mov dx, PORT
     out dx, al
 
 ; Send End of Interrupt (EOI) signal to PIC (Programmable Interrupt Controller)
     mov al, 0x20
     out 0x20, al
+    ret
+
+sound_driver_step:
+    call mix
     ret
 
 isr:

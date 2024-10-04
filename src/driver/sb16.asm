@@ -1,7 +1,7 @@
     %define SB_BASE 0x0220
     %define SB_IRQ 7
     %define SB_DMA 1
-    %define SOUND_SIZE 0x1000
+    %define SOUND_SIZE 0x2000
 
     section .text
 initialize:
@@ -9,6 +9,7 @@ initialize:
     call turn_speaker_off
     call install_isr
     call enable_irq
+    call calculate_sound_buffer_page_offset
     call program_dma
     call set_sampling_rate
     call start_playback
@@ -19,6 +20,28 @@ terminate:
     call disable_irq
     call uninstall_isr
     call turn_speaker_off
+    ret
+
+calculate_sound_buffer_page_offset:
+    mov ax, cs
+    mov dx, ax
+    shr dx, 12
+    shl ax, 4
+    add ax, buffer
+    jnc .continue
+    inc dx
+.continue:
+    mov cx, 0ffffh
+    sub cx, ax
+    inc cx
+    cmp cx, SOUND_SIZE
+    jae .size_ok
+.use_next_page:
+    mov ax, 0
+    inc dx
+.size_ok:
+    mov word [dma_page], dx
+    mov word [dma_offset], ax
     ret
 
 reset_dsp:
@@ -148,9 +171,9 @@ program_dma:
     out dx, al               ; high byte
 
     mov dx, 2                ; channel 1 address
-    mov al, [dma_offset]
+    mov ax, [dma_offset]
     out dx, al               ; low byte
-    mov al, [dma_offset + 1]
+    mov al, ah
     out dx, al               ; high byte
 
     mov dx, 0x83             ; page register for 8-bit DMA channel 1
@@ -165,10 +188,10 @@ program_dma:
 
 set_sampling_rate:
 ; 29102 Hz
-; time constant = 65536 - (256 000 000 / 29102) ~= 0xDDA3
-    mov bl, 0xA3
+; time constant = 65536 - (256 000 000 / 29102)
+    mov bl, 0x40
     call write_dsp
-    mov bl, 0xDD
+    mov bl, 0xDE
     call write_dsp
     ret
 
@@ -184,16 +207,44 @@ start_playback:
     call write_dsp
     ret
 
-isr:
+sound_driver_step:
+    cmp byte [calculate], 1
+    jne .not_ready
+
+    mov di, buffer
+    mov cx, SOUND_SIZE
+.fill_buffer:
+    cmp cx, 0
+    je .fill_done
+
     pusha
+    call mix
+    popa
+    mov ax, [sound]
+    mov al, ah               ; Cast to 8-bit
+
+    mov [di], al
+    inc di
+    dec cx
+    jmp .fill_buffer
+.fill_done:
+    mov byte [calculate], 0
+.not_ready:
+    ret
+
+play_sound:
     mov dx, SB_BASE + 0x0E
     in al, dx
-    mov byte [calculate], 1
 
-; EOI
+; End Of Interrupt
     mov al, 0x20
     out 0x20, al
+    ret
 
+isr:
+    pusha
+    call play_sound
+    mov byte [calculate], 1
     popa
     iret
 
@@ -207,3 +258,7 @@ old_int_offset:
     dw 0
 old_int_seg:
     dw 0
+
+    section .bss
+buffer:
+    resb SOUND_SIZE

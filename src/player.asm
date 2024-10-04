@@ -1,4 +1,4 @@
-    %define DIRECT_MODE 1
+    %define DIRECT_MODE 0
 
     bits 16
     org 100h
@@ -24,7 +24,7 @@ main_loop:
 .no_key:
     cmp byte [calculate], 1
     jnz main_loop
-    call mix
+    call sound_driver_step
     mov byte [calculate], 0
     jmp main_loop
 
