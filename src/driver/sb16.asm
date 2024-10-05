@@ -1,20 +1,41 @@
-    %define SB_8BIT 1
+    %define SB_8BIT 0
     %define SB_BASE 0x0220
     %define SB_IRQ 7
     %define SB_DMA 1
     %define SOUND_SIZE 0x4000
 
+    %if SB_8BIT
     %define SB_MASK_REG 0x0A
     %define SB_FLIP_FLOP 0x0C
     %define SB_MODE_REG 0x0B
     %define SB_COUNT_REG 0x03
     %define SB_ADDR_REG 0x02
     %define SB_PAGE_REG 0x83
+    %define SB_DMA_MODE 0x1C
+    %define SB_DMA_CHANNEL_1_DISABLE 0x05
+    %define SB_AUTO_INIT_PLAYBACK_MODE 0x59
+    %define SB_BLOCK_SIZE 0x48
+    %define SB_DMA_CHANNEL_COUNT SOUND_SIZE - 1
+    %else
+    %define SB_MASK_REG 0xD4
+    %define SB_FLIP_FLOP 0x0C
+    %define SB_MODE_REG 0x0B
+    %define SB_COUNT_REG 0x03 + 2 * SB_DMA
+    %define SB_ADDR_REG 0x02 + 2 * SB_DMA
+    %define SB_PAGE_REG 0x8B
+    %define SB_DMA_MODE 0xB0
+    %define SB_DMA_CHANNEL_1_DISABLE 0x05 + SB_DMA
+    %define SB_AUTO_INIT_PLAYBACK_MODE 0xB9
+    %define SB_BLOCK_SIZE 0xB8
+    %define SB_DMA_CHANNEL_COUNT (SOUND_SIZE - 1) / 2
+    %endif
 
-    %define DMA_CHANNEL_1_DISABLE 0x05
-    %define BYTE_POINTER_FLIP_FLOP_CLEAR 0x00
-    %define AUTO_INIT_PLAYBACK_MODE 0x59
-    %define DMA_CHANNEL_1_ENABLE 0x01
+    %define SB_BYTE_POINTER_FLIP_FLOP_CLEAR 0x00
+    %define SB_DMA_CHANNEL_1_ENABLE 0x01
+
+    %define SB_TURN_ON_SPEAKER 0xD1
+    %define SB_TURN_OFF_SPEAKER 0xD3
+    %define SB_TIME_CONSTANT 0x40
 
     %macro WRITE_PORT_BYTE 2
     mov dx, %1
@@ -128,12 +149,12 @@ read_dsp:
     ret
 
 turn_speaker_on:
-    mov bl, 0xD1
+    mov bl, SB_TURN_ON_SPEAKER
     call write_dsp
     ret
 
 turn_speaker_off:
-    mov bl, 0xD3
+    mov bl, SB_TURN_OFF_SPEAKER
     call write_dsp
     ret
 
@@ -181,33 +202,33 @@ uninstall_isr:
     ret
 
 program_dma:
-    WRITE_PORT_BYTE SB_MASK_REG, DMA_CHANNEL_1_DISABLE ; Disable DMA channel 1
-    WRITE_PORT_BYTE SB_FLIP_FLOP, BYTE_POINTER_FLIP_FLOP_CLEAR ; Clear byte pointer flip-flop
-    WRITE_PORT_BYTE SB_MODE_REG, AUTO_INIT_PLAYBACK_MODE ; Auto-init playback
-    WRITE_PORT_WORD SB_COUNT_REG, (SOUND_SIZE - 1) ; Channel 1 count
+    WRITE_PORT_BYTE SB_MASK_REG, SB_DMA_CHANNEL_1_DISABLE ; Disable DMA channel 1
+    WRITE_PORT_BYTE SB_FLIP_FLOP, SB_BYTE_POINTER_FLIP_FLOP_CLEAR ; Clear byte pointer flip-flop
+    WRITE_PORT_BYTE SB_MODE_REG, SB_AUTO_INIT_PLAYBACK_MODE ; Auto-init playback
+    WRITE_PORT_WORD SB_COUNT_REG, SB_DMA_CHANNEL_COUNT ; Channel 1 count
     WRITE_PORT_WORD SB_ADDR_REG, [dma_offset] ; Channel 1 address
     WRITE_PORT_BYTE SB_PAGE_REG, [dma_page] ; Page register for 8-bit DMA channel 1
-    WRITE_PORT_BYTE SB_MASK_REG, DMA_CHANNEL_1_ENABLE ; Enable DMA channel 1
+    WRITE_PORT_BYTE SB_MASK_REG, SB_DMA_CHANNEL_1_ENABLE ; Enable DMA channel 1
     ret
 
 set_sampling_rate:
 ; 29102 Hz
 ; time constant = 65536 - (256 000 000 / 29102)
-    mov bl, 0x40
+    mov bl, SB_TIME_CONSTANT
     call write_dsp
     mov bl, 0xDE
     call write_dsp
     ret
 
 start_playback:
-    mov bl, 0x48             ; Set block size for 8-bit auto-init mode
+    mov bl, SB_BLOCK_SIZE    ; Set block size for 8-bit auto-init mode
     call write_dsp
     mov bl, (SOUND_SIZE / 2 - 1) & 0xFF
     call write_dsp
     mov bl, (SOUND_SIZE / 2 - 1) >> 8 ; high byte
     call write_dsp
 
-    mov bl, 0x1C             ; Start auto-init 8-bit DMA transfer
+    mov bl, SB_DMA_MODE      ; Start DMA transfer
     call write_dsp
     ret
 
@@ -229,10 +250,15 @@ sound_driver_step:
     popa
 
     mov ax, [sound]
+    %if SB_8BIT
     mov al, ah               ; Cast to 8-bit
     mov [di], al
-
     inc di
+    %else
+    mov [di], ax
+    add di, 2
+    %endif
+
     dec cx
     jmp .fill_buffer
 .finish:
