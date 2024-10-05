@@ -11,6 +11,11 @@
     %define SB_ADDR_REG 0x02
     %define SB_PAGE_REG 0x83
 
+    %define DMA_CHANNEL_1_DISABLE 0x05
+    %define BYTE_POINTER_FLIP_FLOP_CLEAR 0x00
+    %define AUTO_INIT_PLAYBACK_MODE 0x59
+    %define DMA_CHANNEL_1_ENABLE 0x01
+
     %macro WRITE_PORT_BYTE 2
     mov dx, %1
     mov al, %2
@@ -28,7 +33,7 @@
     section .text
 initialize:
     call reset_dsp
-    call turn_speaker_off
+    call turn_speaker_on
     call install_isr
     call enable_irq
     call calculate_sound_buffer_page_offset
@@ -176,13 +181,13 @@ uninstall_isr:
     ret
 
 program_dma:
-    WRITE_PORT_BYTE SB_MASK_REG, 0x05 ; Disable DMA channel 1
-    WRITE_PORT_BYTE SB_FLIP_FLOP, 0 ; Clear byte pointer flip-flop
-    WRITE_PORT_BYTE SB_MODE_REG, 0x59 ; Auto-init playback
-    WRITE_PORT_WORD SB_COUNT_REG, (SOUND_SIZE - 1) ; High byte
+    WRITE_PORT_BYTE SB_MASK_REG, DMA_CHANNEL_1_DISABLE ; Disable DMA channel 1
+    WRITE_PORT_BYTE SB_FLIP_FLOP, BYTE_POINTER_FLIP_FLOP_CLEAR ; Clear byte pointer flip-flop
+    WRITE_PORT_BYTE SB_MODE_REG, AUTO_INIT_PLAYBACK_MODE ; Auto-init playback
+    WRITE_PORT_WORD SB_COUNT_REG, (SOUND_SIZE - 1) ; Channel 1 count
     WRITE_PORT_WORD SB_ADDR_REG, [dma_offset] ; Channel 1 address
     WRITE_PORT_BYTE SB_PAGE_REG, [dma_page] ; Page register for 8-bit DMA channel 1
-    WRITE_PORT_BYTE SB_MASK_REG, 1 ; Enable DMA channel 1
+    WRITE_PORT_BYTE SB_MASK_REG, DMA_CHANNEL_1_ENABLE ; Enable DMA channel 1
     ret
 
 set_sampling_rate:
