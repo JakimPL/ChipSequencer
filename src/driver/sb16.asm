@@ -1,7 +1,8 @@
+    %define SB_8BIT 1
     %define SB_BASE 0x0220
     %define SB_IRQ 7
     %define SB_DMA 1
-    %define SOUND_SIZE 0xC000
+    %define SOUND_SIZE 0x4000
 
     section .text
 initialize:
@@ -31,7 +32,7 @@ calculate_sound_buffer_page_offset:
     jnc .continue
     inc dx
 .continue:
-    mov cx, 0ffffh
+    mov cx, 0xFFFF
     sub cx, ax
     inc cx
     cmp cx, SOUND_SIZE
@@ -67,7 +68,7 @@ reset_dsp:
 
     sub dl, 4
     in al, dx
-    cmp al, 0aah
+    cmp al, 0xAA
     je .reset_ok
 
 .next_attempt:
@@ -147,9 +148,9 @@ uninstall_isr:
     mov ax, 0
     mov es, ax
     mov ax, [old_int_offset]
-    mov [es:8*4], ax
+    mov [es:4 * 0x0F], ax
     mov ax, [old_int_seg]
-    mov [es:8*4+2], ax
+    mov [es:4 * 0x0F + 2], ax
     sti
     ret
 
@@ -172,7 +173,7 @@ program_dma:
     mov al, (SOUND_SIZE - 1) >> 8
     out dx, al               ; High byte
 
-    mov dx, 2                ; Channel 1 address
+    mov dx, 0x02             ; Channel 1 address
     mov ax, [dma_offset]
     out dx, al               ; Low byte
     mov al, ah
