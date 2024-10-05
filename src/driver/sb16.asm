@@ -4,6 +4,27 @@
     %define SB_DMA 1
     %define SOUND_SIZE 0x4000
 
+    %define SB_MASK_REG 0x0A
+    %define SB_FLIP_FLOP 0x0C
+    %define SB_MODE_REG 0x0B
+    %define SB_COUNT_REG 0x03
+    %define SB_ADDR_REG 0x02
+    %define SB_PAGE_REG 0x83
+
+    %macro WRITE_PORT_BYTE 2
+    mov dx, %1
+    mov al, %2
+    out dx, al
+    %endmacro
+
+    %macro WRITE_PORT_WORD 2
+    mov dx, %1
+    mov ax, %2
+    out dx, al
+    mov al, ah
+    out dx, al
+    %endmacro
+
     section .text
 initialize:
     call reset_dsp
@@ -155,38 +176,13 @@ uninstall_isr:
     ret
 
 program_dma:
-    mov dx, 0x0A             ; Write single mask register
-    mov al, 0x05             ; Disable DMA channel 1
-    out dx, al
-
-    mov dx, 0x0C             ; Clear byte pointer flip-flop
-    mov al, 0                ; Any value
-    out dx, al
-
-    mov dx, 0x0B             ; Write mode register
-    mov al, 0x59             ; Auto-init playback
-    out dx, al
-
-    mov dx, 0x03             ; Channel 1 count
-    mov al, (SOUND_SIZE - 1) & 0xFF
-    out dx, al               ; Low byte
-    mov al, (SOUND_SIZE - 1) >> 8
-    out dx, al               ; High byte
-
-    mov dx, 0x02             ; Channel 1 address
-    mov ax, [dma_offset]
-    out dx, al               ; Low byte
-    mov al, ah
-    out dx, al               ; High byte
-
-    mov dx, 0x83             ; Page register for 8-bit DMA channel 1
-    mov al, [dma_page]
-    out dx, al
-
-    mov dx, 0x0A             ; Write single mask register
-    mov al, 1                ; Enable DMA channel 1
-    out dx, al
-
+    WRITE_PORT_BYTE SB_MASK_REG, 0x05 ; Disable DMA channel 1
+    WRITE_PORT_BYTE SB_FLIP_FLOP, 0 ; Clear byte pointer flip-flop
+    WRITE_PORT_BYTE SB_MODE_REG, 0x59 ; Auto-init playback
+    WRITE_PORT_WORD SB_COUNT_REG, (SOUND_SIZE - 1) ; High byte
+    WRITE_PORT_WORD SB_ADDR_REG, [dma_offset] ; Channel 1 address
+    WRITE_PORT_BYTE SB_PAGE_REG, [dma_page] ; Page register for 8-bit DMA channel 1
+    WRITE_PORT_BYTE SB_MASK_REG, 1 ; Enable DMA channel 1
     ret
 
 set_sampling_rate:
