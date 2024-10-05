@@ -1,38 +1,46 @@
     %define SB_8BIT 0
+
     %define SB_BASE 0x0220
     %define SB_IRQ 7
-    %define SB_DMA 1
-    %define SOUND_SIZE 0x4000
+    %define SOUND_SIZE 0x2000
 
     %if SB_8BIT
+    %define SB_DMA 1
     %define SB_MASK_REG 0x0A
-    %define SB_FLIP_FLOP 0x0C
-    %define SB_MODE_REG 0x0B
     %define SB_COUNT_REG 0x03
     %define SB_ADDR_REG 0x02
     %define SB_PAGE_REG 0x83
-    %define SB_DMA_MODE 0x1C
     %define SB_DMA_CHANNEL_1_DISABLE 0x05
     %define SB_AUTO_INIT_PLAYBACK_MODE 0x59
-    %define SB_BLOCK_SIZE 0x48
     %define SB_DMA_CHANNEL_COUNT SOUND_SIZE - 1
+    %define SB_EXIT_AUTO_INIT_DMA_MODE 0xDA
+    %define SB_ISR_OFFSET 0x0F
     %else
+    %define SB_DMA 5
     %define SB_MASK_REG 0xD4
-    %define SB_FLIP_FLOP 0x0C
-    %define SB_MODE_REG 0x0B
-    %define SB_COUNT_REG 0x03 + 2 * SB_DMA
-    %define SB_ADDR_REG 0x02 + 2 * SB_DMA
+    %define SB_COUNT_REG (0xC0 + (SB_DMA - 4) * 4 + 2)
+    %define SB_ADDR_REG (0xC0 + (SB_DMA - 4) * 4)
     %define SB_PAGE_REG 0x8B
-    %define SB_DMA_MODE 0xB0
-    %define SB_DMA_CHANNEL_1_DISABLE 0x05 + SB_DMA
+    %define SB_DMA_CHANNEL_1_DISABLE 0x04 + SB_DMA % 4
     %define SB_AUTO_INIT_PLAYBACK_MODE 0xB9
-    %define SB_BLOCK_SIZE 0xB8
-    %define SB_DMA_CHANNEL_COUNT (SOUND_SIZE - 1) / 2
+    %define SB_DMA_CHANNEL_COUNT SOUND_SIZE - 1
+    %define SB_EXIT_AUTO_INIT_DMA_MODE 0xD9
+    %define SB_ISR_OFFSET 0x0F
     %endif
 
+    %define SB_MODE_REG 0x0B
+    %define SB_CLEAR_FF 0xD8
+    %define SB_DMA_MODE_REG 0xD6
+    %define SB_DMA_MODE 0x58
+    %define SB_FLIP_FLOP 0x0C
+    %define SB_BLOCK_SIZE 0x48
     %define SB_BYTE_POINTER_FLIP_FLOP_CLEAR 0x00
     %define SB_DMA_CHANNEL_1_ENABLE 0x01
+    %define SB_MONO_MODE 0x00
 
+; DSP Commands
+    %define SB_8BIT_DMA_MODE 0x1C
+    %define SB_16BIT_DMA_MODE 0xB6
     %define SB_TURN_ON_SPEAKER 0xD1
     %define SB_TURN_OFF_SPEAKER 0xD3
     %define SB_TIME_CONSTANT 0x40
@@ -171,7 +179,7 @@ disable_irq:
     ret
 
 exit_auto_init:
-    mov bl, 0xDA
+    mov bl, SB_EXIT_AUTO_INIT_DMA_MODE
     call write_dsp
     ret
 
@@ -180,13 +188,13 @@ install_isr:
     xor ax, ax
     mov es, ax
 
-    mov ax, [es:4 * 0x0F]
+    mov ax, [es:4 * SB_ISR_OFFSET]
     mov [old_int_offset], ax
-    mov ax, [es:4 * 0x0F + 2]
+    mov ax, [es:4 * SB_ISR_OFFSET + 2]
     mov [old_int_seg], ax
 
-    mov word [es:4 * 0x0F], isr
-    mov word [es:4 * 0x0F + 2], cs
+    mov word [es:4 * SB_ISR_OFFSET], isr
+    mov word [es:4 * SB_ISR_OFFSET + 2], cs
     sti
     ret
 
@@ -195,20 +203,22 @@ uninstall_isr:
     mov ax, 0
     mov es, ax
     mov ax, [old_int_offset]
-    mov [es:4 * 0x0F], ax
+    mov [es:4 * SB_ISR_OFFSET], ax
     mov ax, [old_int_seg]
-    mov [es:4 * 0x0F + 2], ax
+    mov [es:4 * SB_ISR_OFFSET + 2], ax
     sti
     ret
 
 program_dma:
     WRITE_PORT_BYTE SB_MASK_REG, SB_DMA_CHANNEL_1_DISABLE ; Disable DMA channel 1
+    WRITE_PORT_BYTE SB_CLEAR_FF, SB_DMA_CHANNEL_1_DISABLE ; Clear FF
     WRITE_PORT_BYTE SB_FLIP_FLOP, SB_BYTE_POINTER_FLIP_FLOP_CLEAR ; Clear byte pointer flip-flop
     WRITE_PORT_BYTE SB_MODE_REG, SB_AUTO_INIT_PLAYBACK_MODE ; Auto-init playback
     WRITE_PORT_WORD SB_COUNT_REG, SB_DMA_CHANNEL_COUNT ; Channel 1 count
     WRITE_PORT_WORD SB_ADDR_REG, [dma_offset] ; Channel 1 address
     WRITE_PORT_BYTE SB_PAGE_REG, [dma_page] ; Page register for 8-bit DMA channel 1
     WRITE_PORT_BYTE SB_MASK_REG, SB_DMA_CHANNEL_1_ENABLE ; Enable DMA channel 1
+    WRITE_PORT_BYTE SB_DMA_MODE_REG, SB_DMA_MODE + SB_DMA % 4 ; Transfer mode
     ret
 
 set_sampling_rate:
@@ -221,15 +231,25 @@ set_sampling_rate:
     ret
 
 start_playback:
+    %if SB_8BIT
     mov bl, SB_BLOCK_SIZE    ; Set block size for 8-bit auto-init mode
     call write_dsp
     mov bl, (SOUND_SIZE / 2 - 1) & 0xFF
     call write_dsp
     mov bl, (SOUND_SIZE / 2 - 1) >> 8 ; high byte
     call write_dsp
-
-    mov bl, SB_DMA_MODE      ; Start DMA transfer
+    mov bl, SB_8BIT_DMA_MODE ; Start DMA transfer
     call write_dsp
+    %else
+    mov bl, SB_16BIT_DMA_MODE ; Start DMA transfer
+    call write_dsp
+    mov bl, SB_MONO_MODE     ; Set mode for 16-bit MONO auto-init mode
+    call write_dsp
+    mov bl, (SOUND_SIZE / 2 - 1) & 0xFF
+    call write_dsp
+    mov bl, (SOUND_SIZE / 2 - 1) >> 8 ; high byte
+    call write_dsp
+    %endif
     ret
 
 sound_driver_step:
@@ -255,6 +275,7 @@ sound_driver_step:
     mov [di], al
     inc di
     %else
+    xchg al, ah              ; Swap high and low bytes
     mov [di], ax
     add di, 2
     %endif
@@ -280,7 +301,9 @@ isr:
     pusha
     call play_sound
     mov byte [calculate], 1
-
+    mov ah, 0x0E
+    mov al, 'X'
+    int 0x10
     popa
     iret
 
