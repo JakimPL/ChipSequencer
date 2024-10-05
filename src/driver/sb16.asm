@@ -1,4 +1,4 @@
-    %define SB_8BIT 0
+    %define SB_8BIT 1
 
     %define SB_BASE 0x0220
     %define SB_IRQ 7
@@ -13,8 +13,8 @@
     %define SB_DMA_CHANNEL_1_DISABLE 0x05
     %define SB_AUTO_INIT_PLAYBACK_MODE 0x59
     %define SB_DMA_CHANNEL_COUNT SOUND_SIZE - 1
-    %define SB_EXIT_AUTO_INIT_DMA_MODE 0xDA
-    %define SB_ISR_OFFSET 0x0F
+    %define SB_EXIT_AUTO_INIT_DMA_MODE 0xD5
+    %define SB_ACKNOWLEDGE SB_BASE + 0x0E
     %else
     %define SB_DMA 5
     %define SB_MASK_REG 0xD4
@@ -23,11 +23,12 @@
     %define SB_PAGE_REG 0x8B
     %define SB_DMA_CHANNEL_1_DISABLE 0x04 + SB_DMA % 4
     %define SB_AUTO_INIT_PLAYBACK_MODE 0xB9
-    %define SB_DMA_CHANNEL_COUNT SOUND_SIZE - 1
+    %define SB_DMA_CHANNEL_COUNT SOUND_SIZE / 2 - 1
     %define SB_EXIT_AUTO_INIT_DMA_MODE 0xD9
-    %define SB_ISR_OFFSET 0x0F
+    %define SB_ACKNOWLEDGE SB_BASE + 0x0F
     %endif
 
+    %define SB_ISR_OFFSET 0x0F
     %define SB_MODE_REG 0x0B
     %define SB_CLEAR_FF 0xD8
     %define SB_DMA_MODE_REG 0xD6
@@ -289,7 +290,7 @@ sound_driver_step:
     ret
 
 play_sound:
-    mov dx, SB_BASE + 0x0E
+    mov dx, SB_ACKNOWLEDGE
     in al, dx
 
 ; End Of Interrupt
@@ -301,9 +302,6 @@ isr:
     pusha
     call play_sound
     mov byte [calculate], 1
-    mov ah, 0x0E
-    mov al, 'X'
-    int 0x10
     popa
     iret
 
