@@ -1,5 +1,10 @@
     section .text
 step:
+; If channel does not use orders, skip
+    mov ecx, [channel_offset]
+    cmp byte [CHANNEL_ORDER_INDEX + ecx], -1
+    jz .done
+
 ; Handle timing for sequencer
     movzx ecx, byte [current_channel]
     cmp dword [sequence_timer + 4 * ecx], 0

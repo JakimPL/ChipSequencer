@@ -32,34 +32,34 @@ envelopes:
 channels:
 ; Channel 0
     db 0                     ; envelope_index
-    db 0                     ; order_index
+    db -1                    ; order_index
     db 1                     ; oscillator_index
-    db 0                     ; transpose
+    dd 0x0454BB00            ; pitch
 ; Channel 1
     db 1                     ; envelope_index
     db 1                     ; order_index
     db 0                     ; oscillator_index
-    db 0                     ; transpose
+    dd 0                     ; transpose
 ; Channel 2
     db 2                     ; envelope_index
     db 2                     ; order_index
     db 0                     ; oscillator_index
-    db 0                     ; transpose
+    dd 0                     ; transpose
 ; Channel 3
     db 2                     ; envelope_index
     db 3                     ; order_index
     db 0                     ; oscillator_index
-    db 0                     ; transpose
+    dd 0                     ; transpose
 ; Channel 4
     db 2                     ; envelope_index
     db 4                     ; order_index
     db 0                     ; oscillator_index
-    db 0                     ; transpose
+    dd 0                     ; transpose
 ; Channel 5
     db 2                     ; envelope_index
     db 5                     ; order_index
     db 0                     ; oscillator_index
-    db 0                     ; transpose
+    dd 0                     ; transpose
 
 sequences:
 ; Sequence 0

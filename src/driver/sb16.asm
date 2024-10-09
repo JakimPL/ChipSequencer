@@ -2,7 +2,7 @@
 
     %define SB_BASE 0x0220
     %define SB_IRQ 7
-    %define SOUND_SIZE 0x2000
+    %define SOUND_SIZE 0x4000
 
     %if SB_8BIT
     %define SB_DMA 1

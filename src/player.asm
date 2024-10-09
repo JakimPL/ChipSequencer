@@ -1,4 +1,4 @@
-    %define DIRECT_MODE 0
+    %define DIRECT_MODE 1
 
     bits 16
     org 100h

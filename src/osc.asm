@@ -6,8 +6,13 @@ oscillator:
     ret
 
 increment_timer:
-; Load the frequency
     movzx ecx, byte [current_channel]
+    call check_fixed_frequency
+    jne .load_pitch
+    mov ebx, [channel_offset]
+    mov ebx, [CHANNEL_TRANSPOSE + ebx]
+    jmp .load_frequency
+.load_pitch:
     movzx eax, byte [pitch + ecx]
     mov edx, [channel_offset]
     add al, [edx + CHANNEL_TRANSPOSE]
@@ -15,6 +20,7 @@ increment_timer:
     lea ebx, [frequencies]
     add ebx, eax
     mov ebx, [ebx]
+.load_frequency:
     mov eax, [oscillator_timer + 4 * ecx]
 
 ; Increment index by frequency

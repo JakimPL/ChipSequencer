@@ -26,9 +26,9 @@ load_offsets:
     lea ecx, [envelopes + bx]
     mov dword [envelope_offset], ecx
 .load_order:
+    call check_fixed_frequency
+    je .load_oscillator
     lea ecx, [orders]
-    mov ebx, [channel_offset]
-    mov bl, [CHANNEL_ORDER_INDEX + ebx]
     call load_item
     mov dword [order_offset], ecx
 .load_sequence:
@@ -57,6 +57,12 @@ reset_channels:
     dec bl
     jmp .reset_loop
 .done:
+    ret
+
+check_fixed_frequency:
+    mov ebx, [channel_offset]
+    mov bl, [CHANNEL_ORDER_INDEX + ebx]
+    cmp bl, -1
     ret
 
 reset_channel:
