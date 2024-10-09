@@ -1,4 +1,4 @@
-    %define CHANNELS 6
+    %define CHANNELS 7
     %define ENVELOPES 2
     %define SEQUENCES 2
 
@@ -34,9 +34,9 @@ channels:
     db 0                     ; envelope_index
     db -1                    ; order_index
     db 1                     ; oscillator_index
-    dd 0x4800                ; pitch
+    dd 0x14800               ; pitch
     dw oscillators + 2       ; output
-    db 2                     ; output flag
+    db 0b01101000            ; output flag
 ; Channel 1
     db 1                     ; envelope_index
     db 1                     ; order_index
@@ -68,6 +68,13 @@ channels:
 ; Channel 5
     db 2                     ; envelope_index
     db 5                     ; order_index
+    db 0                     ; oscillator_index
+    dd 0                     ; transpose
+    dw sound                 ; output
+    db 0                     ; output flag
+; Channel 6
+    db 0                     ; envelope_index
+    db 0                     ; order_index
     db 0                     ; oscillator_index
     dd 0                     ; transpose
     dw sound                 ; output

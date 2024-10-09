@@ -16,21 +16,37 @@ mix:
     call increment_timer
     call play_channel
     call load_target
+
+.store_output:
     movzx eax, ax
+    mov edx, [di]
+
+.shift:
+    mov bl, cl
+    and bl, 0b00000111
+    shr eax, cl
+
+.check_mode:
+    test cl, 0b01000000
+    je .set_size
 .set_mode:
-    cmp cl, 1
-    je .add_16_bit
-    cmp cl, 2
-    je .add_8_bit
+    xor edx, edx
+.set_size:
+    test cl, 0b00010000
+    jne .add_16_bit
+    test cl, 0b00100000
+    jne .add_8_bit
 .add_32_bit:
+    mov [di], edx
     add [di], eax
     jmp .restore_index
 .add_16_bit:
-    mov [di], ax
+    mov [di], dx
+    add [di], ax
     jmp .restore_index
 .add_8_bit:
-    shr eax, 8
-    mov [di], al
+    mov [di], dl
+    add [di], al
 .restore_index:
     mov cl, [current_channel]
     jmp .mix_loop
