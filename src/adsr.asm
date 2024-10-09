@@ -23,6 +23,8 @@ adsr:
     mov eax, [envelope_offset]
     movzx ecx, word [eax + ENVELOPE_ATTACK + 2 * ebx]
     mov eax, [magic_constant]
+    cmp ecx, 0
+    je .done
     div ecx
 
 .increment_timer:
@@ -59,8 +61,13 @@ hold:
     mov ax, [eax + ENVELOPE_SUSTAIN_LEVEL]
     ret
 release:
+.check_if_release:
     mov ebx, [envelope_offset]
     mov bx, [ebx + ENVELOPE_SUSTAIN_LEVEL]
+    cmp bx, 0
+    jne .release
+    jmp hold
+.release:
     xor cx, cx
     call interpolate
     ret
