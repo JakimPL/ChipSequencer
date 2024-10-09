@@ -18,11 +18,13 @@
     %define ORDER_SEQUENCES 1
 
 ; Channel
-    %define CHANNEL_SIZE 7
+    %define CHANNEL_SIZE 10
     %define CHANNEL_ENVELOPE_INDEX 0
     %define CHANNEL_ORDER_INDEX 1
     %define CHANNEL_OSCILLATOR_INDEX 2
     %define CHANNEL_TRANSPOSE 3
+    %define CHANNEL_OUTPUT 7
+    %define CHANNEL_SHIFT 9
 
 ; Oscillators
     %define BASE_VOLUME 0x8000
