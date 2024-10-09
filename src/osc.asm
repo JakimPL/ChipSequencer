@@ -16,7 +16,7 @@ increment_timer:
     movzx eax, byte [pitch + ecx]
     mov edx, [channel_offset]
     add al, [edx + CHANNEL_TRANSPOSE]
-    shl al, 2
+    shl ax, 2
     lea ebx, [frequencies]
     add ebx, eax
     mov ebx, [ebx]

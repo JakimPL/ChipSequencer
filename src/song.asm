@@ -13,7 +13,7 @@ envelopes:
     dw 25                    ; attack
     dw 25                    ; decay
     dw 500                   ; hold
-    dw 1                     ; release
+    dw 0                     ; release
 ; Envelope 1
     dw 0x7FFF                ; base_volume
     dw 0x2FFF                ; sustain_level
@@ -32,9 +32,9 @@ envelopes:
 channels:
 ; Channel 0
     db 0                     ; envelope_index
-    db -1                    ; order_index
+    db 0                     ; order_index
     db 1                     ; oscillator_index
-    dd 0x0454BB00            ; pitch
+    dd 0                     ; pitch
 ; Channel 1
     db 1                     ; envelope_index
     db 1                     ; order_index
