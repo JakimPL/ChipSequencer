@@ -36,3 +36,6 @@
 
 ; Saw wave
     %define OSCILLATOR_SAW_PARAMETERS 0
+
+; Sine wave
+    %define OSCILLATOR_SINE_PARAMETERS 0

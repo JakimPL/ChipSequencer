@@ -40,7 +40,7 @@ channels:
 ; Channel 1
     db 1                     ; envelope_index
     db 1                     ; order_index
-    db 0                     ; oscillator_index
+    db 1                     ; oscillator_index
     dd 0                     ; transpose
     dw sound                 ; output
     db 0                     ; output flag
@@ -75,7 +75,7 @@ channels:
 ; Channel 6
     db 0                     ; envelope_index
     db 0                     ; order_index
-    db 0                     ; oscillator_index
+    db 2                     ; oscillator_index
     dd 0                     ; transpose
     dw sound                 ; output
     db 0                     ; output flag
@@ -158,6 +158,9 @@ oscillators:
 ; Oscillator 1
     db 1                     ; oscillator_size
     db 1                     ; generator_index
+; Oscillator 2
+    db 1                     ; oscillator_size
+    db 2                     ; generator_index
 
     section .bss
     envelope_timer resd CHANNELS

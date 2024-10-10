@@ -63,6 +63,7 @@ initialize_frequencies:
 ; Oscillators
     %include "SRC\OSC\SQUARE.ASM"
     %include "SRC\OSC\SAW.ASM"
+    %include "SRC\OSC\SINE.ASM"
 
     section .data
 frequency_data:
@@ -82,6 +83,7 @@ frequency_data:
 oscillators_table:
     dw square
     dw saw
+    dw sine
 
     section .bss
     volume resw 1

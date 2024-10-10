@@ -9,6 +9,7 @@ start:
     call initialize_frequencies
     call reset_channels
     call calculate_ticks_per_beat
+    call generate_sine_table
 
 main_loop:
 .check_esc:
