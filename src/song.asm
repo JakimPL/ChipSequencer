@@ -9,14 +9,14 @@ bpm:
 envelopes:
 ; Envelope 0
     dw 0x7F00                ; base_volume
-    dw 0x6F00                ; sustain_level
+    dw 0x1F00                ; sustain_level
     dw 25                    ; attack
-    dw 25                    ; decay
+    dw 250                   ; decay
     dw 500                   ; hold
     dw 0                     ; release
 ; Envelope 1
     dw 0x7FFF                ; base_volume
-    dw 0x2FFF                ; sustain_level
+    dw 0x5FFF                ; sustain_level
     dw 125                   ; attack
     dw 250                   ; decay
     dw 250                   ; hold
@@ -115,7 +115,7 @@ channels:
 ; Channel 0
     db 0                     ; envelope_index
     db -1                    ; order_index
-    db 1                     ; oscillator_index
+    db 2                     ; oscillator_index
     dd 0x14800               ; pitch
     dw oscillators + 2       ; output
     db 0b01101000            ; output flag
@@ -155,7 +155,7 @@ channels:
     dw sound                 ; output
     db 0                     ; output flag
 ; Channel 6
-    db 0                     ; envelope_index
+    db 1                     ; envelope_index
     db 0                     ; order_index
     db 2                     ; oscillator_index
     dd 0                     ; transpose

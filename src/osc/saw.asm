@@ -4,9 +4,9 @@ saw:
     lea si, [oscillator_timer + 4 * eax]
     lea di, [dividend]
     mov bx, BASE_VOLUME
-    add bx, word [volume]
+    add bx, [volume]
     mov cx, BASE_VOLUME
-    sub cx, word [volume]
+    sub cx, [volume]
     call interpolate
 
 .done:
