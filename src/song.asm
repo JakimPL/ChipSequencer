@@ -29,57 +29,6 @@ envelopes:
     dw 1250                  ; hold
     dw 1250                  ; release
 
-channels:
-; Channel 0
-    db 0                     ; envelope_index
-    db -1                    ; order_index
-    db 1                     ; oscillator_index
-    dd 0x14800               ; pitch
-    dw oscillators + 2       ; output
-    db 0b01101000            ; output flag
-; Channel 1
-    db 1                     ; envelope_index
-    db 1                     ; order_index
-    db 1                     ; oscillator_index
-    dd 0                     ; transpose
-    dw sound                 ; output
-    db 0                     ; output flag
-; Channel 2
-    db 2                     ; envelope_index
-    db 2                     ; order_index
-    db 0                     ; oscillator_index
-    dd 0                     ; transpose
-    dw sound                 ; output
-    db 0                     ; output flag
-; Channel 3
-    db 2                     ; envelope_index
-    db 3                     ; order_index
-    db 0                     ; oscillator_index
-    dd 0                     ; transpose
-    dw sound                 ; output
-    db 0                     ; output flag
-; Channel 4
-    db 2                     ; envelope_index
-    db 4                     ; order_index
-    db 0                     ; oscillator_index
-    dd 0                     ; transpose
-    dw sound                 ; output
-    db 0                     ; output flag
-; Channel 5
-    db 2                     ; envelope_index
-    db 5                     ; order_index
-    db 0                     ; oscillator_index
-    dd 0                     ; transpose
-    dw sound                 ; output
-    db 0                     ; output flag
-; Channel 6
-    db 0                     ; envelope_index
-    db 0                     ; order_index
-    db 2                     ; oscillator_index
-    dd 0                     ; transpose
-    dw sound                 ; output
-    db 0                     ; output flag
-
 sequences:
 ; Sequence 0
     db 16                    ; data_size = 2 * note_count
@@ -161,6 +110,57 @@ oscillators:
 ; Oscillator 2
     db 1                     ; oscillator_size
     db 2                     ; generator_index
+
+channels:
+; Channel 0
+    db 0                     ; envelope_index
+    db -1                    ; order_index
+    db 1                     ; oscillator_index
+    dd 0x14800               ; pitch
+    dw oscillators + 2       ; output
+    db 0b01101000            ; output flag
+; Channel 1
+    db 1                     ; envelope_index
+    db 1                     ; order_index
+    db 1                     ; oscillator_index
+    dd 0                     ; transpose
+    dw sound                 ; output
+    db 0                     ; output flag
+; Channel 2
+    db 2                     ; envelope_index
+    db 2                     ; order_index
+    db 0                     ; oscillator_index
+    dd 0                     ; transpose
+    dw sound                 ; output
+    db 0                     ; output flag
+; Channel 3
+    db 2                     ; envelope_index
+    db 3                     ; order_index
+    db 0                     ; oscillator_index
+    dd 0                     ; transpose
+    dw sound                 ; output
+    db 0                     ; output flag
+; Channel 4
+    db 2                     ; envelope_index
+    db 4                     ; order_index
+    db 0                     ; oscillator_index
+    dd 0                     ; transpose
+    dw sound                 ; output
+    db 0                     ; output flag
+; Channel 5
+    db 2                     ; envelope_index
+    db 5                     ; order_index
+    db 0                     ; oscillator_index
+    dd 0                     ; transpose
+    dw sound                 ; output
+    db 0                     ; output flag
+; Channel 6
+    db 0                     ; envelope_index
+    db 0                     ; order_index
+    db 2                     ; oscillator_index
+    dd 0                     ; transpose
+    dw sound                 ; output
+    db 0                     ; output flag
 
     section .bss
     envelope_timer resd CHANNELS

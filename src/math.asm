@@ -1,6 +1,6 @@
     %define TABLE_SIZE 1024
     %define PI 3.141592653589793
-    %define ANGLE_CONSTANT 0.00015542474911317905 ; 1 / (2 * TABLE_SIZE * PI)
+    %define ANGLE_CONSTANT 0.006135923151542565 ; 2 * PI / TABLE_SIZE
 
     section .text
 interpolate:
@@ -25,14 +25,16 @@ generate_sine_table:
     mov di, sine_table
     fld dword [angle_constant]
 .generate:
+    mov eax, dword [angle]
+    movzx ebx, word [di]
     fld dword [angle]
     fsin
-    fstp dword [edi]
-    add edi, 2
     fmul dword [half_range]
     fadd dword [half_range]
-    fistp word [edi]
-    fadd st0, st1
+    fistp word [di]
+    add di, 2
+    fld dword [angle]
+    fadd dword [angle_constant]
     fstp dword [angle]
     loop .generate
     fstp st0
