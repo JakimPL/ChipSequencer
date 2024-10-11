@@ -47,11 +47,10 @@ mix:
     mov ecx, NORMALIZER
     cdq
     div ecx
-    mov [output], ax
+    mov [output], eax
     ret
 
 store_output:
-    movzx eax, ax
     mov edx, [di]
 
 .shift:
