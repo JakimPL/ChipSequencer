@@ -77,12 +77,8 @@ store_output:
 .add_float:
     call integer_to_float
     fld dword [value]
-    mov eax, [di]
-    mov [value], eax
-    fadd dword [value]
-    fstp dword [value]
-    mov eax, [value]
-    mov [di], eax
+    fadd dword [di]
+    fstp dword [di]
     fstp st0
     jmp .done
 .add_32_bit:
