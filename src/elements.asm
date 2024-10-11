@@ -1,0 +1,7 @@
+    %include "SRC\ELEMENTS\OSC.ASM"
+    %include "SRC\ELEMENTS\ADSR.ASM"
+    %include "SRC\ELEMENTS\SEQUENCE.ASM"
+    %include "SRC\ELEMENTS\ORDER.ASM"
+    %include "SRC\ELEMENTS\CHANNEL.ASM"
+    %include "SRC\ELEMENTS\DSP.ASM"
+    %include "SRC\ELEMENTS\MIXER.ASM"

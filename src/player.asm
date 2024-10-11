@@ -38,13 +38,7 @@ main_loop:
     %include "SRC\CONST.ASM"
     %include "SRC\UTILS.ASM"
     %include "SRC\SONG.ASM"
-    %include "SRC\OSC.ASM"
-    %include "SRC\ADSR.ASM"
-    %include "SRC\SEQUENCE.ASM"
-    %include "SRC\ORDER.ASM"
-    %include "SRC\CHANNEL.ASM"
-    %include "SRC\DSP.ASM"
-    %include "SRC\MIXER.ASM"
+    %include "SRC\ELEMENTS.ASM"
 
     %if DIRECT_MODE
     %include "SRC\DRIVER\DIRECT.ASM"
