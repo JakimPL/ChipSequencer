@@ -103,19 +103,19 @@ orders:
 oscillators:
 ; Oscillator 0
     db 2                     ; oscillator_size
-    db 0                     ; generator_index
+    db OSCILLATOR_SQUARE     ; generator_index
     db 0x20                  ; duty_cycle
 ; Oscillator 1
     db 1                     ; oscillator_size
-    db 1                     ; generator_index
+    db OSCILLATOR_SAW        ; generator_index
 ; Oscillator 2
     db 1                     ; oscillator_size
-    db 2                     ; generator_index
+    db OSCILLATOR_SINE       ; generator_index
 
 dsps:
 ; DSP 0
     db 6                     ; dsp_size
-    db 1                     ; effect_index
+    db EFFECT_GAINER         ; effect_index
     dw output                ; output
     db 0                     ; output_flag
 

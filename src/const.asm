@@ -31,23 +31,28 @@
     %define OSCILLATOR_INDEX 1
 
 ; Square wave
+    %define OSCILLATOR_SQUARE 0
     %define OSCILLATOR_SQUARE_PARAMETERS 1
     %define OSCILLATOR_SQUARE_DUTY_CYCLE 2
 
 ; Saw wave
+    %define OSCILLATOR_SAW 1
     %define OSCILLATOR_SAW_PARAMETERS 0
 
 ; Sine wave
+    %define OSCILLATOR_SINE 2
     %define OSCILLATOR_SINE_PARAMETERS 0
 
 ; DSP
     %define DSP_EFFECT_INDEX 1
     %define DSP_OUTPUT 2
-    %define DSP_SHIFT 3
+    %define DSP_SHIFT 5
 
 ; Gainer
-    %define DSP_GAINER_PARAMETERS 1
-    %define DSP_GAINER_VOLUME 7
+    %define EFFECT_GAINER 0
+    %define EFFECT_GAINER_PARAMETERS 1
+    %define EFFECT_GAINER_VOLUME 7
 
 ; Delay
-    %define DSP_DELAY_PARAMETERS 0
+    %define EFFECT_DELAY 1
+    %define EFFECT_DELAY_PARAMETERS 0
