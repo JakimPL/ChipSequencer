@@ -1,3 +1,4 @@
+    section .text
 sine:
     movzx eax, byte [current_channel]
     mov eax, [oscillator_timer + 4 * eax]

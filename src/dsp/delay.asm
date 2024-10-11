@@ -1,2 +1,3 @@
+    section .text
 delay:
     ret

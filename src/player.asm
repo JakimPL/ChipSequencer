@@ -36,7 +36,7 @@ main_loop:
     int 0x21
 
     %include "SRC\CONST.ASM"
-    %include "SRC\MATH.ASM"
+    %include "SRC\UTILS.ASM"
     %include "SRC\SONG.ASM"
     %include "SRC\OSC.ASM"
     %include "SRC\ADSR.ASM"

@@ -1,7 +1,9 @@
     section .text
 load_dsp:
+.load_effect:
     movzx bx, byte [current_effect]
-    mov ax, word [dsp_input + bx]
+    lea ecx, [dsps]
+    call load_item
     ret
 
 process_dsp:
@@ -12,8 +14,8 @@ process_dsp:
 
 load_dsp_target:
     mov ecx, [effect_offset]
-    mov di, word [CHANNEL_OUTPUT + si]
-    mov cl, [CHANNEL_SHIFT + ecx]
+    mov di, word [DSP_OUTPUT + ecx]
+    mov cl, [DSP_SHIFT + ecx]
     ret
 
 ; Effects
