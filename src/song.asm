@@ -1,6 +1,7 @@
     %define CHANNELS 7
     %define ENVELOPES 2
     %define SEQUENCES 2
+    %define EFFECTS 1
 
     section .data
 bpm:
@@ -111,6 +112,11 @@ oscillators:
     db 1                     ; oscillator_size
     db 2                     ; generator_index
 
+dsps:
+; DSP 0
+    db 0                     ; dsp_index
+    dw sound                 ; output
+
 channels:
 ; Channel 0
     db 0                     ; envelope_index
@@ -159,7 +165,7 @@ channels:
     db 0                     ; order_index
     db 2                     ; oscillator_index
     dd 0                     ; transpose
-    dw sound                 ; output
+    dw dsp_input             ; output
     db 0                     ; output flag
 
     section .bss
@@ -171,3 +177,5 @@ channels:
     envelope_mode resb CHANNELS
     current_order resb CHANNELS
     sequence_current_note resb CHANNELS
+
+    dsp_input resw EFFECTS

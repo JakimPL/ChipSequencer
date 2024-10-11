@@ -3,20 +3,53 @@
 mix:
     xor eax, eax
     mov [sound], eax
+.mix:
     mov cl, CHANNELS
 .mix_loop:
     cmp cl, 0
-    je .normalize
+    je .dsp
 
     dec cl
     mov [current_channel], cl
 
+.process_channel:
     call load_offsets
     call step
     call increment_timer
     call play_channel
     call load_target
+    call store_output
+    jmp .mix_loop
 
+.dsp:
+    mov cl, EFFECTS
+.dsp_loop:
+    cmp cl, 0
+    je .normalize
+
+    dec cl
+    mov [current_effect], cl
+.process_dsp:
+    jmp .dsp_loop
+
+.normalize:
+    mov eax, [sound]
+    mov ecx, CHANNELS
+    cdq
+    div ecx
+    mov [sound], ax
+    ret
+
+.done:
+    ret
+
+load_target:
+    mov ecx, [channel_offset]
+    mov di, word [CHANNEL_OUTPUT + ecx]
+    mov cl, [CHANNEL_SHIFT + ecx]
+    ret
+
+store_output:
 .store_output:
     movzx eax, ax
     mov edx, [di]
@@ -49,21 +82,4 @@ mix:
     add [di], al
 .restore_index:
     mov cl, [current_channel]
-    jmp .mix_loop
-
-.normalize:
-    mov eax, [sound]
-    mov ecx, CHANNELS
-    cdq
-    div ecx
-    mov [sound], ax
-    ret
-
-.done:
-    ret
-
-load_target:
-    mov ecx, [channel_offset]
-    mov di, word [CHANNEL_OUTPUT + ecx]
-    mov cl, [CHANNEL_SHIFT + ecx]
     ret
