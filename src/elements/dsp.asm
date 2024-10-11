@@ -20,7 +20,7 @@ clear_dsps:
     je .done
     dec cl
     movzx bx, byte [current_dsp]
-    mov dword [dsp_input + ebx], 0x8000
+    mov dword [dsp_input + ebx], 0
     jmp .clear_dsp
 .done:
     ret

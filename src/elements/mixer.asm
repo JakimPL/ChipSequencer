@@ -44,7 +44,7 @@ mix:
 
 .normalize:
     mov eax, [output]
-    mov ecx, CHANNELS + DSPS
+    mov ecx, NORMALIZER
     cdq
     div ecx
     mov [output], ax

@@ -3,6 +3,8 @@
     %define SEQUENCES 2
     %define DSPS 1
 
+    %define NORMALIZER 6
+
     section .data
 bpm:
     dw 300
@@ -118,6 +120,7 @@ dsps:
     db EFFECT_GAINER         ; effect_index
     dw output                ; output
     db 0                     ; output_flag
+    dw 0x6000                ; volume
 
 channels:
 ; Channel 0

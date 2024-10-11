@@ -46,13 +46,13 @@
 ; DSP
     %define DSP_EFFECT_INDEX 1
     %define DSP_OUTPUT 2
-    %define DSP_SHIFT 5
+    %define DSP_SHIFT 4
 
 ; Gainer
     %define EFFECT_GAINER 0
-    %define EFFECT_GAINER_PARAMETERS 1
-    %define EFFECT_GAINER_VOLUME 7
+    %define DSP_GAINER_PARAMETERS 1
+    %define DSP_GAINER_VOLUME 5
 
 ; Delay
     %define EFFECT_DELAY 1
-    %define EFFECT_DELAY_PARAMETERS 0
+    %define DSP_DELAY_PARAMETERS 0
