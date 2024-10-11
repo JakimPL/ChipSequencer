@@ -43,10 +43,8 @@ generate_sine_table:
 integer_to_float:
     sub eax, BASE_VOLUME
 
-    push eax
-    fild dword [esp]
-    add esp, 4
-
+    mov dword [value], eax
+    fild dword [value]
     fld dword [half_range]
     fdiv
     fstp dword [value]
@@ -54,10 +52,8 @@ integer_to_float:
     ret
 
 float_to_integer:
-    push eax
-    fld dword [esp]
-    add esp, 4
-
+    mov dword [value], eax
+    fld dword [value]
     fld dword [half_range]
     fmul
     fistp dword [value]
@@ -71,6 +67,8 @@ angle_constant:
     dd __float32__(ANGLE_CONSTANT)
 half_range:
     dd __float32__(32767.5)
+float_255:
+    dd __float32__(255.0)
 
     section .bss
     angle resd 1

@@ -1,7 +1,7 @@
     %define CHANNELS 7
     %define ENVELOPES 2
     %define SEQUENCES 2
-    %define DSPS 0
+    %define DSPS 1
 
     section .data
 bpm:
@@ -120,7 +120,7 @@ dsps:
     db EFFECT_GAINER         ; effect_index
     dw output                ; output
     db 0                     ; output_flag
-    db 0x7F                  ; volume
+    db 0xFF                  ; volume
 
 channels:
 ; Channel 0
@@ -135,42 +135,42 @@ channels:
     db 1                     ; order_index
     db 1                     ; oscillator_index
     dd 0                     ; transpose
-    dw output + 4            ; output
+    dw output                ; output
     db 0                     ; output flag
 ; Channel 2
     db 2                     ; envelope_index
     db 2                     ; order_index
     db 0                     ; oscillator_index
     dd 0                     ; transpose
-    dw output + 4            ; output
+    dw output                ; output
     db 0                     ; output flag
 ; Channel 3
     db 2                     ; envelope_index
     db 3                     ; order_index
     db 0                     ; oscillator_index
     dd 0                     ; transpose
-    dw output + 4            ; output
+    dw output                ; output
     db 0                     ; output flag
 ; Channel 4
     db 2                     ; envelope_index
     db 4                     ; order_index
     db 0                     ; oscillator_index
     dd 0                     ; transpose
-    dw output + 4            ; output
+    dw output                ; output
     db 0                     ; output flag
 ; Channel 5
     db 2                     ; envelope_index
     db 5                     ; order_index
     db 0                     ; oscillator_index
     dd 0                     ; transpose
-    dw output + 4            ; output
+    dw output                ; output
     db 0                     ; output flag
 ; Channel 6
     db 1                     ; envelope_index
     db 0                     ; order_index
-    db 0                     ; oscillator_index
+    db 2                     ; oscillator_index
     dd 0                     ; transpose
-    dw output                ; output
+    dw dsp_input             ; output
     db 0                     ; output flag
 
     section .bss

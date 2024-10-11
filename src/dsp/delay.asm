@@ -1,4 +1,4 @@
     section .text
 delay:
-    mov eax, 0x8000
+    mov eax, __float32__(0.0)
     ret

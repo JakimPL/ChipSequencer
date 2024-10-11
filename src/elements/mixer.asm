@@ -35,6 +35,7 @@ mix:
     mov [current_dsp], cl
 .process_dsp:
     call load_dsp
+    call integer_to_float
     call process_dsp
     call load_dsp_target
     call store_output
@@ -68,8 +69,7 @@ store_output:
 .set_mode:
     xor edx, edx
 .set_size:
-    test cl, 0b00110000
-    jne .add_32_bit
+; TODO: check 32-bit
     test cl, 0b00010000
     jne .add_16_bit
     test cl, 0b00100000
