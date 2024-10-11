@@ -81,6 +81,12 @@ play_channel:
     call oscillator
     ret
 
+load_channel_target:
+    mov ecx, [channel_offset]
+    mov di, word [CHANNEL_OUTPUT + ecx]
+    mov cl, [CHANNEL_SHIFT + ecx]
+    ret
+
     section .bss
     current_channel resb 1
     channel_offset resd 1

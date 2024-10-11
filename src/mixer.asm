@@ -17,7 +17,7 @@ mix:
     call step
     call increment_timer
     call play_channel
-    call load_target
+    call load_channel_target
     call store_output
     jmp .mix_loop
 
@@ -30,6 +30,8 @@ mix:
     dec cl
     mov [current_effect], cl
 .process_dsp:
+; call load_dsp_target
+; call store_output
     jmp .dsp_loop
 
 .normalize:
@@ -41,12 +43,6 @@ mix:
     ret
 
 .done:
-    ret
-
-load_target:
-    mov ecx, [channel_offset]
-    mov di, word [CHANNEL_OUTPUT + ecx]
-    mov cl, [CHANNEL_SHIFT + ecx]
     ret
 
 store_output:

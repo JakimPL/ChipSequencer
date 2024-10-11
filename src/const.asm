@@ -39,3 +39,13 @@
 
 ; Sine wave
     %define OSCILLATOR_SINE_PARAMETERS 0
+
+; DSP
+    %define DSP_INDEX 1
+
+; Gainer
+    %define DSP_GAINER_PARAMETERS 1
+    %define DSP_GAINER_VOLUME 2
+
+; Delay
+    %define DSP_DELAY_PARAMETERS 0

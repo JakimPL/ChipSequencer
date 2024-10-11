@@ -114,6 +114,7 @@ oscillators:
 
 dsps:
 ; DSP 0
+    db 2                     ; dsp_size
     db 0                     ; dsp_index
     dw sound                 ; output
 
