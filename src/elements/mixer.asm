@@ -2,7 +2,7 @@
 
 mix:
     call clear_dsps
-    xor eax, eax
+    mov eax, dword __float32__(0.0)
     mov [output], eax
 .mix:
     mov cl, CHANNELS
@@ -43,14 +43,18 @@ mix:
     jmp .dsp_loop
 
 .normalize:
-    mov eax, [output]
-    mov ecx, NORMALIZER
-    cdq
-    div ecx
+    fld dword [output]
+    fild word [normalizer]
+    fdiv
+    fstp dword [value]
+    mov eax, [value]
+
+    call float_to_integer
     mov [output], eax
     ret
 
 store_output:
+    movzx eax, ax
     mov edx, [di]
 
 .shift:
@@ -64,10 +68,23 @@ store_output:
 .set_mode:
     xor edx, edx
 .set_size:
+    test cl, 0b00110000
+    jne .add_32_bit
     test cl, 0b00010000
     jne .add_16_bit
     test cl, 0b00100000
     jne .add_8_bit
+.add_float:
+    call integer_to_float
+    fld dword [value]
+    mov eax, [di]
+    mov [value], eax
+    fadd dword [value]
+    fstp dword [value]
+    mov eax, [value]
+    mov [di], eax
+    fstp st0
+    jmp .done
 .add_32_bit:
     mov [di], edx
     add [di], eax

@@ -40,6 +40,32 @@ generate_sine_table:
     fstp st0
     ret
 
+integer_to_float:
+    sub eax, BASE_VOLUME
+
+    push eax
+    fild dword [esp]
+    add esp, 4
+
+    fld dword [half_range]
+    fdiv
+    fstp dword [value]
+    mov eax, [value]
+    ret
+
+float_to_integer:
+    push eax
+    fld dword [esp]
+    add esp, 4
+
+    fld dword [half_range]
+    fmul
+    fistp dword [value]
+
+    mov eax, [value]
+    add eax, BASE_VOLUME
+    ret
+
     section .data
 angle_constant:
     dd __float32__(ANGLE_CONSTANT)

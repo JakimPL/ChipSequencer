@@ -1,4 +1,5 @@
     %define DIRECT_MODE 0
+    %define OUTPUT_CHANNELS 2
 
     bits 16
     org 100h
@@ -53,4 +54,4 @@ dividend:
     dd 0x71AE0000
 
     section .bss
-    output resd 1
+    output resd OUTPUT_CHANNELS
