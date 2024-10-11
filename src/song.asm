@@ -1,7 +1,7 @@
     %define CHANNELS 7
     %define ENVELOPES 2
     %define SEQUENCES 2
-    %define EFFECTS 1
+    %define DSPS 1
 
     section .data
 bpm:
@@ -114,9 +114,9 @@ oscillators:
 
 dsps:
 ; DSP 0
-    db 2                     ; dsp_size
-    db 0                     ; dsp_index
-    dw sound                 ; output
+    db 6                     ; dsp_size
+    db 1                     ; effect_index
+    dw output                ; output
     db 0                     ; output_flag
 
 channels:
@@ -132,42 +132,42 @@ channels:
     db 1                     ; order_index
     db 1                     ; oscillator_index
     dd 0                     ; transpose
-    dw sound                 ; output
+    dw output                ; output
     db 0                     ; output flag
 ; Channel 2
     db 2                     ; envelope_index
     db 2                     ; order_index
     db 0                     ; oscillator_index
     dd 0                     ; transpose
-    dw sound                 ; output
+    dw output                ; output
     db 0                     ; output flag
 ; Channel 3
     db 2                     ; envelope_index
     db 3                     ; order_index
     db 0                     ; oscillator_index
     dd 0                     ; transpose
-    dw sound                 ; output
+    dw output                ; output
     db 0                     ; output flag
 ; Channel 4
     db 2                     ; envelope_index
     db 4                     ; order_index
     db 0                     ; oscillator_index
     dd 0                     ; transpose
-    dw sound                 ; output
+    dw output                ; output
     db 0                     ; output flag
 ; Channel 5
     db 2                     ; envelope_index
     db 5                     ; order_index
     db 0                     ; oscillator_index
     dd 0                     ; transpose
-    dw sound                 ; output
+    dw output                ; output
     db 0                     ; output flag
 ; Channel 6
     db 1                     ; envelope_index
     db 0                     ; order_index
     db 2                     ; oscillator_index
     dd 0                     ; transpose
-    dw dsp_input             ; output
+    dw output                ; output
     db 0                     ; output flag
 
     section .bss
@@ -180,4 +180,4 @@ channels:
     current_order resb CHANNELS
     sequence_current_note resb CHANNELS
 
-    dsp_input resw EFFECTS
+    dsp_input resd DSPS

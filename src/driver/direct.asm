@@ -46,7 +46,7 @@ play_sound:
     out dx, al
 
 ; Play sound
-    mov ax, [sound]
+    mov ax, [output]
     mov al, ah               ; Cast to 8-bit
     mov dx, PORT
     out dx, al

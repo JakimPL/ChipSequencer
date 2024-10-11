@@ -5,7 +5,7 @@ load_offsets:
     imul bx, CHANNEL_SIZE
     lea ecx, [channels + bx]
     mov dword [channel_offset], ecx
-    mov bl, [ecx + CHANNEL_ENVELOPE_INDEX]
+    mov bl, [CHANNEL_ENVELOPE_INDEX + ecx]
 .load_envelope:
     imul bx, ENVELOPE_SIZE
     lea ecx, [envelopes + bx]

@@ -1,8 +1,9 @@
     section .text
 
 mix:
+    call clear_dsps
     xor eax, eax
-    mov [sound], eax
+    mov [output], eax
 .mix:
     mov cl, CHANNELS
 .mix_loop:
@@ -19,34 +20,37 @@ mix:
     call play_channel
     call load_channel_target
     call store_output
+
+    mov cl, [current_channel]
     jmp .mix_loop
 
 .dsp:
-    mov cl, EFFECTS
+    xor eax, eax
+    mov cl, DSPS
 .dsp_loop:
     cmp cl, 0
     je .normalize
 
     dec cl
-    mov [current_effect], cl
+    mov [current_dsp], cl
 .process_dsp:
-; call load_dsp_target
-; call store_output
+    call load_dsp
+    call process_dsp
+    call load_dsp_target
+    call store_output
+
+    mov cl, [current_dsp]
     jmp .dsp_loop
 
 .normalize:
-    mov eax, [sound]
-    mov ecx, CHANNELS
+    mov eax, [output]
+    mov ecx, CHANNELS + DSPS
     cdq
     div ecx
-    mov [sound], ax
-    ret
-
-.done:
+    mov [output], ax
     ret
 
 store_output:
-.store_output:
     movzx eax, ax
     mov edx, [di]
 
@@ -68,14 +72,13 @@ store_output:
 .add_32_bit:
     mov [di], edx
     add [di], eax
-    jmp .restore_index
+    jmp .done
 .add_16_bit:
     mov [di], dx
     add [di], ax
-    jmp .restore_index
+    jmp .done
 .add_8_bit:
     mov [di], dl
     add [di], al
-.restore_index:
-    mov cl, [current_channel]
+.done:
     ret

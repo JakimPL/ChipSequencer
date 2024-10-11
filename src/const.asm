@@ -41,7 +41,7 @@
     %define OSCILLATOR_SINE_PARAMETERS 0
 
 ; DSP
-    %define DSP_INDEX 1
+    %define DSP_EFFECT_INDEX 1
     %define DSP_OUTPUT 2
     %define DSP_SHIFT 3
 

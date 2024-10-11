@@ -270,7 +270,7 @@ sound_driver_step:
     call mix
     popa
 
-    mov ax, [sound]
+    mov ax, [output]
     %if SB_8BIT
     mov al, ah               ; Cast to 8-bit
     mov [di], al

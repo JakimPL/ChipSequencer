@@ -13,3 +13,6 @@ load_item:
     jnz .find_data
 .done:
     ret
+
+reset:
+; SI -

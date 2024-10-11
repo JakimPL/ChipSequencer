@@ -53,4 +53,4 @@ dividend:
     dd 0x71AE0000
 
     section .bss
-    sound resw 1
+    output resd 1

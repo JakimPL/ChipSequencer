@@ -16,9 +16,5 @@ sine:
     shr eax, 15
     sub ax, [volume]
     add ax, BASE_VOLUME
-
-; imul eax, [volume]
-; shr eax, 32
-; add eax, BASE_VOLUME
 .done:
     ret
