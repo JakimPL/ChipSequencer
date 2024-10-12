@@ -10,7 +10,7 @@ load_dsp:
     mov [current_effect], bl
 .load_input:
     movzx bx, byte [current_dsp]
-    mov ax, [dsp_input + ebx]
+    mov eax, [dsp_input + ebx]
     ret
 
 clear_dsps:

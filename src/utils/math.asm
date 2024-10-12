@@ -67,8 +67,6 @@ angle_constant:
     dd __float32__(ANGLE_CONSTANT)
 half_range:
     dd __float32__(32767.5)
-float_255:
-    dd __float32__(255.0)
 
     section .bss
     angle resd 1
