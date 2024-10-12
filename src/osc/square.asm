@@ -11,7 +11,7 @@ square:
     mov ebx, eax
     cmp eax, ecx
 
-    mov ax, BASE_VOLUME
+    mov eax, BASE_VOLUME
     mov bx, [volume]
 
     jl .low_value
