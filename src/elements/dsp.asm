@@ -10,7 +10,7 @@ load_dsp:
     mov [current_effect], bl
 .load_input:
     movzx bx, byte [current_dsp]
-    mov eax, [dsp_input + ebx]
+    mov eax, [dsp_input + 4 * ebx]
     ret
 
 clear_dsps:
@@ -19,8 +19,8 @@ clear_dsps:
     cmp cl, 0
     je .done
     dec cl
-    movzx bx, byte [current_dsp]
-    mov dword [dsp_input + ebx], __float32__(0.0)
+    movzx ebx, cl
+    mov dword [dsp_input + 4 * ebx], __float32__(0.0)
     jmp .clear_dsp
 .done:
     ret

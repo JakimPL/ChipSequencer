@@ -41,6 +41,7 @@ generate_sine_table:
     ret
 
 integer_to_float:
+; EAX - input/output
     sub eax, BASE_VOLUME
 
     mov dword [value], eax
@@ -52,6 +53,7 @@ integer_to_float:
     ret
 
 float_to_integer:
+; EAX - input/output
     mov dword [value], eax
     fld dword [value]
     fld dword [half_range]
@@ -60,6 +62,20 @@ float_to_integer:
 
     mov eax, [value]
     add eax, BASE_VOLUME
+    ret
+
+multiply_by_integer:
+; EAX - input float, output
+; EBX - input 16-bit integer
+    mov [value], ebx
+    fild dword [value]
+    mov [value], eax
+    fld dword [value]
+    fmul
+    fld dword [half_range]
+    fdiv
+    fstp dword [value]
+    mov eax, [value]
     ret
 
     section .data

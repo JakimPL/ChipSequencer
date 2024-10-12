@@ -1,5 +1,6 @@
     %define DIRECT_MODE 0
     %define OUTPUT_CHANNELS 2
+    %define DSP_BUFFER_SIZE 0x10000
 
     bits 16
     org 100h
@@ -55,3 +56,6 @@ dividend:
 
     section .bss
     output resd OUTPUT_CHANNELS
+
+; BUFFERS
+    dsp_buffer resd DSPS * DSP_BUFFER_SIZE

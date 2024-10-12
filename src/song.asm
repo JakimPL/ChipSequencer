@@ -1,7 +1,7 @@
     %define CHANNELS 7
     %define ENVELOPES 2
     %define SEQUENCES 2
-    %define DSPS 1
+    %define DSPS 2
 
     section .data
 bpm:
@@ -121,6 +121,15 @@ dsps:
     dw output                ; output
     db 0                     ; output_flag
     dw 0x9FFF                ; volume
+; DSP 1
+    db 14                    ; dsp_size
+    db EFFECT_DELAY          ; effect_index
+    dw output                ; output
+    db 0                     ; output_flag
+    dw 0x9FFF                ; dry
+    dw 0x3FFF                ; wet
+    dw 0x2000                ; feedback
+    dd 0x71AE                ; delay_time
 
 channels:
 ; Channel 0
@@ -170,7 +179,7 @@ channels:
     db 0                     ; order_index
     db 2                     ; oscillator_index
     dd 0                     ; transpose
-    dw output                ; output
+    dw dsp_input + 4         ; output
     db 0                     ; output flag
 
     section .bss
