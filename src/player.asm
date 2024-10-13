@@ -2,6 +2,14 @@
     %define OUTPUT_CHANNELS 2
     %define DSP_BUFFER_SIZE 0x10000
 
+    %define BIOS_KEYBOARD_INTERRUPT 0x16
+    %define BIOS_KEYBOARD_CHECK 0x01
+    %define BIOS_KEYBOARD_READ 0x00
+    %define ESC_KEY 0x1B
+
+    %define DOS_INTERRUPT 0x21
+    %define DOS_TERMINATE 0x4C
+
     bits 16
     org 100h
 
@@ -15,13 +23,13 @@ start:
 
 main_loop:
 .check_esc:
-    mov ah, 0x01
-    int 0x16
+    mov ah, BIOS_KEYBOARD_CHECK
+    int BIOS_KEYBOARD_INTERRUPT
     jz .no_key
 
-    mov ah, 0x00
-    int 0x16
-    cmp al, 0x1B
+    mov ah, BIOS_KEYBOARD_READ
+    int BIOS_KEYBOARD_INTERRUPT
+    cmp al, ESC_KEY
     je .exit
 
 .no_key:
@@ -34,8 +42,8 @@ main_loop:
     call terminate
 
 .return_to_dos:
-    mov ah, 0x4C
-    int 0x21
+    mov ah, DOS_TERMINATE
+    int DOS_INTERRUPT
 
     %include "SRC\CONST.ASM"
     %include "SRC\UTILS.ASM"
@@ -57,5 +65,5 @@ dividend:
     section .bss
     output resd OUTPUT_CHANNELS
 
-; BUFFERS
-    dsp_buffer resd DSPS * DSP_BUFFER_SIZE
+; Buffers
+    dsp_buffer resd DSP_BUFFER_SIZE * DSPS
