@@ -55,4 +55,8 @@
 
 ; Delay
     %define EFFECT_DELAY 1
-    %define DSP_DELAY_PARAMETERS 0
+    %define DSP_DELAY_PARAMETERS 4
+    %define DSP_DELAY_DRY 5
+    %define DSP_DELAY_WET 7
+    %define DSP_DELAY_FEEDBACK 9
+    %define DSP_DELAY_TIME 11

@@ -193,3 +193,4 @@ channels:
     sequence_current_note resb CHANNELS
 
     dsp_input resd DSPS
+    dsp_timer resd DSPS

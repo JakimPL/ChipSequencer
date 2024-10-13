@@ -14,15 +14,14 @@ load_dsp:
     ret
 
 clear_dsps:
-    mov cl, DSPS
-.clear_dsp:
-    cmp cl, 0
-    je .done
-    dec cl
-    movzx ebx, cl
-    mov dword [dsp_input + 4 * ebx], __float32__(0.0)
-    jmp .clear_dsp
-.done:
+    mov bl, DSPS
+    mov si, clear_dsp
+    call reset
+    ret
+
+clear_dsp:
+    movzx ecx, bl
+    mov dword [dsp_input + 4 * ecx], __float32__(0.0)
     ret
 
 process_dsp:

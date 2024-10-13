@@ -34,14 +34,8 @@ load_offsets:
 
 reset_channels:
     mov bl, CHANNELS
-.reset_loop:
-    cmp bl, 0
-    jz .done
-    mov byte [current_channel], bl
-    call reset_channel
-    dec bl
-    jmp .reset_loop
-.done:
+    mov si, reset_channel
+    call reset
     ret
 
 check_fixed_frequency:
@@ -51,6 +45,7 @@ check_fixed_frequency:
     ret
 
 reset_channel:
+    mov byte [current_channel], bl
     movzx ecx, byte [current_channel]
     mov dword [envelope_timer + 4 * ecx], 0
     mov dword [sequence_timer + 4 * ecx], 0

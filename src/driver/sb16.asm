@@ -2,7 +2,7 @@
 
     %define SB_BASE 0x0220
     %define SB_IRQ 7
-    %define SOUND_SIZE 0x4000
+    %define SB_SOUND_SIZE 0x1000
 
     %if SB_8BIT
     %define SB_DMA 1
@@ -12,7 +12,7 @@
     %define SB_PAGE_REG 0x83
     %define SB_DMA_CHANNEL_1_DISABLE 0x05
     %define SB_AUTO_INIT_PLAYBACK_MODE 0x59
-    %define SB_DMA_CHANNEL_COUNT SOUND_SIZE - 1
+    %define SB_DMA_CHANNEL_COUNT SB_SOUND_SIZE - 1
     %define SB_EXIT_AUTO_INIT_DMA_MODE 0xD5
     %define SB_ACKNOWLEDGE SB_BASE + 0x0E
     %else
@@ -23,7 +23,7 @@
     %define SB_PAGE_REG 0x8B
     %define SB_DMA_CHANNEL_1_DISABLE 0x04 + SB_DMA % 4
     %define SB_AUTO_INIT_PLAYBACK_MODE 0xB9
-    %define SB_DMA_CHANNEL_COUNT SOUND_SIZE / 2 - 1
+    %define SB_DMA_CHANNEL_COUNT SB_SOUND_SIZE / 2 - 1
     %define SB_EXIT_AUTO_INIT_DMA_MODE 0xD9
     %define SB_ACKNOWLEDGE SB_BASE + 0x0F
     %endif
@@ -91,7 +91,7 @@ calculate_sound_buffer_page_offset:
     mov cx, 0xFFFF
     sub cx, ax
     inc cx
-    cmp cx, SOUND_SIZE
+    cmp cx, SB_SOUND_SIZE
     jae .size_ok
 .use_next_page:
     mov ax, 0
@@ -233,22 +233,22 @@ set_sampling_rate:
 
 start_playback:
     %if SB_8BIT
-    mov bl, SB_BLOCK_SIZE    ; Set block size for 8-bit auto-init mode
+    mov bl, SB_BLOCK_SIZE
     call write_dsp
-    mov bl, (SOUND_SIZE / 2 - 1) & 0xFF
+    mov bl, (SB_SOUND_SIZE / 2 - 1) & 0xFF
     call write_dsp
-    mov bl, (SOUND_SIZE / 2 - 1) >> 8 ; high byte
+    mov bl, (SB_SOUND_SIZE / 2 - 1) >> 8
     call write_dsp
-    mov bl, SB_8BIT_DMA_MODE ; Start DMA transfer
+    mov bl, SB_8BIT_DMA_MODE
     call write_dsp
     %else
-    mov bl, SB_16BIT_DMA_MODE ; Start DMA transfer
+    mov bl, SB_16BIT_DMA_MODE
     call write_dsp
-    mov bl, SB_MONO_MODE     ; Set mode for 16-bit MONO auto-init mode
+    mov bl, SB_MONO_MODE
     call write_dsp
-    mov bl, (SOUND_SIZE / 2 - 1) & 0xFF
+    mov bl, (SB_SOUND_SIZE / 2 - 1) & 0xFF
     call write_dsp
-    mov bl, (SOUND_SIZE / 2 - 1) >> 8 ; high byte
+    mov bl, (SB_SOUND_SIZE / 2 - 1) >> 8
     call write_dsp
     %endif
     ret
@@ -257,11 +257,11 @@ sound_driver_step:
     cmp byte [calculate], 1
     jne .not_ready
 
-    mov cx, SOUND_SIZE / 2
+    mov cx, SB_SOUND_SIZE / 2
     mov di, buffer
     cmp byte [buffer_half], 0
     je .fill_buffer
-    add di, SOUND_SIZE / 2
+    add di, SB_SOUND_SIZE / 2
 .fill_buffer:
     cmp cx, 0
     je .finish
@@ -320,4 +320,4 @@ buffer_half:
 
     section .bss
 buffer:
-    resb SOUND_SIZE
+    resb SB_SOUND_SIZE
