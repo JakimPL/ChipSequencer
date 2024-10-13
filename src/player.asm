@@ -1,6 +1,6 @@
     %define DIRECT_MODE 1
     %define OUTPUT_CHANNELS 2
-    %define DSP_BUFFER_SIZE 0x1000
+    %define DSP_BUFFER_SIZE 0x0100
 
     %define BIOS_KEYBOARD_INTERRUPT 0x16
     %define BIOS_KEYBOARD_CHECK 0x01
@@ -10,24 +10,31 @@
     %define DOS_INTERRUPT 0x21
     %define DOS_TERMINATE 0x4C
     %define DOS_PRINT_STRING 0x09
-    %define DOS_ALLOCATE_MEMORY 0x48
 
-    bits 32
+    %ifndef EXE
     org 0x0100
+    %else
+    bits 32
+    section .bss class=STACK
+stack:
+    resb 1024                ; Allocate 1024 bytes for the stack
+stack_top:
+    %endif
 
     section .text
     global start
 start:
-; call allocate_memory_for_buffers
+    %ifdef EXE
+    call prepare_stack
+    mov ah, DOS_PRINT_STRING
+    mov dx, message
+    int DOS_INTERRUPT
+    %endif
     call initialize
     call initialize_frequencies
     call reset_channels
-    call reset_dsps
     call calculate_ticks_per_beat
     call generate_sine_table
-
-    mov ah, DOS_TERMINATE
-    int DOS_INTERRUPT
 
 main_loop:
 .check_esc:
@@ -53,17 +60,16 @@ main_loop:
     mov ah, DOS_TERMINATE
     int DOS_INTERRUPT
 
-allocate_memory_for_buffers:
-    mov ah, DOS_ALLOCATE_MEMORY
-    mov bx, DSP_BUFFER_SIZE / 16
-    int DOS_INTERRUPT
-    jc .allocation_error
+    %ifdef EXE
+prepare_stack:
+    mov ax, data
+    mov ds, ax
+
+    mov ax, stack
+    mov ss, ax
+    mov sp, stack_top
     ret
-.allocation_error:
-    mov ah, DOS_PRINT_STRING
-    mov dx, allocation_error_message
-    int DOS_INTERRUPT
-    ret
+    %endif
 
     %include "SRC\CONST.ASM"
     %include "SRC\UTILS.ASM"
@@ -81,13 +87,12 @@ calculate:
     db 1
 dividend:
     dd 0x71AE0000
-dsp_buffer_pointer:
-    dw 0
-allocation_error_message:
-    db 'Memory allocation error$', 0
+message:
+    db 'Test$', 0
 
     section .bss
     output resd OUTPUT_CHANNELS
 
 ; Buffers
     dsp_buffer resd DSP_BUFFER_SIZE * DSPS
+
