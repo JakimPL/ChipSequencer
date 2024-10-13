@@ -13,6 +13,17 @@ load_dsp:
     mov eax, [dsp_input + 4 * ebx]
     ret
 
+reset_dsps:
+    mov bl, DSPS
+    mov si, reset_dsp
+    call reset
+    ret
+
+reset_dsp:
+    movzx ecx, bl
+    mov dword [dsp_timer + 4 * ecx], 0
+    ret
+
 clear_dsps:
     mov bl, DSPS
     mov si, clear_dsp

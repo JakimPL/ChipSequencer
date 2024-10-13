@@ -62,7 +62,7 @@
 
     section .text
 initialize:
-    call reset_dsp
+    call reset_sb_dsp
     call turn_speaker_on
     call install_isr
     call enable_irq
@@ -101,7 +101,7 @@ calculate_sound_buffer_page_offset:
     mov word [dma_offset], ax
     ret
 
-reset_dsp:
+reset_sb_dsp:
     mov dx, SB_BASE
     add dl, 6
 
@@ -133,7 +133,7 @@ reset_dsp:
 .reset_ok:
     ret
 
-write_dsp:
+write_sb_dsp:
     mov dx, SB_BASE
     add dl, 0x0C
 .busy:
@@ -145,7 +145,7 @@ write_dsp:
     out dx, al
     ret
 
-read_dsp:
+read_sb_dsp:
     mov dx, SB_BASE
     add dl, 0x0E
 .busy:
@@ -159,12 +159,12 @@ read_dsp:
 
 turn_speaker_on:
     mov bl, SB_TURN_ON_SPEAKER
-    call write_dsp
+    call write_sb_dsp
     ret
 
 turn_speaker_off:
     mov bl, SB_TURN_OFF_SPEAKER
-    call write_dsp
+    call write_sb_dsp
     ret
 
 enable_irq:
@@ -181,7 +181,7 @@ disable_irq:
 
 exit_auto_init:
     mov bl, SB_EXIT_AUTO_INIT_DMA_MODE
-    call write_dsp
+    call write_sb_dsp
     ret
 
 install_isr:
@@ -226,30 +226,30 @@ set_sampling_rate:
 ; 29102 Hz
 ; time constant = 65536 - (256 000 000 / 29102)
     mov bl, SB_TIME_CONSTANT
-    call write_dsp
+    call write_sb_dsp
     mov bl, 0xDE
-    call write_dsp
+    call write_sb_dsp
     ret
 
 start_playback:
     %if SB_8BIT
     mov bl, SB_BLOCK_SIZE
-    call write_dsp
+    call write_sb_dsp
     mov bl, (SB_SOUND_SIZE / 2 - 1) & 0xFF
-    call write_dsp
+    call write_sb_dsp
     mov bl, (SB_SOUND_SIZE / 2 - 1) >> 8
-    call write_dsp
+    call write_sb_dsp
     mov bl, SB_8BIT_DMA_MODE
-    call write_dsp
+    call write_sb_dsp
     %else
     mov bl, SB_16BIT_DMA_MODE
-    call write_dsp
+    call write_sb_dsp
     mov bl, SB_MONO_MODE
-    call write_dsp
+    call write_sb_dsp
     mov bl, (SB_SOUND_SIZE / 2 - 1) & 0xFF
-    call write_dsp
+    call write_sb_dsp
     mov bl, (SB_SOUND_SIZE / 2 - 1) >> 8
-    call write_dsp
+    call write_sb_dsp
     %endif
     ret
 
