@@ -1,4 +1,4 @@
-    %define DIRECT_MODE 1
+    %define DIRECT_MODE 0
     %define OUTPUT_CHANNELS 2
     %define DSP_BUFFER_SIZE 0x0040
 
@@ -35,20 +35,21 @@
     %endif
     %endmacro
 
-    SEGMENT_CODE
-
     %ifdef EXE
     bits 32
+    segment code
     global start
     %else
     bits 16
     org 0x0100
+    section .text
     %endif
 
 start:
     %ifdef EXE
     call prepare_stack
     %endif
+    call print_message
     call initialize
     call initialize_frequencies
     call reset_channels
@@ -56,7 +57,6 @@ start:
     call generate_sine_table
 
 main_loop:
-    call print_message
 .check_esc:
     mov ah, BIOS_KEYBOARD_CHECK
     int BIOS_KEYBOARD_INTERRUPT
@@ -70,7 +70,7 @@ main_loop:
 .no_key:
     cmp byte [calculate], 1
     jnz main_loop
-; call sound_driver_step
+    call sound_driver_step
     jmp main_loop
 
 exit:

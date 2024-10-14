@@ -41,8 +41,8 @@ terminate:
     ret
 
 play_sound:
-    mov dx, 22ch
-    mov al, 10h
+    mov dx, 0x022C
+    mov al, 0x10
     out dx, al
 
 ; Play sound
