@@ -1,4 +1,4 @@
-    %define DIRECT_MODE 0
+    %define DIRECT_MODE 1
     %define OUTPUT_CHANNELS 2
     %define DSP_BUFFER_SIZE 0x0040
 
@@ -50,11 +50,13 @@ start:
     call prepare_stack
     %endif
     call print_message
-    call initialize
+
     call initialize_frequencies
-    call reset_channels
     call calculate_ticks_per_beat
     call generate_sine_table
+
+    call initialize
+    call reset_channels
 
 main_loop:
 .check_esc:
@@ -93,6 +95,7 @@ prepare_stack:
     mov ax, stack
     mov ss, ax
     mov esp, stacktop
+
     ret
     %endif
 

@@ -81,9 +81,9 @@ frequency_data:
     dd 0x82D01286
 
 oscillators_table:
-    dw square
-    dw saw
-    dw sine
+    dd square
+    dd saw
+    dd sine
 
     SEGMENT_BSS
     volume resw 1

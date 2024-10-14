@@ -28,8 +28,8 @@ step:
 .next_note:
 ; Load the note and calculate the remaining ticks
     mov ecx, [sequence_offset]
-    lea si, [ecx + SEQUENCE_NOTES + eax * 2]
-    mov al, [si]
+    lea esi, [ecx + SEQUENCE_NOTES + eax * 2]
+    mov al, [esi]
 .check_note_off:
     cmp al, 0xFF
     jnz .note_on
@@ -41,7 +41,7 @@ step:
     mov [pitch + ecx], al
     call reset_envelope
 .progress_sequence:
-    mov al, [si + 1]
+    mov al, [esi + 1]
     movzx ax, al
     movzx ebx, word [ticks_per_beat]
     imul eax, ebx

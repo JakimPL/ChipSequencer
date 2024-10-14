@@ -8,10 +8,10 @@ interpolate:
 ; using the interpolation point from SI and the ratio from DI
     movzx eax, bx
     sub eax, ecx
-    mov ecx, [si]
+    mov ecx, [esi]
 
     imul ecx
-    idiv dword [di]
+    idiv dword [edi]
 
     neg ax
     add ax, bx
@@ -21,22 +21,22 @@ generate_sine_table:
 ; Generates a sine table in the sine_table buffer
     fninit
     mov dword [angle], __float32__(0.0)
-    mov cx, TABLE_SIZE
-    mov di, sine_table
+    mov ecx, TABLE_SIZE
+    mov edi, sine_table
     fld dword [angle_constant]
 .generate:
-    mov eax, dword [angle]
-    movzx ebx, word [di]
+    dec ecx
     fld dword [angle]
     fsin
     fmul dword [half_range]
     fadd dword [half_range]
-    fistp word [di]
-    add di, 2
+    fistp word [edi]
+    add edi, 2
     fld dword [angle]
     fadd dword [angle_constant]
     fstp dword [angle]
-    loop .generate
+    cmp ecx, 0
+    jne .generate
     fstp st0
     ret
 

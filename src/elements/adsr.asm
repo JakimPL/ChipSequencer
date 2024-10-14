@@ -6,9 +6,10 @@ adsr:
     xor edx, edx
 .prepare_interpolation_points:
     movzx ecx, byte [current_channel]
-    lea si, [envelope_timer + 4 * ecx]
-    lea di, [dividend]
+    lea esi, [envelope_timer + 4 * ecx]
+    lea edi, [dividend]
 .phase:
+; TODO: fix addressing
     call [phases + eax * 2]
 
 .set_volume:
@@ -91,8 +92,8 @@ magic_constant:
     dd 0x3D09000
 
 phases:
-    dw attack
-    dw decay
-    dw hold
-    dw release
-    dw note_cut
+    dd attack
+    dd decay
+    dd hold
+    dd release
+    dd note_cut
