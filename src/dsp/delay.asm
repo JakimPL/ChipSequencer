@@ -1,3 +1,3 @@
-    section .text
+    SEGMENT_CODE
 delay:
     ret

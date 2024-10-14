@@ -1,4 +1,4 @@
-    section .text
+    SEGMENT_CODE
 load_item:
 ; Arguments:
 ; ECX - beginning offset (sequence)

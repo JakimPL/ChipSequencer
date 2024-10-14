@@ -1,4 +1,4 @@
-    section .text
+    SEGMENT_CODE
 adsr:
     movzx eax, byte [current_channel]
     movzx eax, byte [envelope_mode + eax]
@@ -86,7 +86,7 @@ set_release:
     mov byte [envelope_mode + ecx], RELEASE
     ret
 
-    section .data
+    SEGMENT_DATA
 magic_constant:
     dd 0x3D09000
 

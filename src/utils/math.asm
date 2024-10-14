@@ -2,7 +2,7 @@
     %define PI 3.141592653589793
     %define ANGLE_CONSTANT 0.006135923151542565 ; 2 * PI / TABLE_SIZE
 
-    section .text
+    SEGMENT_CODE
 interpolate:
 ; Interpolates linearly between two values: BX and CX into AX
 ; using the interpolation point from SI and the ratio from DI
@@ -78,13 +78,13 @@ multiply_by_integer:
     mov eax, [value]
     ret
 
-    section .data
+    SEGMENT_DATA
 angle_constant:
     dd __float32__(ANGLE_CONSTANT)
 half_range:
     dd __float32__(32767.5)
 
-    section .bss
+    SEGMENT_BSS
     angle resd 1
     value resd 1
     sine_table resw TABLE_SIZE

@@ -1,4 +1,4 @@
-    section .text
+    SEGMENT_CODE
 load_offsets:
 .load_channel:
     movzx bx, byte [current_channel]
@@ -67,7 +67,7 @@ load_channel_target:
     mov cl, [CHANNEL_SHIFT + ecx]
     ret
 
-    section .bss
+    SEGMENT_BSS
     current_channel resb 1
     channel_offset resd 1
     envelope_offset resd 1

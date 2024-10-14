@@ -3,7 +3,7 @@
     %define SEQUENCES 2
     %define DSPS 2
 
-    section .data
+    SEGMENT_DATA
 bpm:
     dw 300
 normalizer:
@@ -182,7 +182,7 @@ channels:
     dw dsp_input + 4         ; output
     db 0                     ; output flag
 
-    section .bss
+    SEGMENT_BSS
     envelope_timer resd CHANNELS
     sequence_timer resd CHANNELS
     oscillator_timer resd CHANNELS

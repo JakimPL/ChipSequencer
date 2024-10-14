@@ -60,7 +60,7 @@
     out dx, al
     %endmacro
 
-    section .text
+    SEGMENT_CODE
 initialize:
     call reset_sb_dsp
     call turn_speaker_on
@@ -305,7 +305,7 @@ isr:
     popa
     iret
 
-    section .data
+    SEGMENT_DATA
 
 dma_page:
     dw 0
@@ -318,6 +318,6 @@ old_int_seg:
 buffer_half:
     db 0
 
-    section .bss
+    SEGMENT_BSS
 buffer:
     resb SB_SOUND_SIZE

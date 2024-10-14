@@ -1,4 +1,4 @@
-    section .text
+    SEGMENT_CODE
 load_dsp:
 .load_dsp:
     movzx bx, byte [current_dsp]
@@ -50,12 +50,12 @@ load_dsp_target:
     %include "SRC\DSP\GAINER.ASM"
     %include "SRC\DSP\DELAY.ASM"
 
-    section .data
+    SEGMENT_DATA
 effects:
     dw gainer
     dw delay
 
-    section .bss
+    SEGMENT_BSS
     current_dsp resb 1
     dsp_offset resd 1
     current_effect resb 1

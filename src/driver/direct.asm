@@ -1,13 +1,13 @@
     %define PORT 0x022C
     %define DIVISOR 0x29
 
-    section .text
+    SEGMENT_CODE
 initialize:
 .set_timer:
     mov al, 0x36             ; Command byte: binary, mode 2 (rate generator), LSB/MSB
     out 0x43, al             ; Send to the PIT command register
 
-    mov al, DIVISOR          ; 29102 Hz
+    mov ax, DIVISOR          ; 29102 Hz
     out 0x40, al             ; Set low byte (LSB)
     mov al, ah
     out 0x40, al             ; Set high byte (MSB)

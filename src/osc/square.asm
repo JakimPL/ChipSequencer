@@ -1,4 +1,4 @@
-    section .text
+    SEGMENT_CODE
 square:
     movzx eax, byte [current_channel]
     mov eax, [oscillator_timer + 4 * eax]

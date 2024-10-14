@@ -1,4 +1,4 @@
-    section .text
+    SEGMENT_CODE
 oscillator:
     mov eax, [oscillator_offset]
     movzx eax, byte [OSCILLATOR_INDEX + eax]
@@ -65,7 +65,7 @@ initialize_frequencies:
     %include "SRC\OSC\SAW.ASM"
     %include "SRC\OSC\SINE.ASM"
 
-    section .data
+    SEGMENT_DATA
 frequency_data:
     dd 0x454BB03A
     dd 0x496A8B8F
@@ -85,6 +85,6 @@ oscillators_table:
     dw saw
     dw sine
 
-    section .bss
+    SEGMENT_BSS
     volume resw 1
     frequencies resd 128
