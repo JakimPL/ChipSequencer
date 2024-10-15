@@ -35,6 +35,18 @@
     %endif
     %endmacro
 
+    %macro LOAD_FUNCTION 2
+    %ifdef EXE
+    push ds
+    mov ax, seg %1
+    mov ds, ax
+    %endif
+    call [%1 + %2]
+    %ifdef EXE
+    pop ds
+    %endif
+    %endmacro
+
     %ifdef EXE
     bits 32
     segment code

@@ -1,14 +1,14 @@
     SEGMENT_CODE
 load_offsets:
 .load_channel:
-    movzx bx, byte [current_channel]
-    imul bx, CHANNEL_SIZE
-    lea ecx, [channels + bx]
+    movzx ebx, byte [current_channel]
+    imul ebx, CHANNEL_SIZE
+    lea ecx, [channels + ebx]
     mov dword [channel_offset], ecx
     mov bl, [CHANNEL_ENVELOPE_INDEX + ecx]
 .load_envelope:
-    imul bx, ENVELOPE_SIZE
-    lea ecx, [envelopes + bx]
+    imul ebx, ENVELOPE_SIZE
+    lea ecx, [envelopes + ebx]
     mov dword [envelope_offset], ecx
 .load_order:
     call check_fixed_frequency
@@ -18,8 +18,8 @@ load_offsets:
     mov dword [order_offset], ecx
 .load_sequence:
     lea ecx, [sequences]
-    movzx bx, byte [current_channel]
-    movzx ebx, byte [current_order + bx]
+    movzx ebx, byte [current_channel]
+    movzx ebx, byte [current_order + ebx]
     add ebx, [order_offset]
     mov bl, [ORDER_SEQUENCES + ebx]
     call load_item
@@ -63,7 +63,7 @@ play_channel:
 
 load_channel_target:
     mov ecx, [channel_offset]
-    mov di, word [CHANNEL_OUTPUT + ecx]
+    mov di, [CHANNEL_OUTPUT + ecx]
     mov cl, [CHANNEL_SHIFT + ecx]
     ret
 

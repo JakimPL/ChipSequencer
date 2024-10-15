@@ -2,7 +2,7 @@
 oscillator:
     mov eax, [oscillator_offset]
     movzx eax, byte [OSCILLATOR_INDEX + eax]
-    call [oscillators_table + 2 * eax]
+    LOAD_FUNCTION oscillators_table, 4 * eax
     ret
 
 increment_timer:

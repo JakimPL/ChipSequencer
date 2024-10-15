@@ -37,12 +37,12 @@ clear_dsp:
 
 process_dsp:
     movzx ebx, byte [current_effect]
-    call [effects + 2 * ebx]
+    LOAD_FUNCTION effects, 4 * ebx
     ret
 
 load_dsp_target:
     mov ecx, [dsp_offset]
-    mov di, word [DSP_OUTPUT + ecx]
+    mov di, [DSP_OUTPUT + ecx]
     mov cl, [DSP_SHIFT + ecx]
     ret
 
@@ -52,8 +52,8 @@ load_dsp_target:
 
     SEGMENT_DATA
 effects:
-    dw gainer
-    dw delay
+    dd gainer
+    dd delay
 
     SEGMENT_BSS
     current_dsp resb 1

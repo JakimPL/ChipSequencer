@@ -9,8 +9,7 @@ adsr:
     lea esi, [envelope_timer + 4 * ecx]
     lea edi, [dividend]
 .phase:
-; TODO: fix addressing
-    call [phases + eax * 2]
+    LOAD_FUNCTION phases, 4 * eax
 
 .set_volume:
     mov word [volume], ax
