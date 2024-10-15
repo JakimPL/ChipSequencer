@@ -36,15 +36,7 @@
     %endmacro
 
     %macro LOAD_FUNCTION 2
-    %ifdef EXE
-    push ds
-    mov ax, seg %1
-    mov ds, ax
-    %endif
-    call [%1 + %2]
-    %ifdef EXE
-    pop ds
-    %endif
+    call [ds:%1 + %2]
     %endmacro
 
     %ifdef EXE
@@ -65,7 +57,7 @@ start:
 
     call initialize_frequencies
     call calculate_ticks_per_beat
-    call generate_sine_table
+; call generate_sine_table
 
     call initialize
     call reset_channels
