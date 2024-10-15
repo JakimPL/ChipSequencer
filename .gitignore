@@ -3,6 +3,8 @@
 *.EXE
 *.exe
 *.wav
+*.MAP
+*.map
 
 bin/*
 .idea/*

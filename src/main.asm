@@ -29,7 +29,8 @@
 
     %macro SEGMENT_BSS 0
     %ifdef EXE
-    segment .bss
+; TODO: Fix overlapping memory
+    segment data
     %else
     section .bss
     %endif
@@ -57,7 +58,7 @@ start:
 
     call initialize_frequencies
     call calculate_ticks_per_beat
-; call generate_sine_table
+    call generate_sine_table
 
     call initialize
     call reset_channels
@@ -99,7 +100,6 @@ prepare_stack:
     mov ax, stack
     mov ss, ax
     mov esp, stacktop
-
     ret
     %endif
 
