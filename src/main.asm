@@ -1,4 +1,6 @@
     %define DIRECT_MODE 1
+    %define PRECALCULATE 1
+
     %define OUTPUT_CHANNELS 2
     %define DSP_BUFFER_SIZE 0x0040
 
@@ -12,7 +14,7 @@
     %define DOS_PRINT_STRING 0x09
 
     %macro SEGMENT_CODE 0
-    %ifdef EXE
+    %if EXE
     segment code
     %else
     section .text
@@ -20,7 +22,7 @@
     %endmacro
 
     %macro SEGMENT_DATA 0
-    %ifdef EXE
+    %if EXE
     segment data
     %else
     section .data
@@ -28,7 +30,7 @@
     %endmacro
 
     %macro SEGMENT_BSS 0
-    %ifdef EXE
+    %if EXE
 ; TODO: Fix overlapping memory
     segment data
     %else
@@ -36,11 +38,24 @@
     %endif
     %endmacro
 
+    %macro SEGMENT_BUFFERS 0
+    %if EXE
+    segment buffer
+    %else
+    section .buffer
+    %endif
+    %endmacro
+
     %macro LOAD_FUNCTION 2
     call [ds:%1 + %2]
     %endmacro
 
-    %ifdef EXE
+    %macro PRINT_STRING 1
+    mov dx, %1
+    call print_message
+    %endmacro
+
+    %if EXE
     bits 32
     segment code
     global start
@@ -51,10 +66,12 @@
     %endif
 
 start:
-    %ifdef EXE
+    %if EXE
     call prepare_stack
+    call allocate_memory
     %endif
-    call print_message
+
+    PRINT_STRING message
 
     call initialize_frequencies
     call calculate_ticks_per_beat
@@ -62,6 +79,11 @@ start:
 
     call initialize
     call reset_channels
+
+    %if PRECALCULATE & EXE
+.precalculate:
+    call precalculate
+    %endif
 
 main_loop:
 .check_esc:
@@ -82,30 +104,11 @@ main_loop:
 
 exit:
     call terminate
-
-.return_to_dos:
-    mov ah, DOS_TERMINATE
-    int DOS_INTERRUPT
-
-print_message:
-    mov ah, DOS_PRINT_STRING
-    mov dx, message
-    int DOS_INTERRUPT
-    ret
-
-    %ifdef EXE
-prepare_stack:
-    mov ax, data
-    mov ds, ax
-    mov ax, stack
-    mov ss, ax
-    mov esp, stacktop
-    ret
-    %endif
+    call return_to_dos
 
     %include "SRC\CONST.ASM"
-    %include "SRC\UTILS.ASM"
     %include "SRC\SONG.ASM"
+    %include "SRC\UTILS.ASM"
     %include "SRC\ELEMENTS.ASM"
 
     %if DIRECT_MODE
@@ -122,7 +125,7 @@ dividend:
 message:
     db 'Chip Sequencer by Jakim, 2024', 13, 10, '$'
 
-    %ifdef EXE
+    %if EXE
     segment stack stack
     resb 0x1000
 stacktop:
@@ -130,3 +133,4 @@ stacktop:
 
     SEGMENT_BSS
     output resd OUTPUT_CHANNELS
+

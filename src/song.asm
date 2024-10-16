@@ -3,6 +3,8 @@
     %define SEQUENCES 2
     %define DSPS 2
 
+    %define SONG_LENGTH 186265
+
     SEGMENT_DATA
 bpm:
     dw 300
