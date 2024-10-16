@@ -42,6 +42,15 @@ precalculate:
     sti
     ret
 
+load_precalculated:
+    mov eax, [song_position]
+    shl eax, 1
+    add eax, [mem_pointer]
+    mov eax, [eax]
+    mov [output], eax
+    inc dword [song_position]
+    ret
+
     SEGMENT_DATA
 message_precalculating:
     db "Precalculating...", 13, 10, '$'

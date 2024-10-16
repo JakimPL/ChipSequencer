@@ -15,12 +15,12 @@ load_item:
     ret
 
 reset:
-; BL - loop size
+; BX - loop size
 ; SI - function call
 .reset_loop:
-    cmp bl, 0
+    cmp bx, 0
     je .done
-    dec bl
+    dec bx
     call si
     jmp .reset_loop
 .done:

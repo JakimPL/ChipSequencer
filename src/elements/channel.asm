@@ -33,7 +33,7 @@ load_offsets:
     ret
 
 reset_channels:
-    mov bl, CHANNELS
+    mov bx, CHANNELS
     mov si, reset_channel
     call reset
     ret

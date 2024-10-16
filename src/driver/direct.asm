@@ -58,12 +58,7 @@ play_sound:
 
 sound_driver_step:
     %if PRECALCULATE & EXE
-    mov eax, [song_position]
-    shl eax, 1
-    add eax, [mem_pointer]
-    mov eax, [eax]
-    mov [output], eax
-    inc dword [song_position]
+    call load_precalculated
     cmp dword [song_position], SONG_LENGTH
     jne .done
     call exit

@@ -1,4 +1,4 @@
-    %define DIRECT_MODE 1
+    %define DIRECT_MODE 0
     %define PRECALCULATE 1
 
     %define OUTPUT_CHANNELS 2
@@ -77,13 +77,14 @@ start:
     call calculate_ticks_per_beat
     call generate_sine_table
 
-    call initialize
     call reset_channels
 
     %if PRECALCULATE & EXE
 .precalculate:
     call precalculate
     %endif
+
+    call initialize
 
 main_loop:
 .check_esc:

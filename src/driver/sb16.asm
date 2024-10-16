@@ -2,7 +2,7 @@
 
     %define SB_BASE 0x0220
     %define SB_IRQ 7
-    %define SB_SOUND_SIZE 0x1000
+    %define SB_BUFFER_SIZE 0x1000
 
     %if SB_8BIT
     %define SB_DMA 1
@@ -12,7 +12,7 @@
     %define SB_PAGE_REG 0x83
     %define SB_DMA_CHANNEL_1_DISABLE 0x05
     %define SB_AUTO_INIT_PLAYBACK_MODE 0x59
-    %define SB_DMA_CHANNEL_COUNT SB_SOUND_SIZE - 1
+    %define SB_DMA_CHANNEL_COUNT SB_BUFFER_SIZE - 1
     %define SB_EXIT_AUTO_INIT_DMA_MODE 0xD5
     %define SB_ACKNOWLEDGE SB_BASE + 0x0E
     %else
@@ -23,7 +23,7 @@
     %define SB_PAGE_REG 0x8B
     %define SB_DMA_CHANNEL_1_DISABLE 0x04 + SB_DMA % 4
     %define SB_AUTO_INIT_PLAYBACK_MODE 0xB9
-    %define SB_DMA_CHANNEL_COUNT SB_SOUND_SIZE / 2 - 1
+    %define SB_DMA_CHANNEL_COUNT SB_BUFFER_SIZE / 2 - 1
     %define SB_EXIT_AUTO_INIT_DMA_MODE 0xD9
     %define SB_ACKNOWLEDGE SB_BASE + 0x0F
     %endif
@@ -69,6 +69,7 @@ initialize:
     call calculate_sound_buffer_page_offset
     call program_dma
     call set_sampling_rate
+    call clear_buffer
     call start_playback
     ret
 
@@ -77,6 +78,16 @@ terminate:
     call disable_irq
     call uninstall_isr
     call turn_speaker_off
+    ret
+
+clear_buffer:
+    mov bx, SB_BUFFER_SIZE
+    mov si, clear_buffer_cell
+    call reset
+    ret
+
+clear_buffer_cell:
+    mov byte [buffer + bx], 0
     ret
 
 calculate_sound_buffer_page_offset:
@@ -91,7 +102,7 @@ calculate_sound_buffer_page_offset:
     mov cx, 0xFFFF
     sub cx, ax
     inc cx
-    cmp cx, SB_SOUND_SIZE
+    cmp cx, SB_BUFFER_SIZE
     jae .size_ok
 .use_next_page:
     mov ax, 0
@@ -235,9 +246,9 @@ start_playback:
     %if SB_8BIT
     mov bl, SB_BLOCK_SIZE
     call write_sb_dsp
-    mov bl, (SB_SOUND_SIZE / 2 - 1) & 0xFF
+    mov bl, (SB_BUFFER_SIZE / 2 - 1) & 0xFF
     call write_sb_dsp
-    mov bl, (SB_SOUND_SIZE / 2 - 1) >> 8
+    mov bl, (SB_BUFFER_SIZE / 2 - 1) >> 8
     call write_sb_dsp
     mov bl, SB_8BIT_DMA_MODE
     call write_sb_dsp
@@ -246,9 +257,9 @@ start_playback:
     call write_sb_dsp
     mov bl, SB_MONO_MODE
     call write_sb_dsp
-    mov bl, (SB_SOUND_SIZE / 2 - 1) & 0xFF
+    mov bl, (SB_BUFFER_SIZE / 2 - 1) & 0xFF
     call write_sb_dsp
-    mov bl, (SB_SOUND_SIZE / 2 - 1) >> 8
+    mov bl, (SB_BUFFER_SIZE / 2 - 1) >> 8
     call write_sb_dsp
     %endif
     ret
@@ -257,17 +268,21 @@ sound_driver_step:
     cmp byte [calculate], 1
     jne .not_ready
 
-    mov cx, SB_SOUND_SIZE / 2
+    mov cx, SB_BUFFER_SIZE / 2
     mov di, buffer
     cmp byte [buffer_half], 0
     je .fill_buffer
-    add di, SB_SOUND_SIZE / 2
+    add di, SB_BUFFER_SIZE / 2
 .fill_buffer:
     cmp cx, 0
     je .finish
 
     pusha
+    %if PRECALCULATE & EXE
+    call load_precalculated
+    %else
     call mix
+    %endif
     popa
 
     mov ax, [output]
@@ -306,7 +321,6 @@ isr:
     iret
 
     SEGMENT_DATA
-
 dma_page:
     dw 0
 dma_offset:
@@ -320,4 +334,4 @@ buffer_half:
 
     SEGMENT_BSS
 buffer:
-    resb SB_SOUND_SIZE
+    resb SB_BUFFER_SIZE

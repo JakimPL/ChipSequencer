@@ -14,7 +14,7 @@ load_dsp:
     ret
 
 reset_dsps:
-    mov bl, DSPS
+    mov bx, DSPS
     mov si, reset_dsp
     call reset
     ret
@@ -25,7 +25,7 @@ reset_dsp:
     ret
 
 clear_dsps:
-    mov bl, DSPS
+    mov bx, DSPS
     mov si, clear_dsp
     call reset
     ret
