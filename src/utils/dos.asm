@@ -1,5 +1,8 @@
     SEGMENT_CODE
 return_to_dos:
+    %if PRECALCULATE & EXE
+    call deallocate_memory
+    %endif
     mov ah, DOS_TERMINATE
     int DOS_INTERRUPT
 

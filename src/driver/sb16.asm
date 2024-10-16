@@ -13,7 +13,7 @@
     %define SB_DMA_CHANNEL_1_DISABLE 0x05
     %define SB_AUTO_INIT_PLAYBACK_MODE 0x59
     %define SB_DMA_CHANNEL_COUNT SB_BUFFER_SIZE - 1
-    %define SB_EXIT_AUTO_INIT_DMA_MODE 0xD5
+    %define SB_EXIT_AUTO_INIT_DMA_MODE 0xDA
     %define SB_ACKNOWLEDGE SB_BASE + 0x0E
     %else
     %define SB_DMA 5
@@ -62,6 +62,7 @@
 
     SEGMENT_CODE
 initialize:
+    call clear_buffer
     call reset_sb_dsp
     call turn_speaker_on
     call install_isr
@@ -69,7 +70,6 @@ initialize:
     call calculate_sound_buffer_page_offset
     call program_dma
     call set_sampling_rate
-    call clear_buffer
     call start_playback
     ret
 

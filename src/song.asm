@@ -3,7 +3,7 @@
     %define SEQUENCES 2
     %define DSPS 2
 
-    %define SONG_LENGTH 186265
+    %define SONG_LENGTH 186253 ; 6.4 seconds * 29102 Hz
 
     SEGMENT_DATA
 bpm:

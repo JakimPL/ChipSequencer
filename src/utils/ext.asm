@@ -1,3 +1,4 @@
+    SEGMENT_CODE
 prepare_stack:
     mov ax, data
     mov ds, ax
@@ -9,14 +10,21 @@ prepare_stack:
 allocate_memory:
     mov ax, 0x0501
     mov bx, SONG_LENGTH >> 4
-    mov dx, 0x01E4
+    xor cx, cx
     int 0x31
     jc return_to_dos
 
-    mov [mem_handler], ax
+    mov [mem_handler], si
+    mov [mem_handler + 2], di
     mov [mem_pointer], ebx
+    ret
 
-    mov word [song_position], 0
+deallocate_memory:
+    mov ax, 0x0502
+    mov si, [mem_handler]
+    mov di, [mem_handler + 2]
+    int 0x31
+    jc return_to_dos
     ret
 
 precalculate:
@@ -30,7 +38,7 @@ precalculate:
     call mix
     pop ebx
 
-    mov dword [ebx], eax
+    mov word [ebx], ax
     add ebx, 2
 
     inc dword [song_position]
@@ -46,8 +54,8 @@ load_precalculated:
     mov eax, [song_position]
     shl eax, 1
     add eax, [mem_pointer]
-    mov eax, [eax]
-    mov [output], eax
+    mov ax, [eax]
+    mov [output], ax
     inc dword [song_position]
     ret
 
@@ -59,8 +67,8 @@ message_done:
 
     SEGMENT_BSS
 mem_handler:
-    dw 0
+    dd 0
 mem_pointer:
     dd 0
 song_position:
-    dw 0
+    dd 0

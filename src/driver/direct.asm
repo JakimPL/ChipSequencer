@@ -61,7 +61,7 @@ sound_driver_step:
     call load_precalculated
     cmp dword [song_position], SONG_LENGTH
     jne .done
-    call exit
+    mov dword [song_position], 0
     %else
     call mix
     %endif

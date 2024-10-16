@@ -1,4 +1,4 @@
-    %define DIRECT_MODE 0
+    %define DIRECT_MODE 1
     %define PRECALCULATE 1
 
     %define OUTPUT_CHANNELS 2
@@ -68,7 +68,9 @@
 start:
     %if EXE
     call prepare_stack
+    %if PRECALCULATE
     call allocate_memory
+    %endif
     %endif
 
     PRINT_STRING message
