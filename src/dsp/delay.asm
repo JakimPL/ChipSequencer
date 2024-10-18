@@ -16,6 +16,7 @@ delay:
     mov edx, eax
 
 .feedback:
+    mov eax, [esi]
     mov ebx, [dsp_offset]
     movzx ebx, word [DSP_DELAY_FEEDBACK + ebx]
     pop dword [delay_value]
@@ -26,16 +27,14 @@ delay:
     mov eax, edx
 
 .increment_timer:
-    mov ecx, [dsp_offset]
-    movzx edx, word [DSP_DELAY_TIME + ecx]
     movzx ecx, byte [current_dsp]
     mov ebx, [dsp_timer + 4 * ecx]
     inc ebx
-    cmp ebx, edx
+    cmp ebx, DSP_BUFFER_SIZE
     jne .done
-    sub ebx, edx
-    mov [dsp_timer + 4 * ecx], ebx
+    sub ebx, DSP_BUFFER_SIZE
 .done:
+    mov [dsp_timer + 4 * ecx], ebx
     ret
 
 load_buffer:
