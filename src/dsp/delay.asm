@@ -1,41 +1,39 @@
     SEGMENT_CODE
 delay:
-    mov [delay_value], eax
+    push eax
     call load_buffer
     mov ecx, [dsp_offset]
     movzx ebx, word [DSP_DELAY_DRY + ecx]
     call multiply_by_integer
 
 .mix:
-    mov [delay_dry_value], eax
+    push eax
     mov eax, [esi]
     mov ebx, [dsp_offset]
     movzx ebx, word [DSP_DELAY_WET + ebx]
-    call multiply_by_integer
-    mov ebx, [delay_dry_value]
-    call add_floats
+    pop dword [delay_value]
+    call mix_delay
     mov edx, eax
 
 .feedback:
     mov ebx, [dsp_offset]
     movzx ebx, word [DSP_DELAY_FEEDBACK + ebx]
-    call multiply_by_integer
-    mov ebx, [delay_value]
-    call add_floats
+    pop dword [delay_value]
+    call mix_delay
     mov [esi], eax
 
 .restore_output:
     mov eax, edx
 
 .increment_timer:
-    mov ecx, byte [dsp_offset]
+    mov ecx, [dsp_offset]
     movzx edx, word [DSP_DELAY_TIME + ecx]
     movzx ecx, byte [current_dsp]
     mov ebx, [dsp_timer + 4 * ecx]
     inc ebx
-    cmp ebx, DSP_BUFFER_SIZE
+    cmp ebx, edx
     jne .done
-    sub ebx, DSP_BUFFER_SIZE
+    sub ebx, edx
     mov [dsp_timer + 4 * ecx], ebx
 .done:
     ret
@@ -49,6 +47,11 @@ load_buffer:
     lea esi, [dsp_buffer + ebx]
     ret
 
+mix_delay:
+    call multiply_by_integer
+    mov ebx, [delay_value]
+    call add_floats
+    ret
+
     SEGMENT_BSS
     delay_value resd 1
-    delay_dry_value resd 1
