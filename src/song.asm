@@ -118,20 +118,20 @@ oscillators:
 
 dsps:
 ; DSP 0
-    db 6                     ; dsp_size
-    db EFFECT_GAINER         ; effect_index
-    dw output                ; output
-    db 0                     ; output_flag
-    dw 0x9FFF                ; volume
-; DSP 1
     db 14                    ; dsp_size
     db EFFECT_DELAY          ; effect_index
     dw output                ; output
     db 0                     ; output_flag
     dw 0x7FFF                ; dry
     dw 0x5FFF                ; wet
-    dw 0x7FFF                ; feedback
+    dw 0x6FFF                ; feedback
     dd 0x0200                ; delay_time
+; DSP 1
+    db 6                     ; dsp_size
+    db EFFECT_GAINER         ; effect_index
+    dw output                ; output
+    db 0                     ; output_flag
+    dw 0x9FFF                ; volume
 
 channels:
 ; Channel 0
@@ -139,7 +139,7 @@ channels:
     db 0                     ; order_index
     db 2                     ; oscillator_index
     dd 0                     ; transpose
-    dw dsp_input + 4         ; output
+    dw dsp_input             ; output
     db 0                     ; output flag
 ; Channel 1
     db 0                     ; envelope_index
@@ -153,35 +153,35 @@ channels:
     db 1                     ; order_index
     db 1                     ; oscillator_index
     dd 0                     ; transpose
-    dw dsp_input             ; output
+    dw dsp_input + 4         ; output
     db 0                     ; output flag
 ; Channel 3
     db 2                     ; envelope_index
     db 2                     ; order_index
     db 0                     ; oscillator_index
     dd 0                     ; transpose
-    dw dsp_input             ; output
+    dw dsp_input + 4         ; output
     db 0                     ; output flag
 ; Channel 4
     db 2                     ; envelope_index
     db 3                     ; order_index
     db 0                     ; oscillator_index
     dd 0                     ; transpose
-    dw dsp_input             ; output
+    dw dsp_input + 4         ; output
     db 0                     ; output flag
 ; Channel 5
     db 2                     ; envelope_index
     db 4                     ; order_index
     db 0                     ; oscillator_index
     dd 0                     ; transpose
-    dw dsp_input             ; output
+    dw dsp_input + 4         ; output
     db 0                     ; output flag
 ; Channel 6
     db 2                     ; envelope_index
     db 5                     ; order_index
     db 0                     ; oscillator_index
     dd 0                     ; transpose
-    dw dsp_input             ; output
+    dw dsp_input + 4         ; output
     db 0                     ; output flag
 
     SEGMENT_BSS
