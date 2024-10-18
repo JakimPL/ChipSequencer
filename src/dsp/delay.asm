@@ -27,12 +27,14 @@ delay:
     mov eax, edx
 
 .increment_timer:
+    mov edx, [dsp_offset]
+    mov edx, [DSP_DELAY_TIME + edx]
     movzx ecx, byte [current_dsp]
     mov ebx, [dsp_timer + 4 * ecx]
     inc ebx
-    cmp ebx, DSP_BUFFER_SIZE
+    cmp ebx, edx
     jne .done
-    sub ebx, DSP_BUFFER_SIZE
+    sub ebx, edx
 .done:
     mov [dsp_timer + 4 * ecx], ebx
     ret

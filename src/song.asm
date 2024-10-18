@@ -125,7 +125,7 @@ dsps:
     dw 0x7FFF                ; dry
     dw 0x5FFF                ; wet
     dw 0x6FFF                ; feedback
-    dd 0x0200                ; delay_time
+    dd 0x0400                ; delay_time
 ; DSP 1
     db 6                     ; dsp_size
     db EFFECT_GAINER         ; effect_index
