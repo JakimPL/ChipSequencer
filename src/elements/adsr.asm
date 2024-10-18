@@ -32,6 +32,7 @@ adsr:
     add dword [envelope_timer + 4 * ebx], eax
     mov eax, [envelope_timer + 4 * ebx]
 
+    lea esi, [dividend]
     call reduce
     mov [envelope_timer + 4 * ebx], eax
 

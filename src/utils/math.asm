@@ -78,6 +78,19 @@ multiply_by_integer:
     mov eax, [value]
     ret
 
+add_floats:
+; EAX - input/output
+; EBX - input float
+    mov dword [value], ebx
+    fld dword [value]
+    mov dword [value], eax
+    fld dword [value]
+    fadd
+    fstp dword [value]
+    fstp st0
+    mov eax, dword [value]
+    ret
+
     SEGMENT_DATA
 angle_constant:
     dd __float32__(ANGLE_CONSTANT)

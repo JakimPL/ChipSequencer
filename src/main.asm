@@ -1,8 +1,8 @@
     %define DIRECT_MODE 1
-    %define PRECALCULATE 1
+    %define PRECALCULATE 0
 
     %define OUTPUT_CHANNELS 2
-    %define DSP_BUFFER_SIZE 0x0040
+    %define DSP_BUFFER_SIZE 0x0800
 
     %define BIOS_KEYBOARD_INTERRUPT 0x16
     %define BIOS_KEYBOARD_CHECK 0x01
@@ -35,14 +35,6 @@
     segment data
     %else
     section .bss
-    %endif
-    %endmacro
-
-    %macro SEGMENT_BUFFERS 0
-    %if EXE
-    segment buffer
-    %else
-    section .buffer
     %endif
     %endmacro
 
@@ -136,4 +128,5 @@ stacktop:
 
     SEGMENT_BSS
     output resd OUTPUT_CHANNELS
-
+    dsp_buffer resd DSP_BUFFER_SIZE * DSPS
+    mem_pointer resw 1024

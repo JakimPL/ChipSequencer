@@ -25,15 +25,16 @@ increment_timer:
 
 ; Increment index by frequency
     add eax, ebx
+    mov esi, dividend
     call reduce
     mov [oscillator_timer + 4 * ecx], eax
     ret
 
 reduce:
 ; If index > dividend, let index := index - dividend
-    cmp eax, [dividend]
+    cmp eax, [si]
     jl .done
-    sub eax, [dividend]
+    sub eax, [si]
     sbb ecx, 0
     stc
     ret
