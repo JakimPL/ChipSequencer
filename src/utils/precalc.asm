@@ -1,25 +1,5 @@
     SEGMENT_CODE
-allocate_memory:
-    mov ax, 0x0501
-    mov bx, SONG_LENGTH >> 4
-    xor cx, cx
-    xor dx, dx
-; int 0x31
-    jc return_to_dos
-
-    mov [mem_handler], si
-    mov [mem_handler + 2], di
-    mov [mem_pointer], ebx
-    ret
-
-deallocate_memory:
-    mov ax, 0x0502
-    mov si, [mem_handler]
-    mov di, [mem_handler + 2]
-; int 0x31
-    jc return_to_dos
-    ret
-
+    %if PRECALCULATE
 precalculate:
     cli
     mov dword [song_position], 0
@@ -59,5 +39,5 @@ message_done:
     db "Playing!", 13, 10, '$'
 
     SEGMENT_BSS
-    mem_handler resd 1
     song_position resd 1
+    %endif

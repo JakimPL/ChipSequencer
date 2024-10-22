@@ -30,9 +30,6 @@ start:
     mov ax, stack
     mov ss, ax
     mov sp, stacktop
-    %if PRECALCULATE
-    call allocate_memory
-    %endif
     %endif
 
 .initialize:
