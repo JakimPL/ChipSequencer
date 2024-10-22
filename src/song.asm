@@ -5,6 +5,10 @@
 
     %define SONG_LENGTH 186253 ; 6.4 seconds * 29102 Hz
 
+; Buffers
+    %define DSP_0_DELAY_TIME 0x0800
+    %define DSP_BUFFER_SIZE 0x0800
+
     SEGMENT_DATA
 bpm:
     dw 300
@@ -125,7 +129,7 @@ dsps:
     dw 0x7FFF                ; dry
     dw 0x5FFF                ; wet
     dw 0x6FFF                ; feedback
-    dw 0x0800                ; delay_time
+    dw DSP_0_DELAY_TIME      ; delay_time
 ; DSP 1
     db 6                     ; dsp_size
     db EFFECT_GAINER         ; effect_index
@@ -183,6 +187,11 @@ channels:
     dd 0                     ; transpose
     dw dsp_input + 4         ; output
     db 0                     ; output flag
+
+; Buffer offsets
+buffer_offsets:
+    dw 0
+    dw DSP_0_DELAY_TIME
 
     SEGMENT_BSS
     envelope_timer resd CHANNELS

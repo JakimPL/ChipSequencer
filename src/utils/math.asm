@@ -22,7 +22,7 @@ generate_sine_table:
     fninit
     mov dword [angle], __float32__(0.0)
     mov ecx, TABLE_SIZE
-    mov edi, sine_table
+    mov di, sine_table
     fld dword [angle_constant]
 .generate:
     dec ecx
@@ -30,8 +30,8 @@ generate_sine_table:
     fsin
     fmul dword [half_range]
     fadd dword [half_range]
-    fistp word [edi]
-    add edi, 2
+    fistp word [di]
+    add di, 2
     fld dword [angle]
     fadd dword [angle_constant]
     fstp dword [angle]

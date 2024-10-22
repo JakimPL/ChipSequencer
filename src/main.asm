@@ -2,7 +2,6 @@
     %define PRECALCULATE 0
 
     %define OUTPUT_CHANNELS 2
-    %define DSP_BUFFER_SIZE 0x0800
     %define TABLE_SIZE 0x1000
 
     %include "SRC\CONST.ASM"
@@ -97,7 +96,7 @@ stacktop:
 
     SEGMENT_BSS
     output resd OUTPUT_CHANNELS
-    dsp_buffer resd DSP_BUFFER_SIZE * DSPS
+    dsp_buffer resd DSP_BUFFER_SIZE
 
     %if EXE
     group dgroup data bss

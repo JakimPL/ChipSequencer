@@ -2,7 +2,7 @@
 oscillator:
     movzx eax, word [oscillator_offset]
     movzx eax, byte [OSCILLATOR_INDEX + eax]
-    LOAD_FUNCTION oscillators_table, 4 * eax
+    LOAD_FUNCTION oscillators_table, 2 * eax
     ret
 
 increment_timer:
@@ -82,9 +82,9 @@ frequency_data:
     dd 0x82D01286
 
 oscillators_table:
-    dd square
-    dd saw
-    dd sine
+    dw square
+    dw saw
+    dw sine
 
     SEGMENT_BSS
     volume resw 1

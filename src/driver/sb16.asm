@@ -288,12 +288,12 @@ sound_driver_step:
     mov ax, [output]
     %if SB_8BIT
     mov al, ah               ; Cast to 8-bit
-    mov [edi], al
-    inc edi
+    mov [di], al
+    inc di
     %else
     xchg al, ah              ; Swap high and low bytes
-    mov [edi], ax
-    add edi, 2
+    mov [di], ax
+    add di, 2
     %endif
 
     dec cx

@@ -9,7 +9,7 @@ adsr:
     lea si, [envelope_timer + 4 * ecx]
     lea di, [dividend]
 .phase:
-    LOAD_FUNCTION phases, 4 * eax
+    LOAD_FUNCTION phases, 2 * eax
 
 .set_volume:
     mov word [volume], ax
@@ -92,8 +92,8 @@ magic_constant:
     dd 0x3D09000
 
 phases:
-    dd attack
-    dd decay
-    dd hold
-    dd release
-    dd note_cut
+    dw attack
+    dw decay
+    dw hold
+    dw release
+    dw note_cut

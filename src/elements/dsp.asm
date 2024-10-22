@@ -36,15 +36,15 @@ clear_dsp:
     ret
 
 initialize_dsp_buffers:
-    mov edi, dsp_buffer
-    mov ecx, DSP_BUFFER_SIZE * DSPS
     xor eax, eax
+    mov di, dsp_buffer
+    mov cx, DSP_BUFFER_SIZE
     rep stosd
     ret
 
 process_dsp:
     movzx ebx, byte [current_effect]
-    LOAD_FUNCTION effects, 4 * ebx
+    LOAD_FUNCTION effects, 2 * ebx
     ret
 
 load_dsp_target:
@@ -59,10 +59,10 @@ load_dsp_target:
 
     SEGMENT_DATA
 effects:
-    dd gainer
-    dd delay
+    dw gainer
+    dw delay
 
     SEGMENT_BSS
     current_dsp resb 1
-    dsp_offset resd 1
     current_effect resb 1
+    dsp_offset resw 1
