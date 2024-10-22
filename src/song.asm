@@ -1,4 +1,4 @@
-    %define CHANNELS 7
+    %define CHANNELS 1
     %define ENVELOPES 2
     %define SEQUENCES 2
     %define DSPS 2
@@ -6,8 +6,8 @@
     %define SONG_LENGTH 186253 ; 6.4 seconds * 29102 Hz
 
 ; Buffers
-    %define DSP_0_DELAY_TIME 0x0800
-    %define DSP_BUFFER_SIZE 0x0800
+    %define DSP_0_DELAY_TIME 0x0100
+    %define DSP_BUFFER_SIZE 0x0100
 
     SEGMENT_DATA
 bpm:
