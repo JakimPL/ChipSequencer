@@ -17,7 +17,7 @@ increment_timer:
     movzx edx, word [channel_offset]
     add al, [CHANNEL_TRANSPOSE + edx]
     shl ax, 2
-    lea ebx, [frequencies]
+    lea bx, [frequencies]
     add ebx, eax
     mov ebx, [ebx]
 .load_frequency:
@@ -25,7 +25,7 @@ increment_timer:
 
 ; Increment index by frequency
     add eax, ebx
-    mov esi, dividend
+    mov si, dividend
     call reduce
     mov [oscillator_timer + 4 * ecx], eax
     ret

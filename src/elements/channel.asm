@@ -3,21 +3,21 @@ load_offsets:
 .load_channel:
     movzx ebx, byte [current_channel]
     imul ebx, CHANNEL_SIZE
-    lea ecx, [channels + ebx]
+    lea cx, [channels + ebx]
     mov [channel_offset], cx
     mov bl, [CHANNEL_ENVELOPE_INDEX + ecx]
 .load_envelope:
     imul ebx, ENVELOPE_SIZE
-    lea ecx, [envelopes + ebx]
+    lea cx, [envelopes + ebx]
     mov [envelope_offset], cx
 .load_order:
     call check_fixed_frequency
     je .load_oscillator
-    lea ecx, [orders]
+    lea cx, [orders]
     call load_item
     mov [order_offset], cx
 .load_sequence:
-    lea ecx, [sequences]
+    lea cx, [sequences]
     movzx ebx, byte [current_channel]
     movzx ebx, byte [current_order + ebx]
     add bx, [order_offset]
@@ -25,7 +25,7 @@ load_offsets:
     call load_item
     mov [sequence_offset], cx
 .load_oscillator:
-    lea ecx, [oscillators]
+    lea cx, [oscillators]
     movzx ebx, word [channel_offset]
     mov bl, [CHANNEL_OSCILLATOR_INDEX + ebx]
     call load_item

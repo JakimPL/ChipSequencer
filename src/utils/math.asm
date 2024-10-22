@@ -8,10 +8,10 @@ interpolate:
 ; using the interpolation point from SI and the ratio from DI
     movzx eax, bx
     sub eax, ecx
-    mov ecx, [esi]
+    mov ecx, [si]
 
     imul ecx
-    idiv dword [edi]
+    idiv dword [di]
 
     neg ax
     add ax, bx

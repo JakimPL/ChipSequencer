@@ -1,8 +1,8 @@
     SEGMENT_CODE
 saw:
     movzx eax, byte [current_channel]
-    lea esi, [oscillator_timer + 4 * eax]
-    lea edi, [dividend]
+    lea si, [oscillator_timer + 4 * eax]
+    lea di, [dividend]
     mov bx, BASE_VOLUME
     add bx, [volume]
     mov cx, BASE_VOLUME

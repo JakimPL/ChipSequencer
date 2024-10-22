@@ -6,8 +6,8 @@ adsr:
     xor edx, edx
 .prepare_interpolation_points:
     movzx ecx, byte [current_channel]
-    lea esi, [envelope_timer + 4 * ecx]
-    lea edi, [dividend]
+    lea si, [envelope_timer + 4 * ecx]
+    lea di, [dividend]
 .phase:
     LOAD_FUNCTION phases, 4 * eax
 
@@ -32,7 +32,7 @@ adsr:
     add dword [envelope_timer + 4 * ebx], eax
     mov eax, [envelope_timer + 4 * ebx]
 
-    lea esi, [dividend]
+    lea si, [dividend]
     call reduce
     mov [envelope_timer + 4 * ebx], eax
 
