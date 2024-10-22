@@ -4,8 +4,6 @@ wavetable:
     movzx ebx, word [oscillator_offset]
     movzx ebx, byte [OSCILLATOR_WAVETABLE_WAVETABLE_INDEX + ebx]
 .load_wavetable_offset:
-    mov si, wavetable_offsets
-    mov di, wavetable_samples
     movzx ecx, word [wavetable_offsets + 2 * ebx]
     lea si, [wavetable_samples + 2 * ecx]
 .load_wavetable_size:
