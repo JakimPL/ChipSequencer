@@ -50,11 +50,11 @@ initialize_frequencies:
     mov ebx, 116
     add bl, cl
 .fill_loop:
-    cmp ebx, 0
+    cmp bl, 0
     jl .next_note
     mov [frequencies + 4 * ebx], eax
     shr eax, 1
-    sub ebx, 12
+    sub bl, 12
     jmp .fill_loop
 .next_note:
     cmp cl, 0

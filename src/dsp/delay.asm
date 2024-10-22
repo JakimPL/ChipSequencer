@@ -8,7 +8,7 @@ delay:
 
 .mix:
     push eax
-    mov eax, [esi]
+    mov eax, [si]
     mov ebx, [dsp_offset]
     movzx ebx, word [DSP_DELAY_WET + ebx]
     pop dword [delay_value]
@@ -16,36 +16,37 @@ delay:
     mov edx, eax
 
 .feedback:
-    mov eax, [esi]
+    mov eax, [si]
     mov ebx, [dsp_offset]
     movzx ebx, word [DSP_DELAY_FEEDBACK + ebx]
     pop dword [delay_value]
     call mix_delay
-    mov [esi], eax
+    mov [si], eax
 
 .restore_output:
     mov eax, edx
 
 .increment_timer:
     mov edx, [dsp_offset]
-    mov edx, [DSP_DELAY_TIME + edx]
+    mov dx, [DSP_DELAY_TIME + edx]
     movzx ecx, byte [current_dsp]
-    mov ebx, [dsp_timer + 4 * ecx]
-    inc ebx
-    cmp ebx, edx
+    mov bx, [dsp_timer + 2 * ecx]
+    inc bx
+    cmp bx, dx
     jne .done
-    sub ebx, edx
+    sub bx, dx
 .done:
-    mov [dsp_timer + 4 * ecx], ebx
+    mov [dsp_timer + 4 * ecx], bx
     ret
 
 load_buffer:
-    movzx ecx, byte [current_dsp]
-    mov ebx, [dsp_timer + 4 * ecx]
-    shl ebx, 2
-    imul ecx, DSP_BUFFER_SIZE
-    add ebx, ecx
-    lea esi, [dsp_buffer + ebx]
+    movzx cx, byte [current_dsp]
+    movzx bx, [dsp_timer + 4 * ecx]
+    shl bx, 2
+    imul cx, DSP_BUFFER_SIZE
+    add bx, cx
+    lea si, [dsp_buffer]
+    add si, bx
     ret
 
 mix_delay:

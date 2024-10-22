@@ -35,6 +35,13 @@ clear_dsp:
     mov dword [dsp_input + 4 * ecx], __float32__(0.0)
     ret
 
+initialize_dsp_buffers:
+    mov edi, dsp_buffer
+    mov ecx, DSP_BUFFER_SIZE * DSPS
+    xor eax, eax
+    rep stosd
+    ret
+
 process_dsp:
     movzx ebx, byte [current_effect]
     LOAD_FUNCTION effects, 4 * ebx

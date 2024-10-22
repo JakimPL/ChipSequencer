@@ -39,7 +39,9 @@ start:
     call calculate_ticks_per_beat
     call generate_sine_table
 
+; call initialize_dsp_buffers
     call reset_channels
+    call reset_dsps
 
     %if PRECALCULATE & EXE
 .precalculate:

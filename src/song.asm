@@ -118,14 +118,14 @@ oscillators:
 
 dsps:
 ; DSP 0
-    db 14                    ; dsp_size
+    db 12                    ; dsp_size
     db EFFECT_DELAY          ; effect_index
     dw output                ; output
     db 0                     ; output_flag
     dw 0x7FFF                ; dry
     dw 0x5FFF                ; wet
     dw 0x6FFF                ; feedback
-    dd 0x0400                ; delay_time
+    dw 0x0800                ; delay_time
 ; DSP 1
     db 6                     ; dsp_size
     db EFFECT_GAINER         ; effect_index
@@ -195,4 +195,4 @@ channels:
     sequence_current_note resb CHANNELS
 
     dsp_input resd DSPS
-    dsp_timer resd DSPS
+    dsp_timer resw DSPS
