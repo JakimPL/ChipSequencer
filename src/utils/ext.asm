@@ -1,12 +1,4 @@
     SEGMENT_CODE
-prepare_stack:
-    mov ax, data
-    mov ds, ax
-    mov ax, stack
-    mov ss, ax
-    mov esp, stacktop
-    ret
-
 allocate_memory:
     mov ax, 0x0501
     mov bx, SONG_LENGTH >> 4

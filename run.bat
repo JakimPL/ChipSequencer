@@ -1,2 +1,1 @@
-cwsdpmi
 bin\main.exe

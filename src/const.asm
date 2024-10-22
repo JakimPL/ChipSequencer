@@ -1,3 +1,14 @@
+; BIOS
+    %define BIOS_KEYBOARD_INTERRUPT 0x16
+    %define BIOS_KEYBOARD_CHECK 0x01
+    %define BIOS_KEYBOARD_READ 0x00
+    %define ESC_KEY 0x1B
+
+; DOS
+    %define DOS_INTERRUPT 0x21
+    %define DOS_TERMINATE 0x4C
+    %define DOS_PRINT_STRING 0x09
+
 ; Envelope
     %define ENVELOPE_SIZE 12
     %define ENVELOPE_BASE_VOLUME 0
