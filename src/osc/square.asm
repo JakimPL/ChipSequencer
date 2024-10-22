@@ -1,8 +1,6 @@
     SEGMENT_CODE
 square:
-    movzx eax, byte [current_channel]
-    mov eax, [oscillator_timer + 4 * eax]
-    mov ecx, [dividend]
+    call load_timer
 .duty_cycle:
     movzx ebx, word [oscillator_offset]
     movzx ebx, byte [OSCILLATOR_SQUARE_DUTY_CYCLE + ebx]

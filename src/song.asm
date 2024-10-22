@@ -1,9 +1,12 @@
     %define CHANNELS 1
-    %define ENVELOPES 2
-    %define SEQUENCES 2
     %define DSPS 2
+    %define WAVETABLES 1
 
     %define SONG_LENGTH 186253 ; 6.4 seconds * 29102 Hz
+
+; Wavetables
+    %define WAVETABLE_0_SIZE 16
+    %define WAVETABLE_SIZE 16
 
 ; Buffers
     %define DSP_0_DELAY_TIME 0x0100
@@ -119,6 +122,16 @@ oscillators:
 ; Oscillator 2
     db 1                     ; oscillator_size
     db OSCILLATOR_SINE       ; generator_index
+; Oscillator 3
+    db 2                     ; oscillator_size
+    db OSCILLATOR_WAVETABLE  ; generator_index
+    db 0                     ; wavetable_index
+
+wavetables:
+; Wavetable 0
+    db WAVETABLE_0_SIZE      ; wavetable_size
+    db 0x00, 0x0F, 0x1F, 0x2F, 0x3F, 0x4F, 0x5F, 0x6F
+    db 0x7F, 0x6F, 0x5F, 0x4F, 0x3F, 0x2F, 0x1F, 0x0F
 
 dsps:
 ; DSP 0
@@ -127,7 +140,7 @@ dsps:
     dw output                ; output
     db 0                     ; output_flag
     dw 0x7FFF                ; dry
-    dw 0x5FFF                ; wet
+    dw 0x0FFF                ; wet
     dw 0x6FFF                ; feedback
     dw DSP_0_DELAY_TIME      ; delay_time
 ; DSP 1
@@ -141,7 +154,7 @@ channels:
 ; Channel 0
     db 1                     ; envelope_index
     db 0                     ; order_index
-    db 2                     ; oscillator_index
+    db 3                     ; oscillator_index
     dd 0                     ; transpose
     dw dsp_input             ; output
     db 0                     ; output flag
@@ -193,6 +206,11 @@ buffer_offsets:
     dw 0
     dw DSP_0_DELAY_TIME
 
+; Wavetable offsets
+wavetable_offsets:
+    db 0
+    db WAVETABLE_0_SIZE
+
     SEGMENT_BSS
     envelope_timer resd CHANNELS
     sequence_timer resd CHANNELS
@@ -205,3 +223,5 @@ buffer_offsets:
 
     dsp_input resd DSPS
     dsp_timer resw DSPS
+
+    wavetable_samples resd WAVETABLE_SIZE

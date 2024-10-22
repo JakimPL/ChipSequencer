@@ -61,10 +61,25 @@ initialize_frequencies:
     jnz .loop
     ret
 
+load_timer:
+    movzx eax, byte [current_channel]
+    mov eax, [oscillator_timer + 4 * eax]
+    mov ecx, [dividend]
+    ret
+
+apply_volume:
+    movzx ebx, word [volume]
+    imul ebx
+    shr eax, 15
+    sub ax, [volume]
+    add ax, BASE_VOLUME
+    ret
+
 ; Oscillators
     %include "SRC\OSC\SQUARE.ASM"
     %include "SRC\OSC\SAW.ASM"
     %include "SRC\OSC\SINE.ASM"
+    %include "SRC\OSC\WAVE.ASM"
 
     SEGMENT_DATA
 frequency_data:
@@ -85,6 +100,7 @@ oscillators_table:
     dw square
     dw saw
     dw sine
+    dw wavetable
 
     SEGMENT_BSS
     volume resw 1

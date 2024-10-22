@@ -25,3 +25,13 @@ reset:
     jmp .reset_loop
 .done:
     ret
+
+load_table_item:
+; EBX - table size
+; SI  - table address
+; AX  - input timer/output
+    mul ebx
+    div ecx
+    movzx esi, si
+    mov ax, word [esi + 2 * eax]
+    ret
