@@ -28,6 +28,9 @@
 ; Order
     %define ORDER_SEQUENCES 1
 
+; Wavetable
+    %define WAVETABLE_START 1
+
 ; Channel
     %define CHANNEL_SIZE 10
     %define CHANNEL_ENVELOPE_INDEX 0
@@ -56,8 +59,8 @@
 
 ; Wavetable
     %define OSCILLATOR_WAVETABLE 3
-    %define OSCILLATOR_SINE_PARAMETERS 1
-    %define OSCILLATOR_SINE_WAVETABLE_INDEX 2
+    %define OSCILLATOR_WAVETABLE_PARAMETERS 1
+    %define OSCILLATOR_WAVETABLE_WAVETABLE_INDEX 2
 
 ; DSP
     %define DSP_EFFECT_INDEX 1

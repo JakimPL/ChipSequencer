@@ -40,6 +40,30 @@ generate_sine_table:
     fstp st0
     ret
 
+generate_wavetables:
+    mov cl, WAVETABLES
+    mov si, wavetables
+    mov di, wavetable_samples
+.process_wavetable:
+    cmp cl, 0
+    je .done
+    movzx bx, byte [si]
+    inc si
+
+.generate_wavetable:
+    movzx eax, byte [si]
+    shl eax, 8
+    mov [di], eax
+    add di, 2
+    inc si
+    dec bx
+    jnz .generate_wavetable
+
+    dec cl
+    jne .process_wavetable
+.done:
+    ret
+
 integer_to_float:
 ; EAX - input/output
     sub eax, BASE_VOLUME
