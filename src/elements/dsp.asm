@@ -4,7 +4,7 @@ load_dsp:
     movzx bx, byte [current_dsp]
     lea ecx, [dsps]
     call load_item
-    mov dword [dsp_offset], ecx
+    mov [dsp_offset], cx
 .load_effect:
     mov bl, [DSP_EFFECT_INDEX + ecx]
     mov [current_effect], bl
@@ -48,7 +48,7 @@ process_dsp:
     ret
 
 load_dsp_target:
-    mov ecx, [dsp_offset]
+    movzx ecx, word [dsp_offset]
     mov di, [DSP_OUTPUT + ecx]
     mov cl, [DSP_SHIFT + ecx]
     ret

@@ -98,7 +98,6 @@ stacktop:
     SEGMENT_BSS
     output resd OUTPUT_CHANNELS
     dsp_buffer resd DSP_BUFFER_SIZE * DSPS
-    mem_pointer resd 1
 
     %if EXE
     group dgroup data bss

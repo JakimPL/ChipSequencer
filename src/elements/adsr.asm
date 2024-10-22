@@ -20,7 +20,7 @@ adsr:
 ; Load the divisor
     movzx eax, byte [current_channel]
     movzx ebx, byte [envelope_mode + eax]
-    mov eax, [envelope_offset]
+    movzx eax, word [envelope_offset]
     movzx ecx, word [eax + ENVELOPE_ATTACK + 2 * ebx]
     mov eax, [magic_constant]
     cmp ecx, 0
@@ -47,24 +47,24 @@ adsr:
 
 attack:
     xor bx, bx
-    mov ecx, [envelope_offset]
-    mov cx, [ecx + ENVELOPE_BASE_VOLUME]
+    movzx ecx, word [envelope_offset]
+    mov cx, [ENVELOPE_BASE_VOLUME + ecx]
     call interpolate
     ret
 decay:
-    mov ecx, [envelope_offset]
-    mov bx, [ecx + ENVELOPE_BASE_VOLUME]
-    mov cx, [ecx + ENVELOPE_SUSTAIN_LEVEL]
+    movzx ecx, word [envelope_offset]
+    mov bx, [ENVELOPE_BASE_VOLUME + ecx]
+    mov cx, [ENVELOPE_SUSTAIN_LEVEL + ecx]
     call interpolate
     ret
 hold:
-    mov eax, [envelope_offset]
-    mov ax, [eax + ENVELOPE_SUSTAIN_LEVEL]
+    movzx eax, word [envelope_offset]
+    mov ax, [ENVELOPE_SUSTAIN_LEVEL + eax]
     ret
 release:
 .check_if_release:
-    mov ebx, [envelope_offset]
-    mov bx, [ebx + ENVELOPE_SUSTAIN_LEVEL]
+    movzx ebx, word [envelope_offset]
+    mov bx, [ENVELOPE_SUSTAIN_LEVEL + ebx]
     cmp bx, 0
     jne .release
     jmp hold

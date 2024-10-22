@@ -4,7 +4,7 @@ square:
     mov eax, [oscillator_timer + 4 * eax]
     mov ecx, [dividend]
 .duty_cycle:
-    mov ebx, [oscillator_offset]
+    movzx ebx, word [oscillator_offset]
     movzx ebx, byte [OSCILLATOR_SQUARE_DUTY_CYCLE + ebx]
     shr ecx, 8
     imul ecx, ebx

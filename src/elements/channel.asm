@@ -4,32 +4,32 @@ load_offsets:
     movzx ebx, byte [current_channel]
     imul ebx, CHANNEL_SIZE
     lea ecx, [channels + ebx]
-    mov dword [channel_offset], ecx
+    mov [channel_offset], cx
     mov bl, [CHANNEL_ENVELOPE_INDEX + ecx]
 .load_envelope:
     imul ebx, ENVELOPE_SIZE
     lea ecx, [envelopes + ebx]
-    mov dword [envelope_offset], ecx
+    mov [envelope_offset], cx
 .load_order:
     call check_fixed_frequency
     je .load_oscillator
     lea ecx, [orders]
     call load_item
-    mov dword [order_offset], ecx
+    mov [order_offset], cx
 .load_sequence:
     lea ecx, [sequences]
     movzx ebx, byte [current_channel]
     movzx ebx, byte [current_order + ebx]
-    add ebx, [order_offset]
+    add bx, [order_offset]
     mov bl, [ORDER_SEQUENCES + ebx]
     call load_item
-    mov dword [sequence_offset], ecx
+    mov [sequence_offset], cx
 .load_oscillator:
     lea ecx, [oscillators]
-    mov ebx, [channel_offset]
+    movzx ebx, word [channel_offset]
     mov bl, [CHANNEL_OSCILLATOR_INDEX + ebx]
     call load_item
-    mov dword [oscillator_offset], ecx
+    mov [oscillator_offset], cx
     ret
 
 reset_channels:
@@ -39,7 +39,7 @@ reset_channels:
     ret
 
 check_fixed_frequency:
-    mov ebx, [channel_offset]
+    movzx ebx, word [channel_offset]
     mov bl, [CHANNEL_ORDER_INDEX + ebx]
     cmp bl, -1
     ret
@@ -62,15 +62,15 @@ play_channel:
     ret
 
 load_channel_target:
-    mov ecx, [channel_offset]
+    movzx ecx, word [channel_offset]
     mov di, [CHANNEL_OUTPUT + ecx]
     mov cl, [CHANNEL_SHIFT + ecx]
     ret
 
     SEGMENT_BSS
     current_channel resb 1
-    channel_offset resd 1
-    envelope_offset resd 1
-    order_offset resd 1
-    sequence_offset resd 1
-    oscillator_offset resd 1
+    channel_offset resw 1
+    envelope_offset resw 1
+    order_offset resw 1
+    sequence_offset resw 1
+    oscillator_offset resw 1

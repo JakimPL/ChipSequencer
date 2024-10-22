@@ -1,7 +1,7 @@
     SEGMENT_CODE
 step:
 ; If channel does not use orders, skip
-    mov ecx, [channel_offset]
+    movzx ecx, word [channel_offset]
     cmp byte [CHANNEL_ORDER_INDEX + ecx], -1
     jz .done
 
@@ -13,7 +13,7 @@ step:
 .load_next_note:
     movzx ebx, byte [current_channel]
     movzx eax, byte [sequence_current_note + ebx]
-    mov ecx, [sequence_offset]
+    movzx ecx, word [sequence_offset]
 ; Check if the sequence has ended (divided by 2 because each note is 2 bytes)
     mov cl, byte [ecx]
     shr cl, 1
@@ -27,7 +27,7 @@ step:
 
 .next_note:
 ; Load the note and calculate the remaining ticks
-    mov ecx, [sequence_offset]
+    movzx ecx, word [sequence_offset]
     lea esi, [ecx + SEQUENCE_NOTES + eax * 2]
     mov al, [esi]
 .check_note_off:

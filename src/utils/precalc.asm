@@ -40,4 +40,5 @@ message_done:
 
     SEGMENT_BSS
     song_position resd 1
+    mem_pointer resw 1
     %endif
