@@ -1,4 +1,4 @@
-    %define DIRECT_MODE 0
+    %define DIRECT_MODE 1
     %define PRECALCULATE 0
 
     %define OUTPUT_CHANNELS 2
@@ -8,12 +8,16 @@
     %include "SRC\CONST.ASM"
     %include "SRC\UTILS\MACROS.ASM"
 
+    bits 16
+
     %if EXE
-    bits 16
-    segment code
+    segment code use16
     global start
+
+    segment data use16
+    segment bss use16
+    segment code
     %else
-    bits 16
     org 0x0100
     section .text
     %endif
@@ -25,7 +29,7 @@ start:
     mov ds, ax
     mov ax, stack
     mov ss, ax
-    mov esp, stacktop
+    mov sp, stacktop
     %if PRECALCULATE
     call allocate_memory
     %endif
@@ -96,3 +100,7 @@ stacktop:
     output resd OUTPUT_CHANNELS
     dsp_buffer resd DSP_BUFFER_SIZE * DSPS
     mem_pointer resd 1
+
+    %if EXE
+    group dgroup data bss
+    %endif

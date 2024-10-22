@@ -16,8 +16,7 @@
 
     %macro SEGMENT_BSS 0
     %if EXE
-; TODO: Fix overlapping memory
-    segment data
+    segment bss
     %else
     section .bss
     %endif
