@@ -10,7 +10,9 @@ adsr:
     lea di, [dividend]
 .phase:
     LOAD_FUNCTION phases, 2 * eax
-
+.add_bias:
+    movzx ecx, word [envelope_offset]
+    add ax, [ENVELOPE_BIAS + ecx]
 .set_volume:
     mov word [volume], ax
 
@@ -51,16 +53,19 @@ attack:
     mov cx, [ENVELOPE_BASE_VOLUME + ecx]
     call interpolate
     ret
+
 decay:
     movzx ecx, word [envelope_offset]
     mov bx, [ENVELOPE_BASE_VOLUME + ecx]
     mov cx, [ENVELOPE_SUSTAIN_LEVEL + ecx]
     call interpolate
     ret
+
 hold:
     movzx eax, word [envelope_offset]
     mov ax, [ENVELOPE_SUSTAIN_LEVEL + eax]
     ret
+
 release:
 .check_if_release:
     movzx ebx, word [envelope_offset]
@@ -72,6 +77,7 @@ release:
     xor cx, cx
     call interpolate
     ret
+
 note_cut:
     mov ax, 0
     ret

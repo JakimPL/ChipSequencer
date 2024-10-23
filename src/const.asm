@@ -10,10 +10,11 @@
     %define DOS_PRINT_STRING 0x09
 
 ; Envelope
-    %define ENVELOPE_SIZE 12
+    %define ENVELOPE_SIZE 14
     %define ENVELOPE_BASE_VOLUME 0
     %define ENVELOPE_SUSTAIN_LEVEL 2
-    %define ENVELOPE_ATTACK 4
+    %define ENVELOPE_BIAS 4
+    %define ENVELOPE_ATTACK 6
 
 ; Phases
     %define ATTACK 0
