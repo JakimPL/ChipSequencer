@@ -62,7 +62,9 @@ store_output:
 .set_mode:
     xor edx, edx
 .set_size:
-; TODO: check 32-bit
+    test cl, 0b00110000
+    je .add_float
+    jpe .add_32_bit
     test cl, 0b00010000
     jne .add_16_bit
     test cl, 0b00100000
@@ -76,6 +78,7 @@ store_output:
     jmp .done
 .add_32_bit:
     call float_to_integer
+    shl eax, 16
     call shift
     mov [di], edx
     add [di], eax
@@ -95,7 +98,8 @@ store_output:
     ret
 
 shift:
-    mov bl, cl
-    and bl, 0b00000111
+    push cx
+    and cl, 0b00001111
     shr eax, cl
+    pop cx
     ret

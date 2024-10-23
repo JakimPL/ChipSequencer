@@ -1,7 +1,5 @@
     %define DIRECT_MODE 1
     %define PRECALCULATE 0
-
-    %define OUTPUT_CHANNELS 2
     %define TABLE_SIZE 0x1000
 
     %include "SRC\CONST.ASM"

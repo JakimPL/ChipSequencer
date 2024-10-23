@@ -1,7 +1,8 @@
-    %define CHANNELS 7
+    %define CHANNELS 8
     %define DSPS 2
     %define WAVETABLES 2
 
+    %define OUTPUT_CHANNELS 2
     %define SONG_LENGTH 186253 ; 6.4 seconds * 29102 Hz
 
 ; Wavetables
@@ -23,7 +24,7 @@ envelopes:
 .envelope_0:
     dw 0x3F00                ; base_volume
     dw 0x1F00                ; sustain_level
-    dw 0x6000                ; bias
+    dw 0x4000                ; bias
     dw 25                    ; attack
     dw 250                   ; decay
     dw 500                   ; hold
@@ -52,6 +53,14 @@ envelopes:
     dw 1500                  ; decay
     dw 1250                  ; hold
     dw 1250                  ; release
+.envelope_4:
+    dw 0x0180                ; base_volume
+    dw 0x0180                ; sustain_level
+    dw 0x0000                ; bias
+    dw 500                   ; attack
+    dw 1                     ; decay
+    dw 1                     ; hold
+    dw 0                     ; release
 
 sequences:
 .sequence_0:
@@ -167,48 +176,55 @@ dsps:
 
 channels:
 .channel_0:
+    db 4                     ; envelope_index
+    db -1                    ; order_index
+    db 2                     ; oscillator_index
+    dd 0x00080000            ; pitch
+    dw .channel_1 + CHANNEL_TRANSPOSE ; output
+    db 0b01110110            ; output flag
+.channel_1:
     db 1                     ; envelope_index
     db 0                     ; order_index
     db 3                     ; oscillator_index
     dd 0x02000000            ; transpose
-    dw dsp_input             ; output
+    dw output                ; output
     db 0                     ; output flag
-.channel_1:
+.channel_2:
     db 0                     ; envelope_index
     db -1                    ; order_index
     db 2                     ; oscillator_index
     dd 0x14800               ; pitch
-    dw oscillators + 2       ; output
+    dw oscillators.oscillator_0 + OSCILLATOR_SQUARE_DUTY_CYCLE ; output
     db 0b01101000            ; output flag
-.channel_2:
+.channel_3:
     db 1                     ; envelope_index
     db 1                     ; order_index
     db 1                     ; oscillator_index
     dd 0x02000000            ; transpose
     dw dsp_input + 4         ; output
     db 0                     ; output flag
-.channel_3:
+.channel_4:
     db 2                     ; envelope_index
     db 2                     ; order_index
     db 0                     ; oscillator_index
     dd 0x02000000            ; transpose
     dw dsp_input + 4         ; output
     db 0                     ; output flag
-.channel_4:
+.channel_5:
     db 2                     ; envelope_index
     db 3                     ; order_index
     db 0                     ; oscillator_index
     dd 0x02000000            ; transpose
     dw dsp_input + 4         ; output
     db 0                     ; output flag
-.channel_5:
+.channel_6:
     db 2                     ; envelope_index
     db 4                     ; order_index
     db 0                     ; oscillator_index
     dd 0x02000000            ; transpose
     dw dsp_input + 4         ; output
     db 0                     ; output flag
-.channel_6:
+.channel_7:
     db 2                     ; envelope_index
     db 5                     ; order_index
     db 0                     ; oscillator_index
