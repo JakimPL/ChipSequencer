@@ -170,7 +170,7 @@ channels:
     db 1                     ; envelope_index
     db 0                     ; order_index
     db 3                     ; oscillator_index
-    dd 0                     ; transpose
+    dd 0x02000000            ; transpose
     dw dsp_input             ; output
     db 0                     ; output flag
 .channel_1:
@@ -184,35 +184,35 @@ channels:
     db 1                     ; envelope_index
     db 1                     ; order_index
     db 1                     ; oscillator_index
-    dd 0                     ; transpose
+    dd 0x02000000            ; transpose
     dw dsp_input + 4         ; output
     db 0                     ; output flag
 .channel_3:
     db 2                     ; envelope_index
     db 2                     ; order_index
     db 0                     ; oscillator_index
-    dd 0                     ; transpose
+    dd 0x02000000            ; transpose
     dw dsp_input + 4         ; output
     db 0                     ; output flag
 .channel_4:
     db 2                     ; envelope_index
     db 3                     ; order_index
     db 0                     ; oscillator_index
-    dd 0                     ; transpose
+    dd 0x02000000            ; transpose
     dw dsp_input + 4         ; output
     db 0                     ; output flag
 .channel_5:
     db 2                     ; envelope_index
     db 4                     ; order_index
     db 0                     ; oscillator_index
-    dd 0                     ; transpose
+    dd 0x02000000            ; transpose
     dw dsp_input + 4         ; output
     db 0                     ; output flag
 .channel_6:
     db 2                     ; envelope_index
     db 5                     ; order_index
     db 0                     ; oscillator_index
-    dd 0                     ; transpose
+    dd 0x02000000            ; transpose
     dw dsp_input + 4         ; output
     db 0                     ; output flag
 

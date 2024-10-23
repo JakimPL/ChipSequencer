@@ -11,20 +11,20 @@ increment_timer:
     jne .load_pitch
     movzx ebx, word [channel_offset]
     mov ebx, [CHANNEL_TRANSPOSE + ebx]
-    jmp .load_frequency
+    jmp .increment_timer
 .load_pitch:
     movzx eax, byte [pitch + ecx]
-    movzx edx, word [channel_offset]
-    add al, [CHANNEL_TRANSPOSE + edx]
     shl ax, 2
     lea bx, [frequencies]
     add ebx, eax
     mov ebx, [ebx]
-.load_frequency:
-    mov eax, [oscillator_timer + 4 * ecx]
-
-; Increment index by frequency
-    add eax, ebx
+.detune:
+    movzx eax, word [channel_offset]
+    mov eax, [CHANNEL_TRANSPOSE + eax]
+    mul ebx
+    shrd eax, edx, 57
+.increment_timer:
+    add eax, dword [oscillator_timer + 4 * ecx]
     mov si, dividend
     call reduce
     mov [oscillator_timer + 4 * ecx], eax
