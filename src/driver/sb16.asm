@@ -41,7 +41,7 @@
     %define SB_BYTE_POINTER_FLIP_FLOP_CLEAR 0x01
     %define SB_MONO_MODE 0x00
 
-    %define SB_TIME_CONSTANT 0xDE
+    %define SB_TIME_CONSTANT 1 + ((0x10000 - (0xF424000 / SAMPLE_RATE)) >> 8)
 
 ; DSP Commands
     %define SB_8BIT_DMA_MODE 0x1C

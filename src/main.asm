@@ -1,4 +1,4 @@
-    %define DIRECT_MODE 1
+    %define DIRECT_MODE 0
     %define PRECALCULATE 0
     %define TABLE_SIZE 0x1000
     %define SAMPLE_RATE 0x71AE
