@@ -7,9 +7,11 @@
     %if SB_8BIT
     %define SB_DMA 1
     %define SB_MASK_REG 0x0A
+    %define SB_MODE_REG 0x0B
     %define SB_COUNT_REG 0x03
     %define SB_ADDR_REG 0x02
     %define SB_PAGE_REG 0x83
+    %define SB_FLIP_FLOP 0x0C
     %define SB_DMA_CHANNEL_1_DISABLE 0x05
     %define SB_AUTO_INIT_PLAYBACK_MODE 0x59
     %define SB_DMA_CHANNEL_COUNT SB_BUFFER_SIZE - 1
@@ -18,9 +20,11 @@
     %else
     %define SB_DMA 5
     %define SB_MASK_REG 0xD4
+    %define SB_MODE_REG 0xD6
     %define SB_COUNT_REG (0xC0 + (SB_DMA - 4) * 4 + 2)
     %define SB_ADDR_REG (0xC0 + (SB_DMA - 4) * 4)
     %define SB_PAGE_REG 0x8B
+    %define SB_FLIP_FLOP 0xD8
     %define SB_DMA_CHANNEL_1_DISABLE 0x04 + SB_DMA % 4
     %define SB_AUTO_INIT_PLAYBACK_MODE 0xB9
     %define SB_DMA_CHANNEL_COUNT SB_BUFFER_SIZE / 2 - 1
@@ -29,14 +33,11 @@
     %endif
 
     %define SB_ISR_OFFSET 0x0F
-    %define SB_MODE_REG 0x0B
     %define SB_CLEAR_FF 0xD8
     %define SB_DMA_MODE_REG 0xD6
     %define SB_DMA_MODE 0x58
-    %define SB_FLIP_FLOP 0x0C
     %define SB_BLOCK_SIZE 0x48
-    %define SB_BYTE_POINTER_FLIP_FLOP_CLEAR 0x00
-    %define SB_DMA_CHANNEL_1_ENABLE 0x01
+    %define SB_BYTE_POINTER_FLIP_FLOP_CLEAR 0x01
     %define SB_MONO_MODE 0x00
 
 ; DSP Commands
@@ -62,12 +63,12 @@
 
     SEGMENT_CODE
 initialize:
-    call clear_buffer
     call reset_sb_dsp
     call turn_speaker_on
     call install_isr
     call enable_irq
     call calculate_sound_buffer_page_offset
+    call clear_buffer
     call program_dma
     call set_sampling_rate
     call start_playback
@@ -114,9 +115,9 @@ calculate_sound_buffer_page_offset:
 
 reset_sb_dsp:
     mov dx, SB_BASE
-    add dl, 6
+    add dl, 0x06
 
-    mov al, 1
+    mov al, 0x01
     out dx, al
     sub al, al
 .delay:
@@ -226,10 +227,10 @@ program_dma:
     WRITE_PORT_BYTE SB_CLEAR_FF, SB_DMA_CHANNEL_1_DISABLE ; Clear FF
     WRITE_PORT_BYTE SB_FLIP_FLOP, SB_BYTE_POINTER_FLIP_FLOP_CLEAR ; Clear byte pointer flip-flop
     WRITE_PORT_BYTE SB_MODE_REG, SB_AUTO_INIT_PLAYBACK_MODE ; Auto-init playback
-    WRITE_PORT_WORD SB_COUNT_REG, SB_DMA_CHANNEL_COUNT ; Channel 1 count
-    WRITE_PORT_WORD SB_ADDR_REG, [dma_offset] ; Channel 1 address
     WRITE_PORT_BYTE SB_PAGE_REG, [dma_page] ; Page register for 8-bit DMA channel 1
-    WRITE_PORT_BYTE SB_MASK_REG, SB_DMA_CHANNEL_1_ENABLE ; Enable DMA channel 1
+    WRITE_PORT_WORD SB_ADDR_REG, [dma_offset] ; Channel 1 address
+    WRITE_PORT_WORD SB_COUNT_REG, SB_DMA_CHANNEL_COUNT ; Channel 1 count
+    WRITE_PORT_BYTE SB_MASK_REG, SB_DMA % 4 ; Enable DMA channel 1
     WRITE_PORT_BYTE SB_DMA_MODE_REG, SB_DMA_MODE + SB_DMA % 4 ; Transfer mode
     ret
 
@@ -322,7 +323,7 @@ isr:
 
     SEGMENT_DATA
 dma_page:
-    dw 0
+    db 0
 dma_offset:
     dw 0
 old_int_offset:
@@ -333,5 +334,4 @@ buffer_half:
     db 0
 
     SEGMENT_BSS
-buffer:
-    resb SB_BUFFER_SIZE
+    buffer resb SB_BUFFER_SIZE
