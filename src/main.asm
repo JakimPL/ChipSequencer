@@ -1,7 +1,8 @@
     %define DIRECT_MODE 0
     %define PRECALCULATE 0
     %define TABLE_SIZE 0x1000
-    %define SAMPLE_RATE 0x71AE
+    %define SAMPLE_RATE 0x7800
+    %define SB_BUFFER_SIZE 0x2000
 
     %include "SRC\CONST.ASM"
     %include "SRC\UTILS\MACROS.ASM"
@@ -14,9 +15,16 @@
 
     segment data use16
     segment bss use16
+    %ifn DIRECT_MODE
+    buffer resb SB_BUFFER_SIZE
+    %endif
     segment code
     %else
     org 0x0100
+    %ifn DIRECT_MODE
+    section .bss
+    buffer resb SB_BUFFER_SIZE
+    %endif
     section .text
     %endif
 
@@ -100,5 +108,5 @@ stacktop:
     dsp_buffer resd DSP_BUFFER_SIZE
 
     %if EXE
-    group dgroup data bss
+    group dgroup bss data
     %endif

@@ -3,7 +3,6 @@
 
     %define SB_BASE 0x0220
     %define SB_IRQ 7
-    %define SB_BUFFER_SIZE 0x4000
 
     %if SB_8BIT
     %define SB_DMA 1
@@ -334,5 +333,3 @@ old_int_seg:
 buffer_half:
     db 0
 
-    SEGMENT_BSS
-    buffer resb SB_BUFFER_SIZE
