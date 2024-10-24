@@ -1,4 +1,4 @@
-    %define SB_8BIT 1
+    %define SB_8BIT 0
     %define SB_EXACT_SAMPLE_RATE 0
 
     %define SB_BASE 0x0220
@@ -27,7 +27,7 @@
     %define SB_FLIP_FLOP 0xD8
     %define SB_DMA_CHANNEL_1_DISABLE 0x04 + SB_DMA % 4
     %define SB_AUTO_INIT_PLAYBACK_MODE 0xB9
-    %define SB_DMA_CHANNEL_COUNT SB_BUFFER_SIZE / 2 - 1
+    %define SB_DMA_CHANNEL_COUNT (SB_BUFFER_SIZE / 2 - 1)
     %define SB_EXIT_AUTO_INIT_DMA_MODE 0xD9
     %define SB_ACKNOWLEDGE SB_BASE + 0x0F
     %endif
@@ -96,6 +96,9 @@ clear_buffer_cell:
 
 calculate_sound_buffer_page_offset:
     mov ax, ds
+    %ifn SB_8BIT
+    shr ax, 1
+    %endif
     mov dx, ax
     shr dx, 12
     shl ax, 4

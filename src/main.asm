@@ -2,7 +2,7 @@
     %define PRECALCULATE 0
     %define TABLE_SIZE 0x1000
     %define SAMPLE_RATE 0x7800
-    %define SB_BUFFER_SIZE 0x2000
+    %define SB_BUFFER_SIZE 0x4000
 
     %include "SRC\CONST.ASM"
     %include "SRC\UTILS\MACROS.ASM"
@@ -16,7 +16,8 @@
     segment data use16
     segment bss use16
     %ifn DIRECT_MODE
-    buffer resb SB_BUFFER_SIZE
+; TODO: fix size
+    buffer resw SB_BUFFER_SIZE
     %endif
     segment code
     %else
