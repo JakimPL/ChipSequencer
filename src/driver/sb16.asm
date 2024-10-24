@@ -1,8 +1,9 @@
     %define SB_8BIT 1
+    %define SB_EXACT_SAMPLE_RATE 0
 
     %define SB_BASE 0x0220
     %define SB_IRQ 7
-    %define SB_BUFFER_SIZE 0x1000
+    %define SB_BUFFER_SIZE 0x4000
 
     %if SB_8BIT
     %define SB_DMA 1
@@ -40,12 +41,15 @@
     %define SB_BYTE_POINTER_FLIP_FLOP_CLEAR 0x01
     %define SB_MONO_MODE 0x00
 
+    %define SB_TIME_CONSTANT 0xDE
+
 ; DSP Commands
     %define SB_8BIT_DMA_MODE 0x1C
     %define SB_16BIT_DMA_MODE 0xB6
     %define SB_TURN_ON_SPEAKER 0xD1
     %define SB_TURN_OFF_SPEAKER 0xD3
-    %define SB_TIME_CONSTANT 0x40
+    %define SB_SET_TIME_CONSTANT 0x40
+    %define SB_SET_SAMPLE_RATE 0x41
 
     %macro WRITE_PORT_BYTE 2
     mov dx, %1
@@ -92,25 +96,13 @@ clear_buffer_cell:
     ret
 
 calculate_sound_buffer_page_offset:
-    mov ax, cs
+    mov ax, ds
     mov dx, ax
     shr dx, 12
     shl ax, 4
     add ax, buffer
-    jnc .continue
-    inc dx
-.continue:
-    mov cx, 0xFFFF
-    sub cx, ax
-    inc cx
-    cmp cx, SB_BUFFER_SIZE
-    jae .size_ok
-.use_next_page:
-    mov ax, 0
-    inc dx
-.size_ok:
-    mov word [dma_page], dx
-    mov word [dma_offset], ax
+    mov [dma_page], dl
+    mov [dma_offset], ax
     ret
 
 reset_sb_dsp:
@@ -237,10 +229,19 @@ program_dma:
 set_sampling_rate:
 ; 29102 Hz
 ; time constant = 65536 - (256 000 000 / 29102)
+    %if SB_EXACT_SAMPLE_RATE
+    mov bl, SB_SET_SAMPLE_RATE
+    call write_sb_dsp
+    mov bl, SAMPLE_RATE >> 8
+    call write_sb_dsp
+    mov bl, SAMPLE_RATE & 0xFF
+    call write_sb_dsp
+    %else
+    mov bl, SB_SET_TIME_CONSTANT
+    call write_sb_dsp
     mov bl, SB_TIME_CONSTANT
     call write_sb_dsp
-    mov bl, 0xDE
-    call write_sb_dsp
+    %endif
     ret
 
 start_playback:

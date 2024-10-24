@@ -1,5 +1,5 @@
     %define PORT 0x022C
-    %define DIVISOR 0x29
+    %define DIVISOR 0x1234DE / SAMPLE_RATE
 
     SEGMENT_CODE
 initialize:

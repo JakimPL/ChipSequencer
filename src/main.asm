@@ -1,6 +1,7 @@
     %define DIRECT_MODE 1
     %define PRECALCULATE 0
     %define TABLE_SIZE 0x1000
+    %define SAMPLE_RATE 0x71AE
 
     %include "SRC\CONST.ASM"
     %include "SRC\UTILS\MACROS.ASM"
@@ -84,7 +85,7 @@ exit:
 calculate:
     db 1
 dividend:
-    dd 0x71AE0000
+    dd SAMPLE_RATE << 16
 message:
     db 'Chip Sequencer by Jakim, 2024', 13, 10, '$'
 
