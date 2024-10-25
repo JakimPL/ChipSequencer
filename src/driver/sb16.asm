@@ -1,4 +1,4 @@
-    %define SB_8BIT 0
+    %define SB_8BIT 1
     %define SB_EXACT_SAMPLE_RATE 0
 
     %define SB_BASE 0x0220
@@ -64,10 +64,15 @@
     out dx, al
     %endmacro
 
+    %macro WRITE_SB_DSP 1
+    mov bl, %1
+    call write_sb_dsp
+    %endmacro
+
     SEGMENT_CODE
 initialize:
     call reset_sb_dsp
-    call turn_speaker_on
+    WRITE_SB_DSP SB_TURN_ON_SPEAKER
     call install_isr
     call enable_irq
     call calculate_sound_buffer_page_offset
@@ -78,10 +83,10 @@ initialize:
     ret
 
 terminate:
-    call exit_auto_init
+    WRITE_SB_DSP SB_EXIT_AUTO_INIT_DMA_MODE
     call disable_irq
     call uninstall_isr
-    call turn_speaker_off
+    WRITE_SB_DSP SB_TURN_OFF_SPEAKER
     ret
 
 clear_buffer:
@@ -151,6 +156,7 @@ write_sb_dsp:
     out dx, al
     ret
 
+    %ifdef SB_READ_DSP
 read_sb_dsp:
     mov dx, SB_BASE
     add dl, 0x0E
@@ -162,16 +168,7 @@ read_sb_dsp:
     sub dl, 4
     in al, dx
     ret
-
-turn_speaker_on:
-    mov bl, SB_TURN_ON_SPEAKER
-    call write_sb_dsp
-    ret
-
-turn_speaker_off:
-    mov bl, SB_TURN_OFF_SPEAKER
-    call write_sb_dsp
-    ret
+    %endif
 
 enable_irq:
     in al, 0x21
@@ -183,11 +180,6 @@ disable_irq:
     in al, 0x21
     or al, 10000000b
     out 0x21, al
-    ret
-
-exit_auto_init:
-    mov bl, SB_EXIT_AUTO_INIT_DMA_MODE
-    call write_sb_dsp
     ret
 
 install_isr:
@@ -232,39 +224,26 @@ set_sampling_rate:
 ; 29102 Hz
 ; time constant = 65536 - (256 000 000 / 29102)
     %if SB_EXACT_SAMPLE_RATE
-    mov bl, SB_SET_SAMPLE_RATE
-    call write_sb_dsp
-    mov bl, SAMPLE_RATE >> 8
-    call write_sb_dsp
-    mov bl, SAMPLE_RATE & 0xFF
-    call write_sb_dsp
+    WRITE_SB_DSP SB_SET_SAMPLE_RATE
+    WRITE_SB_DSP SAMPLE_RATE >> 8
+    WRITE_SB_DSP SAMPLE_RATE & 0xFF
     %else
-    mov bl, SB_SET_TIME_CONSTANT
-    call write_sb_dsp
-    mov bl, SB_TIME_CONSTANT
-    call write_sb_dsp
+    WRITE_SB_DSP SB_SET_TIME_CONSTANT
+    WRITE_SB_DSP SB_TIME_CONSTANT
     %endif
     ret
 
 start_playback:
     %if SB_8BIT
-    mov bl, SB_BLOCK_SIZE
-    call write_sb_dsp
-    mov bl, (SB_BUFFER_SIZE / 2 - 1) & 0xFF
-    call write_sb_dsp
-    mov bl, (SB_BUFFER_SIZE / 2 - 1) >> 8
-    call write_sb_dsp
-    mov bl, SB_8BIT_DMA_MODE
-    call write_sb_dsp
+    WRITE_SB_DSP SB_BLOCK_SIZE
+    WRITE_SB_DSP (SB_BUFFER_SIZE / 2 - 1) & 0xFF
+    WRITE_SB_DSP (SB_BUFFER_SIZE / 2 - 1) >> 8
+    WRITE_SB_DSP SB_8BIT_DMA_MODE
     %else
-    mov bl, SB_16BIT_DMA_MODE
-    call write_sb_dsp
-    mov bl, SB_MONO_MODE
-    call write_sb_dsp
-    mov bl, (SB_BUFFER_SIZE / 2 - 1) & 0xFF
-    call write_sb_dsp
-    mov bl, (SB_BUFFER_SIZE / 2 - 1) >> 8
-    call write_sb_dsp
+    WRITE_SB_DSP SB_16BIT_DMA_MODE
+    WRITE_SB_DSP SB_MONO_MODE
+    WRITE_SB_DSP (SB_BUFFER_SIZE / 2 - 1) & 0xFF
+    WRITE_SB_DSP (SB_BUFFER_SIZE / 2 - 1) >> 8
     %endif
     ret
 
@@ -272,11 +251,11 @@ sound_driver_step:
     cmp byte [calculate], 1
     jne .not_ready
 
-    mov cx, SB_BUFFER_SIZE / 2
+    mov cx, SB_BUFFER_SIZE >> 1
     mov di, buffer
     cmp byte [buffer_half], 0
     je .fill_buffer
-    add di, SB_BUFFER_SIZE / 2
+    add di, SB_BUFFER_SIZE >> 1
 .fill_buffer:
     cmp cx, 0
     je .finish
