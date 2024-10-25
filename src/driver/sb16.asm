@@ -1,9 +1,3 @@
-    %define SB_8BIT 1
-    %define SB_EXACT_SAMPLE_RATE 0
-
-    %define SB_BASE 0x0220
-    %define SB_IRQ 7
-
     %if SB_8BIT
     %define SB_DMA 1
     %define SB_MASK_REG 0x0A
@@ -27,7 +21,7 @@
     %define SB_FLIP_FLOP 0xD8
     %define SB_DMA_CHANNEL_1_DISABLE 0x04 + SB_DMA % 4
     %define SB_AUTO_INIT_PLAYBACK_MODE 0xB9
-    %define SB_DMA_CHANNEL_COUNT (SB_BUFFER_SIZE / 2 - 1)
+    %define SB_DMA_CHANNEL_COUNT (SB_BUFFER_SIZE - 1)
     %define SB_EXIT_AUTO_INIT_DMA_MODE 0xD9
     %define SB_ACKNOWLEDGE SB_BASE + 0x0F
     %endif
@@ -101,13 +95,19 @@ clear_buffer_cell:
 
 calculate_sound_buffer_page_offset:
     mov ax, ds
-    %ifn SB_8BIT
-    shr ax, 1
-    %endif
     mov dx, ax
+
+    %if SB_8BIT
     shr dx, 12
     shl ax, 4
     add ax, buffer
+    %else
+    shr dx, 13
+    shl ax, 4
+    add ax, buffer
+    shr ax, 1
+    %endif
+
     mov [dma_page], dl
     mov [dma_offset], ax
     ret
@@ -255,7 +255,7 @@ sound_driver_step:
     mov di, buffer
     cmp byte [buffer_half], 0
     je .fill_buffer
-    add di, SB_BUFFER_SIZE >> 1
+    add di, SB_BUFFER_SIZE >> SB_8BIT
 .fill_buffer:
     cmp cx, 0
     je .finish
@@ -274,7 +274,7 @@ sound_driver_step:
     mov [di], al
     inc di
     %else
-    xchg al, ah              ; Swap high and low bytes
+; xchg al, ah
     mov [di], ax
     add di, 2
     %endif
@@ -308,10 +308,9 @@ dma_page:
     db 0
 dma_offset:
     dw 0
-old_int_offset:
-    dw 0
-old_int_seg:
-    dw 0
 buffer_half:
     db 0
 
+    SEGMENT_BSS
+    old_int_offset resw 0
+    old_int_seg resw 0

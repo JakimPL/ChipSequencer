@@ -1,9 +1,4 @@
-    %define DIRECT_MODE 0
-    %define PRECALCULATE 0
-    %define TABLE_SIZE 0x1000
-    %define SAMPLE_RATE 0x7800
-    %define SB_BUFFER_SIZE 0x4000
-
+    %include "SRC\CONFIG.ASM"
     %include "SRC\CONST.ASM"
     %include "SRC\UTILS\MACROS.ASM"
 
@@ -15,20 +10,19 @@
 
     segment data use16
     segment bss use16
-    %ifn DIRECT_MODE
-; TODO: fix size
-    buffer resw SB_BUFFER_SIZE
-    %endif
     segment code
     %else
     org 0x0100
-    %ifn DIRECT_MODE
-    section .bss
-    buffer resb SB_BUFFER_SIZE
-    %endif
     section .text
     %endif
 
+    %ifn DIRECT_MODE
+    SEGMENT_BSS
+    align 2
+    buffer resb SB_BUFFER_SIZE * (1 + SB_16BIT)
+    %endif
+
+    SEGMENT_CODE
 start:
     %if EXE
 .prepare_stack:
