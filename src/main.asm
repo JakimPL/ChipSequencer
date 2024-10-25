@@ -45,6 +45,7 @@ start:
 
     call generate_sine_table
     call generate_wavetables
+    call generate_fft_twiddles
 
     %if PRECALCULATE & EXE
 .precalculate:

@@ -1,5 +1,4 @@
     %define SAMPLE_RATE 0x71AE
-    %define TABLE_SIZE 0x0800
 
     %define PRECALCULATE 0
     %define DIRECT_MODE 0
@@ -13,3 +12,9 @@
     %define SB_IRQ 7
     %define SB_16BIT (1 - SB_8BIT)
     %endif
+
+    %define TABLE_SIZE 0x0800
+    %define FFT_SIZE 0x40
+
+    %define ANGLE_CONSTANT 0.006135923151542565 ; 2 * PI / TABLE_SIZE
+    %define FFT_ANGLE_CONSTANT 0.09817477042468103 ; 2 * PI / FFT_SIZE

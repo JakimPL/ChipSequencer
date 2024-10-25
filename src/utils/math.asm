@@ -1,7 +1,3 @@
-    %define TABLE_SIZE 1024
-    %define PI 3.141592653589793
-    %define ANGLE_CONSTANT 0.006135923151542565 ; 2 * PI / TABLE_SIZE
-
     SEGMENT_CODE
 interpolate:
 ; Interpolates linearly between two values: BX and CX into AX
@@ -115,9 +111,35 @@ add_floats:
     mov eax, dword [value]
     ret
 
+generate_fft_twiddles:
+    mov cx, FFT_SIZE
+    mov di, fft_twiddles
+    fldz
+    fld dword [fft_angle_constant]
+    fldz
+
+.generate_twiddle:
+    fld st0
+    fsincos
+    fstp dword [di]
+    mov eax, dword [di]
+    fstp dword [di + 4]
+    add edi, 8
+
+    fadd st0, st1            ; angle += fft_angle_constant
+
+    dec cx
+    jnz .generate_twiddle
+
+    fstp st0
+    fstp st0
+    ret
+
     SEGMENT_DATA
 angle_constant:
     dd __float32__(ANGLE_CONSTANT)
+fft_angle_constant:
+    dd __float32__(FFT_ANGLE_CONSTANT)
 half_range:
     dd __float32__(32767.5)
 
@@ -125,3 +147,4 @@ half_range:
     angle resd 1
     value resd 1
     sine_table resw TABLE_SIZE
+    fft_twiddles resd FFT_SIZE * 2
