@@ -179,7 +179,7 @@ dsps:
     db EFFECT_FILTER         ; effect_index
     dw output                ; output
     db 0                     ; output_flag
-    dw 0xFFFF                ; type and frequency
+    dw 0x0001                ; type and frequency
 
 channels:
 .channel_0:

@@ -1,7 +1,7 @@
     %define SAMPLE_RATE 0x71AE
 
     %define PRECALCULATE 0
-    %define DIRECT_MODE 1
+    %define DIRECT_MODE 0
     %define FFT 1
 
 ; SoundBlaster16 configuration

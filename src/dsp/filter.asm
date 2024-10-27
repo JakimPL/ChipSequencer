@@ -22,14 +22,25 @@ filter:
     call fft
 
 .filter:
-    mov dword [fft_output], 0
-    mov dword [fft_output + 4], 0
-    mov dword [fft_output + 8], 0
-    mov dword [fft_output + 12], 0
-    mov dword [fft_output + 16], 0
-    mov dword [fft_output + 20], 0
-    mov dword [fft_output + 24], 0
-    mov dword [fft_output + 28], 0
+    movzx ecx, word [dsp_offset]
+    movzx ecx, word [DSP_FILTER_VALUE + ecx]
+    mov esi, ecx
+    and si, 0b0111111111111111
+    and cx, 0b1000000000000000
+.clear:
+    mov dword [fft_output + 8 * esi], 0
+    mov dword [fft_output + 8 * esi + 4], 0
+
+    cmp cx, 0
+    je .clear_increment
+    dec si
+    cmp si, 0
+    jne .clear
+    jmp .ifft
+.clear_increment:
+    inc si
+    cmp si, [fft_size]
+    jne .clear
 
 .ifft:
     call ifft
