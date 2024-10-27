@@ -45,7 +45,10 @@ start:
 
     call generate_sine_table
     call generate_wavetables
+
+    %if FFT
     call generate_fft_twiddles
+    %endif
 
     %if PRECALCULATE & EXE
 .precalculate:
