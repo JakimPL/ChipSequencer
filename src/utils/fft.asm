@@ -51,7 +51,7 @@ _fft:
     div ecx
     mov ebx, edx
 
-    mov edx, [fft_input_pointer]
+    movzx edx, word [fft_input_pointer]
     fld dword [edx + 8 * esi]
     fld dword [edx + 8 * esi + 4]
     fld dword [fft_twiddles + 8 * ebx]
@@ -93,7 +93,7 @@ _fft:
     fdiv st2, st0
     fstp st0
 .store_output:
-    mov edx, [fft_output_pointer]
+    movzx edx, word [fft_output_pointer]
     fstp dword [edx + 8 * edi + 4]
     fstp dword [edx + 8 * edi]
 
@@ -104,22 +104,26 @@ _fft:
     ret
 
 fft:
-    mov dx, fft_output
-    mov [fft_output_pointer], dx
     mov dx, fft_input
     mov [fft_input_pointer], dx
+    mov dx, fft_output
+    mov [fft_output_pointer], dx
     mov byte [fft_inverse], 0
     call _fft
     ret
 
 ifft:
-    mov dx, fft_input
-    mov [fft_output_pointer], dx
     mov dx, fft_output
     mov [fft_input_pointer], dx
+    mov dx, fft_input
+    mov [fft_output_pointer], dx
     mov byte [fft_inverse], 1
     call _fft
     ret
+
+    SEGMENT_DATA
+fft_angle_constant:
+    dd __float32__(FFT_ANGLE_CONSTANT)
 
     SEGMENT_BSS
     fft_twiddles resq FFT_SIZE

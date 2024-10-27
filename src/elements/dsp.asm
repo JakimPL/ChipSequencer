@@ -21,7 +21,7 @@ reset_dsps:
 
 reset_dsp:
     movzx ecx, bl
-    mov dword [dsp_timer + 4 * ecx], 0
+    mov dword [dsp_timer + 2 * ecx], 0
     ret
 
 clear_dsps:
@@ -57,15 +57,38 @@ load_dsp_target:
     mov cl, [DSP_SHIFT + ecx]
     ret
 
+load_dsp_buffer:
+    movzx cx, byte [current_dsp]
+    movzx ebx, word [dsp_timer + 2 * ecx]
+    shl bx, 2
+    add bx, [buffer_offsets + 2 * ecx]
+    lea si, [dsp_buffer]
+    add si, bx
+    ret
+
+increment_dsp_timer:
+    movzx ecx, byte [current_dsp]
+    mov bx, [dsp_timer + 2 * ecx]
+    inc bx
+    cmp bx, dx
+    jne .done
+    sub bx, dx
+.done:
+    mov [dsp_timer + 2 * ecx], bx
+    ret
+
 ; Effects
     %include "SRC\DSP\GAINER.ASM"
     %include "SRC\DSP\DELAY.ASM"
+    %if FFT
     %include "SRC\DSP\FILTER.ASM"
+    %endif
 
     SEGMENT_DATA
 effects:
     dw gainer
     dw delay
+    dw filter
 
     SEGMENT_BSS
     current_dsp resb 1

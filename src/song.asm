@@ -1,5 +1,5 @@
-    %define CHANNELS 8
-    %define DSPS 2
+    %define CHANNELS 3
+    %define DSPS 3
     %define WAVETABLES 2
 
     %define OUTPUT_CHANNELS 2
@@ -12,7 +12,8 @@
 
 ; Buffers
     %define DSP_0_DELAY_TIME 0x0100
-    %define DSP_BUFFER_SIZE 0x0100
+    %define DSP_2_FILTER_SIZE FFT_SIZE
+    %define DSP_BUFFER_SIZE DSP_0_DELAY_TIME + DSP_2_FILTER_SIZE
 
     SEGMENT_DATA
 bpm:
@@ -173,6 +174,12 @@ dsps:
     dw output                ; output
     db 0                     ; output_flag
     dw 0x9FFF                ; volume
+.dsp_2:
+    db 6                     ; dsp_size
+    db EFFECT_FILTER         ; effect_index
+    dw output                ; output
+    db 0                     ; output_flag
+    dw 0xFFFF                ; type and frequency
 
 channels:
 .channel_0:
@@ -187,7 +194,7 @@ channels:
     db 0                     ; order_index
     db 3                     ; oscillator_index
     dd 0x02000000            ; transpose
-    dw output                ; output
+    dw dsp_input + 8         ; output
     db 0                     ; output flag
 .channel_2:
     db 0                     ; envelope_index
@@ -201,7 +208,7 @@ channels:
     db 1                     ; order_index
     db 1                     ; oscillator_index
     dd 0x02000000            ; transpose
-    dw dsp_input + 4         ; output
+    dw output                ; output
     db 0                     ; output flag
 .channel_4:
     db 2                     ; envelope_index
@@ -235,6 +242,7 @@ channels:
 ; Buffer offsets
 buffer_offsets:
     dw 0
+    dw DSP_0_DELAY_TIME
     dw DSP_0_DELAY_TIME
 
 ; Wavetable offsets

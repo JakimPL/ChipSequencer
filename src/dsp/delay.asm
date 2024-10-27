@@ -1,7 +1,7 @@
     SEGMENT_CODE
 delay:
     push eax
-    call load_buffer
+    call load_dsp_buffer
     movzx ecx, word [dsp_offset]
     movzx ebx, word [DSP_DELAY_DRY + ecx]
     call multiply_by_integer
@@ -29,25 +29,7 @@ delay:
 .increment_timer:
     movzx edx, word [dsp_offset]
     mov dx, [DSP_DELAY_TIME + edx]
-    movzx ecx, byte [current_dsp]
-    mov bx, [dsp_timer + 2 * ecx]
-    inc bx
-    cmp bx, dx
-    jne .done
-    sub bx, dx
-.done:
-    mov [dsp_timer + 4 * ecx], bx
-    ret
-
-load_buffer:
-    movzx cx, byte [current_dsp]
-    movzx bx, [dsp_timer + 4 * ecx]
-    shl bx, 2
-    imul cx, DSP_BUFFER_SIZE
-    add bx, cx
-    lea si, [dsp_buffer]
-    add si, bx
-    ret
+    call increment_dsp_timer
 
 mix_delay:
     call multiply_by_integer

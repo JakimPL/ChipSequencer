@@ -80,3 +80,8 @@
     %define DSP_DELAY_WET 7
     %define DSP_DELAY_FEEDBACK 9
     %define DSP_DELAY_TIME 11
+
+; Delay
+    %define EFFECT_FILTER 2
+    %define DSP_FILTER_PARAMETERS 1
+    %define DSP_FILTER_VALUE 5

@@ -1,7 +1,7 @@
     %define SAMPLE_RATE 0x71AE
 
     %define PRECALCULATE 0
-    %define DIRECT_MODE 0
+    %define DIRECT_MODE 1
     %define FFT 1
 
 ; SoundBlaster16 configuration
@@ -18,6 +18,6 @@
     %define ANGLE_CONSTANT 0.006135923151542565 ; 2 * PI / TABLE_SIZE
 
     %if FFT
-    %define FFT_SIZE 0x40
-    %define FFT_ANGLE_CONSTANT 0.09817477042468103 ; 2 * PI / FFT_SIZE
+    %define FFT_SIZE 0x10
+    %define FFT_ANGLE_CONSTANT 0.39269908169872414 ; 2 * PI / FFT_SIZE
     %endif
