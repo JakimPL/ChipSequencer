@@ -25,7 +25,7 @@ generate_fft_twiddles:
     fstp st0
     ret
 
-fft:
+_fft:
     mov cl, [fft_inverse]
     fninit
     pusha
@@ -51,12 +51,13 @@ fft:
     div ecx
     mov ebx, edx
 
-    fld dword [fft_input + 8 * esi]
-    fld dword [fft_input + 8 * esi + 4]
+    mov edx, [fft_input_pointer]
+    fld dword [edx + 8 * esi]
+    fld dword [edx + 8 * esi + 4]
     fld dword [fft_twiddles + 8 * ebx]
     fld dword [fft_twiddles + 8 * ebx + 4]
 
-; Real part
+.real_part:
     fld st3
     fmul st0, st2
     fld st3
@@ -64,7 +65,7 @@ fft:
     fsubp st1, st0
     faddp st6, st0
 
-; Imaginary part
+.imaginary_part:
     fld st3
     fmul st0, st1
     fld st3
@@ -72,13 +73,13 @@ fft:
     faddp st1, st0
     faddp st5, st0
 
-; Unload stack
+.unload_stack:
     fstp st0
     fstp st0
     fstp st0
     fstp st0
 
-; Increment
+.increment:
     inc si
     cmp si, [fft_size]
     jnz .inner_loop
@@ -92,8 +93,9 @@ fft:
     fdiv st2, st0
     fstp st0
 .store_output:
-    fstp dword [fft_output + 8 * edi + 4]
-    fstp dword [fft_output + 8 * edi]
+    mov edx, [fft_output_pointer]
+    fstp dword [edx + 8 * edi + 4]
+    fstp dword [edx + 8 * edi]
 
     inc di
     cmp di, [fft_size]
@@ -101,8 +103,22 @@ fft:
     popa
     ret
 
-fft_divide:
-    mov cl, [fft_inverse]
+fft:
+    mov dx, fft_output
+    mov [fft_output_pointer], dx
+    mov dx, fft_input
+    mov [fft_input_pointer], dx
+    mov byte [fft_inverse], 0
+    call _fft
+    ret
+
+ifft:
+    mov dx, fft_input
+    mov [fft_output_pointer], dx
+    mov dx, fft_output
+    mov [fft_input_pointer], dx
+    mov byte [fft_inverse], 1
+    call _fft
     ret
 
     SEGMENT_BSS
@@ -111,3 +127,6 @@ fft_divide:
     fft_output resq FFT_SIZE
     fft_size resw 1
     fft_inverse resb 1
+
+    fft_input_pointer resw 1
+    fft_output_pointer resw 1
