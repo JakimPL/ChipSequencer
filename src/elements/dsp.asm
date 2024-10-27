@@ -60,6 +60,7 @@ load_dsp_target:
 ; Effects
     %include "SRC\DSP\GAINER.ASM"
     %include "SRC\DSP\DELAY.ASM"
+    %include "SRC\DSP\FILTER.ASM"
 
     SEGMENT_DATA
 effects:
