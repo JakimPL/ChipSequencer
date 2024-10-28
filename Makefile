@@ -17,6 +17,9 @@ install:
 	make nasmfmt
 	make pre-commit
 
+config:
+	python config.py
+
 nasm:
 	@echo "Downloading NASM..."
 	@wget -q $(NASM_URL) -O $(NASM_ZIP)
@@ -47,5 +50,6 @@ nasmfmt:
 	fi
 
 pre-commit:
+	make config
 	pip install pre-commit
 	pre-commit autoupdate

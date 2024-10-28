@@ -13,7 +13,11 @@ To install NASM for DOS, use `make nasm`.
 
 To install all of these, run `make install`.
 
-## DOSBox configuration
+## Configuration
+
+The project uses the `config.yaml` file for generating `config.asm` used by the assembler. To generate the assembler configuration file, run `make config`.
+
+### DOSBox configuration
 
 To run the project in DOSBox, please set the following _SoundBlaster16_ settings in the `dosbox.conf` file:
 

@@ -6,6 +6,12 @@ repos:
         types: [text]
   - repo: local
     hooks:
+      - id: make-config
+        name: Run make config
+        entry: make config
+        language: system
+        always_run: true
+        files: "src/config.asm"
       - id: nasmfmt-hook
         name: nasmfmt formatting
         entry: nasmfmt

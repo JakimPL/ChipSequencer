@@ -1,0 +1,15 @@
+sample_rate: 29102
+precalculate: false
+table_size: 1024
+
+soundblaster16:
+    enabled: true
+    buffer_size: 1024
+    bits: 16
+    base_port: "0x220"
+    irq: 7
+    exact_sample_rate: false
+
+fft:
+    enabled: true
+    size: 16

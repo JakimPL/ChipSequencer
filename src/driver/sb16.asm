@@ -10,7 +10,7 @@
     %define SB_AUTO_INIT_PLAYBACK_MODE 0x59
     %define SB_DMA_CHANNEL_COUNT SB_BUFFER_SIZE - 1
     %define SB_EXIT_AUTO_INIT_DMA_MODE 0xDA
-    %define SB_ACKNOWLEDGE SB_BASE + 0x0E
+    %define SB_ACKNOWLEDGE SB_BASE_PORT + 0x0E
     %else
     %define SB_DMA 5
     %define SB_MASK_REG 0xD4
@@ -23,7 +23,7 @@
     %define SB_AUTO_INIT_PLAYBACK_MODE 0xB9
     %define SB_DMA_CHANNEL_COUNT (SB_BUFFER_SIZE - 1)
     %define SB_EXIT_AUTO_INIT_DMA_MODE 0xD9
-    %define SB_ACKNOWLEDGE SB_BASE + 0x0F
+    %define SB_ACKNOWLEDGE SB_BASE_PORT + 0x0F
     %endif
 
     %define SB_ISR_OFFSET 0x0F
@@ -113,7 +113,7 @@ calculate_sound_buffer_page_offset:
     ret
 
 reset_sb_dsp:
-    mov dx, SB_BASE
+    mov dx, SB_BASE_PORT
     add dl, 0x06
 
     mov al, 0x01
@@ -126,7 +126,7 @@ reset_sb_dsp:
 
     sub cx, cx
 .empty:
-    mov dx, SB_BASE
+    mov dx, SB_BASE_PORT
     add dl, 0x0E
 
     in al, dx
@@ -145,7 +145,7 @@ reset_sb_dsp:
     ret
 
 write_sb_dsp:
-    mov dx, SB_BASE
+    mov dx, SB_BASE_PORT
     add dl, 0x0C
 .busy:
     in al, dx
@@ -158,7 +158,7 @@ write_sb_dsp:
 
     %ifdef SB_READ_DSP
 read_sb_dsp:
-    mov dx, SB_BASE
+    mov dx, SB_BASE_PORT
     add dl, 0x0E
 .busy:
     in al, dx
