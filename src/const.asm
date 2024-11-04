@@ -84,4 +84,4 @@
 ; Delay
     %define EFFECT_FILTER 2
     %define DSP_FILTER_PARAMETERS 1
-    %define DSP_FILTER_VALUE 5
+    %define DSP_FILTER_FREQUENCY 5

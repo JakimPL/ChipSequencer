@@ -1,4 +1,4 @@
-    %define CHANNELS 8
+    %define CHANNELS 3
     %define DSPS 3
     %define WAVETABLES 2
 
@@ -59,6 +59,14 @@ envelopes:
     dw 0x0180                ; sustain_level
     dw 0x0000                ; bias
     dw 500                   ; attack
+    dw 1                     ; decay
+    dw 1                     ; hold
+    dw 0                     ; release
+.envelope_5:
+    dw 0x5FFF                ; base_volume
+    dw 0x5FFF                ; sustain_level
+    dw 0x0014                ; bias
+    dw 1                     ; attack
     dw 1                     ; decay
     dw 1                     ; hold
     dw 0                     ; release
@@ -179,64 +187,71 @@ dsps:
     db EFFECT_FILTER         ; effect_index
     dw output                ; output
     db 0                     ; output_flag
-    dw 0x0001                ; type and frequency
+    dw 0x0150                ; frequency
 
 channels:
 .channel_0:
+    db 5                     ; envelope_index
+    db -1                    ; order_index
+    db 1                     ; oscillator_index
+    dd 0x00005000            ; pitch
+    dw dsps.dsp_2 + DSP_FILTER_FREQUENCY ; output
+    db 0b01010111            ; output flag
+.channel_1:
     db 4                     ; envelope_index
     db -1                    ; order_index
     db 2                     ; oscillator_index
     dd 0x00080000            ; pitch
-    dw .channel_1 + CHANNEL_TRANSPOSE ; output
+    dw .channel_2 + CHANNEL_TRANSPOSE ; output
     db 0b01110110            ; output flag
-.channel_1:
+.channel_2:
     db 1                     ; envelope_index
     db 0                     ; order_index
     db 3                     ; oscillator_index
     dd 0x02000000            ; transpose
     dw dsp_input + 8         ; output
     db 0                     ; output flag
-.channel_2:
+.channel_3:
     db 0                     ; envelope_index
     db -1                    ; order_index
     db 2                     ; oscillator_index
-    dd 0x14800               ; pitch
+    dd 0x00014800            ; pitch
     dw oscillators.oscillator_0 + OSCILLATOR_SQUARE_DUTY_CYCLE ; output
     db 0b01101000            ; output flag
-.channel_3:
+.channel_4:
     db 1                     ; envelope_index
     db 1                     ; order_index
     db 1                     ; oscillator_index
     dd 0x02000000            ; transpose
-    dw output                ; output
+    dw dsp_input + 8         ; output
     db 0                     ; output flag
-.channel_4:
+.channel_5:
     db 2                     ; envelope_index
     db 2                     ; order_index
     db 0                     ; oscillator_index
     dd 0x02000000            ; transpose
-    dw dsp_input + 4         ; output
+    dw dsp_input + 8         ; output
     db 0                     ; output flag
-.channel_5:
+.channel_6:
     db 2                     ; envelope_index
     db 3                     ; order_index
     db 0                     ; oscillator_index
     dd 0x02000000            ; transpose
-    dw dsp_input + 4         ; output
+    dw dsp_input + 8         ; output
     db 0                     ; output flag
-.channel_6:
+.channel_7:
     db 2                     ; envelope_index
     db 4                     ; order_index
     db 0                     ; oscillator_index
     dd 0x02000000            ; transpose
-    dw dsp_input + 4         ; output
+    dw dsp_input + 8         ; output
     db 0                     ; output flag
-.channel_7:
+.channel_8:
     db 2                     ; envelope_index
     db 5                     ; order_index
     db 0                     ; oscillator_index
     dd 0x02000000            ; transpose
-    dw dsp_input + 4         ; output
+    dw dsp_input + 8         ; output
     db 0                     ; output flag
 
 ; Buffer offsets

@@ -9,7 +9,7 @@ load_dsp:
     mov bl, [DSP_EFFECT_INDEX + ecx]
     mov [current_effect], bl
 .load_input:
-    movzx bx, byte [current_dsp]
+    movzx ebx, byte [current_dsp]
     mov eax, [dsp_input + 4 * ebx]
     ret
 
@@ -59,11 +59,10 @@ load_dsp_target:
 
 load_dsp_buffer:
     movzx cx, byte [current_dsp]
-    movzx ebx, word [dsp_timer + 2 * ecx]
-    shl bx, 2
-    add bx, [buffer_offsets + 2 * ecx]
-    lea si, [dsp_buffer]
-    add si, bx
+    movzx esi, word [dsp_timer + 2 * ecx]
+    shl si, 2
+    add si, [buffer_offsets + 2 * ecx]
+    add si, dsp_buffer
     ret
 
 increment_dsp_timer:

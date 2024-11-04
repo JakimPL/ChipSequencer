@@ -111,6 +111,8 @@ add_floats:
     ret
 
     SEGMENT_DATA
+pi:
+    dd __float32__(3.141592653589793238462)
 angle_constant:
     dd ANGLE_CONSTANT
 half_range:
