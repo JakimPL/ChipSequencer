@@ -80,9 +80,7 @@ increment_dsp_timer:
 ; Effects
     %include "SRC\DSP\GAINER.ASM"
     %include "SRC\DSP\DELAY.ASM"
-    %if FFT
     %include "SRC\DSP\FILTER.ASM"
-    %endif
 
     SEGMENT_DATA
 effects:

@@ -4,6 +4,3 @@
     %if PRECALCULATE & EXE
     %include "SRC\UTILS\PRECALC.ASM"
     %endif
-    %if FFT
-    %include "SRC\UTILS\FFT.ASM"
-    %endif

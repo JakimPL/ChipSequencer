@@ -9,7 +9,3 @@ soundblaster16:
     base_port: "0x220"
     irq: 7
     exact_sample_rate: false
-
-fft:
-    enabled: true
-    size: 16

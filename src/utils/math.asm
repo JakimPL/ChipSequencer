@@ -112,7 +112,7 @@ add_floats:
 
     SEGMENT_DATA
 angle_constant:
-    dd __float32__(ANGLE_CONSTANT)
+    dd ANGLE_CONSTANT
 half_range:
     dd __float32__(32767.5)
 

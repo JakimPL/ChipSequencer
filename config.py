@@ -54,16 +54,6 @@ if __name__ == "__main__":
         add_config_line("direct_mode", True)
 
     add_config_line()
-    fft = config["fft"]
-    if fft["enabled"]:
-        angle_constant = 2 * math.pi / fft["size"]
-        add_config_line("fft", True)
-        add_config_line("fft_size", fft["size"])
-        add_config_line("fft_angle_constant", str(angle_constant))
-    else:
-        add_config_line("fft", False)
-
-    add_config_line()
     asm_config = "\n".join(config_lines)
     with open(ASM_FILE, "w") as file:
         file.write(asm_config)

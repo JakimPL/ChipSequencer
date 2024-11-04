@@ -1,4 +1,4 @@
-    %define CHANNELS 3
+    %define CHANNELS 8
     %define DSPS 3
     %define WAVETABLES 2
 
@@ -12,7 +12,7 @@
 
 ; Buffers
     %define DSP_0_DELAY_TIME 0x0100
-    %define DSP_2_FILTER_SIZE FFT_SIZE
+    %define DSP_2_FILTER_SIZE 1
     %define DSP_BUFFER_SIZE DSP_0_DELAY_TIME + DSP_2_FILTER_SIZE
 
     SEGMENT_DATA

@@ -12,7 +12,3 @@
     %define SB_IRQ 7
     %define SB_8BIT 0
     %define SB_16BIT 1
-
-    %define FFT 1
-    %define FFT_SIZE 16
-    %define FFT_ANGLE_CONSTANT 0.39269908169872414
