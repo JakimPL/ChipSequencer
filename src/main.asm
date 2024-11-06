@@ -75,6 +75,7 @@ exit:
     call return_to_dos
 
     %include "SRC\SONG.ASM"
+    %include "SRC\VARS.ASM"
     %include "SRC\UTILS.ASM"
     %include "SRC\ELEMENTS.ASM"
 

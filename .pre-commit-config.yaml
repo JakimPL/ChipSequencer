@@ -12,6 +12,12 @@ repos:
         language: system
         always_run: true
         files: "src/config.asm"
+      - id: make-song
+        name: Run make song
+        entry: make song
+        language: system
+        always_run: true
+        files: "src/song.asm"
       - id: nasmfmt-hook
         name: nasmfmt formatting
         entry: nasmfmt
@@ -23,3 +29,20 @@ repos:
             "-ii", "4",
             "-ci", "30"
           ]
+  - repo: https://github.com/timothycrosley/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        language_version: python3
+        args: [
+          "--profile", "black",
+          "-l", "120"
+        ]
+  - repo: https://github.com/ambv/black
+    rev: 24.8.0
+    hooks:
+      - id: black
+        language_version: python3
+        args: [
+          "--line-length", "120"
+        ]

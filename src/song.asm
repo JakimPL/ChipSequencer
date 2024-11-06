@@ -1,9 +1,9 @@
-    %define CHANNELS 3
+    %define CHANNELS 9
     %define DSPS 3
     %define WAVETABLES 2
 
     %define OUTPUT_CHANNELS 2
-    %define SONG_LENGTH 186253 ; 6.4 seconds * 29102 Hz
+    %define SONG_LENGTH 186253
 
 ; Wavetables
     %define WAVETABLE_0_SIZE 16
@@ -11,9 +11,10 @@
     %define WAVETABLE_SIZE 24
 
 ; Buffers
-    %define DSP_0_DELAY_TIME 0x0100
-    %define DSP_2_FILTER_SIZE 1
-    %define DSP_BUFFER_SIZE DSP_0_DELAY_TIME + DSP_2_FILTER_SIZE
+    %define DSP_0_BUFFER_SIZE 256
+    %define DSP_1_BUFFER_SIZE 0
+    %define DSP_2_BUFFER_SIZE 0
+    %define DSP_BUFFER_SIZE 256
 
     SEGMENT_DATA
 bpm:
@@ -28,7 +29,7 @@ envelopes:
     dw 0x4000                ; bias
     dw 25                    ; attack
     dw 250                   ; decay
-    dw 500                   ; hold
+    dw 250                   ; hold
     dw 0                     ; release
 .envelope_1:
     dw 0x7FFF                ; base_volume
@@ -47,14 +48,6 @@ envelopes:
     dw 1250                  ; hold
     dw 1250                  ; release
 .envelope_3:
-    dw 0x2FFF                ; base_volume
-    dw 0x1FFF                ; sustain_level
-    dw 0x0000                ; bias
-    dw 1500                  ; attack
-    dw 1500                  ; decay
-    dw 1250                  ; hold
-    dw 1250                  ; release
-.envelope_4:
     dw 0x0180                ; base_volume
     dw 0x0180                ; sustain_level
     dw 0x0000                ; bias
@@ -62,7 +55,7 @@ envelopes:
     dw 1                     ; decay
     dw 1                     ; hold
     dw 0                     ; release
-.envelope_5:
+.envelope_4:
     dw 0x5FFF                ; base_volume
     dw 0x5FFF                ; sustain_level
     dw 0x0014                ; bias
@@ -75,70 +68,75 @@ sequences:
 .sequence_0:
     db 16                    ; data_size = 2 * note_count
 ; notes
-    db 0x3C, 3
-    db 0x35, 3
-    db 0x33, 3
-    db 0x32, 3
-    db 0x30, 1
-    db 0xFF, 1
-    db 0x30, 1
-    db 0x2E, 1
+    db 60, 3                 ; C-5
+    db 53, 3                 ; F-4
+    db 51, 3                 ; D#4
+    db 50, 3                 ; D-4
+    db 48, 1                 ; C-4
+    db -1, 1                 ; note off
+    db 48, 1                 ; C-4
+    db 46, 1                 ; A#3
 .sequence_1:
     db 6                     ; data_size = 2 * note_count
 ; notes
-    db 0x2D, 2
-    db 0x37, 1
-    db 0x35, 13
+    db 45, 2                 ; A-3
+    db 55, 1                 ; G-4
+    db 53, 13                ; F-4
 .sequence_2:
     db 4                     ; data_size = 2 * note_count
 ; notes
-    db 0x18, 1
-    db 0xFF, 1
+    db 24, 1                 ; C-2
+    db -1, 1                 ; note off
 .sequence_3:
     db 4                     ; data_size = 2 * note_count
 ; notes
-    db 0x11, 1
-    db 0xFF, 1
+    db 17, 1                 ; F-1
+    db -1, 1                 ; note off
 .sequence_4:
     db 4                     ; data_size = 2 * note_count
 ; notes
-    db 0x30, 16
-    db 0x30, 16
+    db 48, 16                ; C-4
+    db 48, 16                ; C-4
 .sequence_5:
     db 4                     ; data_size = 2 * note_count
 ; notes
-    db 0x33, 16
-    db 0x33, 16
+    db 51, 16                ; D#4
+    db 51, 16                ; D#4
 .sequence_6:
     db 4                     ; data_size = 2 * note_count
 ; notes
-    db 0x37, 16
-    db 0x35, 16
+    db 55, 16                ; G-4
+    db 53, 16                ; F-4
 .sequence_7:
     db 4                     ; data_size = 2 * note_count
 ; notes
-    db 0x3A, 16
-    db 0x39, 16
+    db 58, 16                ; A#4
+    db 57, 16                ; A-4
 
 orders:
 .order_0:
     db 4                     ; order_length
+; sequences
     db 0, 1, 0, 1
 .order_1:
     db 16                    ; order_length
-    db 2, 2, 2, 2, 2, 2, 2, 2
-    db 3, 3, 3, 3, 3, 3, 3, 3
+; sequences
+    db 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3
 .order_2:
     db 1                     ; order_length
+; sequences
     db 4
 .order_3:
     db 1                     ; order_length
+; sequences
     db 5
 .order_4:
     db 1                     ; order_length
+; sequences
     db 6
 .order_5:
     db 1                     ; order_length
+; sequences
     db 7
 
 oscillators:
@@ -158,11 +156,10 @@ oscillators:
     db 1                     ; wavetable_index
 
 wavetables:
-; Wavetable 0
+.wavetable_0:
     db WAVETABLE_0_SIZE      ; wavetable_size
-    db 0x00, 0x1F, 0x3F, 0x5F, 0x7F, 0x9F, 0xBF, 0xDF
-    db 0xFF, 0xDF, 0xBF, 0x9F, 0x7F, 0x5F, 0x3F, 0x1F
-; Wavetable 1
+    db 0x00, 0x1F, 0x3F, 0x5F, 0x7F, 0x9F, 0xBF, 0xDF, 0xFF, 0xDF, 0xBF, 0x9F, 0x7F, 0x5F, 0x3F, 0x1F
+.wavetable_1:
     db WAVETABLE_1_SIZE      ; wavetable_size
     db 0x00, 0x20, 0xE0, 0x40, 0xC0, 0x60, 0xA0, 0x80
 
@@ -171,111 +168,97 @@ dsps:
     db 12                    ; dsp_size
     db EFFECT_DELAY          ; effect_index
     dw output                ; output
-    db 0                     ; output_flag
+    db 0b00000000            ; output_flag
     dw 0x7FFF                ; dry
     dw 0x6FFF                ; wet
     dw 0x5FFF                ; feedback
-    dw DSP_0_DELAY_TIME      ; delay_time
+    dw DSP_0_BUFFER_SIZE     ; delay_time
 .dsp_1:
     db 6                     ; dsp_size
     db EFFECT_GAINER         ; effect_index
     dw output                ; output
-    db 0                     ; output_flag
+    db 0b00000000            ; output_flag
     dw 0x9FFF                ; volume
 .dsp_2:
     db 6                     ; dsp_size
     db EFFECT_FILTER         ; effect_index
     dw output                ; output
-    db 0                     ; output_flag
-    dw 0x0150                ; frequency
+    db 0b00000000            ; output_flag
+    dw 336                   ; frequency
 
 channels:
 .channel_0:
-    db 5                     ; envelope_index
+    db 4                     ; envelope_index
     db -1                    ; order_index
     db 1                     ; oscillator_index
     dd 0x00005000            ; pitch
     dw dsps.dsp_2 + DSP_FILTER_FREQUENCY ; output
-    db 0b01010111            ; output flag
+
+    db 0b01010111            ; output_flag
 .channel_1:
-    db 4                     ; envelope_index
+    db 3                     ; envelope_index
     db -1                    ; order_index
     db 2                     ; oscillator_index
     dd 0x00080000            ; pitch
-    dw .channel_2 + CHANNEL_TRANSPOSE ; output
-    db 0b01110110            ; output flag
+    dw channels.channel_3 + CHANNEL_PITCH ; output
+
+    db 0b01110110            ; output_flag
 .channel_2:
-    db 1                     ; envelope_index
-    db 0                     ; order_index
-    db 3                     ; oscillator_index
-    dd 0x02000000            ; transpose
-    dw dsp_input + 8         ; output
-    db 0                     ; output flag
-.channel_3:
     db 0                     ; envelope_index
     db -1                    ; order_index
     db 2                     ; oscillator_index
     dd 0x00014800            ; pitch
     dw oscillators.oscillator_0 + OSCILLATOR_SQUARE_DUTY_CYCLE ; output
-    db 0b01101000            ; output flag
+
+    db 0b01101000            ; output_flag
+.channel_3:
+    db 1                     ; envelope_index
+    db 0                     ; order_index
+    db 3                     ; oscillator_index
+    dd 0x02000000            ; pitch
+    dw dsp_input + 8         ; output
+    db 0b00000000            ; output_flag
 .channel_4:
     db 1                     ; envelope_index
     db 1                     ; order_index
     db 1                     ; oscillator_index
-    dd 0x02000000            ; transpose
+    dd 0x02000000            ; pitch
     dw dsp_input + 8         ; output
-    db 0                     ; output flag
+    db 0b00000000            ; output_flag
 .channel_5:
     db 2                     ; envelope_index
     db 2                     ; order_index
     db 0                     ; oscillator_index
-    dd 0x02000000            ; transpose
-    dw dsp_input + 8         ; output
-    db 0                     ; output flag
+    dd 0x02000000            ; pitch
+    dw dsp_input + 4         ; output
+    db 0b00000000            ; output_flag
 .channel_6:
     db 2                     ; envelope_index
     db 3                     ; order_index
     db 0                     ; oscillator_index
-    dd 0x02000000            ; transpose
-    dw dsp_input + 8         ; output
-    db 0                     ; output flag
+    dd 0x02000000            ; pitch
+    dw dsp_input + 4         ; output
+    db 0b00000000            ; output_flag
 .channel_7:
     db 2                     ; envelope_index
     db 4                     ; order_index
     db 0                     ; oscillator_index
-    dd 0x02000000            ; transpose
-    dw dsp_input + 8         ; output
-    db 0                     ; output flag
+    dd 0x02000000            ; pitch
+    dw dsp_input + 4         ; output
+    db 0b00000000            ; output_flag
 .channel_8:
     db 2                     ; envelope_index
     db 5                     ; order_index
     db 0                     ; oscillator_index
-    dd 0x02000000            ; transpose
-    dw dsp_input + 8         ; output
-    db 0                     ; output flag
+    dd 0x02000000            ; pitch
+    dw dsp_input + 4         ; output
+    db 0b00000000            ; output_flag
 
-; Buffer offsets
 buffer_offsets:
-    dw 0
-    dw DSP_0_DELAY_TIME
-    dw DSP_0_DELAY_TIME
+    dw 0                     ; dsp_0_buffer_offset
+    dw 256                   ; dsp_1_buffer_offset
+    dw 256                   ; dsp_2_buffer_offset
 
-; Wavetable offsets
 wavetable_offsets:
-    dw 0
-    dw WAVETABLE_0_SIZE
-
-    SEGMENT_BSS
-    envelope_timer resd CHANNELS
-    sequence_timer resd CHANNELS
-    oscillator_timer resd CHANNELS
-    pitch resb CHANNELS
-
-    envelope_mode resb CHANNELS
-    current_order resb CHANNELS
-    sequence_current_note resb CHANNELS
-
-    dsp_input resd DSPS
-    dsp_timer resw DSPS
-
-    wavetable_samples resw WAVETABLE_SIZE
+    dw 0                     ; wavetable_0_offset
+    dw 16                    ; wavetable_1_offset

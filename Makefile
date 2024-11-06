@@ -18,7 +18,10 @@ install:
 	make pre-commit
 
 config:
-	python config.py
+	python scripts/config.py
+
+song:
+	python scripts/song.py
 
 nasm:
 	@echo "Downloading NASM..."

@@ -10,7 +10,7 @@ increment_timer:
     call check_fixed_frequency
     jne .load_pitch
     movzx eax, word [channel_offset]
-    mov eax, [CHANNEL_TRANSPOSE + eax]
+    mov eax, [CHANNEL_PITCH + eax]
     jmp .increment_timer
 .load_pitch:
     movzx eax, byte [pitch + ecx]
@@ -20,7 +20,7 @@ increment_timer:
     mov ebx, [ebx]
 .detune:
     movzx eax, word [channel_offset]
-    mov eax, [CHANNEL_TRANSPOSE + eax]
+    mov eax, [CHANNEL_PITCH + eax]
     mul ebx
     shrd eax, edx, 57
 .increment_timer:
