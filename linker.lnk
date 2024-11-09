@@ -1,4 +1,4 @@
 FORMAT DOS
-OPTION MAP=bin\main.map
+OPTION MAP=bin\player.map
 OPTION ELIMINATE
-OPTION START=start
+OPTION START=_start
