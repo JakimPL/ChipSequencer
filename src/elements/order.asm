@@ -1,4 +1,4 @@
-    SEGMENT_CODE
+    segment code
 next_sequence:
     movzx ecx, byte [current_channel]
     inc byte [current_order + ecx]

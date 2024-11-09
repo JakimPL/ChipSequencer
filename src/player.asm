@@ -3,14 +3,14 @@
     %include "SRC\UTILS\MACROS.ASM"
 
     %ifn DIRECT_MODE
-    SEGMENT_BSS
+    segment bss
     align 2
     buffer resb SB_BUFFER_SIZE * (1 + SB_16BIT)
     %endif
 
     global player
 
-    SEGMENT_CODE
+    segment code
 player:
 .initialize:
     PRINT_STRING message
@@ -25,7 +25,7 @@ player:
     call generate_sine_table
     call generate_wavetables
 
-    %if PRECALCULATE & EXE
+    %if PRECALCULATE
 .precalculate:
     call precalculate
     %endif
@@ -64,7 +64,7 @@ exit:
     %include "SRC\DRIVER\SB16.ASM"
     %endif
 
-    SEGMENT_DATA
+    segment data
 calculate:
     db 1
 dividend:
@@ -72,10 +72,8 @@ dividend:
 message:
     db 'Chip Sequencer by Jakim, 2024', 13, 10, '$'
 
-    SEGMENT_BSS
+    segment bss
     output resd OUTPUT_CHANNELS
     dsp_buffer resd DSP_BUFFER_SIZE
 
-    %if EXE
     group dgroup bss data
-    %endif

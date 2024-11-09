@@ -1,6 +1,6 @@
-    SEGMENT_CODE
+    segment code
 return_to_dos:
-    %if PRECALCULATE & EXE
+    %if PRECALCULATE
     call deallocate_memory
     %endif
     mov ah, DOS_TERMINATE

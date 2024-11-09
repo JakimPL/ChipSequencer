@@ -16,7 +16,7 @@
     %define DSP_2_BUFFER_SIZE 0
     %define DSP_BUFFER_SIZE 256
 
-    SEGMENT_DATA
+    segment data
 bpm:
     dw 300
 normalizer:

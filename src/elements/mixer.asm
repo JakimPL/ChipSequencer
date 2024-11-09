@@ -1,4 +1,4 @@
-    SEGMENT_CODE
+    segment code
 mix:
     call clear_dsps
     mov eax, dword __float32__(0.0)

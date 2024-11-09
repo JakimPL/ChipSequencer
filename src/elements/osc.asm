@@ -1,4 +1,4 @@
-    SEGMENT_CODE
+    segment code
 oscillator:
     movzx eax, word [oscillator_offset]
     movzx eax, byte [OSCILLATOR_INDEX + eax]
@@ -81,7 +81,7 @@ apply_volume:
     %include "SRC\OSC\SINE.ASM"
     %include "SRC\OSC\WAVE.ASM"
 
-    SEGMENT_DATA
+    segment data
 frequency_data:
     dd 0x454BB03A
     dd 0x496A8B8F
@@ -102,6 +102,6 @@ oscillators_table:
     dw sine
     dw wavetable
 
-    SEGMENT_BSS
+    segment bss
     volume resw 1
     frequencies resd 128

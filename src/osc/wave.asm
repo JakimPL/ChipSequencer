@@ -1,4 +1,4 @@
-    SEGMENT_CODE
+    segment code
 wavetable:
 .load_wavetable:
     movzx ebx, word [oscillator_offset]

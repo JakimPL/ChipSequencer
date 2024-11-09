@@ -1,4 +1,4 @@
-    SEGMENT_CODE
+    segment code
 load_item:
 ; Arguments:
 ; ECX - beginning offset (sequence)

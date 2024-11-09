@@ -63,7 +63,7 @@
     call write_sb_dsp
     %endmacro
 
-    SEGMENT_CODE
+    segment code
 initialize:
     call reset_sb_dsp
     WRITE_SB_DSP SB_TURN_ON_SPEAKER
@@ -261,7 +261,7 @@ sound_driver_step:
     je .finish
 
     pusha
-    %if PRECALCULATE & EXE
+    %if PRECALCULATE
     call load_precalculated
     %else
     call mix
@@ -303,7 +303,7 @@ isr:
     popa
     iret
 
-    SEGMENT_DATA
+    segment data
 dma_page:
     db 0
 dma_offset:
@@ -311,6 +311,6 @@ dma_offset:
 buffer_half:
     db 0
 
-    SEGMENT_BSS
+    segment bss
     old_int_offset resw 0
     old_int_seg resw 0

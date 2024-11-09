@@ -1,4 +1,4 @@
-    SEGMENT_CODE
+    segment code
     %if PRECALCULATE
 precalculate:
     cli
@@ -32,13 +32,13 @@ load_precalculated:
     inc dword [song_position]
     ret
 
-    SEGMENT_DATA
+    segment code
 message_precalculating:
     db "Precalculating...", 13, 10, '$'
 message_done:
     db "Playing!", 13, 10, '$'
 
-    SEGMENT_BSS
+    segment bss
     song_position resd 1
     mem_pointer resw 1
     %endif

@@ -1,4 +1,4 @@
-    SEGMENT_CODE
+    segment code
 delay:
     push eax
     call load_dsp_buffer
@@ -37,5 +37,5 @@ mix_delay:
     call add_floats
     ret
 
-    SEGMENT_BSS
+    segment bss
     delay_value resd 1

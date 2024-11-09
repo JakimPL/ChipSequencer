@@ -1,4 +1,4 @@
-    SEGMENT_CODE
+    segment code
 load_dsp:
 .load_dsp:
     movzx bx, byte [current_dsp]
@@ -81,13 +81,13 @@ increment_dsp_timer:
     %include "SRC\DSP\DELAY.ASM"
     %include "SRC\DSP\FILTER.ASM"
 
-    SEGMENT_DATA
+    segment data
 effects:
     dw gainer
     dw delay
     dw filter
 
-    SEGMENT_BSS
+    segment bss
     current_dsp resb 1
     current_effect resb 1
     dsp_offset resw 1

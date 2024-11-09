@@ -1,7 +1,7 @@
     %define PORT 0x022C
     %define DIVISOR 0x1234DE / SAMPLE_RATE
 
-    SEGMENT_CODE
+    segment code
 initialize:
 .set_timer:
     mov al, 0x36             ; Command byte: binary, mode 2 (rate generator), LSB/MSB
@@ -57,7 +57,7 @@ play_sound:
     ret
 
 sound_driver_step:
-    %if PRECALCULATE & EXE
+    %if PRECALCULATE
     call load_precalculated
     cmp dword [song_position], SONG_LENGTH
     jne .done
