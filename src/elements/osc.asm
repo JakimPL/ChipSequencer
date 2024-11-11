@@ -2,7 +2,7 @@
 oscillator:
     LOAD_OFFSET eax, oscillator_offset
     movzx eax, byte [OSCILLATOR_INDEX + eax]
-    LOAD_FUNCTION oscillators_table, 2 * eax
+    LOAD_FUNCTION oscillators_table, eax
     ret
 
 increment_timer:
@@ -97,10 +97,17 @@ frequency_data:
     dd 0x82D01286
 
 oscillators_table:
+    %ifdef ELF
+    dd square
+    dd saw
+    dd sine
+    dd wavetable
+    %else
     dw square
     dw saw
     dw sine
     dw wavetable
+    %endif
 
     SEGMENT_BSS
     volume resw 1

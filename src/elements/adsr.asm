@@ -9,7 +9,7 @@ adsr:
     lea esi, [envelope_timer + 4 * ecx]
     lea edi, [dividend]
 .phase:
-    LOAD_FUNCTION phases, 2 * eax
+    LOAD_FUNCTION phases, eax
 .add_bias:
     LOAD_OFFSET ecx, envelope_offset
     add ax, [ENVELOPE_BIAS + ecx]
@@ -98,8 +98,16 @@ magic_constant:
     dd 0x3D09000
 
 phases:
+    %ifdef ELF
+    dd attack
+    dd decay
+    dd hold
+    dd release
+    dd note_cut
+    %else
     dw attack
     dw decay
     dw hold
     dw release
     dw note_cut
+    %endif

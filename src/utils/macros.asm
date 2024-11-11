@@ -23,7 +23,11 @@
     %endmacro
 
     %macro LOAD_FUNCTION 2
-    call [ds:%1 + %2]
+    %ifdef ELF
+    call [ds:%1 + 4 * %2]
+    %else
+    call [ds:%1 + 2 * %2]
+    %endif
     %endmacro
 
     %macro PRINT_STRING 1

@@ -48,7 +48,7 @@ initialize_dsp_buffer:
 
 process_dsp:
     movzx ebx, byte [current_effect]
-    LOAD_FUNCTION effects, 2 * ebx
+    LOAD_FUNCTION effects, ebx
     ret
 
 load_dsp_target:
@@ -83,9 +83,15 @@ increment_dsp_timer:
 
     SEGMENT_DATA
 effects:
+    %ifdef ELF
+    dd gainer
+    dd delay
+    dd filter
+    %else
     dw gainer
     dw delay
     dw filter
+    %endif
 
     SEGMENT_BSS
     current_dsp resb 1

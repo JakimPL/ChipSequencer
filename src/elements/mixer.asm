@@ -1,6 +1,5 @@
     SEGMENT_CODE
 mix:
-    pusha
     call clear_dsps
     mov eax, dword __float32__(0.0)
     mov [output], eax
@@ -96,7 +95,6 @@ store_output:
     mov [di], dl
     add [di], al
 .done:
-    popa
     ret
 
 shift:

@@ -43,6 +43,7 @@ check_fixed_frequency:
     LOAD_OFFSET ebx, channel_offset
     mov bl, [CHANNEL_ORDER_INDEX + ebx]
     cmp bl, -1
+    jmp check_fixed_frequency
     ret
 
 reset_channel:
