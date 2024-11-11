@@ -3,8 +3,17 @@
     %include "src/utils/macros.asm"
 
     global player
+    global calculate
+    global mix
+    global output
+    global reset
+
+    extern sound_driver_step
+    extern sound_driver_initialize
+    extern sound_driver_terminate
 
     %ifn DIRECT_MODE
+    global buffer
     SEGMENT_BSS
     align 2
     buffer resb SB_BUFFER_SIZE * (1 + SB_16BIT)
@@ -28,7 +37,7 @@ player:
     call precalculate
     %endif
 
-    call initialize
+    call sound_driver_initialize
 
 main_loop:
 .check_esc:
@@ -48,19 +57,13 @@ main_loop:
     jmp main_loop
 
 exit:
-    call terminate
+    call sound_driver_terminate
     ret
 
     %include "src/song.asm"
     %include "src/vars.asm"
     %include "src/utils.asm"
     %include "src/elements.asm"
-
-    %if DIRECT_MODE
-    %include "src/driver/direct.asm"
-    %else
-    %include "src/driver/sb16.asm"
-    %endif
 
     SEGMENT_DATA
 calculate:

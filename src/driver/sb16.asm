@@ -64,7 +64,7 @@
     %endmacro
 
     SEGMENT_CODE
-initialize:
+sound_driver_initialize:
     call reset_sb_dsp
     WRITE_SB_DSP SB_TURN_ON_SPEAKER
     call install_isr
@@ -76,7 +76,7 @@ initialize:
     call start_playback
     ret
 
-terminate:
+sound_driver_terminate:
     WRITE_SB_DSP SB_EXIT_AUTO_INIT_DMA_MODE
     call disable_irq
     call uninstall_isr

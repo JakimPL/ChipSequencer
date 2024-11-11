@@ -2,7 +2,7 @@
     %define DIVISOR 0x1234DE / SAMPLE_RATE
 
     SEGMENT_CODE
-initialize:
+sound_driver_initialize:
 .set_timer:
     mov al, 0x36             ; Command byte: binary, mode 2 (rate generator), LSB/MSB
     out 0x43, al             ; Send to the PIT command register
@@ -26,7 +26,7 @@ initialize:
     out 0x21, al             ; Write back to PIC
     ret
 
-terminate:
+sound_driver_terminate:
     cli
     mov al, 0x36             ; Reset PIT to a known state (optional)
     out 0x43, al
