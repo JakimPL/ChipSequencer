@@ -1,6 +1,6 @@
-    %include "SRC\CONFIG.ASM"
-    %include "SRC\CONST.ASM"
-    %include "SRC\UTILS\MACROS.ASM"
+    %include "src/config.asm"
+    %include "src/const.asm"
+    %include "src/utils/macros.asm"
 
     bits 16
 

@@ -77,9 +77,9 @@ increment_dsp_timer:
     ret
 
 ; Effects
-    %include "SRC\DSP\GAINER.ASM"
-    %include "SRC\DSP\DELAY.ASM"
-    %include "SRC\DSP\FILTER.ASM"
+    %include "src\dsp\gainer.asm"
+    %include "src\dsp\delay.asm"
+    %include "src\dsp\filter.asm"
 
     segment data
 effects:

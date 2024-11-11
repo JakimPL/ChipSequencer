@@ -76,10 +76,10 @@ apply_volume:
     ret
 
 ; Oscillators
-    %include "SRC\OSC\SQUARE.ASM"
-    %include "SRC\OSC\SAW.ASM"
-    %include "SRC\OSC\SINE.ASM"
-    %include "SRC\OSC\WAVE.ASM"
+    %include "src\osc\square.asm"
+    %include "src\osc\saw.asm"
+    %include "src\osc\sine.asm"
+    %include "src\osc\wave.asm"
 
     segment data
 frequency_data:

@@ -1,6 +1,6 @@
-    %include "SRC\UTILS\DOS.ASM"
-    %include "SRC\UTILS\MATH.ASM"
-    %include "SRC\UTILS\TABLE.ASM"
+    %include "src\utils\dos.asm"
+    %include "src\utils\math.asm"
+    %include "src\utils\table.asm"
     %if PRECALCULATE
-    %include "SRC\UTILS\PRECALC.ASM"
+    %include "src\utils\precalc.asm"
     %endif

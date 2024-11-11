@@ -1,6 +1,6 @@
-    %include "SRC\CONFIG.ASM"
-    %include "SRC\CONST.ASM"
-    %include "SRC\UTILS\MACROS.ASM"
+    %include "src/config.asm"
+    %include "src/const.asm"
+    %include "src/utils/macros.asm"
 
     %ifn DIRECT_MODE
     segment bss
@@ -53,15 +53,15 @@ exit:
     call terminate
     call return_to_dos
 
-    %include "SRC\SONG.ASM"
-    %include "SRC\VARS.ASM"
-    %include "SRC\UTILS.ASM"
-    %include "SRC\ELEMENTS.ASM"
+    %include "src\song.asm"
+    %include "src\vars.asm"
+    %include "src\utils.asm"
+    %include "src\elements.asm"
 
     %if DIRECT_MODE
-    %include "SRC\DRIVER\DIRECT.ASM"
+    %include "src\driver\direct.asm"
     %else
-    %include "SRC\DRIVER\SB16.ASM"
+    %include "src\driver\sb16.asm"
     %endif
 
     segment data
