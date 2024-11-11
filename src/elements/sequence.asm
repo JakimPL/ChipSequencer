@@ -28,7 +28,7 @@ step:
 .next_note:
 ; Load the note and calculate the remaining ticks
     movzx ecx, word [sequence_offset]
-    lea si, [ecx + SEQUENCE_NOTES + eax * 2]
+    lea esi, [ecx + SEQUENCE_NOTES + eax * 2]
     mov al, [si]
 .check_note_off:
     cmp al, 0xFF

@@ -21,7 +21,11 @@ reset:
     cmp bx, 0
     je .done
     dec bx
+    %ifdef ELF
+    call esi
+    %else
     call si
+    %endif
     jmp .reset_loop
 .done:
     ret

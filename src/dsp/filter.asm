@@ -2,7 +2,7 @@
 filter:
 .load_buffer:
     movzx ecx, byte [current_dsp]
-    mov si, [buffer_offsets + 2 * ecx]
+    mov esi, [buffer_offsets + 2 * ecx]
     add si, dsp_buffer
 
     mov ebx, [si]

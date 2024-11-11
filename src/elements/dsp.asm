@@ -15,7 +15,7 @@ load_dsp:
 
 reset_dsps:
     mov bx, DSPS
-    mov si, reset_dsp
+    mov esi, reset_dsp
     call reset
     ret
 
@@ -26,7 +26,7 @@ reset_dsp:
 
 clear_dsps:
     mov bx, DSPS
-    mov si, clear_dsp
+    mov esi, clear_dsp
     call reset
     ret
 
@@ -37,7 +37,7 @@ clear_dsp:
 
 initialize_dsp_buffers:
     mov bx, DSP_BUFFER_SIZE
-    mov si, initialize_dsp_buffer
+    mov esi, initialize_dsp_buffer
     call reset
     ret
 
@@ -53,7 +53,7 @@ process_dsp:
 
 load_dsp_target:
     movzx ecx, word [dsp_offset]
-    mov di, [DSP_OUTPUT + ecx]
+    mov edi, [DSP_OUTPUT + ecx]
     mov cl, [DSP_SHIFT + ecx]
     ret
 

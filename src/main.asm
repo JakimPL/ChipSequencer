@@ -12,13 +12,16 @@
     global _start
     extern player
 
+    segment code use16
     segment data use16
     segment bss use16
-    segment code use16
+    segment code
     %endif
 
 _start:
 .prepare_stack:
+    xor edi, edi
+    xor esi, esi
     mov ax, data
     mov ds, ax
     mov ax, stack

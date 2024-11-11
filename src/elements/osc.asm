@@ -25,7 +25,7 @@ increment_timer:
     shrd eax, edx, 57
 .increment_timer:
     add eax, dword [oscillator_timer + 4 * ecx]
-    mov si, dividend
+    mov esi, dividend
     call reduce
     mov [oscillator_timer + 4 * ecx], eax
     ret

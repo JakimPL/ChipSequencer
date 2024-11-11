@@ -85,7 +85,7 @@ terminate:
 
 clear_buffer:
     mov bx, SB_BUFFER_SIZE
-    mov si, clear_buffer_cell
+    mov esi, clear_buffer_cell
     call reset
     ret
 
@@ -252,7 +252,7 @@ sound_driver_step:
     jne .not_ready
 
     mov cx, SB_BUFFER_SIZE >> 1
-    mov di, buffer
+    mov edi, buffer
     cmp byte [buffer_half], 0
     je .fill_buffer
     add di, SB_BUFFER_SIZE >> SB_8BIT

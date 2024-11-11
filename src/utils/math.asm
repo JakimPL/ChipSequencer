@@ -4,10 +4,10 @@ interpolate:
 ; using the interpolation point from SI and the ratio from DI
     movzx eax, bx
     sub eax, ecx
-    mov ecx, [si]
+    mov ecx, [esi]
 
     imul ecx
-    idiv dword [di]
+    idiv dword [edi]
 
     neg ax
     add ax, bx
@@ -17,7 +17,7 @@ generate_sine_table:
     fninit
     mov dword [angle], __float32__(0.0)
     mov ecx, TABLE_SIZE
-    mov di, sine_table
+    mov edi, sine_table
     fld dword [angle_constant]
 .generate:
     dec ecx
@@ -25,8 +25,8 @@ generate_sine_table:
     fsin
     fmul dword [half_range]
     fadd dword [half_range]
-    fistp word [di]
-    add di, 2
+    fistp word [edi]
+    add edi, 2
     fld dword [angle]
     fadd dword [angle_constant]
     fstp dword [angle]
@@ -37,20 +37,20 @@ generate_sine_table:
 
 generate_wavetables:
     mov cl, WAVETABLES
-    mov si, wavetables
-    mov di, wavetable_samples
+    mov esi, wavetables
+    mov edi, wavetable_samples
 .process_wavetable:
     cmp cl, 0
     je .done
-    movzx bx, byte [si]
+    movzx bx, byte [esi]
     inc si
 
 .generate_wavetable:
-    movzx eax, byte [si]
+    movzx eax, byte [esi]
     shl eax, 8
-    mov [di], eax
-    add di, 2
-    inc si
+    mov [edi], eax
+    add edi, 2
+    inc esi
     dec bx
     jnz .generate_wavetable
 

@@ -34,7 +34,7 @@ load_offsets:
 
 reset_channels:
     mov bx, CHANNELS
-    mov si, reset_channel
+    mov esi, reset_channel
     call reset
     ret
 
@@ -63,7 +63,7 @@ play_channel:
 
 load_channel_target:
     movzx ecx, word [channel_offset]
-    mov di, [CHANNEL_OUTPUT + ecx]
+    mov edi, [CHANNEL_OUTPUT + ecx]
     mov cl, [CHANNEL_SHIFT + ecx]
     ret
 
