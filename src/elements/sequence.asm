@@ -41,7 +41,7 @@ step:
     mov [pitch + ecx], al
     call reset_envelope
 .progress_sequence:
-    mov al, [si + 1]
+    mov al, [esi + 1]
     movzx ax, al
     movzx ebx, word [ticks_per_beat]
     imul eax, ebx

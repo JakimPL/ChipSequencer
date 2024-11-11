@@ -21,6 +21,7 @@
 
     SEGMENT_CODE
 initialize:
+    pusha
     call initialize_frequencies
     call calculate_ticks_per_beat
 
@@ -37,6 +38,7 @@ initialize:
     %endif
 
     call sound_driver_initialize
+    popa
     ret
 
     %include "src/song.asm"
