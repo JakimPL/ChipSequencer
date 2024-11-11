@@ -53,15 +53,15 @@ exit:
     call terminate
     call return_to_dos
 
-    %include "src\song.asm"
-    %include "src\vars.asm"
-    %include "src\utils.asm"
-    %include "src\elements.asm"
+    %include "src/song.asm"
+    %include "src/vars.asm"
+    %include "src/utils.asm"
+    %include "src/elements.asm"
 
     %if DIRECT_MODE
-    %include "src\driver\direct.asm"
+    %include "src/driver/direct.asm"
     %else
-    %include "src\driver\sb16.asm"
+    %include "src/driver/sb16.asm"
     %endif
 
     segment data
@@ -76,4 +76,6 @@ message:
     output resd OUTPUT_CHANNELS
     dsp_buffer resd DSP_BUFFER_SIZE
 
+    %ifndef ELF
     group dgroup bss data
+    %endif
