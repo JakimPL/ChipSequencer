@@ -17,11 +17,12 @@ load_offsets:
     call load_item
     mov [order_offset], ecx
 .load_sequence:
-    lea ecx, [sequences]
-    movzx ebx, byte [current_channel]
-    movzx ebx, byte [current_order + ebx]
-    add bx, [order_offset]
+    LOAD_OFFSET ebx, order_offset
+    movzx ecx, byte [current_channel]
+    movzx ecx, byte [current_order + ecx]
+    add ebx, ecx
     mov bl, [ORDER_SEQUENCES + ebx]
+    lea ecx, [sequences]
     call load_item
     mov [sequence_offset], ecx
 .load_oscillator:
@@ -69,8 +70,16 @@ load_channel_target:
 
     SEGMENT_BSS
     current_channel resb 1
+    %ifdef ELF
+    channel_offset resd 1
+    envelope_offset resd 1
+    order_offset resd 1
+    sequence_offset resd 1
+    oscillator_offset resd 1
+    %else
     channel_offset resw 1
     envelope_offset resw 1
     order_offset resw 1
     sequence_offset resw 1
     oscillator_offset resw 1
+    %endif

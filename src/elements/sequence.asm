@@ -29,7 +29,7 @@ step:
 ; Load the note and calculate the remaining ticks
     LOAD_OFFSET ecx, sequence_offset
     lea esi, [ecx + SEQUENCE_NOTES + eax * 2]
-    mov al, [si]
+    mov al, [esi]
 .check_note_off:
     cmp al, 0xFF
     jnz .note_on

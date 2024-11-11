@@ -90,4 +90,8 @@ effects:
     SEGMENT_BSS
     current_dsp resb 1
     current_effect resb 1
+    %ifdef ELF
+    dsp_offset resd 1
+    %else
     dsp_offset resw 1
+    %endif
