@@ -1,4 +1,4 @@
-    segment code
+    SEGMENT_CODE
 square:
     call load_timer
 .duty_cycle:

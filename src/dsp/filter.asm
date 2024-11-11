@@ -1,4 +1,4 @@
-    segment code
+    SEGMENT_CODE
 filter:
 .load_buffer:
     movzx ecx, byte [current_dsp]
@@ -56,7 +56,7 @@ filter:
     mov [si], eax
     ret
 
-    segment data
+    SEGMENT_DATA
 two:
     dw 2
 sample_rate:
@@ -64,5 +64,5 @@ sample_rate:
 y:
     dd 0
 
-    segment bss
+    SEGMENT_BSS
     cutoff_frequency resw 1

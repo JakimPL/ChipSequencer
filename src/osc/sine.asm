@@ -1,4 +1,4 @@
-    segment code
+    SEGMENT_CODE
 sine:
     call load_timer
     mov ebx, TABLE_SIZE

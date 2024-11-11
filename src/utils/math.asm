@@ -1,4 +1,4 @@
-    segment code
+    SEGMENT_CODE
 interpolate:
 ; Interpolates linearly between two values: BX and CX into AX
 ; using the interpolation point from SI and the ratio from DI
@@ -110,7 +110,7 @@ add_floats:
     mov eax, dword [value]
     ret
 
-    segment data
+    SEGMENT_DATA
 pi:
     dd __float32__(3.141592653589793238462)
 angle_constant:
@@ -118,7 +118,7 @@ angle_constant:
 half_range:
     dd __float32__(32767.5)
 
-    segment bss
+    SEGMENT_BSS
     angle resd 1
     value resd 1
     sine_table resw TABLE_SIZE

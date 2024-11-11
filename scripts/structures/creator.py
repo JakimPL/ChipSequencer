@@ -149,7 +149,7 @@ class Creator:
         self.comment()
 
     def song_header(self):
-        self.add("    segment data")
+        self.add("    SEGMENT_DATA")
         self.label("bpm")
         self.value(self.song.bpm)
         self.label("normalizer")

@@ -1,4 +1,4 @@
-    segment bss
+    SEGMENT_BSS
     envelope_timer resd CHANNELS
     sequence_timer resd CHANNELS
     oscillator_timer resd CHANNELS

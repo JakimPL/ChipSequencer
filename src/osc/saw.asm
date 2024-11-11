@@ -1,4 +1,4 @@
-    segment code
+    SEGMENT_CODE
 saw:
     movzx eax, byte [current_channel]
     lea si, [oscillator_timer + 4 * eax]

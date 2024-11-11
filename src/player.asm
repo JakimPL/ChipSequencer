@@ -2,19 +2,17 @@
     %include "src/const.asm"
     %include "src/utils/macros.asm"
 
+    global player
+
     %ifn DIRECT_MODE
-    segment bss
+    SEGMENT_BSS
     align 2
     buffer resb SB_BUFFER_SIZE * (1 + SB_16BIT)
     %endif
 
-    global player
-
-    segment code
+    SEGMENT_CODE
 player:
 .initialize:
-    PRINT_STRING message
-
     call initialize_frequencies
     call calculate_ticks_per_beat
 
@@ -51,7 +49,7 @@ main_loop:
 
 exit:
     call terminate
-    call return_to_dos
+    ret
 
     %include "src/song.asm"
     %include "src/vars.asm"
@@ -64,15 +62,13 @@ exit:
     %include "src/driver/sb16.asm"
     %endif
 
-    segment data
+    SEGMENT_DATA
 calculate:
     db 1
 dividend:
     dd SAMPLE_RATE << 16
-message:
-    db 'Chip Sequencer by Jakim, 2024', 13, 10, '$'
 
-    segment bss
+    SEGMENT_BSS
     output resd OUTPUT_CHANNELS
     dsp_buffer resd DSP_BUFFER_SIZE
 

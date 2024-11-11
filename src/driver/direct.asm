@@ -1,7 +1,7 @@
     %define PORT 0x022C
     %define DIVISOR 0x1234DE / SAMPLE_RATE
 
-    segment code
+    SEGMENT_CODE
 initialize:
 .set_timer:
     mov al, 0x36             ; Command byte: binary, mode 2 (rate generator), LSB/MSB

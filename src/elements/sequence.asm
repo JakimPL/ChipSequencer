@@ -1,4 +1,4 @@
-    segment code
+    SEGMENT_CODE
 step:
 ; If channel does not use orders, skip
     movzx ecx, word [channel_offset]
@@ -63,5 +63,5 @@ calculate_ticks_per_beat:
     mov [ticks_per_beat], ax
     ret
 
-    segment bss
+    SEGMENT_BSS
     ticks_per_beat resw 1

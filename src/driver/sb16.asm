@@ -63,7 +63,7 @@
     call write_sb_dsp
     %endmacro
 
-    segment code
+    SEGMENT_CODE
 initialize:
     call reset_sb_dsp
     WRITE_SB_DSP SB_TURN_ON_SPEAKER
@@ -303,7 +303,7 @@ isr:
     popa
     iret
 
-    segment data
+    SEGMENT_DATA
 dma_page:
     db 0
 dma_offset:
@@ -311,6 +311,6 @@ dma_offset:
 buffer_half:
     db 0
 
-    segment bss
+    SEGMENT_BSS
     old_int_offset resw 0
     old_int_seg resw 0
