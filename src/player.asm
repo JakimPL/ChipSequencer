@@ -2,7 +2,7 @@
     %include "src/const.asm"
     %include "src/utils/macros.asm"
 
-    global player
+    global initialize
     global calculate
     global mix
     global output
@@ -20,8 +20,7 @@
     %endif
 
     SEGMENT_CODE
-player:
-.initialize:
+initialize:
     call initialize_frequencies
     call calculate_ticks_per_beat
 
@@ -38,26 +37,6 @@ player:
     %endif
 
     call sound_driver_initialize
-
-main_loop:
-.check_esc:
-    mov ah, BIOS_KEYBOARD_CHECK
-    int BIOS_KEYBOARD_INTERRUPT
-    jz .no_key
-
-    mov ah, BIOS_KEYBOARD_READ
-    int BIOS_KEYBOARD_INTERRUPT
-    cmp al, ESC_KEY
-    jmp exit
-
-.no_key:
-    cmp byte [calculate], 1
-    jnz main_loop
-    call sound_driver_step
-    jmp main_loop
-
-exit:
-    call sound_driver_terminate
     ret
 
     %include "src/song.asm"

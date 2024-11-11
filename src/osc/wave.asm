@@ -1,7 +1,7 @@
     SEGMENT_CODE
 wavetable:
 .load_wavetable:
-    movzx ebx, word [oscillator_offset]
+    LOAD_OFFSET ebx, oscillator_offset
     movzx ebx, byte [OSCILLATOR_WAVETABLE_WAVETABLE_INDEX + ebx]
 .load_wavetable_offset:
     movzx ecx, word [wavetable_offsets + 2 * ebx]

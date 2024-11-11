@@ -7,7 +7,7 @@ filter:
 
     mov ebx, [si]
 .load_frequency:
-    movzx ecx, word [dsp_offset]
+    LOAD_OFFSET ecx, dsp_offset
     mov cx, [DSP_FILTER_FREQUENCY + ecx]
     mov [cutoff_frequency], cx
 

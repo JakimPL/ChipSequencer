@@ -2,15 +2,16 @@
     %include "src/const.asm"
     %include "src/utils/macros.asm"
 
-    %ifdef ELF
     global _start
-    extern player
+    extern initialize
+    extern sound_driver_step
+    extern sound_driver_terminate
+    extern calculate
 
+    %ifdef ELF
     section .text
     %else
     bits 16
-    global _start
-    extern player
 
     segment code use16
     segment data use16
@@ -29,7 +30,27 @@ _start:
     mov sp, stack_top
 
     PRINT_STRING message
-    call player
+    call initialize
+
+main_loop:
+.check_esc:
+    mov ah, BIOS_KEYBOARD_CHECK
+    int BIOS_KEYBOARD_INTERRUPT
+    jz .no_key
+
+    mov ah, BIOS_KEYBOARD_READ
+    int BIOS_KEYBOARD_INTERRUPT
+    cmp al, ESC_KEY
+    jmp exit
+
+.no_key:
+    cmp byte [calculate], 1
+    jnz main_loop
+    call sound_driver_step
+    jmp main_loop
+
+exit:
+    call sound_driver_terminate
     call return_to_dos
 
 return_to_dos:

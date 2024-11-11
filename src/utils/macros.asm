@@ -30,3 +30,11 @@
     mov dx, %1
     call print_message
     %endmacro
+
+    %macro LOAD_OFFSET 2
+    %ifdef ELF
+    mov %1, %2
+    %else
+    movzx %1, word [%2]
+    %endif
+    %endmacro

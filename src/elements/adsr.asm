@@ -11,7 +11,7 @@ adsr:
 .phase:
     LOAD_FUNCTION phases, 2 * eax
 .add_bias:
-    movzx ecx, word [envelope_offset]
+    LOAD_OFFSET ecx, envelope_offset
     add ax, [ENVELOPE_BIAS + ecx]
 .set_volume:
     mov word [volume], ax
@@ -22,7 +22,7 @@ adsr:
 ; Load the divisor
     movzx eax, byte [current_channel]
     movzx ebx, byte [envelope_mode + eax]
-    movzx eax, word [envelope_offset]
+    LOAD_OFFSET eax, envelope_offset
     movzx ecx, word [eax + ENVELOPE_ATTACK + 2 * ebx]
     mov eax, [magic_constant]
     cmp ecx, 0
@@ -49,26 +49,26 @@ adsr:
 
 attack:
     xor bx, bx
-    movzx ecx, word [envelope_offset]
+    LOAD_OFFSET ecx, envelope_offset
     mov cx, [ENVELOPE_BASE_VOLUME + ecx]
     call interpolate
     ret
 
 decay:
-    movzx ecx, word [envelope_offset]
+    LOAD_OFFSET ecx, envelope_offset
     mov bx, [ENVELOPE_BASE_VOLUME + ecx]
     mov cx, [ENVELOPE_SUSTAIN_LEVEL + ecx]
     call interpolate
     ret
 
 hold:
-    movzx eax, word [envelope_offset]
+    LOAD_OFFSET eax, envelope_offset
     mov ax, [ENVELOPE_SUSTAIN_LEVEL + eax]
     ret
 
 release:
 .check_if_release:
-    movzx ebx, word [envelope_offset]
+    LOAD_OFFSET ebx, envelope_offset
     mov bx, [ENVELOPE_SUSTAIN_LEVEL + ebx]
     cmp bx, 0
     jne .release

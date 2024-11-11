@@ -3,7 +3,7 @@ next_sequence:
     movzx ecx, byte [current_channel]
     inc byte [current_order + ecx]
     mov bl, [current_order + ecx]
-    movzx ecx, word [order_offset]
+    LOAD_OFFSET ecx, order_offset
     cmp bl, byte [ecx]
     jnz .done
     movzx ecx, byte [current_channel]

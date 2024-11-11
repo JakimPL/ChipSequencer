@@ -2,7 +2,7 @@
 square:
     call load_timer
 .duty_cycle:
-    movzx ebx, word [oscillator_offset]
+    LOAD_OFFSET ebx, oscillator_offset
     movzx ebx, byte [OSCILLATOR_SQUARE_DUTY_CYCLE + ebx]
     shr ecx, 8
     imul ecx, ebx

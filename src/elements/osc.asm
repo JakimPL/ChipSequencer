@@ -1,6 +1,6 @@
     SEGMENT_CODE
 oscillator:
-    movzx eax, word [oscillator_offset]
+    LOAD_OFFSET eax, oscillator_offset
     movzx eax, byte [OSCILLATOR_INDEX + eax]
     LOAD_FUNCTION oscillators_table, 2 * eax
     ret
@@ -9,17 +9,17 @@ increment_timer:
     movzx ecx, byte [current_channel]
     call check_fixed_frequency
     jne .load_pitch
-    movzx eax, word [channel_offset]
+    LOAD_OFFSET eax, channel_offset
     mov eax, [CHANNEL_PITCH + eax]
     jmp .increment_timer
 .load_pitch:
     movzx eax, byte [pitch + ecx]
     shl ax, 2
-    lea bx, [frequencies]
+    lea ebx, [frequencies]
     add ebx, eax
     mov ebx, [ebx]
 .detune:
-    movzx eax, word [channel_offset]
+    LOAD_OFFSET eax, channel_offset
     mov eax, [CHANNEL_PITCH + eax]
     mul ebx
     shrd eax, edx, 57
