@@ -54,7 +54,7 @@ mix:
     ret
 
 store_output:
-    mov edx, [di]
+    MOV_FROM_DI edx
 
 .check_mode:
     test cl, 0b01000000
@@ -72,28 +72,33 @@ store_output:
 .add_float:
     mov [value], eax
     fld dword [value]
+    %ifdef ELF
+    fadd dword [edi]
+    fstp dword [edi]
+    %else
     fadd dword [di]
     fstp dword [di]
+    %endif
     fstp st0
     jmp .done
 .add_32_bit:
     call float_to_integer
     shl eax, 16
     call shift
-    mov [di], edx
-    add [di], eax
+    MOV_TO_DI edx
+    ADD_TO_DI eax
     jmp .done
 .add_16_bit:
     call float_to_integer
     call shift
-    mov [di], dx
-    add [di], ax
+    MOV_TO_DI dx
+    ADD_TO_DI ax
     jmp .done
 .add_8_bit:
     call float_to_integer
     call shift
-    mov [di], dl
-    add [di], al
+    MOV_TO_DI dl
+    ADD_TO_DI al
 .done:
     ret
 

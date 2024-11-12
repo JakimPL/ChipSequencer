@@ -43,7 +43,7 @@ generate_wavetables:
     cmp cl, 0
     je .done
     movzx bx, byte [esi]
-    inc si
+    inc esi
 
 .generate_wavetable:
     movzx eax, byte [esi]

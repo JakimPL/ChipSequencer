@@ -42,3 +42,51 @@
     movzx %1, word [%2]
     %endif
     %endmacro
+
+    %macro MOV_FROM_DI 1
+    %ifdef ELF
+    mov %1, [edi]
+    %else
+    mov %1, [di]
+    %endif
+    %endmacro
+
+    %macro MOV_TO_DI 1
+    %ifdef ELF
+    mov [edi], %1
+    %else
+    mov [di], %1
+    %endif
+    %endmacro
+
+    %macro ADD_TO_DI 1
+    %ifdef ELF
+    add [edi], %1
+    %else
+    add [di], %1
+    %endif
+    %endmacro
+
+    %macro MOV_FROM_SI 1
+    %ifdef ELF
+    mov %1, [esi]
+    %else
+    mov %1, [si]
+    %endif
+    %endmacro
+
+    %macro MOV_TO_SI 1
+    %ifdef ELF
+    mov [esi], %1
+    %else
+    mov [si], %1
+    %endif
+    %endmacro
+
+    %macro ADD_TO_SI 1
+    %ifdef ELF
+    add [esi], %1
+    %else
+    add [si], %1
+    %endif
+    %endmacro

@@ -8,7 +8,7 @@ delay:
 
 .mix:
     push eax
-    mov eax, [si]
+    MOV_FROM_SI eax
     LOAD_OFFSET ebx, dsp_offset
     movzx ebx, word [DSP_DELAY_WET + ebx]
     pop dword [delay_value]
@@ -16,12 +16,12 @@ delay:
     mov edx, eax
 
 .feedback:
-    mov eax, [si]
+    MOV_FROM_SI eax
     LOAD_OFFSET ebx, dsp_offset
     movzx ebx, word [DSP_DELAY_FEEDBACK + ebx]
     pop dword [delay_value]
     call mix_delay
-    mov [si], eax
+    MOV_TO_SI eax
 
 .restore_output:
     mov eax, edx

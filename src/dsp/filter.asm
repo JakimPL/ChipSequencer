@@ -3,9 +3,9 @@ filter:
 .load_buffer:
     movzx ecx, byte [current_dsp]
     mov esi, [buffer_offsets + 2 * ecx]
-    add si, dsp_buffer
+    add esi, dsp_buffer
 
-    mov ebx, [si]
+    MOV_FROM_SI ebx
 .load_frequency:
     LOAD_OFFSET ecx, dsp_offset
     mov cx, [DSP_FILTER_FREQUENCY + ecx]
@@ -53,7 +53,7 @@ filter:
     faddp st1, st0
     fstp dword [value]
     mov eax, [value]
-    mov [si], eax
+    MOV_TO_SI eax
     ret
 
     SEGMENT_DATA
