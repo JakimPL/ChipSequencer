@@ -1,0 +1,26 @@
+# .clang-format settings
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+BreakBeforeBraces: Attach
+NamespaceIndentation: None
+SpaceBeforeParens: ControlStatements
+SpaceAfterCStyleCast: true
+AlignAfterOpenBracket: Align
+AlignOperands: true
+AlignTrailingComments: true
+BinPackArguments: false
+BinPackParameters: false
+SortIncludes: false
+ColumnLimit: 0
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortFunctionsOnASingleLine: InlineOnly
+AllowShortIfStatementsOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
+
+BraceWrapping:
+  AfterFunction: false
+  AfterExternBlock: true
+  BeforeElse: false
+  SplitEmptyFunction: false
