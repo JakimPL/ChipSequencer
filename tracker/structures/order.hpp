@@ -5,7 +5,8 @@
 #include <vector>
 
 struct Order {
-    std::vector<uint8_t> patterns;
+    uint8_t order_length;
+    uint8_t sequences[];
 };
 
 #endif // ORDER_HPP

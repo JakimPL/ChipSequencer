@@ -54,7 +54,7 @@ process_dsp:
 load_dsp_target:
     LOAD_OFFSET ecx, dsp_offset
     mov edi, [DSP_OUTPUT + ecx]
-    mov cl, [DSP_SHIFT + ecx]
+    mov cl, [DSP_OUTPUT_FLAG + ecx]
     ret
 
 load_dsp_buffer:

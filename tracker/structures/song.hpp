@@ -19,9 +19,9 @@ struct Song {
     std::vector<Envelope> envelopes;
     std::vector<Sequence> sequences;
     std::vector<Order> orders;
-    std::vector<Oscillator*> oscillators;
+    std::vector<Oscillator *> oscillators;
     std::vector<Wavetable> wavetables;
-    std::vector<DSP*> dsps;
+    std::vector<DSP *> dsps;
     std::vector<Channel> channels;
 
     ~Song() {

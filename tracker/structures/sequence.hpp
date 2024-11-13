@@ -5,8 +5,14 @@
 #include <vector>
 #include <utility>
 
+struct Note {
+    int8_t pitch;
+    uint8_t duration;
+};
+
 struct Sequence {
-    std::vector<std::pair<uint8_t, uint8_t>> notes;
+    uint8_t data_size;
+    Note notes[];
 };
 
 #endif // SEQUENCE_HPP

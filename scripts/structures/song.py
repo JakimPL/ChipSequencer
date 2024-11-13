@@ -14,7 +14,7 @@ from structures.wavetable import Wavetable
 @dataclass
 class Song:
     bpm: Word
-    normalizer: Byte
+    normalizer: Word
     output_channels: int
     song_length: int
     envelopes: List[Envelope]

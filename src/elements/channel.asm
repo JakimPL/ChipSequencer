@@ -65,7 +65,7 @@ play_channel:
 load_channel_target:
     LOAD_OFFSET ecx, channel_offset
     mov edi, [CHANNEL_OUTPUT + ecx]
-    mov cl, [CHANNEL_SHIFT + ecx]
+    mov cl, [CHANNEL_OUTPUT_FLAG + ecx]
     ret
 
     SEGMENT_BSS

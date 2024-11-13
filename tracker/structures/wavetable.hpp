@@ -5,7 +5,8 @@
 #include <vector>
 
 struct Wavetable {
-    std::vector<uint8_t> wave;
+    uint8_t wavetable_size;
+    uint8_t wavetable[];
 };
 
 #endif // WAVETABLE_HPP

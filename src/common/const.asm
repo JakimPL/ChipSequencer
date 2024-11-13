@@ -33,13 +33,23 @@
     %define WAVETABLE_START 1
 
 ; Channel
+    %ifdef ELF
+    %define CHANNEL_SIZE 12
+    %define CHANNEL_ENVELOPE_INDEX 0
+    %define CHANNEL_ORDER_INDEX 1
+    %define CHANNEL_OSCILLATOR_INDEX 2
+    %define CHANNEL_PITCH 3
+    %define CHANNEL_OUTPUT 7
+    %define CHANNEL_OUTPUT_FLAG 11
+    %else
     %define CHANNEL_SIZE 10
     %define CHANNEL_ENVELOPE_INDEX 0
     %define CHANNEL_ORDER_INDEX 1
     %define CHANNEL_OSCILLATOR_INDEX 2
     %define CHANNEL_PITCH 3
     %define CHANNEL_OUTPUT 7
-    %define CHANNEL_SHIFT 9
+    %define CHANNEL_OUTPUT_FLAG 9
+    %endif
 
 ; Oscillators
     %define BASE_VOLUME 0x8000
@@ -63,10 +73,35 @@
     %define OSCILLATOR_WAVETABLE_PARAMETERS 1
     %define OSCILLATOR_WAVETABLE_WAVETABLE_INDEX 2
 
+    %ifdef ELF
 ; DSP
     %define DSP_EFFECT_INDEX 1
     %define DSP_OUTPUT 2
-    %define DSP_SHIFT 4
+    %define DSP_OUTPUT_FLAG 6
+
+; Gainer
+    %define EFFECT_GAINER 0
+    %define DSP_GAINER_PARAMETERS 1
+    %define DSP_GAINER_VOLUME 7
+
+; Delay
+    %define EFFECT_DELAY 1
+    %define DSP_DELAY_PARAMETERS 4
+    %define DSP_DELAY_DRY 7
+    %define DSP_DELAY_WET 9
+    %define DSP_DELAY_FEEDBACK 11
+    %define DSP_DELAY_TIME 13
+
+; Filter
+    %define EFFECT_FILTER 2
+    %define DSP_FILTER_PARAMETERS 1
+    %define DSP_FILTER_FREQUENCY 7
+
+    %else
+; DSP
+    %define DSP_EFFECT_INDEX 1
+    %define DSP_OUTPUT 2
+    %define DSP_OUTPUT_FLAG 4
 
 ; Gainer
     %define EFFECT_GAINER 0
@@ -81,7 +116,8 @@
     %define DSP_DELAY_FEEDBACK 9
     %define DSP_DELAY_TIME 11
 
-; Delay
+; Filter
     %define EFFECT_FILTER 2
     %define DSP_FILTER_PARAMETERS 1
     %define DSP_FILTER_FREQUENCY 5
+    %endif

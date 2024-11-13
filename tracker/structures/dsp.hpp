@@ -4,24 +4,36 @@
 #include <cstdint>
 
 struct DSP {
-    uint16_t output;
+    uint8_t dsp_size;
+    uint8_t effect_index;
+    _Float32 *output;
     uint8_t output_flag;
-
-    virtual ~DSP() = default;
 };
 
-struct EffectDelay : public DSP {
+struct DSPDelay {
+    uint8_t dsp_size;
+    uint8_t effect_index;
+    _Float32 *output;
+    uint8_t output_flag;
     uint16_t dry;
     uint16_t wet;
     uint16_t feedback;
     uint16_t delay_time;
 };
 
-struct EffectGainer : public DSP {
+struct DSPGainer {
+    uint8_t dsp_size;
+    uint8_t effect_index;
+    _Float32 *output;
+    uint8_t output_flag;
     uint16_t volume;
 };
 
-struct EffectFilter : public DSP {
+struct DSPFilter {
+    uint8_t dsp_size;
+    uint8_t effect_index;
+    _Float32 *output;
+    uint8_t output_flag;
     uint16_t frequency;
 };
 

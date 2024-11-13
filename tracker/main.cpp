@@ -1,4 +1,6 @@
+#include <array>
 #include <iostream>
+#include "song.hpp"
 
 extern "C" {
 void sound_driver_initialize() __attribute__((used));
@@ -24,6 +26,6 @@ int main() {
     std::cout << "Starting the program..." << std::endl;
     initialize();
     std::cout << "ChipSequencer initialized!" << std::endl;
-    // mix();
+    mix();
     return 0;
 }
