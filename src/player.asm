@@ -1,6 +1,4 @@
-    %include "src/config.asm"
-    %include "src/const.asm"
-    %include "src/utils/macros.asm"
+    %include "src/common.asm"
 
     global initialize
     global calculate
@@ -8,9 +6,24 @@
     global output
     global reset
 
+    global output
+    global dsp_input
+
     extern sound_driver_step
     extern sound_driver_initialize
     extern sound_driver_terminate
+
+    extern bpm
+    extern normalizer
+    extern envelopes
+    extern sequences
+    extern orders
+    extern oscillators
+    extern wavetables
+    extern dsps
+    extern channels
+    extern buffer_offsets
+    extern wavetable_offsets
 
     %ifn DIRECT_MODE
     global buffer
@@ -41,10 +54,9 @@ initialize:
     popa
     ret
 
-    %include "src/song.asm"
-    %include "src/vars.asm"
     %include "src/utils.asm"
     %include "src/elements.asm"
+    %include "src/vars.asm"
 
     SEGMENT_DATA
 calculate:

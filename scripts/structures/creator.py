@@ -15,6 +15,28 @@ class Creator:
         self.lines = []
         self.references = self.map_objects()
 
+    def __call__(self) -> Tuple[str, str]:
+        self.lines.clear()
+        self.define_header()
+        self.define_wavetables()
+        self.define_buffers()
+        header = "\n".join(self.lines)
+
+        self.lines.clear()
+        self.song_header()
+        self.envelopes()
+        self.sequences()
+        self.orders()
+        self.oscillators()
+        self.wavetables()
+        self.dsps()
+        self.channels()
+        self.buffer_offsets()
+        self.wavetable_offsets()
+        data = "\n".join(self.lines)
+
+        return header, data
+
     @staticmethod
     def get_class_name(klass):
         for base_class in CLASSES:
@@ -265,23 +287,3 @@ class Creator:
             offset += len(wavetable)
 
         self.comment()
-
-    def __call__(self):
-        self.lines.clear()
-        self.define_header()
-
-        self.define_wavetables()
-        self.define_buffers()
-
-        self.song_header()
-        self.envelopes()
-        self.sequences()
-        self.orders()
-        self.oscillators()
-        self.wavetables()
-        self.dsps()
-        self.channels()
-        self.buffer_offsets()
-        self.wavetable_offsets()
-
-        return "\n".join(self.lines)

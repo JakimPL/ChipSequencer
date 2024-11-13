@@ -1,6 +1,4 @@
-    %include "src/config.asm"
-    %include "src/const.asm"
-    %include "src/utils/macros.asm"
+    %include "src/common.asm"
 
     extern calculate
     extern mix

@@ -8,7 +8,8 @@ from structures.wavetable import Wavetable
 
 CONFIG_YAML_FILE = "config.yaml"
 CONFIG_ASM_FILE = "src/config.asm"
-SONG_ASM_FILE = "src/song.asm"
+ASM_SONG_DATA_FILE = "src/song/data.asm"
+ASM_SONG_HEADER_FILE = "src/song/header.asm"
 
 PADDING = 30
 

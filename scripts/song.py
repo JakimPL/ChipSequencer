@@ -1,4 +1,6 @@
-from constants import SONG_ASM_FILE
+from pathlib import Path
+
+from constants import ASM_SONG_DATA_FILE, ASM_SONG_HEADER_FILE
 from structures.channel import Channel
 from structures.creator import Creator
 from structures.dsp import DSPDelay, DSPFilter, DSPGainer
@@ -10,6 +12,11 @@ from structures.sequence import Sequence
 from structures.song import Song
 from structures.types import Byte, Word
 from structures.wavetable import Wavetable
+
+
+def save_asm(asm: str, file: Path):
+    with open(file, "w") as file:
+        file.write(asm)
 
 
 def main():
@@ -282,9 +289,9 @@ def main():
     )
 
     creator = Creator(song)
-    asm_song = creator()
-    with open(SONG_ASM_FILE, "w") as file:
-        file.write(asm_song)
+    asm_song_header, asm_song_data = creator()
+    save_asm(asm_song_header, ASM_SONG_HEADER_FILE)
+    save_asm(asm_song_data, ASM_SONG_DATA_FILE)
 
 
 if __name__ == "__main__":
