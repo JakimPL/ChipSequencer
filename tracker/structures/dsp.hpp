@@ -11,8 +11,8 @@ struct DSP {
 };
 
 struct DSPDelay {
-    uint8_t dsp_size;
-    uint8_t effect_index;
+    uint8_t dsp_size = DSP_DELAY_SIZE;
+    uint8_t effect_index = EFFECT_DELAY;
     _Float32 *output;
     uint8_t output_flag;
     uint16_t dry;
@@ -22,16 +22,16 @@ struct DSPDelay {
 };
 
 struct DSPGainer {
-    uint8_t dsp_size;
-    uint8_t effect_index;
+    uint8_t dsp_size = DSP_GAINER_SIZE;
+    uint8_t effect_index = EFFECT_GAINER;
     _Float32 *output;
     uint8_t output_flag;
     uint16_t volume;
 };
 
 struct DSPFilter {
-    uint8_t dsp_size;
-    uint8_t effect_index;
+    uint8_t dsp_size = DSP_FILTER_SIZE;
+    uint8_t effect_index = EFFECT_FILTER;
     _Float32 *output;
     uint8_t output_flag;
     uint16_t frequency;

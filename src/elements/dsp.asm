@@ -58,10 +58,10 @@ load_dsp_target:
     ret
 
 load_dsp_buffer:
-    movzx cx, byte [current_dsp]
+    movzx ecx, byte [current_dsp]
     movzx esi, word [dsp_timer + 2 * ecx]
-    shl esi, 2
-    add esi, [buffer_offsets + 2 * ecx]
+    shl si, 2
+    add si, [buffer_offsets + 2 * ecx]
     add esi, dsp_buffer
     ret
 

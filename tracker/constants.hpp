@@ -1,4 +1,5 @@
-#def ELF
+#define ELF
+
 // BIOS
 #define BIOS_KEYBOARD_INTERRUPT 0x16
 #define BIOS_KEYBOARD_CHECK 0x01
@@ -84,7 +85,7 @@
 #define EFFECT_GAINER 0
 #define DSP_GAINER_PARAMETERS 1
 #define DSP_GAINER_VOLUME 7
-#define DSP_GAINER_SIZE 9
+#define DSP_GAINER_SIZE 8
 
 // Delay
 #define EFFECT_DELAY 1
@@ -93,13 +94,13 @@
 #define DSP_DELAY_WET 9
 #define DSP_DELAY_FEEDBACK 11
 #define DSP_DELAY_TIME 13
-#define DSP_DELAY_SIZE 15
+#define DSP_DELAY_SIZE 14
 
 // Filter
 #define EFFECT_FILTER 2
 #define DSP_FILTER_PARAMETERS 1
 #define DSP_FILTER_FREQUENCY 7
-#define DSP_FILTER_SIZE 9
+#define DSP_FILTER_SIZE 8
 
 #else
 // DSP

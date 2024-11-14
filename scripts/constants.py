@@ -6,7 +6,7 @@ from pyconf import CONSTANTS_ASM_FILE, CONSTANTS_CPP_FILE
 def convert_asm_to_cpp(data: str) -> str:
     output = data.replace(";", "//").replace("%", "#")
     output = re.sub(r"^[ \t]+", "", output, flags=re.MULTILINE)
-    return "#def ELF\n" + output
+    return "#define ELF\n\n" + output
 
 
 if __name__ == "__main__":
