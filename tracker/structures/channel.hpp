@@ -8,7 +8,7 @@ struct Channel {
     uint8_t order_index;
     uint8_t oscillator_index;
     uint32_t pitch;
-    _Float32 *output;
+    void *output;
     uint8_t output_flag;
 };
 

@@ -27,5 +27,6 @@ int main() {
     initialize();
     std::cout << "ChipSequencer initialized!" << std::endl;
     mix();
+    std::cout << output << std::endl;
     return 0;
 }

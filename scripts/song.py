@@ -21,7 +21,7 @@ def save_asm(asm: str, file: Path):
 
 def main():
     bpm = Word(300)
-    normalizer = Byte(6)
+    normalizer = Word(6)
     output_channels = 2
     song_length = 186253
 
