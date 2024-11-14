@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from constants import ASM_SONG_DATA_FILE, ASM_SONG_HEADER_FILE
+from pyconf import ASM_SONG_DATA_FILE, ASM_SONG_HEADER_FILE
 from structures.channel import Channel
 from structures.creator import Creator
 from structures.dsp import DSPDelay, DSPFilter, DSPGainer

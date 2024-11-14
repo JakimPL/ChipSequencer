@@ -38,9 +38,9 @@ OscillatorWavetable oscillator4 = {2, OSCILLATOR_WAVETABLE, 1};
 Wavetable wavetables = {16, {0x00, 0x1F, 0x3F, 0x5F, 0x7F, 0x9F, 0xBF, 0xDF, 0xFF, 0xDF, 0xBF, 0x9F, 0x7F, 0x5F, 0x3F, 0x1F}};
 Wavetable wavetable2 = {8, {0x00, 0x20, 0xE0, 0x40, 0xC0, 0x60, 0xA0, 0x80}};
 
-DSPDelay dsps = {14, EFFECT_DELAY, &output, 0, 0x7FFF, 0x6FFF, 0x5FFF, 256};
-DSPGainer dsp2 = {8, EFFECT_GAINER, &output, 0, 0x9FFF};
-DSPFilter dsp3 = {8, EFFECT_FILTER, &output, 0, 336};
+DSPDelay dsps = {15, EFFECT_DELAY, &output, 0, 0x7FFF, 0x6FFF, 0x5FFF, 256};
+DSPGainer dsp2 = {9, EFFECT_GAINER, &output, 0, 0x9FFF};
+DSPFilter dsp3 = {9, EFFECT_FILTER, &output, 0, 336};
 
 Channel channels[] = {
     {4, 0xFF, 1, 0x5000, &output, 0b01010111},

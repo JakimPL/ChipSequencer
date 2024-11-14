@@ -1,7 +1,7 @@
 import re
 from typing import Any, Dict, List, Tuple, Union
 
-from constants import CLASSES, NOTES, PADDING
+from pyconf import CLASSES, NOTES, PADDING
 from structures.dsp import DSP
 from structures.enumeration import Effects, Oscillators
 from structures.output import Output

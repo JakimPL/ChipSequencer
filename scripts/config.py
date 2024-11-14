@@ -2,7 +2,7 @@ import math
 from typing import Any, Optional
 
 import yaml
-from constants import CONFIG_ASM_FILE, CONFIG_YAML_FILE
+from pyconf import CONFIG_ASM_FILE, CONFIG_YAML_FILE
 
 
 def get_config_line(key: Optional[str] = None, value: Optional[Any] = None) -> str:

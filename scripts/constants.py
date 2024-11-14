@@ -1,17 +1,18 @@
-from structures.channel import Channel
-from structures.dsp import DSP
-from structures.envelope import Envelope
-from structures.order import Order
-from structures.oscillator import Oscillator
-from structures.sequence import Sequence
-from structures.wavetable import Wavetable
+import re
 
-CONFIG_YAML_FILE = "config.yaml"
-CONFIG_ASM_FILE = "src/config.asm"
-ASM_SONG_DATA_FILE = "src/song/data.asm"
-ASM_SONG_HEADER_FILE = "src/song/header.asm"
+from pyconf import CONSTANTS_ASM_FILE, CONSTANTS_CPP_FILE
 
-PADDING = 30
 
-NOTES = ["C-", "C#", "D-", "D#", "E-", "F-", "F#", "G-", "G#", "A-", "A#", "B-"]
-CLASSES = [Envelope, Sequence, Order, Oscillator, Wavetable, DSP, Channel]
+def convert_asm_to_cpp(data: str) -> str:
+    output = data.replace(";", "//").replace("%", "#")
+    output = re.sub(r"^[ \t]+", "", output, flags=re.MULTILINE)
+    return "#def ELF\n" + output
+
+
+if __name__ == "__main__":
+    with open(CONSTANTS_ASM_FILE, "r") as file:
+        asm_constants = file.read()
+
+    cpp_constants = convert_asm_to_cpp(asm_constants)
+    with open(CONSTANTS_CPP_FILE, "w") as file:
+        file.write(cpp_constants)

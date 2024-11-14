@@ -11,13 +11,19 @@ repos:
         entry: make config
         language: system
         always_run: true
-        files: "src/config.asm"
+        files: "src/common/config.asm"
       - id: make-song
         name: Run make song
         entry: make song
         language: system
         always_run: true
-        files: "src/song.asm"
+        files: "src/song/header.asm src/song/data.asm"
+      - id: make-consts
+        name: Run make song
+        entry: make consts
+        language: system
+        always_run: true
+        files: "scripts/constants.hpp"
       - id: nasmfmt-hook
         name: nasmfmt formatting
         entry: nasmfmt

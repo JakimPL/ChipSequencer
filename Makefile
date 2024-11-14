@@ -23,6 +23,9 @@ config:
 song:
 	python scripts/song.py
 
+consts:
+	python scripts/constants.py
+
 nasm:
 	@echo "Downloading NASM..."
 	@wget -q $(NASM_URL) -O $(NASM_ZIP)

@@ -50,6 +50,7 @@ step:
     inc byte [sequence_current_note + ecx]
 
 .done:
+    movzx ecx, byte [current_channel]
     dec dword [sequence_timer + 4 * ecx]
     ret
 
