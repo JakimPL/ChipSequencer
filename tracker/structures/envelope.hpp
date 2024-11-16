@@ -2,6 +2,7 @@
 #define ENVELOPE_HPP
 
 #include <cstdint>
+#include <vector>
 
 struct Envelope {
     uint16_t base_volume;
@@ -12,5 +13,7 @@ struct Envelope {
     uint16_t hold;
     uint16_t release;
 };
+
+typedef std::vector<Envelope *> Envelopes;
 
 #endif // ENVELOPE_HPP

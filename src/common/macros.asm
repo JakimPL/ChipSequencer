@@ -30,6 +30,12 @@
     %endif
     %endmacro
 
+    %macro LOAD_ITEM 2
+    mov ecx, [%1]
+    mov ecx, [ecx + 4 * ebx]
+    mov [%2], ecx
+    %endmacro
+
     %macro PRINT_STRING 1
     mov dx, %1
     call print_message

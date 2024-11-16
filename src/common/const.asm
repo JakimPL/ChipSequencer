@@ -14,11 +14,7 @@
     %define ENVELOPE_SUSTAIN_LEVEL 2
     %define ENVELOPE_BIAS 4
     %define ENVELOPE_ATTACK 6
-    %ifdef ELF
-    %define ENVELOPE_SIZE 16
-    %else
     %define ENVELOPE_SIZE 14
-    %endif
 
 ; Phases
     %define ATTACK 0

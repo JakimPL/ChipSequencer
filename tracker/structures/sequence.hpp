@@ -3,7 +3,6 @@
 
 #include <cstdint>
 #include <vector>
-#include <utility>
 
 struct Note {
     int8_t pitch;
@@ -14,5 +13,7 @@ struct Sequence {
     uint8_t data_size;
     Note notes[];
 };
+
+typedef std::vector<Sequence *> Sequences;
 
 #endif // SEQUENCE_HPP
