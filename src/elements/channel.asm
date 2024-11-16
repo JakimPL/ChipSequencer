@@ -7,46 +7,22 @@ load_offsets:
     mov [channel_offset], ecx
 .load_envelope:
     mov bl, [CHANNEL_ENVELOPE_INDEX + ecx]
-    %ifdef ELF
-    LOAD_ITEM envelopes, envelope_offset
-    %else
-    imul ebx, ENVELOPE_SIZE
-    lea ecx, [envelopes + ebx]
-    mov [envelope_offset], ecx
-    %endif
+    LOAD_STRUCT_ITEM envelopes, envelope_offset, ENVELOPE_SIZE
 .load_order:
     call check_fixed_frequency
     je .load_oscillator
-    %ifdef ELF
-    LOAD_ITEM orders, order_offset
-    %else
-    lea ecx, [orders]
-    call load_item
-    mov [order_offset], ecx
-    %endif
+    LOAD_VECTOR_ITEM orders, order_offset
 .load_sequence:
     LOAD_OFFSET ebx, order_offset
     movzx ecx, byte [current_channel]
     movzx ecx, byte [current_order + ecx]
     add ebx, ecx
     movzx ebx, byte [ORDER_SEQUENCES + ebx]
-    %ifdef ELF
-    LOAD_ITEM sequences, sequence_offset
-    %else
-    lea ecx, [sequences]
-    call load_item
-    mov [sequence_offset], ecx
-    %endif
+    LOAD_VECTOR_ITEM sequences, sequence_offset
 .load_oscillator:
     LOAD_OFFSET ebx, channel_offset
     movzx ebx, byte [CHANNEL_OSCILLATOR_INDEX + ebx]
-    %ifdef ELF
-    LOAD_ITEM oscillators, oscillator_offset
-    %else
-    lea ecx, [oscillators]
-    call load_item
-    mov [oscillator_offset], ecx
-    %endif
+    LOAD_VECTOR_ITEM oscillators, oscillator_offset
     ret
 
 reset_channels:

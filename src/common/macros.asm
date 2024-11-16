@@ -36,6 +36,26 @@
     mov [%2], ecx
     %endmacro
 
+    %macro LOAD_STRUCT_ITEM 3
+    %ifdef ELF
+    LOAD_ITEM %1, %2
+    %else
+    imul ebx, %3
+    lea ecx, [%1 + ebx]
+    mov [%2], ecx
+    %endif
+    %endmacro
+
+    %macro LOAD_VECTOR_ITEM 2
+    %ifdef ELF
+    LOAD_ITEM %1, %2
+    %else
+    lea ecx, [%1]
+    call load_item
+    mov [%2], ecx
+    %endif
+    %endmacro
+
     %macro PRINT_STRING 1
     mov dx, %1
     call print_message
