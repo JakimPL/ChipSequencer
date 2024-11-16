@@ -2,9 +2,7 @@
 load_dsp:
 .load_dsp:
     movzx bx, byte [current_dsp]
-    lea ecx, [dsps]
-    call load_item
-    mov [dsp_offset], ecx
+    LOAD_VECTOR_ITEM dsps, dsp_offset
 .load_effect:
     mov bl, [DSP_EFFECT_INDEX + ecx]
     mov [current_effect], bl

@@ -2,6 +2,7 @@
 #define OSCILLATOR_HPP
 
 #include <cstdint>
+#include <vector>
 
 struct Oscillator {
     uint8_t oscillator_size;

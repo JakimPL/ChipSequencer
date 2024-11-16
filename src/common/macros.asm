@@ -36,7 +36,7 @@
     mov [%2], ecx
     %endmacro
 
-    %macro LOAD_STRUCT_ITEM 3
+    %macro LOAD_ARRAY_ITEM 3
     %ifdef ELF
     LOAD_ITEM %1, %2
     %else

@@ -73,11 +73,16 @@ Oscillators oscillators = {
 Wavetable wavetables = {16, {0x00, 0x1F, 0x3F, 0x5F, 0x7F, 0x9F, 0xBF, 0xDF, 0xFF, 0xDF, 0xBF, 0x9F, 0x7F, 0x5F, 0x3F, 0x1F}};
 Wavetable wavetable1 = {8, {0x00, 0x20, 0xE0, 0x40, 0xC0, 0x60, 0xA0, 0x80}};
 
-DSPDelay dsps = {DSP_DELAY_SIZE, EFFECT_DELAY, &output, 0, 0x7FFF, 0x6FFF, 0x5FFF, 256};
+DSPDelay dsp0 = {DSP_DELAY_SIZE, EFFECT_DELAY, &output, 0, 0x7FFF, 0x6FFF, 0x5FFF, 256};
 DSPGainer dsp1 = {DSP_GAINER_SIZE, EFFECT_GAINER, &output, 0, 0x9FFF};
 DSPFilter dsp2 = {DSP_FILTER_SIZE, EFFECT_FILTER, &output, 0, 336};
 
-Channel channels = {1, 0, 3, 0x02000000, &output, 0};
+DSPs dsps = {
+    &dsp0,
+    &dsp1,
+    &dsp2};
+
+Channel channel0 = {1, 0, 3, 0x02000000, &output, 0};
 Channel channel1 = {1, 1, 1, 0x02000000, &output, 0};
 Channel channel2 = {2, 2, 0, 0x02000000, &output, 0};
 Channel channel3 = {2, 3, 0, 0x02000000, &output, 0};
@@ -86,6 +91,17 @@ Channel channel5 = {2, 5, 0, 0x02000000, &output, 0};
 Channel channel6 = {4, 0xFF, 1, 0x5000, &(dsp2.frequency), 0b01010111};
 Channel channel7 = {0, 0xFF, 2, 0x8000, &(channel3.pitch), 0b01110110};
 Channel channel8 = {0, 0xFF, 2, 0x14800, &(oscillator0.duty_cycle), 0b01101000};
+
+Channels channels = {
+    &channel0,
+    &channel1,
+    &channel2,
+    &channel3,
+    &channel4,
+    &channel5,
+    &channel6,
+    &channel7,
+    &channel8};
 
 uint16_t buffer_offsets[] = {0, 256, 256};
 uint16_t wavetable_offsets[] = {0, 16};

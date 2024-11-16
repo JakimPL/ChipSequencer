@@ -2,6 +2,7 @@
 #define DSP_HPP
 
 #include <cstdint>
+#include <vector>
 
 struct DSP {
     uint8_t dsp_size;
@@ -36,5 +37,7 @@ struct DSPFilter {
     uint8_t output_flag;
     uint16_t frequency;
 };
+
+typedef std::vector<void *> DSPs;
 
 #endif // DSP_HPP

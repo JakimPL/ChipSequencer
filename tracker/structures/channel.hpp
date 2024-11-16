@@ -2,6 +2,7 @@
 #define CHANNEL_HPP
 
 #include <cstdint>
+#include <vector>
 
 struct Channel {
     uint8_t envelope_index;
@@ -11,5 +12,7 @@ struct Channel {
     void *output;
     uint8_t output_flag;
 };
+
+typedef std::vector<Channel *> Channels;
 
 #endif // CHANNEL_HPP
