@@ -4,7 +4,7 @@ load_dsp:
     movzx bx, byte [current_dsp]
     LOAD_VECTOR_ITEM dsps, dsp_offset
 .load_effect:
-    mov bl, [DSP_EFFECT_INDEX + ecx]
+    movzx ebx, byte [DSP_EFFECT_INDEX + ecx]
     mov [current_effect], bl
 .load_input:
     movzx ebx, byte [current_dsp]
