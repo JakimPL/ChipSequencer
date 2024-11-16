@@ -30,4 +30,6 @@ struct OscillatorWavetable {
     uint8_t wavetable_index;
 };
 
+typedef std::vector<void *> Oscillators;
+
 #endif // OSCILLATOR_HPP

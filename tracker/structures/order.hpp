@@ -9,4 +9,6 @@ struct Order {
     uint8_t sequences[];
 };
 
+typedef std::vector<Order *> Orders;
+
 #endif // ORDER_HPP

@@ -34,6 +34,7 @@ Sequence sequence7 = {4, {{55, 16}, {53, 16}}};
 Sequence sequence8 = {4, {{58, 16}, {57, 16}}};
 
 Sequences sequences = {
+    &sequence0,
     &sequence1,
     &sequence2,
     &sequence3,
@@ -43,17 +44,31 @@ Sequences sequences = {
     &sequence7,
     &sequence8};
 
-Order orders = {4, {0, 1, 0, 1}};
+Order order0 = {4, {0, 1, 0, 1}};
 Order order1 = {16, {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2}};
 Order order2 = {1, {4}};
 Order order3 = {1, {5}};
 Order order4 = {1, {6}};
 Order order5 = {1, {7}};
 
-OscillatorSquare oscillators = {2, OSCILLATOR_SQUARE, 0x20};
+Orders orders = {
+    &order0,
+    &order1,
+    &order2,
+    &order3,
+    &order4,
+    &order5};
+
+OscillatorSquare oscillator0 = {2, OSCILLATOR_SQUARE, 0x20};
 OscillatorSaw oscillator1;
 OscillatorSine oscillator2;
 OscillatorWavetable oscillator3 = {2, OSCILLATOR_WAVETABLE, 1};
+
+Oscillators oscillators = {
+    &oscillator0,
+    &oscillator1,
+    &oscillator2,
+    &oscillator3};
 
 Wavetable wavetables = {16, {0x00, 0x1F, 0x3F, 0x5F, 0x7F, 0x9F, 0xBF, 0xDF, 0xFF, 0xDF, 0xBF, 0x9F, 0x7F, 0x5F, 0x3F, 0x1F}};
 Wavetable wavetable1 = {8, {0x00, 0x20, 0xE0, 0x40, 0xC0, 0x60, 0xA0, 0x80}};
@@ -70,7 +85,7 @@ Channel channel4 = {2, 4, 0, 0x02000000, &output, 0};
 Channel channel5 = {2, 5, 0, 0x02000000, &output, 0};
 Channel channel6 = {4, 0xFF, 1, 0x5000, &(dsp2.frequency), 0b01010111};
 Channel channel7 = {0, 0xFF, 2, 0x8000, &(channel3.pitch), 0b01110110};
-Channel channel8 = {0, 0xFF, 2, 0x14800, &(oscillators.duty_cycle), 0b01101000};
+Channel channel8 = {0, 0xFF, 2, 0x14800, &(oscillator0.duty_cycle), 0b01101000};
 
 uint16_t buffer_offsets[] = {0, 256, 256};
 uint16_t wavetable_offsets[] = {0, 16};
