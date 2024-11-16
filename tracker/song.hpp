@@ -1,18 +1,20 @@
 #include "constants.hpp"
 #include "structures.hpp"
 
-extern "C" _Float32 output;
-extern "C" _Float32 dsp_input;
+#define SONG_LENGTH 186253
+typedef _Float32 t_output;
 
-uint16_t bpm = 600;
-uint16_t normalizer = 1;
+extern "C" t_output output;
+extern "C" t_output dsp_input;
 
-Envelope envelopes[] = {
-    {0x3F00, 0x1F00, 0x4000, 25, 250, 250, 0},
-    {0x7FFF, 0x5FFF, 0x0000, 125, 250, 250, 250},
-    {0x2FFF, 0x1FFF, 0x0000, 1500, 1500, 1250, 1250},
-    {0x0180, 0x0180, 0x0000, 500, 1, 1, 0},
-    {0x5FFF, 0x5FFF, 0x0014, 1, 1, 1, 0}};
+uint16_t bpm = 300;
+uint16_t normalizer = 6;
+
+Envelope envelopes = {0x3F00, 0x1F00, 0x4000, 25, 250, 250, 0};
+Envelope envelope1 = {0x1FFF, 0x1FFF, 0x0000, 25, 250, 250, 250};
+Envelope envelope2 = {0x2FFF, 0x1FFF, 0x0000, 1500, 1500, 1250, 1250};
+Envelope envelope3 = {0x0180, 0x0180, 0x0000, 500, 1, 1, 0};
+Envelope envelope4 = {0x5FFF, 0x5FFF, 0x0014, 1, 1, 1, 0};
 
 Sequence sequences = {16, {{60, 3}, {53, 3}, {51, 3}, {50, 3}, {48, 1}, {-1, 1}, {48, 1}, {46, 1}}};
 Sequence sequence1 = {6, {{45, 2}, {55, 1}, {53, 13}}};
@@ -39,9 +41,9 @@ OscillatorWavetable oscillator3 = {2, OSCILLATOR_WAVETABLE, 1};
 Wavetable wavetables = {16, {0x00, 0x1F, 0x3F, 0x5F, 0x7F, 0x9F, 0xBF, 0xDF, 0xFF, 0xDF, 0xBF, 0x9F, 0x7F, 0x5F, 0x3F, 0x1F}};
 Wavetable wavetable1 = {8, {0x00, 0x20, 0xE0, 0x40, 0xC0, 0x60, 0xA0, 0x80}};
 
-DSPDelay dsps = {15, EFFECT_DELAY, &output, 0, 0x7FFF, 0x6FFF, 0x5FFF, 256};
-DSPGainer dsp1 = {11, EFFECT_GAINER, &output, 0, 0x9FFF};
-DSPFilter dsp2 = {11, EFFECT_FILTER, &output, 0, 336};
+DSPDelay dsps = {DSP_DELAY_SIZE, EFFECT_DELAY, &output, 0, 0x7FFF, 0x6FFF, 0x5FFF, 256};
+DSPGainer dsp1 = {DSP_GAINER_SIZE, EFFECT_GAINER, &output, 0, 0x9FFF};
+DSPFilter dsp2 = {DSP_FILTER_SIZE, EFFECT_FILTER, &output, 0, 336};
 
 Channel channels = {1, 0, 3, 0x02000000, &output, 0};
 Channel channel1 = {1, 1, 1, 0x02000000, &output, 0};

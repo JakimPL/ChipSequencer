@@ -170,6 +170,48 @@ dsps:
 
 channels:
 .channel_0:
+    db 1                     ; envelope_index
+    db 0                     ; order_index
+    db 3                     ; oscillator_index
+    dd 0x02000000            ; pitch
+    dw dsp_input + 8         ; output
+    db 0b00000000            ; output_flag
+.channel_1:
+    db 1                     ; envelope_index
+    db 1                     ; order_index
+    db 1                     ; oscillator_index
+    dd 0x02000000            ; pitch
+    dw dsp_input + 8         ; output
+    db 0b00000000            ; output_flag
+.channel_2:
+    db 2                     ; envelope_index
+    db 2                     ; order_index
+    db 0                     ; oscillator_index
+    dd 0x02000000            ; pitch
+    dw dsp_input + 4         ; output
+    db 0b00000000            ; output_flag
+.channel_3:
+    db 2                     ; envelope_index
+    db 3                     ; order_index
+    db 0                     ; oscillator_index
+    dd 0x02000000            ; pitch
+    dw dsp_input + 4         ; output
+    db 0b00000000            ; output_flag
+.channel_4:
+    db 2                     ; envelope_index
+    db 4                     ; order_index
+    db 0                     ; oscillator_index
+    dd 0x02000000            ; pitch
+    dw dsp_input + 4         ; output
+    db 0b00000000            ; output_flag
+.channel_5:
+    db 2                     ; envelope_index
+    db 5                     ; order_index
+    db 0                     ; oscillator_index
+    dd 0x02000000            ; pitch
+    dw dsp_input + 4         ; output
+    db 0b00000000            ; output_flag
+.channel_6:
     db 4                     ; envelope_index
     db -1                    ; order_index
     db 1                     ; oscillator_index
@@ -177,15 +219,15 @@ channels:
     dw dsps.dsp_2 + DSP_FILTER_FREQUENCY ; output
 
     db 0b01010111            ; output_flag
-.channel_1:
+.channel_7:
     db 3                     ; envelope_index
     db -1                    ; order_index
     db 2                     ; oscillator_index
     dd 0x00080000            ; pitch
-    dw channels.channel_3 + CHANNEL_PITCH ; output
+    dw channels.channel_0 + CHANNEL_PITCH ; output
 
     db 0b01110110            ; output_flag
-.channel_2:
+.channel_8:
     db 0                     ; envelope_index
     db -1                    ; order_index
     db 2                     ; oscillator_index
@@ -193,48 +235,6 @@ channels:
     dw oscillators.oscillator_0 + OSCILLATOR_SQUARE_DUTY_CYCLE ; output
 
     db 0b01101000            ; output_flag
-.channel_3:
-    db 1                     ; envelope_index
-    db 0                     ; order_index
-    db 3                     ; oscillator_index
-    dd 0x02000000            ; pitch
-    dw dsp_input + 8         ; output
-    db 0b00000000            ; output_flag
-.channel_4:
-    db 1                     ; envelope_index
-    db 1                     ; order_index
-    db 1                     ; oscillator_index
-    dd 0x02000000            ; pitch
-    dw dsp_input + 8         ; output
-    db 0b00000000            ; output_flag
-.channel_5:
-    db 2                     ; envelope_index
-    db 2                     ; order_index
-    db 0                     ; oscillator_index
-    dd 0x02000000            ; pitch
-    dw dsp_input + 4         ; output
-    db 0b00000000            ; output_flag
-.channel_6:
-    db 2                     ; envelope_index
-    db 3                     ; order_index
-    db 0                     ; oscillator_index
-    dd 0x02000000            ; pitch
-    dw dsp_input + 4         ; output
-    db 0b00000000            ; output_flag
-.channel_7:
-    db 2                     ; envelope_index
-    db 4                     ; order_index
-    db 0                     ; oscillator_index
-    dd 0x02000000            ; pitch
-    dw dsp_input + 4         ; output
-    db 0b00000000            ; output_flag
-.channel_8:
-    db 2                     ; envelope_index
-    db 5                     ; order_index
-    db 0                     ; oscillator_index
-    dd 0x02000000            ; pitch
-    dw dsp_input + 4         ; output
-    db 0b00000000            ; output_flag
 
 buffer_offsets:
     dw 0                     ; dsp_0_buffer_offset

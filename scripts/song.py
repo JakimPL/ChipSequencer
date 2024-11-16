@@ -10,7 +10,7 @@ from structures.oscillator import OscillatorSaw, OscillatorSine, OscillatorSquar
 from structures.output import Output
 from structures.sequence import Sequence
 from structures.song import Song
-from structures.types import Byte, Word
+from structures.types import Word
 from structures.wavetable import Wavetable
 
 
@@ -272,7 +272,7 @@ def main():
         output_flag=0b01101000,
     )
 
-    channels = [mod1, mod2, mod3, osc1, osc2, osc3, osc4, osc5, osc6]
+    channels = [osc1, osc2, osc3, osc4, osc5, osc6, mod1, mod2, mod3]
 
     song = Song(
         bpm=bpm,

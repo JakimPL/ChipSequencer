@@ -10,11 +10,15 @@
     %define DOS_PRINT_STRING 0x09
 
 ; Envelope
-    %define ENVELOPE_SIZE 14
     %define ENVELOPE_BASE_VOLUME 0
     %define ENVELOPE_SUSTAIN_LEVEL 2
     %define ENVELOPE_BIAS 4
     %define ENVELOPE_ATTACK 6
+    %ifdef ELF
+    %define ENVELOPE_SIZE 16
+    %else
+    %define ENVELOPE_SIZE 14
+    %endif
 
 ; Phases
     %define ATTACK 0
@@ -34,21 +38,21 @@
 
 ; Channel
     %ifdef ELF
-    %define CHANNEL_SIZE 12
     %define CHANNEL_ENVELOPE_INDEX 0
     %define CHANNEL_ORDER_INDEX 1
     %define CHANNEL_OSCILLATOR_INDEX 2
     %define CHANNEL_PITCH 3
     %define CHANNEL_OUTPUT 7
     %define CHANNEL_OUTPUT_FLAG 11
+    %define CHANNEL_SIZE 12
     %else
-    %define CHANNEL_SIZE 10
     %define CHANNEL_ENVELOPE_INDEX 0
     %define CHANNEL_ORDER_INDEX 1
     %define CHANNEL_OSCILLATOR_INDEX 2
     %define CHANNEL_PITCH 3
     %define CHANNEL_OUTPUT 7
     %define CHANNEL_OUTPUT_FLAG 9
+    %define CHANNEL_SIZE 10
     %endif
 
 ; Oscillators
@@ -83,7 +87,7 @@
     %define EFFECT_GAINER 0
     %define DSP_GAINER_PARAMETERS 1
     %define DSP_GAINER_VOLUME 7
-    %define DSP_GAINER_SIZE 8
+    %define DSP_GAINER_SIZE 11
 
 ; Delay
     %define EFFECT_DELAY 1
@@ -92,13 +96,13 @@
     %define DSP_DELAY_WET 9
     %define DSP_DELAY_FEEDBACK 11
     %define DSP_DELAY_TIME 13
-    %define DSP_DELAY_SIZE 14
+    %define DSP_DELAY_SIZE 15
 
 ; Filter
     %define EFFECT_FILTER 2
     %define DSP_FILTER_PARAMETERS 1
     %define DSP_FILTER_FREQUENCY 7
-    %define DSP_FILTER_SIZE 8
+    %define DSP_FILTER_SIZE 11
 
     %else
 ; DSP

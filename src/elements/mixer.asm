@@ -50,7 +50,9 @@ mix:
     fstp dword [value]
     mov eax, [value]
 
+    %ifndef ELF
     call float_to_integer
+    %endif
     mov [output], eax
     popa
     ret

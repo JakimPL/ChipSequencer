@@ -3,6 +3,7 @@ interpolate:
 ; Interpolates linearly between two values: BX and CX into AX
 ; using the interpolation point from SI and the ratio from DI
     movzx eax, bx
+    movzx ecx, cx
     sub eax, ecx
     mov ecx, [esi]
 

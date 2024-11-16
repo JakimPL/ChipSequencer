@@ -5,6 +5,7 @@
 *.wav
 *.MAP
 *.map
+*.txt
 
 bin/
 
