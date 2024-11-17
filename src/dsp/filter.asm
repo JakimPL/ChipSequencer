@@ -56,13 +56,5 @@ filter:
     MOV_TO_SI eax
     ret
 
-    SEGMENT_DATA
-two:
-    dw 2
-sample_rate:
-    dw SAMPLE_RATE
-y:
-    dd 0
-
     SEGMENT_BSS
     cutoff_frequency resw 1

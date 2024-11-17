@@ -1,5 +1,5 @@
-#ifndef DSP_HPP
-#define DSP_HPP
+#ifndef STRUCTURES_DSP_HPP
+#define STRUCTURES_DSP_HPP
 
 #include <cstdint>
 #include <vector>
@@ -40,4 +40,4 @@ struct DSPFilter {
 
 typedef std::vector<void *> DSPs;
 
-#endif // DSP_HPP
+#endif // STRUCTURES_DSP_HPP

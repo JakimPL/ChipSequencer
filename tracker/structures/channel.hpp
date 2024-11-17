@@ -1,5 +1,5 @@
-#ifndef CHANNEL_HPP
-#define CHANNEL_HPP
+#ifndef STRUCTURES_CHANNEL_HPP
+#define STRUCTURES_CHANNEL_HPP
 
 #include <cstdint>
 #include <vector>
@@ -15,4 +15,4 @@ struct Channel {
 
 typedef std::vector<Channel *> Channels;
 
-#endif // CHANNEL_HPP
+#endif // STRUCTURES_CHANNEL_HPP

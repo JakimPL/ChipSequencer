@@ -1,5 +1,5 @@
-#ifndef ORDER_HPP
-#define ORDER_HPP
+#ifndef STRUCTURES_ORDER_HPP
+#define STRUCTURES_ORDER_HPP
 
 #include <cstdint>
 #include <vector>
@@ -11,4 +11,4 @@ struct Order {
 
 typedef std::vector<Order *> Orders;
 
-#endif // ORDER_HPP
+#endif // STRUCTURES_ORDER_HPP

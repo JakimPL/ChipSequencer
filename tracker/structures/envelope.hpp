@@ -1,5 +1,5 @@
-#ifndef ENVELOPE_HPP
-#define ENVELOPE_HPP
+#ifndef STRUCTURES_ENVELOPE_HPP
+#define STRUCTURES_ENVELOPE_HPP
 
 #include <cstdint>
 #include <vector>
@@ -16,4 +16,4 @@ struct Envelope {
 
 typedef std::vector<Envelope *> Envelopes;
 
-#endif // ENVELOPE_HPP
+#endif // STRUCTURES_ENVELOPE_HPP

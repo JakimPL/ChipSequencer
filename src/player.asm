@@ -6,6 +6,7 @@
     global output
     global reset
 
+    global sample_rate
     global output
     global dsp_input
 

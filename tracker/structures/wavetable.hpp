@@ -1,5 +1,5 @@
-#ifndef WAVETABLE_HPP
-#define WAVETABLE_HPP
+#ifndef STRUCTURES_WAVETABLE_HPP
+#define STRUCTURES_WAVETABLE_HPP
 
 #include <cstdint>
 #include <vector>
@@ -11,4 +11,4 @@ struct Wavetable {
 
 typedef std::vector<Wavetable *> Wavetables;
 
-#endif // WAVETABLE_HPP
+#endif // STRUCTURES_WAVETABLE_HPP

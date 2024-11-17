@@ -1,5 +1,5 @@
-#ifndef SEQUENCE_HPP
-#define SEQUENCE_HPP
+#ifndef STRUCTURES_SEQUENCE_HPP
+#define STRUCTURES_SEQUENCE_HPP
 
 #include <cstdint>
 #include <vector>
@@ -16,4 +16,4 @@ struct Sequence {
 
 typedef std::vector<Sequence *> Sequences;
 
-#endif // SEQUENCE_HPP
+#endif // STRUCTURES_SEQUENCE_HPP

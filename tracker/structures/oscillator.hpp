@@ -1,5 +1,5 @@
-#ifndef OSCILLATOR_HPP
-#define OSCILLATOR_HPP
+#ifndef STRUCTURES_OSCILLATOR_HPP
+#define STRUCTURES_OSCILLATOR_HPP
 
 #include <cstdint>
 #include <vector>
@@ -33,4 +33,4 @@ struct OscillatorWavetable {
 
 typedef std::vector<void *> Oscillators;
 
-#endif // OSCILLATOR_HPP
+#endif // STRUCTURES_OSCILLATOR_HPP

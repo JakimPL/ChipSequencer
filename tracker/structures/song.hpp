@@ -1,5 +1,5 @@
-#ifndef SONG_HPP
-#define SONG_HPP
+#ifndef STRUCTURES_SONG_HPP
+#define STRUCTURES_SONG_HPP
 
 #include <cstdint>
 #include <vector>
@@ -30,4 +30,4 @@ struct Song {
     }
 };
 
-#endif // SONG_HPP
+#endif // STRUCTURES_SONG_HPP

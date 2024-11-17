@@ -118,6 +118,12 @@ angle_constant:
     dd ANGLE_CONSTANT
 half_range:
     dd __float32__(32767.5)
+two:
+    dw 2
+sample_rate:
+    dw SAMPLE_RATE
+y:
+    dd 0
 
     SEGMENT_BSS
     angle resd 1

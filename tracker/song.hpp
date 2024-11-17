@@ -1,3 +1,6 @@
+#ifndef SONG_HPP
+#define SONG_HPP
+
 #include "constants.hpp"
 #include "structures.hpp"
 
@@ -6,6 +9,7 @@ typedef _Float32 t_output;
 
 extern "C" t_output output;
 extern "C" t_output dsp_input;
+extern "C" uint16_t sample_rate;
 
 uint16_t bpm = 300;
 uint16_t normalizer = 6;
@@ -103,3 +107,5 @@ Channels channels = {
 
 uint16_t buffer_offsets[] = {0, 256, 256};
 uint16_t wavetable_offsets[] = {0, 16};
+
+#endif // SONG_HPP
