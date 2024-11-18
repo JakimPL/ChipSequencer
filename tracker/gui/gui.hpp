@@ -4,7 +4,8 @@
 #include <atomic>
 #include <functional>
 #include "init.hpp"
-#include "envelopes.hpp"
+#include "panels/envelopes.hpp"
+#include "panels/sequences.hpp"
 
 class GUI {
   public:
@@ -67,6 +68,7 @@ class GUI {
 
         ImGui::Begin("Control Panel");
         envelope_panel.draw();
+        sequence_panel.draw();
         if (draw_play_button() && !is_playing && play_callback) {
             is_playing = true;
             play_callback();
@@ -122,7 +124,8 @@ class GUI {
     bool done = false;
     std::function<void()> play_callback;
     std::atomic<bool> is_playing;
-    EnvelopeGUI envelope_panel;
+    GUIEnvelopesPanel envelope_panel;
+    GUISequencesPanel sequence_panel;
 
     bool draw_play_button() {
         ImVec2 p = ImGui::GetCursorScreenPos();

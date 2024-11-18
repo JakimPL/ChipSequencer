@@ -3,9 +3,10 @@
 
 #include <algorithm>
 #include <string>
-#include "init.hpp"
+#include "../init.hpp"
+#include "utils.hpp"
 
-class EnvelopeGUI {
+class GUIEnvelopesPanel {
   private:
     struct CurrentEnvelope {
         float base_volume;
@@ -50,26 +51,7 @@ class EnvelopeGUI {
     }
 
     void update_envelopes() {
-        envelope_names.clear();
-        for (size_t i = 0; i < envelopes.size(); ++i) {
-            envelope_names.emplace_back("Envelope " + std::to_string(i + 1));
-        }
-        if (envelope_index >= static_cast<int>(envelope_names.size())) {
-            envelope_index = static_cast<int>(envelope_names.size()) - 1;
-        }
-        if (envelope_index < 0 && !envelope_names.empty()) {
-            envelope_index = 0;
-        }
-    }
-
-    void prepare_envelopes_combo() {
-        std::vector<const char *> envelope_names_cstr;
-        for (const auto &name : envelope_names) {
-            envelope_names_cstr.push_back(name.c_str());
-        }
-
-        ImGui::Combo("##EnvelopeCombo", &envelope_index, envelope_names_cstr.data(), envelope_names_cstr.size());
-        from_envelope();
+        update_items(envelope_names, envelopes.size(), "Envelope ", envelope_index);
     }
 
     void draw_levels() {
@@ -138,16 +120,16 @@ class EnvelopeGUI {
 
         draw_list->AddLine(p0, p1, IM_COL32(255, 0, 0, 255), 2.0f);
         draw_list->AddLine(p1, p2, IM_COL32(255, 165, 0, 255), 2.0f);
-        draw_list->AddLine(p2, p3, IM_COL32(75, 0, 130, 255), 2.0f);
-        draw_list->AddLine(p3, p4, IM_COL32(0, 255, 0, 255), 2.0f);
+        draw_list->AddLine(p2, p3, IM_COL32(75, 255, 130, 255), 2.0f);
+        draw_list->AddLine(p3, p4, IM_COL32(0, 144, 255, 255), 2.0f);
         draw_list->AddCircleFilled(p1, 3.0f, IM_COL32(255, 0, 0, 255));
         draw_list->AddCircleFilled(p2, 3.0f, IM_COL32(255, 165, 0, 255));
-        draw_list->AddCircleFilled(p3, 3.0f, IM_COL32(75, 0, 130, 255));
-        draw_list->AddCircleFilled(p4, 3.0f, IM_COL32(0, 255, 0, 255));
+        draw_list->AddCircleFilled(p3, 3.0f, IM_COL32(75, 255, 130, 255));
+        draw_list->AddCircleFilled(p4, 3.0f, IM_COL32(0, 144, 255, 255));
     }
 
   public:
-    EnvelopeGUI() {
+    GUIEnvelopesPanel() {
         update_envelopes();
     }
 
@@ -160,14 +142,15 @@ class EnvelopeGUI {
             return;
         }
 
-        prepare_envelopes_combo();
+        prepare_combo(envelope_names, "##EnvelopeCombo", envelope_index);
+        from_envelope();
 
-        ImGui::Columns(2, "top_columns");
+        ImGui::Columns(2, "envelope_top_columns");
         draw_levels();
         ImGui::NextColumn();
         draw_timers();
 
-        ImGui::Columns(1);
+        ImGui::Columns(1, "envelope_bottom_columns");
         draw_envelope_graph();
         ImGui::End();
         to_envelope();
