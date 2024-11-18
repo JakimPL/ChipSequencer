@@ -1,12 +1,15 @@
 #ifndef GUI_GUI_HPP
 #define GUI_GUI_HPP
 
+#include <atomic>
+#include <functional>
 #include "init.hpp"
+#include "envelopes.hpp"
 
 class GUI {
   public:
     GUI()
-        : window(nullptr), gl_context(nullptr) {}
+        : window(nullptr), gl_context(nullptr), play_callback(nullptr), is_playing(false) {}
 
     ~GUI() {
         terminate();
@@ -23,13 +26,13 @@ class GUI {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
-        window = SDL_CreateWindow("SDL2 + ImGui Hello World (OpenGLES2)", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+        window = SDL_CreateWindow("ChipSequencer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
         if (!window) {
             printf("Failed to create SDL window: %s\n", SDL_GetError());
             return false;
         }
 
-        SDL_GLContext gl_context = SDL_GL_CreateContext(window);
+        gl_context = SDL_GL_CreateContext(window);
         if (!gl_context) {
             printf("Failed to create OpenGL ES context: %s\n", SDL_GetError());
             return false;
@@ -61,8 +64,16 @@ class GUI {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL2_NewFrame();
         ImGui::NewFrame();
-        ImGui::Begin("Hello");
-        ImGui::Text("Hello, World!");
+
+        ImGui::Begin("Control Panel");
+        envelope_panel.draw();
+        if (draw_play_button() && !is_playing && play_callback) {
+            is_playing = true;
+            play_callback();
+        }
+        if (is_playing) {
+            ImGui::Text("Playing audio...");
+        }
         ImGui::End();
 
         ImGui::Render();
@@ -96,11 +107,40 @@ class GUI {
         return done;
     }
 
+    void set_play_callback(std::function<void()> callback) {
+        play_callback = callback;
+    }
+
+    void set_playing_status(bool status) {
+        is_playing = status;
+    }
+
   private:
     SDL_Window *window;
     SDL_GLContext gl_context;
     ImGuiIO *io;
     bool done = false;
+    std::function<void()> play_callback;
+    std::atomic<bool> is_playing;
+    EnvelopeGUI envelope_panel;
+
+    bool draw_play_button() {
+        ImVec2 p = ImGui::GetCursorScreenPos();
+        float sz = 50.0f;
+        ImDrawList *draw_list = ImGui::GetWindowDrawList();
+        ImVec2 center = ImVec2(p.x + sz * 0.5f, p.y + sz * 0.5f);
+
+        ImVec2 points[3] = {
+            ImVec2(center.x - sz * 0.3f, center.y - sz * 0.5f),
+            ImVec2(center.x + sz * 0.5f, center.y),
+            ImVec2(center.x - sz * 0.3f, center.y + sz * 0.5f)};
+
+        draw_list->AddTriangleFilled(points[0], points[1], points[2], IM_COL32(0, 255, 0, 255)); // Green triangle
+
+        ImGui::SetCursorScreenPos(p);
+        ImGui::InvisibleButton("PlayButton", ImVec2(sz, sz));
+        return ImGui::IsItemClicked();
+    }
 };
 
 #endif // GUI_GUI_HPP

@@ -1,5 +1,6 @@
 #include <array>
 #include <iostream>
+#include <thread>
 #include "song.hpp"
 #include "driver/file.hpp"
 #include "driver/port.hpp"
@@ -25,8 +26,18 @@ void sound_driver_step() {
     return;
 }
 
-static std::array<t_output, SONG_LENGTH> target;
-static uint32_t song_index = 0;
+void render(std::array<t_output, SONG_LENGTH> &target) {
+    for (uint i = 0; i < SONG_LENGTH; ++i) {
+        mix();
+        target[i] = output;
+    }
+}
+
+void play_audio(PortAudioDriver &port_audio_driver, std::array<t_output, SONG_LENGTH> &target, GUI &gui) {
+    render(target);
+    port_audio_driver.play();
+    gui.set_playing_status(false);
+}
 
 int main() {
     std::cout << "Starting the program..." << std::endl;
@@ -34,10 +45,8 @@ int main() {
     std::cout << "ChipSequencer initialized!" << std::endl;
     std::cout << "Sample rate: " << sample_rate << std::endl;
 
-    for (uint i = 0; i < SONG_LENGTH; ++i) {
-        mix();
-        target[i] = output;
-    }
+    std::array<t_output, SONG_LENGTH> target;
+    render(target);
 
 #if SAVE_TO_FILE
     FileDriver file_driver = FileDriver(target, "output.txt");
@@ -52,7 +61,11 @@ int main() {
         return 1;
     }
 
-    port_audio_driver.play();
+    gui.set_play_callback([&]() {
+        std::thread audio_thread(play_audio, std::ref(port_audio_driver), std::ref(target), std::ref(gui));
+        audio_thread.detach();
+    });
+
     while (!gui.is_done()) {
         gui.render();
     }

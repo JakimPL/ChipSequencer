@@ -16,6 +16,10 @@ class FileDriver : public Driver {
         return true;
     }
 
+    void terminate() override {
+        return;
+    }
+
     void play() override {
         save_output_to_file();
     }

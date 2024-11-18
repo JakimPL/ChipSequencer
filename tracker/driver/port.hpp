@@ -13,6 +13,25 @@ class PortAudioDriver : public Driver {
         unsigned long frames_per_buffer = 256)
         : Driver(target), sample_rate(sample_rate), stream(nullptr), current_index(0), frames_per_buffer(frames_per_buffer) {}
 
+    void play() override {
+        current_index = 0;
+        if (!open_stream()) {
+            return;
+        }
+
+        if (!start_stream()) {
+            close_stream();
+        }
+
+        sleep();
+        stop_stream();
+        close_stream();
+    }
+
+    void terminate() override {
+        Pa_Terminate();
+    }
+
     bool initialize() override {
         PaError err = Pa_Initialize();
         if (err != paNoError) {
@@ -74,22 +93,6 @@ class PortAudioDriver : public Driver {
 
     void sleep() {
         Pa_Sleep(SONG_LENGTH * 1000 / sample_rate);
-    }
-
-    void play() override {
-        if (!open_stream()) {
-            return;
-        }
-
-        if (!start_stream()) {
-            close_stream();
-        }
-
-        sleep();
-        stop_stream();
-        close_stream();
-
-        Pa_Terminate();
     }
 
   private:

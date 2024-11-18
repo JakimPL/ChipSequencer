@@ -26,4 +26,4 @@ g++ -m32 -g \
     bin/imgui_impl_opengl3.o \
     bin/imgui_impl_sdl2.o \
     -o bin/main \
-    --std=c++17 -lportaudio -lSDL2 -lGL -ldl
+    --std=c++17 -lportaudio -lSDL2 -lGL -ldl -lpthread
