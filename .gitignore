@@ -6,6 +6,7 @@
 *.MAP
 *.map
 *.txt
+*.ini
 
 bin/
 

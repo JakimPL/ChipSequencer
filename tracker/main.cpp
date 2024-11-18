@@ -3,6 +3,7 @@
 #include "song.hpp"
 #include "driver/file.hpp"
 #include "driver/port.hpp"
+#include "gui/gui.hpp"
 
 extern "C" {
 void sound_driver_initialize() __attribute__((used));
@@ -31,9 +32,7 @@ int main() {
     std::cout << "Starting the program..." << std::endl;
     initialize();
     std::cout << "ChipSequencer initialized!" << std::endl;
-    std::cout << sample_rate << std::endl;
-
-    // sample_rate = 22050;
+    std::cout << "Sample rate: " << sample_rate << std::endl;
 
     for (uint i = 0; i < SONG_LENGTH; ++i) {
         mix();
@@ -47,7 +46,19 @@ int main() {
 #else
     PortAudioDriver port_audio_driver = PortAudioDriver(target, sample_rate);
     port_audio_driver.initialize();
+
+    GUI gui;
+    if (!gui.initialize()) {
+        return 1;
+    }
+
     port_audio_driver.play();
+    while (!gui.is_done()) {
+        gui.render();
+    }
+
+    gui.terminate();
+
 #endif
 
     return 0;
