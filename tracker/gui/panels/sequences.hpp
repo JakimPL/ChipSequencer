@@ -1,5 +1,5 @@
-#ifndef GUI_SEQUENCES_HPP
-#define GUI_SEQUENCES_HPP
+#ifndef GUI_PANELS_SEQUENCES_HPP
+#define GUI_PANELS_SEQUENCES_HPP
 
 #include <algorithm>
 #include <string>
@@ -14,7 +14,7 @@ class GUISequencesPanel {
 
     int sequence_index = 0;
     int selected_step = 0;
-    int max_steps = 64;
+    const int max_steps = 64;
     std::vector<std::string> sequence_names;
 
     void from_sequence() {
@@ -71,9 +71,10 @@ class GUISequencesPanel {
 
     void draw_sequence_length() {
         ImGui::PushID("##SequenceLength");
+        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 50.0f);
         ImGui::InputInt("Steps", &current_sequence.steps, 1, max_steps);
         ImGui::PopID();
-        current_sequence.steps = std::clamp(current_sequence.steps, 1, 64);
+        current_sequence.steps = std::clamp(current_sequence.steps, 1, max_steps);
     }
 
     void draw_sequence() {
@@ -101,7 +102,7 @@ class GUISequencesPanel {
             ImGui::PushID(i);
             ImGui::Text("%d", i);
             ImGui::NextColumn();
-            bool is_selected = (selected_step == i);
+            const bool is_selected = (selected_step == i);
             if (ImGui::Selectable("##selectable", is_selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)) {
                 selected_step = i;
             }
@@ -143,4 +144,4 @@ class GUISequencesPanel {
     }
 };
 
-#endif // GUI_SEQUENCES_HPP
+#endif // GUI_PANELS_SEQUENCES_HPP

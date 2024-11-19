@@ -1,3 +1,6 @@
+#ifndef GUI_PANELS_UTILS_HPP
+#define GUI_PANELS_UTILS_HPP
+
 #include <string>
 #include <vector>
 #include "../init.hpp"
@@ -135,8 +138,8 @@ void prepare_combo(const std::vector<std::string> &names, std::string label, int
         names_cstr.push_back(name.c_str());
     }
 
-    float comboWidth = ImGui::GetContentRegionAvail().x;
-    ImGui::SetNextItemWidth(comboWidth);
+    float combo_width = ImGui::GetContentRegionAvail().x;
+    ImGui::SetNextItemWidth(combo_width);
     ImGui::Combo(label.c_str(), &index, names_cstr.data(), names_cstr.size());
 }
 
@@ -173,3 +176,5 @@ uint8_t get_midi_value(const std::string &note_name) {
 
     return NOTE_REST;
 }
+
+#endif // GUI_PANELS_UTILS_HPP

@@ -6,6 +6,7 @@
 #include "init.hpp"
 #include "panels/envelopes.hpp"
 #include "panels/sequences.hpp"
+#include "panels/wavetables.hpp"
 
 class GUI {
   public:
@@ -67,9 +68,11 @@ class GUI {
         ImGui_ImplSDL2_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::Begin("Control Panel");
         envelope_panel.draw();
         sequence_panel.draw();
+        wavetables_panel.draw();
+
+        ImGui::Begin("Control Panel");
         if (draw_play_button() && !is_playing && play_callback) {
             is_playing = true;
             play_callback();
@@ -127,6 +130,7 @@ class GUI {
     std::atomic<bool> is_playing;
     GUIEnvelopesPanel envelope_panel;
     GUISequencesPanel sequence_panel;
+    GUIWavetablesPanel wavetables_panel;
 
     bool draw_play_button() {
         ImVec2 p = ImGui::GetCursorScreenPos();

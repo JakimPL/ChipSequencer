@@ -1,5 +1,5 @@
-#ifndef GUI_ENVELOPES_HPP
-#define GUI_ENVELOPES_HPP
+#ifndef GUI_PANELS_ENVELOPES_HPP
+#define GUI_PANELS_ENVELOPES_HPP
 
 #include <algorithm>
 #include <string>
@@ -18,8 +18,8 @@ class GUIEnvelopesPanel {
     } current_envelope;
 
     int envelope_index = 0;
-    float max_timer_value = 10.0f;
-    float timer_constant = UINT16_MAX * 0.001f;
+    const float max_timer_value = 10.0f;
+    const float timer_constant = UINT16_MAX * 0.001f;
     std::vector<std::string> envelope_names;
 
     static float cast_to_float(int value, float scale = 1.0f) {
@@ -61,8 +61,8 @@ class GUIEnvelopesPanel {
     }
 
     void add_slider(const char *label, float &reference, int min, int max) {
-        std::string slider_id = std::string("##") + label + "Slider";
-        std::string input_id = std::string("##") + label + "Input";
+        const std::string slider_id = std::string("##") + label + "Slider";
+        const std::string input_id = std::string("##") + label + "Input";
         ImGui::PushID(label);
         ImGui::SliderFloat(slider_id.c_str(), &reference, min, max, label);
         ImGui::SameLine();
@@ -83,8 +83,8 @@ class GUIEnvelopesPanel {
         ImGui::Text("Envelope Graph");
         ImDrawList *draw_list = ImGui::GetWindowDrawList();
         ImVec2 p = ImGui::GetCursorScreenPos();
-        float width = ImGui::GetContentRegionAvail().x;
-        float height = 200.0f;
+        const float width = ImGui::GetContentRegionAvail().x;
+        const float height = 200.0f;
         ImVec2 size = ImVec2(width, height);
         ImGui::InvisibleButton("canvas", size);
         ImVec2 canvas_p0 = p;
@@ -95,10 +95,10 @@ class GUIEnvelopesPanel {
         float total_time = current_envelope.attack + current_envelope.decay + current_envelope.hold + current_envelope.release;
         total_time = std::max(total_time, 0.001f);
 
-        float attack_time = current_envelope.attack / total_time;
-        float decay_time = current_envelope.decay / total_time;
-        float hold_time = current_envelope.hold / total_time;
-        float release_time = current_envelope.release / total_time;
+        const float attack_time = current_envelope.attack / total_time;
+        const float decay_time = current_envelope.decay / total_time;
+        const float hold_time = current_envelope.hold / total_time;
+        const float release_time = current_envelope.release / total_time;
 
         ImVec2 p0 = ImVec2(canvas_p0.x, canvas_p1.y);
         ImVec2 p1 = ImVec2(canvas_p0.x + size.x * attack_time, canvas_p0.y + (1.0f - current_envelope.base_volume) * size.y);
@@ -106,12 +106,12 @@ class GUIEnvelopesPanel {
         ImVec2 p3 = ImVec2(p2.x + size.x * hold_time, p2.y);
         ImVec2 p4 = ImVec2(p3.x + size.x * release_time, canvas_p1.y);
 
-        float grid_step = 1.0f;
-        int grid_lines = total_time / grid_step;
+        const float grid_step = 1.0f;
+        const int grid_lines = total_time / grid_step;
 
         for (int i = 0; i <= grid_lines; ++i) {
-            float current_step_time = grid_step * i;
-            float x = canvas_p0.x + size.x * (current_step_time / static_cast<float>(total_time));
+            const float current_step_time = grid_step * i;
+            const float x = canvas_p0.x + size.x * (current_step_time / static_cast<float>(total_time));
             std::string label = std::to_string(static_cast<int>(1000 * grid_step * i)) + "ms";
             ImVec2 text_size = ImGui::CalcTextSize(label.c_str());
             draw_list->AddLine(ImVec2(x, canvas_p0.y), ImVec2(x, canvas_p1.y), IM_COL32(100, 100, 100, 255), 1.0f);
@@ -159,4 +159,4 @@ class GUIEnvelopesPanel {
     }
 };
 
-#endif // GUI_ENVELOPES_HPP
+#endif // GUI_PANELS_ENVELOPES_HPP

@@ -157,13 +157,13 @@ struct Song {
           channels(chn) {}
 
     ~Song() {
-        for (auto env : envelopes) delete env;
-        for (auto seq : sequences) delete seq;
-        for (auto ord : orders) delete ord;
-        for (auto osc : oscillators) delete osc;
-        for (auto wav : wavetables) delete wav;
-        for (auto dsp : dsps) delete dsp;
-        for (auto chn : channels) delete chn;
+        // for (auto env : envelopes) delete env;
+        // for (auto seq : sequences) delete seq;
+        // for (auto ord : orders) delete ord;
+        // for (auto osc : oscillators) delete osc;
+        // for (auto wav : wavetables) delete wav;
+        // for (auto dsp : dsps) delete dsp;
+        // for (auto chn : channels) delete chn;
     }
 };
 
