@@ -66,6 +66,7 @@ class GUIWavetablesPanel {
         ImVec2 canvas_p0 = p;
         ImVec2 canvas_p1 = ImVec2(p.x + size.x, p.y + size.y);
 
+        draw_list->AddRectFilled(canvas_p0, canvas_p1, IM_COL32(50, 50, 50, 255));
         draw_list->AddRect(canvas_p0, canvas_p1, IM_COL32(200, 200, 200, 255));
 
         const size_t data_size = current_wavetable.wave.size();
@@ -75,8 +76,7 @@ class GUIWavetablesPanel {
 
         for (int i = 0; i <= grid_lines; ++i) {
             const float y = canvas_p0.y + size.y * (1.0f - i / static_cast<float>(grid_lines));
-            float label_value = -1.0f + 2.0f * i / grid_lines;
-            // Format label with one decimal place
+            const float label_value = -1.0f + 2.0f * i / grid_lines;
             char label[5];
             snprintf(label, sizeof(label), "%.1f", label_value);
 
@@ -91,10 +91,10 @@ class GUIWavetablesPanel {
         }
 
         for (size_t i = 0; i < data_size - 1; ++i) {
-            float x1 = canvas_p0.x + i * x_step;
-            float y1 = y_center - current_wavetable.wave[i] * (size.y / 2.0f);
-            float x2 = canvas_p0.x + (i + 1) * x_step;
-            float y2 = y_center - current_wavetable.wave[i + 1] * (size.y / 2.0f);
+            const float x1 = canvas_p0.x + i * x_step;
+            const float y1 = y_center - current_wavetable.wave[i] * (size.y / 2.0f);
+            const float x2 = canvas_p0.x + (i + 1) * x_step;
+            const float y2 = y_center - current_wavetable.wave[i + 1] * (size.y / 2.0f);
             draw_list->AddLine(ImVec2(x1, y1), ImVec2(x2, y2), IM_COL32(0, 255, 0, 255), 1.0f);
         }
 

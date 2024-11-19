@@ -81,6 +81,7 @@ class GUIEnvelopesPanel {
         ImVec2 canvas_p1 = ImVec2(p.x + size.x, p.y + size.y);
 
         draw_list->AddRectFilled(canvas_p0, canvas_p1, IM_COL32(50, 50, 50, 255));
+        draw_list->AddRect(canvas_p0, canvas_p1, IM_COL32(200, 200, 200, 255));
 
         float total_time = current_envelope.attack + current_envelope.decay + current_envelope.hold + current_envelope.release;
         total_time = std::max(total_time, 0.001f);

@@ -4,6 +4,7 @@
 #include "init.hpp"
 #include "panels/envelopes.hpp"
 #include "panels/general.hpp"
+#include "panels/oscillators.hpp"
 #include "panels/sequences.hpp"
 #include "panels/wavetables.hpp"
 
@@ -68,6 +69,7 @@ class GUI {
         ImGui::NewFrame();
 
         envelope_panel.draw();
+        oscillators_panel.draw();
         sequence_panel.draw();
         wavetables_panel.draw();
         general_panel.draw();
@@ -118,6 +120,7 @@ class GUI {
     bool done = false;
     GUIGeneralPanel general_panel;
     GUIEnvelopesPanel envelope_panel;
+    GUIOscillatorsPanel oscillators_panel;
     GUISequencesPanel sequence_panel;
     GUIWavetablesPanel wavetables_panel;
 };
