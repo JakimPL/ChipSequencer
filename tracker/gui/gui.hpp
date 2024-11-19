@@ -10,7 +10,8 @@
 class GUI {
   public:
     GUI()
-        : window(nullptr), gl_context(nullptr), play_callback(nullptr), is_playing(false) {}
+        : window(nullptr), gl_context(nullptr), play_callback(nullptr), is_playing(false) {
+    }
 
     ~GUI() {
         terminate();
@@ -136,7 +137,8 @@ class GUI {
         ImVec2 points[3] = {
             ImVec2(center.x - sz * 0.3f, center.y - sz * 0.5f),
             ImVec2(center.x + sz * 0.5f, center.y),
-            ImVec2(center.x - sz * 0.3f, center.y + sz * 0.5f)};
+            ImVec2(center.x - sz * 0.3f, center.y + sz * 0.5f)
+        };
 
         draw_list->AddTriangleFilled(points[0], points[1], points[2], IM_COL32(0, 255, 0, 255)); // Green triangle
 

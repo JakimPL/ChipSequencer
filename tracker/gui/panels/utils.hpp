@@ -126,7 +126,8 @@ const char *note_names[] = {
     "A-9",
     "A#9",
     "B-9",
-    "C-10"};
+    "C-10"
+};
 
 void prepare_combo(const std::vector<std::string> &names, std::string label, int &index) {
     std::vector<const char *> names_cstr;

@@ -25,7 +25,8 @@ Envelopes envelopes = {
     &envelope1,
     &envelope2,
     &envelope3,
-    &envelope4};
+    &envelope4
+};
 
 Sequence sequence0 = {16, {{60, 3}, {53, 3}, {51, 3}, {50, 3}, {48, 1}, {-1, 1}, {48, 1}, {46, 1}}};
 Sequence sequence1 = {6, {{45, 2}, {55, 1}, {53, 13}}};
@@ -44,7 +45,8 @@ Sequences sequences = {
     &sequence4,
     &sequence5,
     &sequence6,
-    &sequence7};
+    &sequence7
+};
 
 Order order0 = {4, {0, 1, 0, 1}};
 Order order1 = {16, {2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3}};
@@ -59,7 +61,8 @@ Orders orders = {
     &order2,
     &order3,
     &order4,
-    &order5};
+    &order5
+};
 
 OscillatorSquare oscillator0 = {2, OSCILLATOR_SQUARE, 0x20};
 OscillatorSaw oscillator1;
@@ -70,14 +73,16 @@ Oscillators oscillators = {
     &oscillator0,
     &oscillator1,
     &oscillator2,
-    &oscillator3};
+    &oscillator3
+};
 
 Wavetable wavetable0 = {16, {0x00, 0x1F, 0x3F, 0x5F, 0x7F, 0x9F, 0xBF, 0xDF, 0xFF, 0xDF, 0xBF, 0x9F, 0x7F, 0x5F, 0x3F, 0x1F}};
 Wavetable wavetable1 = {8, {0x00, 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70}};
 
 Wavetables wavetables = {
     &wavetable0,
-    &wavetable1};
+    &wavetable1
+};
 
 DSPDelay dsp0 = {DSP_DELAY_SIZE, EFFECT_DELAY, &output, 0, 0x7FFF, 0x6FFF, 0x5FFF, 256};
 DSPGainer dsp1 = {DSP_GAINER_SIZE, EFFECT_GAINER, &output, 0, 0x9FFF};
@@ -86,7 +91,8 @@ DSPFilter dsp2 = {DSP_FILTER_SIZE, EFFECT_FILTER, &output, 0, 336};
 DSPs dsps = {
     &dsp0,
     &dsp1,
-    &dsp2};
+    &dsp2
+};
 
 Channel channel0 = {1, 0, 3, 0x02000000, &output, 0};
 Channel channel1 = {1, 1, 1, 0x02000000, &output, 0};
@@ -107,7 +113,8 @@ Channels channels = {
     &channel5,
     &channel6,
     &channel7,
-    &channel8};
+    &channel8
+};
 
 uint16_t buffer_offsets[] = {0, 256, 256};
 
@@ -135,7 +142,8 @@ struct Song {
         Oscillators &osc,
         Wavetables &wav,
         DSPs &dsp,
-        Channels &chn)
+        Channels &chn
+    )
         : bpm(bpm_reference),
           normalizer(normalizer_reference),
           output_channels(output_ch),
@@ -157,6 +165,20 @@ struct Song {
         for (auto dsp : dsps) delete dsp;
         for (auto chn : channels) delete chn;
     }
+};
+
+Song song = {
+    bpm,
+    normalizer,
+    CHANNEL_SIZE,
+    SONG_LENGTH,
+    envelopes,
+    sequences,
+    orders,
+    oscillators,
+    wavetables,
+    dsps,
+    channels
 };
 
 #endif // SONG_HPP

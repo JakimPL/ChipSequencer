@@ -7,7 +7,7 @@ BreakBeforeBraces: Attach
 NamespaceIndentation: None
 SpaceBeforeParens: ControlStatements
 SpaceAfterCStyleCast: true
-AlignAfterOpenBracket: Align
+AlignAfterOpenBracket: BlockIndent
 AlignOperands: true
 AlignTrailingComments: true
 BinPackArguments: false

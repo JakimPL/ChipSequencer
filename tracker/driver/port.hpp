@@ -10,7 +10,8 @@ class PortAudioDriver : public Driver {
     PortAudioDriver(
         const std::array<t_output, SONG_LENGTH> &target,
         uint16_t sample_rate,
-        unsigned long frames_per_buffer = 256)
+        unsigned long frames_per_buffer = 256
+    )
         : Driver(target), sample_rate(sample_rate), stream(nullptr), current_index(0), frames_per_buffer(frames_per_buffer) {}
 
     void play() override {
@@ -50,7 +51,8 @@ class PortAudioDriver : public Driver {
             sample_rate,
             256,
             audio_callback,
-            this);
+            this
+        );
         if (err != paNoError) {
             std::cerr << "PortAudio error: " << Pa_GetErrorText(err) << std::endl;
             Pa_Terminate();
@@ -102,7 +104,8 @@ class PortAudioDriver : public Driver {
         unsigned long frames_per_buffer,
         const PaStreamCallbackTimeInfo *time_info,
         PaStreamCallbackFlags status_flags,
-        void *user_data) {
+        void *user_data
+    ) {
         auto *driver = static_cast<PortAudioDriver *>(user_data);
         float *out = (float *) output_buffer;
         (void) input_buffer;
