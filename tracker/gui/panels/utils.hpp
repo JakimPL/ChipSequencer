@@ -2,8 +2,8 @@
 #include <vector>
 #include "../init.hpp"
 
-#define NOTE_OFF 254
-#define NOTE_REST 255
+#define NOTE_REST -2
+#define NOTE_OFF -1
 
 const char *note_names[] = {
     "C-0",
@@ -152,9 +152,9 @@ void update_items(std::vector<std::string> &names, size_t size, std::string labe
     }
 }
 
-std::string get_note_name(uint8_t midi_value) {
-    if (midi_value == NOTE_OFF) return "...";
-    if (midi_value == NOTE_REST) return "===";
+std::string get_note_name(int8_t midi_value) {
+    if (midi_value == NOTE_REST) return "...";
+    if (midi_value == NOTE_OFF) return "===";
 
     int max_notes = sizeof(note_names) / sizeof(note_names[0]);
     if (midi_value < max_notes) {
@@ -166,9 +166,9 @@ std::string get_note_name(uint8_t midi_value) {
 uint8_t get_midi_value(const std::string &note_name) {
     for (size_t i = 0; i < sizeof(note_names) / sizeof(note_names[0]); ++i) {
         if (note_name == note_names[i]) {
-            return static_cast<uint8_t>(i);
+            return static_cast<int8_t>(i);
         }
     }
 
-    return 255;
+    return NOTE_REST;
 }

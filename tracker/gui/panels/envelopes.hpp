@@ -66,7 +66,7 @@ class GUIEnvelopesPanel {
         ImGui::PushID(label);
         ImGui::SliderFloat(slider_id.c_str(), &reference, min, max, label);
         ImGui::SameLine();
-        ImGui::InputFloat(input_id.c_str(), &reference, min, max);
+        ImGui::InputFloat(input_id.c_str(), &reference, 0.001f, 0.01f, "%.4f");
         ImGui::PopID();
     }
 
@@ -152,8 +152,10 @@ class GUIEnvelopesPanel {
 
         ImGui::Columns(1, "envelope_bottom_columns");
         draw_envelope_graph();
-        ImGui::End();
+
         to_envelope();
+
+        ImGui::End();
     }
 };
 

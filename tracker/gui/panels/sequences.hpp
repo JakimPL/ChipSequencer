@@ -9,7 +9,7 @@ class GUISequencesPanel {
   private:
     struct CurrentSequence {
         int steps;
-        std::vector<uint8_t> pattern;
+        std::vector<int8_t> pattern;
     } current_sequence;
 
     int sequence_index = 0;
@@ -27,26 +27,43 @@ class GUISequencesPanel {
             total_length += duration;
             current_sequence.pattern.push_back(sequence->notes[i].pitch);
             for (uint16_t j = 1; j < duration; ++j) {
-                current_sequence.pattern.push_back(NOTE_OFF);
+                current_sequence.pattern.push_back(NOTE_REST);
             }
         }
         current_sequence.steps = total_length;
     }
 
-    void to_sequence() {
-        Sequence *sequence = sequences[sequence_index];
-        std::vector<Note> notes;
-        uint16_t duration = 1;
-        int16_t current_pitch = NOTE_REST;
-        for (size_t i = 0; i < current_sequence.pattern.size(); ++i) {
-            if (current_sequence.pattern[i] == NOTE_REST) {
+    std::vector<Note> pattern_to_sequence() {
+        std::vector<Note> note_vector;
+
+        uint8_t duration = 1;
+        int8_t pitch;
+        for (int i = current_sequence.pattern.size() - 1; i >= 0; --i) {
+            pitch = current_sequence.pattern[i];
+            if (pitch == NOTE_REST && i > 0) {
                 ++duration;
             } else {
-                Note nute = {current_pitch, duration};
-                notes.push_back(nute);
+                Note note = {pitch, duration};
+                note_vector.push_back(note);
                 duration = 1;
             }
         }
+
+        std::reverse(note_vector.begin(), note_vector.end());
+        return note_vector;
+    }
+
+    void to_sequence() {
+        Sequence *sequence = sequences[sequence_index];
+        const std::vector<Note> note_vector = pattern_to_sequence();
+        const uint8_t data_size = static_cast<uint8_t>(note_vector.size() * sizeof(Note));
+        const size_t sequence_size = data_size + 1;
+
+        Sequence *new_sequence = static_cast<Sequence *>(operator new(sequence_size));
+        new_sequence->data_size = data_size;
+        std::copy(note_vector.begin(), note_vector.end(), new_sequence->notes);
+        sequences[sequence_index] = new_sequence;
+        // old sequence needs to be deleted!
     }
 
     void update_sequences() {
