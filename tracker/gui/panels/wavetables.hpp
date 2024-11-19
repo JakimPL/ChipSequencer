@@ -2,6 +2,7 @@
 #define GUI_PANELS_WAVETABLES_HPP
 
 #include <algorithm>
+#include <cmath>
 #include <string>
 #include <vector>
 #include "../init.hpp"
@@ -25,6 +26,21 @@ class GUIWavetablesPanel {
         for (size_t i = 0; i < current_wavetable.wave.size(); ++i) {
             current_wavetable.wave[i] = (2.0f * wavetable->wavetable[i]) / UINT8_MAX - 1.0f;
         }
+    }
+
+    void to_wavetable() {
+        Wavetable *wavetable = wavetables[wavetable_index];
+        const size_t size = current_wavetable.size;
+        const size_t structure_size = size + 1;
+
+        Wavetable *new_wavetable = static_cast<Wavetable *>(operator new(structure_size));
+        new_wavetable->wavetable_size = size;
+        for (size_t i = 0; i < size; ++i) {
+            const uint8_t value = std::round((current_wavetable.wave[i] + 1.0f) * UINT8_MAX / 2.0f);
+            new_wavetable->wavetable[i] = value;
+        }
+
+        wavetables[wavetable_index] = new_wavetable;
     }
 
     void draw_wavetable_length() {
@@ -56,11 +72,7 @@ class GUIWavetablesPanel {
 
         draw_list->AddRect(canvas_p0, canvas_p1, IM_COL32(200, 200, 200, 255));
 
-        size_t data_size = current_wavetable.wave.size();
-        if (data_size < 2) {
-            return;
-        }
-
+        const size_t data_size = current_wavetable.wave.size();
         const float x_step = size.x / (data_size - 1);
         const float y_center = canvas_p0.y + size.y / 2.0f;
         const int grid_lines = 4;
@@ -75,6 +87,11 @@ class GUIWavetablesPanel {
             ImVec2 text_size = ImGui::CalcTextSize(label);
             draw_list->AddLine(ImVec2(canvas_p0.x, y), ImVec2(canvas_p1.x, y), IM_COL32(100, 100, 100, 255), 1.0f);
             draw_list->AddText(ImVec2(30.0f + canvas_p1.x - text_size.x - 5, y - text_size.y / 2), IM_COL32(255, 255, 255, 255), label);
+        }
+
+        if (data_size < 2) {
+            ImGui::EndChild();
+            return;
         }
 
         for (size_t i = 0; i < data_size - 1; ++i) {
@@ -117,6 +134,8 @@ class GUIWavetablesPanel {
 
         draw_wavetable_length();
         draw_waveform();
+
+        to_wavetable();
 
         ImGui::End();
     }
