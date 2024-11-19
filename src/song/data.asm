@@ -143,7 +143,7 @@ wavetables:
     db 0x00, 0x1F, 0x3F, 0x5F, 0x7F, 0x9F, 0xBF, 0xDF, 0xFF, 0xDF, 0xBF, 0x9F, 0x7F, 0x5F, 0x3F, 0x1F
 .wavetable_1:
     db WAVETABLE_1_SIZE      ; wavetable_size
-    db 0x00, 0x20, 0xE0, 0x40, 0xC0, 0x60, 0xA0, 0x80
+    db 0x00, 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70
 
 dsps:
 .dsp_0:
@@ -240,7 +240,3 @@ buffer_offsets:
     dw 0                     ; dsp_0_buffer_offset
     dw 256                   ; dsp_1_buffer_offset
     dw 256                   ; dsp_2_buffer_offset
-
-wavetable_offsets:
-    dw 0                     ; wavetable_0_offset
-    dw 16                    ; wavetable_1_offset

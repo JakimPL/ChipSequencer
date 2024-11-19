@@ -66,10 +66,12 @@ load_channel_target:
     order_offset resd 1
     sequence_offset resd 1
     oscillator_offset resd 1
+    wavetable_offset resd 1
     %else
     channel_offset resw 1
     envelope_offset resw 1
     order_offset resw 1
     sequence_offset resw 1
     oscillator_offset resw 1
+    wavetable_offset resw 1
     %endif

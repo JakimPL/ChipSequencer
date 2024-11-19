@@ -72,8 +72,12 @@ Oscillators oscillators = {
     &oscillator2,
     &oscillator3};
 
-Wavetable wavetables = {16, {0x00, 0x1F, 0x3F, 0x5F, 0x7F, 0x9F, 0xBF, 0xDF, 0xFF, 0xDF, 0xBF, 0x9F, 0x7F, 0x5F, 0x3F, 0x1F}};
-Wavetable wavetable1 = {8, {0x00, 0x20, 0xE0, 0x40, 0xC0, 0x60, 0xA0, 0x80}};
+Wavetable wavetable0 = {16, {0x00, 0x1F, 0x3F, 0x5F, 0x7F, 0x9F, 0xBF, 0xDF, 0xFF, 0xDF, 0xBF, 0x9F, 0x7F, 0x5F, 0x3F, 0x1F}};
+Wavetable wavetable1 = {8, {0x00, 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70}};
+
+Wavetables wavetables = {
+    &wavetable0,
+    &wavetable1};
 
 DSPDelay dsp0 = {DSP_DELAY_SIZE, EFFECT_DELAY, &output, 0, 0x7FFF, 0x6FFF, 0x5FFF, 256};
 DSPGainer dsp1 = {DSP_GAINER_SIZE, EFFECT_GAINER, &output, 0, 0x9FFF};
@@ -106,6 +110,53 @@ Channels channels = {
     &channel8};
 
 uint16_t buffer_offsets[] = {0, 256, 256};
-uint16_t wavetable_offsets[] = {0, 16};
+
+struct Song {
+    uint16_t &bpm;
+    uint16_t &normalizer;
+    int output_channels;
+    int song_length;
+    Envelopes &envelopes;
+    Sequences &sequences;
+    Orders &orders;
+    Oscillators &oscillators;
+    Wavetables &wavetables;
+    DSPs &dsps;
+    Channels &channels;
+
+    Song(
+        uint16_t &bpm_reference,
+        uint16_t &normalizer_reference,
+        int output_ch,
+        int song_len,
+        Envelopes &env,
+        Sequences &seq,
+        Orders &ord,
+        Oscillators &osc,
+        Wavetables &wav,
+        DSPs &dsp,
+        Channels &chn)
+        : bpm(bpm_reference),
+          normalizer(normalizer_reference),
+          output_channels(output_ch),
+          song_length(song_len),
+          envelopes(env),
+          sequences(seq),
+          orders(ord),
+          oscillators(osc),
+          wavetables(wav),
+          dsps(dsp),
+          channels(chn) {}
+
+    ~Song() {
+        for (auto env : envelopes) delete env;
+        for (auto seq : sequences) delete seq;
+        for (auto ord : orders) delete ord;
+        for (auto osc : oscillators) delete osc;
+        for (auto wav : wavetables) delete wav;
+        for (auto dsp : dsps) delete dsp;
+        for (auto chn : channels) delete chn;
+    }
+};
 
 #endif // SONG_HPP

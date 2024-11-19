@@ -63,7 +63,6 @@ class GUISequencesPanel {
         new_sequence->data_size = data_size;
         std::copy(note_vector.begin(), note_vector.end(), new_sequence->notes);
         sequences[sequence_index] = new_sequence;
-        // old sequence needs to be deleted!
     }
 
     void update_sequences() {

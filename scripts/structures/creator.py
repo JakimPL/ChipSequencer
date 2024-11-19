@@ -32,7 +32,6 @@ class Creator:
         self.dsps()
         self.channels()
         self.buffer_offsets()
-        self.wavetable_offsets()
         data = "\n".join(self.lines)
 
         return header, data
@@ -276,14 +275,5 @@ class Creator:
         for i, dsp in enumerate(self.song.dsps):
             self.value(Word(offset), f"dsp_{i}_buffer_offset")
             offset += dsp.buffer
-
-        self.comment()
-
-    def wavetable_offsets(self):
-        self.label("wavetable_offsets")
-        offset = 0
-        for i, wavetable in enumerate(self.song.wavetables):
-            self.value(Word(offset), f"wavetable_{i}_offset")
-            offset += len(wavetable)
 
         self.comment()

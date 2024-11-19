@@ -24,7 +24,6 @@
     extern dsps
     extern channels
     extern buffer_offsets
-    extern wavetable_offsets
 
     %ifn DIRECT_MODE
     global buffer
@@ -44,7 +43,6 @@ initialize:
     call reset_dsps
 
     call generate_sine_table
-    call generate_wavetables
 
     %if PRECALCULATE
 .precalculate:

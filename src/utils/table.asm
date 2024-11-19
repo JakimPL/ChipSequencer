@@ -30,11 +30,22 @@ reset:
 .done:
     ret
 
-load_table_item:
+load_table_16bit_item:
 ; EBX - table size
+; ECX - divisor
 ; SI  - table address
 ; AX  - input timer/output
     mul ebx
     div ecx
-    mov ax, word [esi + 2 * eax]
+    mov ax, [esi + 2 * eax]
+    ret
+
+load_table_8bit_item:
+; EBX - table size
+; ECX - divisor
+; SI  - table address
+; AX  - input timer/output
+    mul ebx
+    div ecx
+    mov al, [esi + eax]
     ret

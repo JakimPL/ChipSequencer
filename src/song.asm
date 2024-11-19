@@ -8,7 +8,6 @@
     global dsps
     global channels
     global buffer_offsets
-    global wavetable_offsets
 
     extern dsp_input
     extern output
