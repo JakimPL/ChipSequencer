@@ -48,6 +48,28 @@ class Word:
 
 
 @dataclass(frozen=True)
+class Float:
+    value: float = field(init=False)
+
+    def __init__(self, value: float):
+        if isinstance(value, Word):
+            object.__setattr__(self, "value", value.value)
+        else:
+            object.__setattr__(self, "value", value)
+
+    def __len__(self):
+        return 4
+
+    @property
+    def type(self):
+        return "dd"
+
+    @property
+    def raw(self):
+        return struct.pack("f", self.value)
+
+
+@dataclass(frozen=True)
 class Dword:
     value: int = field(init=False)
 

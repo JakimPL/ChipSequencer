@@ -10,9 +10,10 @@ typedef _Float32 t_output;
 extern "C" t_output output;
 extern "C" t_output dsp_input;
 extern "C" uint16_t sample_rate;
+extern "C" void calculate_ticks_per_beat();
 
 uint16_t bpm = 300;
-uint16_t normalizer = 6;
+_Float32 normalizer = 0.25f;
 
 Envelope envelope0 = {0x3F00, 0x1F00, 0x4000, 25, 250, 250, 0};
 Envelope envelope1 = {0x7FFF, 0x5FFF, 0x0000, 125, 250, 250, 250};
@@ -120,7 +121,7 @@ uint16_t buffer_offsets[] = {0, 256, 256};
 
 struct Song {
     uint16_t &bpm;
-    uint16_t &normalizer;
+    _Float32 &normalizer;
     int output_channels;
     int song_length;
     Envelopes &envelopes;
@@ -133,7 +134,7 @@ struct Song {
 
     Song(
         uint16_t &bpm_reference,
-        uint16_t &normalizer_reference,
+        _Float32 &normalizer_reference,
         int output_ch,
         int song_len,
         Envelopes &env,

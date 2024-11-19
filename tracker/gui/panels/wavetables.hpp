@@ -44,11 +44,7 @@ class GUIWavetablesPanel {
     }
 
     void draw_wavetable_length() {
-        ImGui::PushID("##WavetableLength");
-        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 50.0f);
-        ImGui::InputInt("Points", &current_wavetable.size, 1, max_points);
-        ImGui::PopID();
-        current_wavetable.size = std::clamp(current_wavetable.size, 1, max_points);
+        draw_number_of_items("Points", "##WavetableLength", current_wavetable.size, 1, max_points);
     }
 
     void draw_waveform() {

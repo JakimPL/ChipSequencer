@@ -10,7 +10,7 @@ from structures.oscillator import OscillatorSaw, OscillatorSine, OscillatorSquar
 from structures.output import Output
 from structures.sequence import Sequence
 from structures.song import Song
-from structures.types import Word
+from structures.types import Float, Word
 from structures.wavetable import Wavetable
 
 
@@ -21,7 +21,7 @@ def save_asm(asm: str, file: Path):
 
 def main():
     bpm = Word(300)
-    normalizer = Word(6)
+    normalizer = Float(0.25)
     output_channels = 2
     song_length = 186253
 

@@ -45,8 +45,9 @@ mix:
 
 .normalize:
     fld dword [output]
-    fild word [normalizer]
-    fdiv
+    fld dword [normalizer]
+    fmul
+
     fstp dword [value]
     mov eax, [value]
 

@@ -1,6 +1,5 @@
 #include <array>
 #include <iostream>
-#include <thread>
 #include "song.hpp"
 #include "driver/file.hpp"
 #include "driver/port.hpp"
@@ -35,6 +34,7 @@ void render(std::array<t_output, SONG_LENGTH> &target) {
 
 void play_audio(PortAudioDriver &port_audio_driver, std::array<t_output, SONG_LENGTH> &target, GUI &gui) {
     render(target);
+    gui.set_playing_status(true);
     port_audio_driver.play();
     gui.set_playing_status(false);
 }

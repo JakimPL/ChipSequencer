@@ -1,17 +1,16 @@
 #ifndef GUI_GUI_HPP
 #define GUI_GUI_HPP
 
-#include <atomic>
-#include <functional>
 #include "init.hpp"
 #include "panels/envelopes.hpp"
+#include "panels/general.hpp"
 #include "panels/sequences.hpp"
 #include "panels/wavetables.hpp"
 
 class GUI {
   public:
     GUI()
-        : window(nullptr), gl_context(nullptr), play_callback(nullptr), is_playing(false) {
+        : window(nullptr), gl_context(nullptr) {
     }
 
     ~GUI() {
@@ -71,16 +70,7 @@ class GUI {
         envelope_panel.draw();
         sequence_panel.draw();
         wavetables_panel.draw();
-
-        ImGui::Begin("Control Panel");
-        if (draw_play_button() && !is_playing && play_callback) {
-            is_playing = true;
-            play_callback();
-        }
-        if (is_playing) {
-            ImGui::Text("Playing audio...");
-        }
-        ImGui::End();
+        general_panel.draw();
 
         ImGui::Render();
         glViewport(0, 0, (int) io->DisplaySize.x, (int) io->DisplaySize.y);
@@ -114,11 +104,11 @@ class GUI {
     }
 
     void set_play_callback(std::function<void()> callback) {
-        play_callback = callback;
+        general_panel.play_callback = callback;
     }
 
     void set_playing_status(bool status) {
-        is_playing = status;
+        general_panel.is_playing = status;
     }
 
   private:
@@ -126,30 +116,10 @@ class GUI {
     SDL_GLContext gl_context;
     ImGuiIO *io;
     bool done = false;
-    std::function<void()> play_callback;
-    std::atomic<bool> is_playing;
+    GUIGeneralPanel general_panel;
     GUIEnvelopesPanel envelope_panel;
     GUISequencesPanel sequence_panel;
     GUIWavetablesPanel wavetables_panel;
-
-    bool draw_play_button() {
-        ImVec2 p = ImGui::GetCursorScreenPos();
-        float sz = 50.0f;
-        ImDrawList *draw_list = ImGui::GetWindowDrawList();
-        ImVec2 center = ImVec2(p.x + sz * 0.5f, p.y + sz * 0.5f);
-
-        ImVec2 points[3] = {
-            ImVec2(center.x - sz * 0.3f, center.y - sz * 0.5f),
-            ImVec2(center.x + sz * 0.5f, center.y),
-            ImVec2(center.x - sz * 0.3f, center.y + sz * 0.5f)
-        };
-
-        draw_list->AddTriangleFilled(points[0], points[1], points[2], IM_COL32(0, 255, 0, 255)); // Green triangle
-
-        ImGui::SetCursorScreenPos(p);
-        ImGui::InvisibleButton("PlayButton", ImVec2(sz, sz));
-        return ImGui::IsItemClicked();
-    }
 };
 
 #endif // GUI_GUI_HPP

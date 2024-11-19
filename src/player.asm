@@ -5,6 +5,7 @@
     global mix
     global output
     global reset
+    global calculate_ticks_per_beat
 
     global sample_rate
     global output

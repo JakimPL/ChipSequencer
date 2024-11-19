@@ -56,26 +56,16 @@ class GUIEnvelopesPanel {
 
     void draw_levels() {
         ImGui::Text("Levels");
-        add_slider("Base Volume", current_envelope.base_volume, 0.0f, 1.0f);
-        add_slider("Sustain Level", current_envelope.sustain_level, 0.0f, 1.0f);
-    }
-
-    void add_slider(const char *label, float &reference, int min, int max) {
-        const std::string slider_id = std::string("##") + label + "Slider";
-        const std::string input_id = std::string("##") + label + "Input";
-        ImGui::PushID(label);
-        ImGui::SliderFloat(slider_id.c_str(), &reference, min, max, label);
-        ImGui::SameLine();
-        ImGui::InputFloat(input_id.c_str(), &reference, 0.001f, 0.01f, "%.4f");
-        ImGui::PopID();
+        draw_float_slider("Base Volume", current_envelope.base_volume, 0.0f, 1.0f);
+        draw_float_slider("Sustain Level", current_envelope.sustain_level, 0.0f, 1.0f);
     }
 
     void draw_timers() {
         ImGui::Text("Timers");
-        add_slider("Attack", current_envelope.attack, 0.0f, max_timer_value);
-        add_slider("Decay", current_envelope.decay, 0.0f, max_timer_value);
-        add_slider("Hold", current_envelope.hold, 0.0f, max_timer_value);
-        add_slider("Release", current_envelope.release, 0.0f, max_timer_value);
+        draw_float_slider("Attack", current_envelope.attack, 0.0f, max_timer_value);
+        draw_float_slider("Decay", current_envelope.decay, 0.0f, max_timer_value);
+        draw_float_slider("Hold", current_envelope.hold, 0.0f, max_timer_value);
+        draw_float_slider("Release", current_envelope.release, 0.0f, max_timer_value);
     }
 
     void draw_envelope_graph() {

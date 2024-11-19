@@ -2,7 +2,7 @@
 bpm:
     dw 300
 normalizer:
-    dw 6
+    dd 0.25
 
 envelopes:
 .envelope_0:

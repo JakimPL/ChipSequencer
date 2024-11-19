@@ -70,11 +70,7 @@ class GUISequencesPanel {
     }
 
     void draw_sequence_length() {
-        ImGui::PushID("##SequenceLength");
-        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 50.0f);
-        ImGui::InputInt("Steps", &current_sequence.steps, 1, max_steps);
-        ImGui::PopID();
-        current_sequence.steps = std::clamp(current_sequence.steps, 1, max_steps);
+        draw_number_of_items("Steps", "##SequenceLength", current_sequence.steps, 1, max_steps);
     }
 
     void draw_sequence() {

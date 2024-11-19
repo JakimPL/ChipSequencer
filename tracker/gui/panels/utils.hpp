@@ -1,6 +1,7 @@
 #ifndef GUI_PANELS_UTILS_HPP
 #define GUI_PANELS_UTILS_HPP
 
+#include <algorithm>
 #include <string>
 #include <vector>
 #include "../init.hpp"
@@ -131,6 +132,34 @@ const char *note_names[] = {
     "B-9",
     "C-10"
 };
+
+void draw_number_of_items(const std::string &label, const char *label_id, int &value, int min, int max, float label_length = 50.0f) {
+    ImGui::PushID(label_id);
+    ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - label_length);
+    ImGui::InputInt("Points", &value, min, max);
+    ImGui::PopID();
+    value = std::clamp(value, min, max);
+}
+
+void draw_int_slider(const char *label, int &reference, int min, int max) {
+    const std::string slider_id = std::string("##") + label + "Slider";
+    const std::string input_id = std::string("##") + label + "Input";
+    ImGui::PushID(label);
+    ImGui::SliderInt(slider_id.c_str(), &reference, min, max, label);
+    ImGui::SameLine();
+    ImGui::InputInt(input_id.c_str(), &reference, 1, 10);
+    ImGui::PopID();
+}
+
+void draw_float_slider(const char *label, float &reference, int min, int max) {
+    const std::string slider_id = std::string("##") + label + "Slider";
+    const std::string input_id = std::string("##") + label + "Input";
+    ImGui::PushID(label);
+    ImGui::SliderFloat(slider_id.c_str(), &reference, min, max, label);
+    ImGui::SameLine();
+    ImGui::InputFloat(input_id.c_str(), &reference, 0.001f, 0.01f, "%.4f");
+    ImGui::PopID();
+}
 
 void prepare_combo(const std::vector<std::string> &names, std::string label, int &index) {
     std::vector<const char *> names_cstr;
