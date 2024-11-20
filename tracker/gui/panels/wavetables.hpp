@@ -42,6 +42,12 @@ class GUIWavetablesPanel {
             new_wavetable->wavetable[i] = value;
         }
 
+        if (new_wavetable->wavetable_size > wavetable->wavetable_size) {
+            for (size_t i = wavetable->wavetable_size; i < new_wavetable->wavetable_size; ++i) {
+                new_wavetable->wavetable[i] = 0x80;
+            }
+        }
+
         wavetables[wavetable_index] = new_wavetable;
     }
 
@@ -58,15 +64,14 @@ class GUIWavetablesPanel {
             return;
         }
 
-        ImGui::BeginChild("WaveformScroll", ImVec2(0, 200), true);
         ImDrawList *draw_list = ImGui::GetWindowDrawList();
-        ImVec2 p = ImGui::GetCursorScreenPos();
-        const float width = std::max(30.0f, ImGui::GetContentRegionAvail().x - 25.0f);
-        const float height = ImGui::GetContentRegionAvail().y;
-        ImVec2 size = ImVec2(width, height);
+        const ImVec2 p = ImGui::GetCursorScreenPos();
+        const float width = std::max(45.0f, ImGui::GetContentRegionAvail().x - 35.0f);
+        const float height = std::max(20.0f, ImGui::GetContentRegionAvail().y - 10.0f);
+        const ImVec2 size = ImVec2(width, height);
         ImGui::InvisibleButton("wave_canvas", size);
-        ImVec2 canvas_p0 = p;
-        ImVec2 canvas_p1 = ImVec2(p.x + size.x, p.y + size.y);
+        const ImVec2 canvas_p0 = p;
+        const ImVec2 canvas_p1 = ImVec2(p.x + size.x, p.y + size.y);
 
         draw_list->AddRectFilled(canvas_p0, canvas_p1, IM_COL32(50, 50, 50, 255));
         draw_list->AddRect(canvas_p0, canvas_p1, IM_COL32(200, 200, 200, 255));
@@ -82,9 +87,9 @@ class GUIWavetablesPanel {
             char label[5];
             snprintf(label, sizeof(label), "%.1f", label_value);
 
-            ImVec2 text_size = ImGui::CalcTextSize(label);
+            const ImVec2 text_size = ImGui::CalcTextSize(label);
             draw_list->AddLine(ImVec2(canvas_p0.x, y), ImVec2(canvas_p1.x, y), IM_COL32(100, 100, 100, 255), 1.0f);
-            draw_list->AddText(ImVec2(30.0f + canvas_p1.x - text_size.x - 5, y - text_size.y / 2), IM_COL32(255, 255, 255, 255), label);
+            draw_list->AddText(ImVec2(40.0f + canvas_p1.x - text_size.x - 5, y - text_size.y / 2), IM_COL32(255, 255, 255, 255), label);
         }
 
         if (data_size < 2) {
@@ -107,8 +112,6 @@ class GUIWavetablesPanel {
                 draw_list->AddLine(ImVec2(x2, y1), ImVec2(x2, y2), IM_COL32(0, 255, 0, 255), 1.0f);
             }
         }
-
-        ImGui::EndChild();
     }
 
     void update_wavetables() {

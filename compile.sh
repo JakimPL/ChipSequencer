@@ -9,21 +9,28 @@ g++ -m32 -g -c --std=c++17 \
     imgui/imgui_tables.cpp \
     imgui/backends/imgui_impl_opengl3.cpp \
     imgui/backends/imgui_impl_sdl2.cpp
+
+g++ -m32 -g -c --std=c++17 \
+    -Iimgui -Iimgui-knobs -I/usr/include/SDL2 \
+    imgui-knobs/imgui-knobs.cpp
+
 mv *.o bin/
 
 g++ -m32 -g -c --std=c++17 \
-    -Iimgui -I/usr/include/SDL2 \
+    -Iimgui -Iimgui-knobs -I/usr/include/SDL2 \
     tracker/main.cpp \
     -o bin/main.o
 
-g++ -m32 -g \
+g++ -m32 -g --std=c++17 \
+    -Iimgui -Iimgui-knobs -I/usr/include/SDL2 \
     bin/main.o \
     bin/player.o \
     bin/imgui.o \
+    bin/imgui-knobs.o \
     bin/imgui_draw.o \
     bin/imgui_widgets.o \
     bin/imgui_tables.o \
     bin/imgui_impl_opengl3.o \
     bin/imgui_impl_sdl2.o \
     -o bin/main \
-    --std=c++17 -lportaudio -lSDL2 -lGL -ldl -lpthread
+    -lportaudio -lSDL2 -lGL -ldl -lpthread

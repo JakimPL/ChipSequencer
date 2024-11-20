@@ -72,13 +72,13 @@ class GUIEnvelopesPanel {
         ImGui::Separator();
         ImGui::Text("Envelope Graph");
         ImDrawList *draw_list = ImGui::GetWindowDrawList();
-        ImVec2 p = ImGui::GetCursorScreenPos();
-        const float width = ImGui::GetContentRegionAvail().x;
-        const float height = 200.0f;
-        ImVec2 size = ImVec2(width, height);
-        ImGui::InvisibleButton("canvas", size);
-        ImVec2 canvas_p0 = p;
-        ImVec2 canvas_p1 = ImVec2(p.x + size.x, p.y + size.y);
+        const ImVec2 p = ImGui::GetCursorScreenPos();
+        const float width = std::max(40.0f, ImGui::GetContentRegionAvail().x);
+        const float height = std::max(20.0f, ImGui::GetContentRegionAvail().y - 20.0f);
+        const ImVec2 size = ImVec2(width, height);
+        ImGui::InvisibleButton("envelope_canvas", size);
+        const ImVec2 canvas_p0 = ImVec2(p.x, p.y + 10.0f);
+        const ImVec2 canvas_p1 = ImVec2(p.x + size.x, p.y + size.y + 10.0f);
 
         draw_list->AddRectFilled(canvas_p0, canvas_p1, IM_COL32(50, 50, 50, 255));
         draw_list->AddRect(canvas_p0, canvas_p1, IM_COL32(200, 200, 200, 255));
@@ -91,20 +91,20 @@ class GUIEnvelopesPanel {
         const float hold_time = current_envelope.hold / total_time;
         const float release_time = current_envelope.release / total_time;
 
-        ImVec2 p0 = ImVec2(canvas_p0.x, canvas_p1.y);
-        ImVec2 p1 = ImVec2(canvas_p0.x + size.x * attack_time, canvas_p0.y + (1.0f - current_envelope.base_volume) * size.y);
-        ImVec2 p2 = ImVec2(p1.x + size.x * decay_time, canvas_p1.y - current_envelope.sustain_level * height);
-        ImVec2 p3 = ImVec2(p2.x + size.x * hold_time, p2.y);
-        ImVec2 p4 = ImVec2(p3.x + size.x * release_time, canvas_p1.y);
+        const ImVec2 p0 = ImVec2(canvas_p0.x, canvas_p1.y);
+        const ImVec2 p1 = ImVec2(canvas_p0.x + size.x * attack_time, canvas_p0.y + (1.0f - current_envelope.base_volume) * size.y);
+        const ImVec2 p2 = ImVec2(p1.x + size.x * decay_time, canvas_p1.y - current_envelope.sustain_level * height);
+        const ImVec2 p3 = ImVec2(p2.x + size.x * hold_time, p2.y);
+        const ImVec2 p4 = ImVec2(p3.x + size.x * release_time, canvas_p1.y);
 
         const float grid_step = 1.0f;
         const int grid_lines = total_time / grid_step;
 
-        for (int i = 0; i <= grid_lines; ++i) {
+        for (int i = 1; i <= grid_lines; ++i) {
             const float current_step_time = grid_step * i;
             const float x = canvas_p0.x + size.x * (current_step_time / static_cast<float>(total_time));
-            std::string label = std::to_string(static_cast<int>(1000 * grid_step * i)) + "ms";
-            ImVec2 text_size = ImGui::CalcTextSize(label.c_str());
+            const std::string label = std::to_string(static_cast<int>(grid_step * i)) + "s";
+            const ImVec2 text_size = ImGui::CalcTextSize(label.c_str());
             draw_list->AddLine(ImVec2(x, canvas_p0.y), ImVec2(x, canvas_p1.y), IM_COL32(100, 100, 100, 255), 1.0f);
             draw_list->AddText(ImVec2(x - text_size.x / 2, canvas_p1.y + 5), IM_COL32(255, 255, 255, 255), label.c_str());
         }

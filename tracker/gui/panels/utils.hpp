@@ -149,9 +149,10 @@ void draw_int_slider(const char *label, int &reference, int min, int max) {
     ImGui::SameLine();
     ImGui::InputInt(input_id.c_str(), &reference, 1, 10);
     ImGui::PopID();
+    reference = std::clamp(reference, min, max);
 }
 
-void draw_float_slider(const char *label, float &reference, int min, int max) {
+void draw_float_slider(const char *label, float &reference, float min, float max) {
     const std::string slider_id = std::string("##") + label + "Slider";
     const std::string input_id = std::string("##") + label + "Input";
     ImGui::PushID(label);
@@ -159,6 +160,13 @@ void draw_float_slider(const char *label, float &reference, int min, int max) {
     ImGui::SameLine();
     ImGui::InputFloat(input_id.c_str(), &reference, 0.001f, 0.01f, "%.4f");
     ImGui::PopID();
+    reference = std::clamp(reference, min, max);
+}
+
+void draw_knob(const char *label, float &reference, float min, float max) {
+    ImGuiKnobs::Knob(label, &reference, min, max);
+    ImGui::SameLine();
+    reference = std::clamp(reference, min, max);
 }
 
 void prepare_combo(const std::vector<std::string> &names, std::string label, int &index) {
