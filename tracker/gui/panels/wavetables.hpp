@@ -12,6 +12,7 @@ class GUIWavetablesPanel {
   private:
     struct CurrentWavetable {
         int size;
+        bool interpolate;
         std::vector<float> wave;
     } current_wavetable;
 
@@ -22,6 +23,7 @@ class GUIWavetablesPanel {
     void from_wavetable() {
         const Wavetable *wavetable = wavetables[wavetable_index];
         current_wavetable.size = wavetable->wavetable_size;
+        current_wavetable.interpolate = false;
         current_wavetable.wave.resize(current_wavetable.size);
         for (size_t i = 0; i < current_wavetable.wave.size(); ++i) {
             current_wavetable.wave[i] = (2.0f * wavetable->wavetable[i]) / UINT8_MAX - 1.0f;
@@ -70,7 +72,7 @@ class GUIWavetablesPanel {
         draw_list->AddRect(canvas_p0, canvas_p1, IM_COL32(200, 200, 200, 255));
 
         const size_t data_size = current_wavetable.wave.size();
-        const float x_step = size.x / (data_size - 1);
+        const float x_step = size.x / data_size;
         const float y_center = canvas_p0.y + size.y / 2.0f;
         const int grid_lines = 4;
 
@@ -90,18 +92,20 @@ class GUIWavetablesPanel {
             return;
         }
 
-        for (size_t i = 0; i < data_size - 1; ++i) {
+        for (size_t i = 0; i < data_size; ++i) {
             const float x1 = canvas_p0.x + i * x_step;
             const float y1 = y_center - current_wavetable.wave[i] * (size.y / 2.0f);
             const float x2 = canvas_p0.x + (i + 1) * x_step;
-            const float y2 = y_center - current_wavetable.wave[i + 1] * (size.y / 2.0f);
-            draw_list->AddLine(ImVec2(x1, y1), ImVec2(x2, y2), IM_COL32(0, 255, 0, 255), 1.0f);
-        }
+            const float y2 = y_center - current_wavetable.wave[i + 1 == data_size ? 0 : i + 1] * (size.y / 2.0f);
 
-        for (size_t i = 0; i < data_size; ++i) {
-            float x = canvas_p0.x + i * x_step;
-            float y = y_center - current_wavetable.wave[i] * (size.y / 2.0f);
-            draw_list->AddCircleFilled(ImVec2(x, y), 3.0f, IM_COL32(0, 255, 0, 255));
+            draw_list->AddCircleFilled(ImVec2(x1, y1), 3.0f, IM_COL32(0, 255, 0, 255));
+            if (current_wavetable.interpolate) {
+                draw_list->AddLine(ImVec2(x1, y1), ImVec2(x2, y2), IM_COL32(0, 255, 0, 255), 1.0f);
+            } else {
+                draw_list->AddCircleFilled(ImVec2(x2, y1), 3.0f, IM_COL32(0, 255, 0, 255));
+                draw_list->AddLine(ImVec2(x1, y1), ImVec2(x2, y1), IM_COL32(0, 255, 0, 255), 1.0f);
+                draw_list->AddLine(ImVec2(x2, y1), ImVec2(x2, y2), IM_COL32(0, 255, 0, 255), 1.0f);
+            }
         }
 
         ImGui::EndChild();

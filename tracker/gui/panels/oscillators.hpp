@@ -16,6 +16,7 @@ class GUIOscillatorsPanel {
 
     int oscillator_index = 0;
     std::vector<std::string> oscillator_names;
+    std::vector<std::string> generator_names;
     std::vector<std::string> wavetable_names;
 
     void from_oscillator() {
@@ -47,10 +48,43 @@ class GUIOscillatorsPanel {
     }
 
     void to_oscillator() {
+        switch (current_oscillator.generator_index) {
+        case OSCILLATOR_SQUARE: {
+            OscillatorSquare *new_oscillator = static_cast<OscillatorSquare *>(operator new(sizeof(OscillatorSquare)));
+            new_oscillator->generator_index = OSCILLATOR_SQUARE;
+            new_oscillator->oscillator_size = OSCILLATOR_SQUARE_SIZE;
+            new_oscillator->duty_cycle = static_cast<uint8_t>(std::round(current_oscillator.duty_cycle * UINT8_MAX));
+            oscillators[oscillator_index] = new_oscillator;
+            break;
+        }
+        case OSCILLATOR_SAW: {
+            OscillatorSaw *new_oscillator = static_cast<OscillatorSaw *>(operator new(sizeof(OscillatorSaw)));
+            new_oscillator->generator_index = OSCILLATOR_SAW;
+            new_oscillator->oscillator_size = OSCILLATOR_SAW_SIZE;
+            oscillators[oscillator_index] = new_oscillator;
+            break;
+        }
+        case OSCILLATOR_SINE: {
+            OscillatorSine *new_oscillator = static_cast<OscillatorSine *>(operator new(sizeof(OscillatorSine)));
+            new_oscillator->generator_index = OSCILLATOR_SINE;
+            new_oscillator->oscillator_size = OSCILLATOR_SINE_SIZE;
+            oscillators[oscillator_index] = new_oscillator;
+            break;
+        }
+        case OSCILLATOR_WAVETABLE: {
+            OscillatorWavetable *new_oscillator = static_cast<OscillatorWavetable *>(operator new(sizeof(OscillatorWavetable)));
+            new_oscillator->generator_index = OSCILLATOR_WAVETABLE;
+            new_oscillator->oscillator_size = OSCILLATOR_WAVETABLE_SIZE;
+            new_oscillator->wavetable_index = current_oscillator.wavetable_index;
+            oscillators[oscillator_index] = new_oscillator;
+            break;
+        }
+        }
     }
 
     void update_oscillators() {
         update_items(oscillator_names, oscillators.size(), "Oscillator ", oscillator_index);
+        generator_names = {"Square", "Saw", "Sine", "Wavetable"};
     }
 
     void update_wavetables() {
@@ -60,24 +94,7 @@ class GUIOscillatorsPanel {
     void draw_oscillator_type() {
         ImGui::Text("Type");
         ImGui::NextColumn();
-        switch (current_oscillator.generator_index) {
-        case OSCILLATOR_SQUARE: {
-            ImGui::Text("%s", "Square");
-            break;
-        }
-        case OSCILLATOR_SAW: {
-            ImGui::Text("%s", "Saw");
-            break;
-        }
-        case OSCILLATOR_SINE: {
-            ImGui::Text("%s", "Sine");
-            break;
-        }
-        case OSCILLATOR_WAVETABLE: {
-            ImGui::Text("%s", "Wavetable");
-            break;
-        }
-        }
+        prepare_combo(generator_names, "##GeneratorCombo", current_oscillator.generator_index);
         ImGui::NextColumn();
     }
 
