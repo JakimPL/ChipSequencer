@@ -92,7 +92,8 @@ class GUISequencesPanel {
         ImGui::Separator();
         ImGui::Text("Pattern:");
 
-        ImGui::BeginChild("PatternScroll", ImVec2(0, 300), true);
+        const float height = std::max(5.0f, ImGui::GetContentRegionAvail().y - 5.0f);
+        ImGui::BeginChild("PatternScroll", ImVec2(0, height), true);
         ImGui::Columns(2, "pattern_columns", false);
         ImGui::SetColumnWidth(0, 50.0f);
 
@@ -107,16 +108,18 @@ class GUISequencesPanel {
             ImGui::PushID(i);
             ImGui::Text("%d", i);
             ImGui::NextColumn();
+
             const bool is_selected = (selected_step == i);
             if (ImGui::Selectable("##selectable", is_selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)) {
                 selected_step = i;
             }
             ImGui::SameLine();
-            std::string note_str = get_note_name(current_sequence.pattern[i]);
+
+            const std::string note_string = get_note_name(current_sequence.pattern[i]);
             if (is_selected) {
-                ImGui::TextColored(ImVec4(1.0f, 0.2f, 1.0f, 1.0f), "%s", note_str.c_str());
+                ImGui::TextColored(ImVec4(1.0f, 0.2f, 1.0f, 1.0f), "%s", note_string.c_str());
             } else {
-                ImGui::Text("%s", note_str.c_str());
+                ImGui::Text("%s", note_string.c_str());
             }
 
             ImGui::NextColumn();

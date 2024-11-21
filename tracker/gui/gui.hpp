@@ -5,6 +5,7 @@
 #include "panels/envelopes.hpp"
 #include "panels/general.hpp"
 #include "panels/oscillators.hpp"
+#include "panels/orders.hpp"
 #include "panels/sequences.hpp"
 #include "panels/wavetables.hpp"
 
@@ -49,6 +50,8 @@ class GUI {
         io = &ImGui::GetIO();
         (void) io;
 
+        // set_font();
+
         ImGui::StyleColorsDark();
         ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
         ImGui_ImplOpenGL3_Init("#version 100");
@@ -68,9 +71,10 @@ class GUI {
         ImGui_ImplSDL2_NewFrame();
         ImGui::NewFrame();
 
-        envelope_panel.draw();
+        envelopes_panel.draw();
+        orders_panel.draw();
         oscillators_panel.draw();
-        sequence_panel.draw();
+        sequences_panel.draw();
         wavetables_panel.draw();
         general_panel.draw();
 
@@ -81,6 +85,14 @@ class GUI {
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         SDL_GL_SwapWindow(window);
         return done;
+    }
+
+    void set_font() {
+        ImFontConfig fontConfig;
+        fontConfig.PixelSnapH = true;
+        float fontSize = 13.0f;
+        float largerFontSize = 18.0f;
+        font = io->Fonts->AddFontFromFileTTF("imgui/misc/fonts/ProggyClean.ttf", largerFontSize, &fontConfig);
     }
 
     void terminate() {
@@ -117,11 +129,13 @@ class GUI {
     SDL_Window *window;
     SDL_GLContext gl_context;
     ImGuiIO *io;
+    ImFont *font;
     bool done = false;
     GUIGeneralPanel general_panel;
-    GUIEnvelopesPanel envelope_panel;
+    GUIEnvelopesPanel envelopes_panel;
+    GUIOrdersPanel orders_panel;
     GUIOscillatorsPanel oscillators_panel;
-    GUISequencesPanel sequence_panel;
+    GUISequencesPanel sequences_panel;
     GUIWavetablesPanel wavetables_panel;
 };
 
