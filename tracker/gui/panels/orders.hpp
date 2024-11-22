@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string>
 #include "../init.hpp"
+#include "utils.hpp"
 
 class GUIOrdersPanel {
   private:

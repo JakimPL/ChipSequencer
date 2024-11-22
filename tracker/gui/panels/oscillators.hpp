@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <string>
 #include "../init.hpp"
+#include "utils.hpp"
 
 class GUIOscillatorsPanel {
   private:

@@ -147,18 +147,33 @@ void draw_int_slider(const char *label, int &reference, int min, int max) {
     ImGui::PushID(label);
     ImGui::SliderInt(slider_id.c_str(), &reference, min, max, label);
     ImGui::SameLine();
-    ImGui::InputInt(input_id.c_str(), &reference, 1, 10);
+    ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+    ImGui::InputInt(input_id.c_str(), &reference, 0, 0);
     ImGui::PopID();
     reference = std::clamp(reference, min, max);
 }
 
-void draw_float_slider(const char *label, float &reference, float min, float max) {
+void draw_float_slider(const char *label, float &reference, float min, float max, bool log_scale = false) {
     const std::string slider_id = std::string("##") + label + "Slider";
     const std::string input_id = std::string("##") + label + "Input";
     ImGui::PushID(label);
-    ImGui::SliderFloat(slider_id.c_str(), &reference, min, max, label);
+
+    float display_value = reference;
+    if (log_scale) {
+        display_value = std::log(reference / min) / std::log(max / min);
+    }
+
+    if (ImGui::SliderFloat(slider_id.c_str(), &display_value, log_scale ? 0.0f : min, log_scale ? 1.0f : max, label)) {
+        if (log_scale) {
+            reference = min * std::pow(max / min, display_value);
+        } else {
+            reference = display_value;
+        }
+    }
+
     ImGui::SameLine();
-    ImGui::InputFloat(input_id.c_str(), &reference, 0.001f, 0.01f, "%.4f");
+    ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+    ImGui::InputFloat(input_id.c_str(), &reference, 0.0f, 0.0f, "%.4f");
     ImGui::PopID();
     reference = std::clamp(reference, min, max);
 }

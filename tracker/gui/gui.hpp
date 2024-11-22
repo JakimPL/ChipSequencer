@@ -2,6 +2,7 @@
 #define GUI_GUI_HPP
 
 #include "init.hpp"
+#include "panels/channels.hpp"
 #include "panels/envelopes.hpp"
 #include "panels/general.hpp"
 #include "panels/oscillators.hpp"
@@ -71,6 +72,7 @@ class GUI {
         ImGui_ImplSDL2_NewFrame();
         ImGui::NewFrame();
 
+        channels_panel.draw();
         envelopes_panel.draw();
         orders_panel.draw();
         oscillators_panel.draw();
@@ -132,6 +134,7 @@ class GUI {
     ImFont *font;
     bool done = false;
     GUIGeneralPanel general_panel;
+    GUIChannelsPanel channels_panel;
     GUIEnvelopesPanel envelopes_panel;
     GUIOrdersPanel orders_panel;
     GUIOscillatorsPanel oscillators_panel;

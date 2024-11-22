@@ -6,6 +6,7 @@
 #include <string>
 #include <thread>
 #include "../init.hpp"
+#include "utils.hpp"
 
 class GUIGeneralPanel {
   private:
