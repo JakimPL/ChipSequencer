@@ -36,7 +36,7 @@ class GUIChannelsPanel {
         current_channel.oscillator_index = channel->oscillator_index;
         current_channel.additive = !(channel->output_flag & CHANNEL_MASK_ADDITIVE);
         current_channel.type = (channel->output_flag & CHANNEL_MASK_VARIABLE_TYPE) >> 4;
-        current_channel.shift = channel->output_flag & CHANNEL_MASK_SHIFT;
+        current_channel.shift = current_channel.type == 0 ? 0 : channel->output_flag & CHANNEL_MASK_SHIFT;
         current_channel.output = channel->output;
 
         if (current_channel.constant_pitch) {
@@ -99,7 +99,9 @@ class GUIChannelsPanel {
         ImGui::Text("Output:");
         ImGui::Checkbox("Additive", &current_channel.additive);
         prepare_combo(variable_types, "##TypeCombo", current_channel.type);
+        ImGui::BeginDisabled(current_channel.type == 0);
         draw_int_slider("Shift", current_channel.shift, 0, 15);
+        ImGui::EndDisabled();
     }
 
   public:

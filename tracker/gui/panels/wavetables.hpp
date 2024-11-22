@@ -57,6 +57,7 @@ class GUIWavetablesPanel {
 
     void draw_waveform() {
         ImGui::Separator();
+        ImGui::Checkbox("Interpolate", &current_wavetable.interpolate);
         ImGui::Text("Waveform:");
 
         if (current_wavetable.wave.empty()) {
@@ -80,6 +81,24 @@ class GUIWavetablesPanel {
         const float x_step = size.x / data_size;
         const float y_center = canvas_p0.y + size.y / 2.0f;
         const int grid_lines = 4;
+
+        ImGuiIO &io = ImGui::GetIO();
+        ImVec2 mouse_pos = io.MousePos;
+        bool is_hovered = ImGui::IsItemHovered();
+        bool is_active = ImGui::IsItemActive();
+
+        if (is_hovered && ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
+            const float relative_x = mouse_pos.x - canvas_p0.x;
+            int index = static_cast<int>(std::round(relative_x / x_step));
+            if (index >= 0 && index < static_cast<int>(data_size)) {
+                const int current_point = index;
+                const float relative_y = mouse_pos.y - canvas_p0.y;
+                float normalized = 1.0f - (relative_y / size.y);
+                normalized = std::clamp(normalized, 0.0f, 1.0f);
+                const float value = (normalized * 2.0f) - 1.0f;
+                current_wavetable.wave[current_point] = value;
+            }
+        }
 
         for (int i = 0; i <= grid_lines; ++i) {
             const float y = canvas_p0.y + size.y * (1.0f - i / static_cast<float>(grid_lines));
