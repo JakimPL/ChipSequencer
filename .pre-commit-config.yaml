@@ -7,19 +7,19 @@ repos:
   - repo: local
     hooks:
       - id: make-config
-        name: Run make config
+        name: make config
         entry: make config
         language: system
         always_run: true
         files: "src/common/config.asm"
       - id: make-song
-        name: Run make song
+        name: make song
         entry: make song
         language: system
         always_run: true
         files: "src/song/header.asm src/song/data.asm"
       - id: make-consts
-        name: Run make song
+        name: make song
         entry: make consts
         language: system
         always_run: true

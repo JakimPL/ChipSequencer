@@ -51,6 +51,11 @@
     %define CHANNEL_SIZE 10
     %endif
 
+; Channel output masks
+    %define CHANNEL_MASK_ADDITIVE 0b01000000
+    %define CHANNEL_MASK_VARIABLE_TYPE 0b00110000
+    %define CHANNEL_MASK_SHIFT 0b00001111
+
 ; Oscillators
     %define BASE_VOLUME 0x8000
     %define OSCILLATOR_INDEX 1

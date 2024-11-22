@@ -34,9 +34,10 @@ class GUIChannelsPanel {
         current_channel.constant_pitch = channel->order_index == 0xFF;
         current_channel.order_index = std::max(0, static_cast<int>(channel->order_index));
         current_channel.oscillator_index = channel->oscillator_index;
-        current_channel.additive = ~(channel->output_flag & 0b10000000);
-        current_channel.type = (channel->output_flag & 0b00110000) >> 4;
-        current_channel.shift = channel->output_flag & 0b00001111;
+        current_channel.additive = !(channel->output_flag & CHANNEL_MASK_ADDITIVE);
+        current_channel.type = (channel->output_flag & CHANNEL_MASK_VARIABLE_TYPE) >> 4;
+        current_channel.shift = channel->output_flag & CHANNEL_MASK_SHIFT;
+        current_channel.output = channel->output;
 
         if (current_channel.constant_pitch) {
             current_channel.pitch = static_cast<float>(channel->pitch) / 0x10000;
@@ -47,6 +48,19 @@ class GUIChannelsPanel {
 
     void to_channel() {
         Channel *channel = channels[channel_index];
+        channel->envelope_index = current_channel.envelope_index;
+        channel->oscillator_index = current_channel.oscillator_index;
+
+        channel->output_flag = current_channel.additive ? 0 : CHANNEL_MASK_ADDITIVE;
+        channel->output_flag |= (current_channel.type << 4) | current_channel.shift;
+        channel->output = current_channel.output;
+
+        channel->order_index = current_channel.constant_pitch ? CONSTANT_PITCH : current_channel.order_index;
+        if (current_channel.constant_pitch) {
+            channel->pitch = static_cast<uint32_t>(std::round(current_channel.pitch * 0x10000));
+        } else {
+            channel->pitch = static_cast<uint32_t>(std::round(0x02000000 * pow(2, current_channel.pitch / 12)));
+        }
     }
 
     void update_channels() {
@@ -66,7 +80,10 @@ class GUIChannelsPanel {
         ImGui::Text("Channel:");
         prepare_combo(envelope_names, "##EnvelopeCombo", current_channel.envelope_index);
         prepare_combo(oscillator_names, "##OscillatorCombo", current_channel.oscillator_index);
-        ImGui::Checkbox("Constant Pitch", &current_channel.constant_pitch);
+        if (ImGui::Checkbox("Constant Pitch", &current_channel.constant_pitch) && !orders.empty()) {
+            current_channel.order_index = 0;
+        }
+
         ImGui::SameLine();
         ImGui::BeginDisabled(current_channel.constant_pitch);
         prepare_combo(order_names, "##OrderCombo", current_channel.order_index);

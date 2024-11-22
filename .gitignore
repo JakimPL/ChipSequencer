@@ -5,8 +5,13 @@
 *.wav
 *.MAP
 *.map
+*.TXT
 *.txt
+*.INI
 *.ini
+*.OBJ
+*.obj
+*.o
 
 bin/
 

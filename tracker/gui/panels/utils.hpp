@@ -8,6 +8,7 @@
 
 #define NOTE_REST -2
 #define NOTE_OFF -1
+#define CONSTANT_PITCH 0xFF
 
 const char *note_names[] = {
     "C-0",
