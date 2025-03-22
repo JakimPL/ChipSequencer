@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string>
 #include "../init.hpp"
+#include "../names.hpp"
 #include "utils.hpp"
 
 class GUIOrdersPanel {
@@ -17,7 +18,6 @@ class GUIOrdersPanel {
     int order_index = 0;
     int selected_sequence = 0;
     const int max_items = 64;
-    std::vector<std::string> order_names;
 
     void from_order() {
         Order *order = orders[order_index];

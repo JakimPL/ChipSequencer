@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <string>
 #include "../init.hpp"
+#include "../names.hpp"
 #include "utils.hpp"
 
 class GUISequencesPanel {
@@ -16,7 +17,6 @@ class GUISequencesPanel {
     int sequence_index = 0;
     int selected_step = 0;
     const int max_steps = 64;
-    std::vector<std::string> sequence_names;
 
     void from_sequence() {
         Sequence *sequence = sequences[sequence_index];

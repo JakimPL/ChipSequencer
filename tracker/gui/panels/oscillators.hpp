@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <string>
 #include "../init.hpp"
+#include "../names.hpp"
 #include "utils.hpp"
 
 class GUIOscillatorsPanel {
@@ -16,9 +17,6 @@ class GUIOscillatorsPanel {
     } current_oscillator;
 
     int oscillator_index = 0;
-    std::vector<std::string> oscillator_names;
-    std::vector<std::string> generator_names;
-    std::vector<std::string> wavetable_names;
 
     void from_oscillator() {
         void *oscillator = oscillators[oscillator_index];

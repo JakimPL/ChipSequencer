@@ -5,6 +5,7 @@
 #include <cmath>
 #include <string>
 #include "../init.hpp"
+#include "../names.hpp"
 #include "utils.hpp"
 
 class GUIChannelsPanel {
@@ -22,11 +23,6 @@ class GUIChannelsPanel {
     } current_channel;
 
     int channel_index = 0;
-    std::vector<std::string> channel_names;
-    std::vector<std::string> envelope_names;
-    std::vector<std::string> order_names;
-    std::vector<std::string> oscillator_names;
-    std::vector<std::string> variable_types = {"Float", "Int8", "Int16", "Int32"};
 
     void from_channel() {
         Channel *channel = channels[channel_index];

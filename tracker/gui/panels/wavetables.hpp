@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include "../init.hpp"
+#include "../names.hpp"
 #include "utils.hpp"
 
 class GUIWavetablesPanel {
@@ -18,7 +19,6 @@ class GUIWavetablesPanel {
 
     int wavetable_index = 0;
     const int max_points = 128;
-    std::vector<std::string> wavetable_names;
 
     void from_wavetable() {
         const Wavetable *wavetable = wavetables[wavetable_index];

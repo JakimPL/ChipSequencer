@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <string>
 #include "../init.hpp"
+#include "../names.hpp"
 #include "utils.hpp"
 
 class GUIEnvelopesPanel {
@@ -20,7 +21,6 @@ class GUIEnvelopesPanel {
     int envelope_index = 0;
     const float max_timer_value = 10.0f;
     const float timer_constant = UINT16_MAX * 0.001f;
-    std::vector<std::string> envelope_names;
 
     static float cast_to_float(int value, float scale = 1.0f) {
         return scale * static_cast<float>(value) / UINT16_MAX;
