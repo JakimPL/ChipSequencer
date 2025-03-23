@@ -12,8 +12,10 @@
 *.OBJ
 *.obj
 *.o
+*.seq
 
 bin/
+temp/
 
 **/*.idea
 **/*.vscode/**

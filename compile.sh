@@ -18,12 +18,18 @@ mv *.o bin/
 
 g++ -m32 -g -c --std=c++17 \
     -Iimgui -Iimgui-knobs -I/usr/include/SDL2 \
+    tracker/song/song.cpp \
+    -o bin/song.o
+
+g++ -m32 -g -c --std=c++17 \
+    -Iimgui -Iimgui-knobs -I/usr/include/SDL2 \
     tracker/main.cpp \
     -o bin/main.o
 
 g++ -m32 -g --std=c++17 \
     -Iimgui -Iimgui-knobs -I/usr/include/SDL2 \
     bin/main.o \
+    bin/song.o \
     bin/player.o \
     bin/imgui.o \
     bin/imgui-knobs.o \
@@ -33,4 +39,4 @@ g++ -m32 -g --std=c++17 \
     bin/imgui_impl_opengl3.o \
     bin/imgui_impl_sdl2.o \
     -o bin/main \
-    -lportaudio -lSDL2 -lGL -ldl -lpthread
+    -lportaudio -lSDL2 -lGL -ldl -lpthread -lz

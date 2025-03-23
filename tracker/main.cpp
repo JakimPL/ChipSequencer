@@ -1,6 +1,6 @@
 #include <array>
 #include <iostream>
-#include "song.hpp"
+#include "song/song.hpp"
 #include "driver/file.hpp"
 #include "driver/port.hpp"
 #include "gui/gui.hpp"
@@ -71,6 +71,22 @@ int main() {
     }
 
     gui.terminate();
+
+    Song song = {
+        bpm,
+        normalizer,
+        CHANNEL_SIZE,
+        SONG_LENGTH,
+        envelopes,
+        sequences,
+        orders,
+        oscillators,
+        wavetables,
+        dsps,
+        channels
+    };
+
+    song.save_to_file("song.seq");
 
 #endif
 
