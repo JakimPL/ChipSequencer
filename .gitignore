@@ -17,6 +17,7 @@
 
 !CMakeLists.txt
 
+Makefile
 cmake_install.cmake
 CMakeFiles/
 
