@@ -12,7 +12,13 @@
 *.OBJ
 *.obj
 *.o
+*.a
 *.seq
+
+!CMakeLists.txt
+
+cmake_install.cmake
+CMakeFiles/
 
 bin/
 temp/
