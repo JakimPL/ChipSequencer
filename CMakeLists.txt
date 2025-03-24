@@ -63,6 +63,15 @@ add_executable(main
     tracker/song/song.cpp
     tracker/driver/file.cpp
     tracker/driver/port.cpp
+    tracker/gui/gui.cpp
+    tracker/gui/panels/channels.cpp
+    tracker/gui/panels/envelopes.cpp
+    tracker/gui/panels/general.cpp
+    tracker/gui/panels/orders.cpp
+    tracker/gui/panels/oscillators.cpp
+    tracker/gui/panels/sequences.cpp
+    tracker/gui/panels/utils.cpp
+    tracker/gui/panels/wavetables.cpp
 )
 
 add_dependencies(main asm_objects)
