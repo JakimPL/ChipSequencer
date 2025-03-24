@@ -59,9 +59,8 @@ nlohmann::json Song::create_header_json() const {
 }
 
 void Song::compress_directory(const std::string &directory, const std::string &output_file) const {
-    std::string tar_command = "tar -czf \"" + output_file + "\" -C \"" +
-                              std::filesystem::path(directory).parent_path().string() +
-                              "\" \"" + std::filesystem::path(directory).filename().string() + "\"";
+    std::string tar_command = "tar -cvf " + output_file + " -C " +
+                              std::filesystem::path(directory).string() + " .";
 
     int result = system(tar_command.c_str());
     if (result != 0) {
@@ -90,11 +89,15 @@ void Song::save_to_file(const std::string &filename) {
     try {
         export_asm_file(temp_dir);
         export_header(temp_dir);
-        export_vector(temp_dir + "/envelopes.bin", envelopes, sizeof(Envelope));
-        export_vector(temp_dir + "/channels.bin", channels, sizeof(Channel));
-        export_arrays(temp_dir + "/sequences.bin", sequences, sizeof(Note));
+        export_vector(temp_dir + "/envelopes.bin", envelopes, {sizeof(Envelope)});
+        export_vector(temp_dir + "/channels.bin", channels, {sizeof(Channel)});
+        export_vector(temp_dir + "/oscillators.bin", oscillators, get_struct_sizes(oscillators));
+        export_vector(temp_dir + "/dsps.bin", dsps, get_struct_sizes(dsps));
+        export_structure(temp_dir + "/sequences.bin", sequences);
+        export_structure(temp_dir + "/orders.bin", orders);
+        export_structure(temp_dir + "/wavetables.bin", wavetables);
         compress_directory(temp_dir, filename);
-        std::filesystem::remove_all(temp_dir);
+        // std::filesystem::remove_all(temp_dir);
     } catch (const std::exception &e) {
         // std::filesystem::remove_all(temp_dir);
         throw;
