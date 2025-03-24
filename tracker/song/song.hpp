@@ -64,15 +64,6 @@ struct Song {
     std::string generate_asm_file() const;
     nlohmann::json create_header_json() const;
 
-    template <typename T>
-    void write_data(std::ofstream &file, const T *data, const size_t size) const;
-
-    template <typename T>
-    void write_vector(std::ofstream &file, const std::vector<T> &vector, const size_t size, bool write_count = true) const;
-
-    template <typename T>
-    void export_vector(const std::string &filename, const std::vector<T> &vector, const size_t size) const;
-
     void export_asm_file(const std::string &directory) const;
     void export_header(const std::string &directory) const;
 

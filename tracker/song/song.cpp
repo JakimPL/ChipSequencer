@@ -8,6 +8,7 @@
 #include <stdexcept>
 
 #include "song.hpp"
+#include "../utils.hpp"
 
 std::string Song::generate_asm_file() const {
     std::stringstream asm_content;
@@ -57,33 +58,6 @@ nlohmann::json Song::create_header_json() const {
     return json;
 }
 
-template <typename T>
-void Song::write_data(std::ofstream &file, const T *data, const size_t size) const {
-    file.write(reinterpret_cast<const char *>(data), size);
-}
-
-template <typename T>
-void Song::write_vector(std::ofstream &file, const std::vector<T> &vector, const size_t size, bool write_count) const {
-    size_t count = vector.size();
-    if (write_count) {
-        write_data(file, &count, 1);
-    }
-    for (size_t i = 0; i < count; i++) {
-        write_data(file, vector[i], size);
-    }
-}
-
-template <typename T>
-void Song::export_vector(const std::string &filename, const std::vector<T> &vector, const size_t size) const {
-    std::ofstream file(filename, std::ios::binary);
-    if (!file) {
-        throw std::runtime_error("Failed to create file: " + filename);
-    }
-
-    write_vector(file, vector, size, false);
-    file.close();
-}
-
 void Song::compress_directory(const std::string &directory, const std::string &output_file) const {
     std::string tar_command = "tar -czf \"" + output_file + "\" -C \"" +
                               std::filesystem::path(directory).parent_path().string() +
@@ -118,6 +92,7 @@ void Song::save_to_file(const std::string &filename) {
         export_header(temp_dir);
         export_vector(temp_dir + "/envelopes.bin", envelopes, sizeof(Envelope));
         export_vector(temp_dir + "/channels.bin", channels, sizeof(Channel));
+        export_arrays(temp_dir + "/sequences.bin", sequences, sizeof(Note));
         compress_directory(temp_dir, filename);
         std::filesystem::remove_all(temp_dir);
     } catch (const std::exception &e) {
