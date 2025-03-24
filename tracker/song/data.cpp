@@ -1,17 +1,4 @@
-#ifndef SONG_HPP
-#define SONG_HPP
-
-#include <nlohmann/json.hpp>
-#include "constants.hpp"
-#include "structures.hpp"
-
-#define SONG_LENGTH 186253
-typedef _Float32 t_output;
-
-extern "C" t_output output;
-extern "C" t_output dsp_input;
-extern "C" uint16_t sample_rate;
-extern "C" void calculate_ticks_per_beat();
+#include "data.hpp"
 
 uint16_t bpm = 300;
 _Float32 normalizer = 0.25f;
@@ -119,5 +106,3 @@ Channels channels = {
 };
 
 uint16_t buffer_offsets[] = {0, 256, 256};
-
-#endif // SONG_HPP

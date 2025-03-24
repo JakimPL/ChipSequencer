@@ -57,7 +57,14 @@ target_include_directories(song PUBLIC
 )
 target_link_libraries(song PUBLIC imgui imgui_knobs)
 
-add_executable(main tracker/main.cpp)
+add_executable(main
+    tracker/main.cpp
+    tracker/song/data.cpp
+    tracker/song/song.cpp
+    tracker/driver/file.cpp
+    tracker/driver/port.cpp
+)
+
 add_dependencies(main asm_objects)
 target_include_directories(main PRIVATE
     ${CMAKE_SOURCE_DIR}/imgui
