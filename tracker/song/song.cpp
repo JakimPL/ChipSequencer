@@ -44,45 +44,43 @@ std::string Song::generate_asm_file() const {
     return asm_content.str();
 }
 
-// Create header JSON file
 nlohmann::json Song::create_header_json() const {
-    nlohmann::json header;
-    header["title"] = "Untitled Song";
-    header["author"] = "Unknown";
-    header["version"] = "1.0";
-    header["bpm"] = bpm;
-    header["normalizer"] = normalizer;
-    header["output_channels"] = output_channels;
+    nlohmann::json json;
+    json["title"] = header.title;
+    json["author"] = header.author;
+    json["version"] = header.version;
+    json["bpm"] = bpm;
+    json["normalizer"] = normalizer;
+    json["output_channels"] = output_channels;
+    json["length"] = song_length;
 
-    return header;
+    return json;
 }
 
 template <typename T>
-void Song::export_binary(const std::string &filename, const T *data, size_t size) const {
-    std::ofstream file(filename, std::ios::binary);
-    if (!file) {
-        throw std::runtime_error("Failed to create file: " + filename);
-    }
+void Song::write_data(std::ofstream &file, const T *data, const size_t size) const {
     file.write(reinterpret_cast<const char *>(data), size);
-    file.close();
 }
 
-void Song::export_envelopes(const std::string &filename) const {
-    size_t count = 0;
-    for (size_t i = 0; envelopes[i] != nullptr; i++) {
-        count++;
+template <typename T>
+void Song::write_vector(std::ofstream &file, const std::vector<T> &vector, const size_t size, bool write_count) const {
+    size_t count = vector.size();
+    if (write_count) {
+        write_data(file, &count, 1);
     }
+    for (size_t i = 0; i < count; i++) {
+        write_data(file, vector[i], size);
+    }
+}
 
+template <typename T>
+void Song::export_vector(const std::string &filename, const std::vector<T> &vector, const size_t size) const {
     std::ofstream file(filename, std::ios::binary);
     if (!file) {
         throw std::runtime_error("Failed to create file: " + filename);
     }
 
-    file.write(reinterpret_cast<const char *>(&count), sizeof(count));
-    for (size_t i = 0; i < count; i++) {
-        file.write(reinterpret_cast<const char *>(envelopes[i]), sizeof(Envelope));
-    }
-
+    write_vector(file, vector, size, false);
     file.close();
 }
 
@@ -97,26 +95,33 @@ void Song::compress_directory(const std::string &directory, const std::string &o
     }
 }
 
+void Song::export_asm_file(const std::string &directory) const {
+    std::string asm_content = generate_asm_file();
+    std::ofstream asm_file(directory + "/song.asm");
+    asm_file << asm_content;
+    asm_file.close();
+}
+
+void Song::export_header(const std::string &directory) const {
+    nlohmann::json header = create_header_json();
+    std::ofstream header_file(directory + "/header.json");
+    header_file << header.dump(4);
+    header_file.close();
+}
+
 void Song::save_to_file(const std::string &filename) {
     std::string temp_dir = "temp";
     std::filesystem::create_directory(temp_dir);
 
     try {
-        std::string asm_content = generate_asm_file();
-        std::ofstream asm_file(temp_dir + "/song.asm");
-        asm_file << asm_content;
-        asm_file.close();
-
-        nlohmann::json header = create_header_json();
-        std::ofstream header_file(temp_dir + "/header.json");
-        header_file << header.dump(4);
-        header_file.close();
-
-        export_envelopes(temp_dir + "/envelopes.bin");
+        export_asm_file(temp_dir);
+        export_header(temp_dir);
+        export_vector(temp_dir + "/envelopes.bin", envelopes, sizeof(Envelope));
+        export_vector(temp_dir + "/channels.bin", channels, sizeof(Channel));
         compress_directory(temp_dir, filename);
         std::filesystem::remove_all(temp_dir);
     } catch (const std::exception &e) {
-        std::filesystem::remove_all(temp_dir);
+        // std::filesystem::remove_all(temp_dir);
         throw;
     }
 }
