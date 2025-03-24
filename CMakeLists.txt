@@ -63,6 +63,11 @@ add_executable(main
     tracker/song/song.cpp
     tracker/driver/file.cpp
     tracker/driver/port.cpp
+    tracker/structures/channel.cpp
+    tracker/structures/dsp.cpp
+    tracker/structures/order.cpp
+    tracker/structures/sequence.cpp
+    tracker/structures/wavetable.cpp
     tracker/gui/gui.cpp
     tracker/gui/panels/channels.cpp
     tracker/gui/panels/envelopes.cpp

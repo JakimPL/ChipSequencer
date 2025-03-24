@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "utils.hpp"
 
 const char *note_names[] = {

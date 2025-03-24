@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <vector>
 
+#include "../constants.hpp"
+
 struct Oscillator {
     uint8_t oscillator_size;
     uint8_t generator_index;

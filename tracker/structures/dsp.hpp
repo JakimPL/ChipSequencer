@@ -2,13 +2,18 @@
 #define STRUCTURES_DSP_HPP
 
 #include <cstdint>
+#include <fstream>
 #include <vector>
+
+#include "../constants.hpp"
 
 struct DSP {
     uint8_t dsp_size;
     uint8_t effect_index;
     void *output;
     uint8_t output_flag;
+
+    virtual void serialize(std::ofstream &file) const = 0;
 };
 
 struct DSPDelay {
@@ -20,6 +25,8 @@ struct DSPDelay {
     uint16_t wet;
     uint16_t feedback;
     uint16_t delay_time;
+
+    void serialize(std::ofstream &file) const;
 };
 
 struct DSPGainer {
@@ -28,6 +35,8 @@ struct DSPGainer {
     void *output;
     uint8_t output_flag;
     uint16_t volume;
+
+    void serialize(std::ofstream &file) const;
 };
 
 struct DSPFilter {
@@ -36,6 +45,8 @@ struct DSPFilter {
     void *output;
     uint8_t output_flag;
     uint16_t frequency;
+
+    void serialize(std::ofstream &file) const;
 };
 
 typedef std::vector<void *> DSPs;

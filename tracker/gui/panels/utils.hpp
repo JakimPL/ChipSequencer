@@ -1,7 +1,6 @@
 #ifndef GUI_PANELS_UTILS_HPP
 #define GUI_PANELS_UTILS_HPP
 
-#include <algorithm>
 #include <string>
 #include <vector>
 
