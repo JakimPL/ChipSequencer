@@ -82,6 +82,36 @@ void Song::export_header(const std::string &directory) const {
     header_file.close();
 }
 
+void Song::export_channels(const std::string &filename) const {
+    std::ofstream file(filename, std::ios::binary);
+    for (const Channel *channel : channels) {
+        channel->serialize(file);
+    }
+    file.close();
+}
+
+void Song::export_dsps(const std::string &filename) const {
+    std::ofstream file(filename, std::ios::binary);
+    for (void *dsp : dsps) {
+        const uint8_t *bytes = static_cast<const uint8_t *>(dsp);
+        uint8_t dsp_type = bytes[1];
+        switch (dsp_type) {
+        case EFFECT_DELAY:
+            reinterpret_cast<DSPDelay *>(dsp)->serialize(file);
+            break;
+        case EFFECT_GAINER:
+            reinterpret_cast<DSPGainer *>(dsp)->serialize(file);
+            break;
+        case EFFECT_FILTER:
+            reinterpret_cast<DSPFilter *>(dsp)->serialize(file);
+            break;
+        default:
+            throw std::runtime_error("Unknown DSP type: " + std::to_string(dsp_type));
+        }
+    }
+    file.close();
+}
+
 void Song::save_to_file(const std::string &filename) {
     std::string temp_dir = "temp";
     std::filesystem::create_directory(temp_dir);
@@ -90,9 +120,9 @@ void Song::save_to_file(const std::string &filename) {
         export_asm_file(temp_dir);
         export_header(temp_dir);
         export_vector(temp_dir + "/envelopes.bin", envelopes, {sizeof(Envelope)});
-        export_vector(temp_dir + "/channels.bin", channels, {sizeof(Channel)});
+        export_channels(temp_dir + "/channels.bin");
         export_vector(temp_dir + "/oscillators.bin", oscillators, get_struct_sizes(oscillators));
-        export_vector(temp_dir + "/dsps.bin", dsps, get_struct_sizes(dsps));
+        export_dsps(temp_dir + "/dsps.bin");
         export_structure(temp_dir + "/sequences.bin", sequences);
         export_structure(temp_dir + "/orders.bin", orders);
         export_structure(temp_dir + "/wavetables.bin", wavetables);

@@ -66,6 +66,8 @@ struct Song {
 
     void export_asm_file(const std::string &directory) const;
     void export_header(const std::string &directory) const;
+    void export_channels(const std::string &filename) const;
+    void export_dsps(const std::string &filename) const;
 
     void compress_directory(const std::string &directory, const std::string &output_file) const;
 };
