@@ -71,14 +71,18 @@ struct Song {
     std::string generate_asm_file() const;
     nlohmann::json create_header_json() const;
 
+    void set_link(Link &link, void *item) const;
     void set_links();
 
     void export_asm_file(const std::string &directory) const;
     void export_header(const std::string &directory) const;
     void export_channels(const std::string &filename) const;
     void export_dsps(const std::string &filename) const;
+    void export_offsets(const std::string &filename) const;
     void export_links(const std::string &filename) const;
 
+    int run_command(const std::string &command) const;
+    void compile_sources(const std::string &directory) const;
     void compress_directory(const std::string &directory, const std::string &output_file) const;
 };
 
