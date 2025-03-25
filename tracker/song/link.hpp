@@ -26,10 +26,12 @@ struct Link {
     ItemType type;
     Target target;
     uint8_t index;
-    void *item;
-    void *pointer;
+    uint16_t offset;
+    void *item = nullptr;
+    void *base = nullptr;
+    void *pointer = nullptr;
 
-    void set_pointer();
+    void assign_output();
     void serialize(std::ofstream &file) const;
 };
 

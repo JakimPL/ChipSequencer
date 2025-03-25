@@ -52,7 +52,9 @@ struct Song {
           wavetables(wav),
           dsps(dsp),
           channels(chn),
-          links(lnk) {}
+          links(lnk) {
+        set_links();
+    }
 
     ~Song() {
         // for (auto env : envelopes) delete env;
@@ -68,6 +70,8 @@ struct Song {
   private:
     std::string generate_asm_file() const;
     nlohmann::json create_header_json() const;
+
+    void set_links();
 
     void export_asm_file(const std::string &directory) const;
     void export_header(const std::string &directory) const;

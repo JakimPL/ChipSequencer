@@ -7,8 +7,9 @@
 #include <vector>
 #include <zlib.h>
 
-#include "song.hpp"
 #include "../utils.hpp"
+#include "data.hpp"
+#include "song.hpp"
 
 std::string Song::generate_asm_file() const {
     std::stringstream asm_content;
@@ -56,6 +57,44 @@ nlohmann::json Song::create_header_json() const {
     json["length"] = song_length;
 
     return json;
+}
+
+void Song::set_links() {
+    for (size_t i = 0; i < channels.size(); i++) {
+        Link &link = links[0][i];
+        switch (link.target) {
+        case Target::OUTPUT_CHANNEL:
+            link.base = &output;
+            break;
+        case Target::DSP_CHANNEL:
+            link.base = &dsp_input;
+            break;
+        case Target::ENVELOPE:
+            link.base = envelopes[link.index];
+            break;
+        case Target::SEQUENCE:
+            link.base = sequences[link.index];
+            break;
+        case Target::ORDER:
+            link.base = orders[link.index];
+            break;
+        case Target::OSCILLATOR:
+            link.base = oscillators[link.index];
+            break;
+        case Target::WAVETABLE:
+            link.base = wavetables[link.index];
+            break;
+        case Target::DSP:
+            link.base = dsps[link.index];
+            break;
+        case Target::CHANNEL:
+            link.base = channels[link.index];
+            break;
+        }
+        link.item = channels[i];
+        link.pointer = link.base + link.offset;
+        link.assign_output();
+    }
 }
 
 void Song::compress_directory(const std::string &directory, const std::string &output_file) const {
