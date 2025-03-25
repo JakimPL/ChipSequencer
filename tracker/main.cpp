@@ -83,7 +83,8 @@ int main() {
         oscillators,
         wavetables,
         dsps,
-        channels
+        channels,
+        links
     };
 
     song.save_to_file("song.seq");

@@ -3,6 +3,7 @@
 
 #include "../constants.hpp"
 #include "../structures.hpp"
+#include "link.hpp"
 
 #define SONG_LENGTH 186253
 typedef _Float32 t_output;
@@ -67,5 +68,7 @@ extern Channel channel8;
 extern Channels channels;
 
 extern "C" uint16_t buffer_offsets[];
+
+extern Links links;
 
 #endif // SONG_DATA_HPP

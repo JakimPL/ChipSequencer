@@ -2,8 +2,10 @@
 #define SONG_SONG_HPP
 
 #include <nlohmann/json.hpp>
+
 #include "../constants.hpp"
 #include "../structures.hpp"
+#include "link.hpp"
 
 struct Song {
     struct Header {
@@ -23,6 +25,7 @@ struct Song {
     Wavetables &wavetables;
     DSPs &dsps;
     Channels &channels;
+    std::map<ItemType, std::vector<Link>> &links;
 
     Song(
         uint16_t &bpm_reference,
@@ -35,7 +38,8 @@ struct Song {
         Oscillators &osc,
         Wavetables &wav,
         DSPs &dsp,
-        Channels &chn
+        Channels &chn,
+        Links &lnk
     )
         : bpm(bpm_reference),
           normalizer(normalizer_reference),
@@ -47,7 +51,8 @@ struct Song {
           oscillators(osc),
           wavetables(wav),
           dsps(dsp),
-          channels(chn) {}
+          channels(chn),
+          links(lnk) {}
 
     ~Song() {
         // for (auto env : envelopes) delete env;

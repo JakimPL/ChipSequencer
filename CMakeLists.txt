@@ -60,6 +60,7 @@ target_link_libraries(song PUBLIC imgui imgui_knobs)
 add_executable(main
     tracker/main.cpp
     tracker/song/data.cpp
+    tracker/song/link.cpp
     tracker/song/song.cpp
     tracker/driver/file.cpp
     tracker/driver/port.cpp
