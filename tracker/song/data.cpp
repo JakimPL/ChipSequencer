@@ -108,20 +108,18 @@ Channels channels = {
 uint16_t buffer_offsets[] = {0, 256, 256};
 
 Links links = {
-    {ItemType::CHANNEL,
-     {
-         {ItemType::CHANNEL, Target::OUTPUT_CHANNEL, 0, &channel0, &output},
-         {ItemType::CHANNEL, Target::OUTPUT_CHANNEL, 1, &channel1, &output},
-         {ItemType::CHANNEL, Target::OUTPUT_CHANNEL, 2, &channel2, &output},
-         {ItemType::CHANNEL, Target::OUTPUT_CHANNEL, 3, &channel3, &output},
-         {ItemType::CHANNEL, Target::OUTPUT_CHANNEL, 4, &channel4, &output},
-         {ItemType::CHANNEL, Target::OUTPUT_CHANNEL, 5, &channel5, &output},
-         {ItemType::CHANNEL, Target::DSP, 6, &channel6, &(dsp2.frequency)},
-         {ItemType::CHANNEL, Target::CHANNEL, 7, &channel7, &(channel0.pitch)},
-         {ItemType::CHANNEL, Target::OSCILLATOR, 8, &channel8, &(oscillator0.duty_cycle)},
-     }},
-    {ItemType::DSP,
-     {{ItemType::DSP, Target::OUTPUT_CHANNEL, 0, &dsp0, &output},
-      {ItemType::DSP, Target::OUTPUT_CHANNEL, 1, &dsp1, &output},
-      {ItemType::DSP, Target::OUTPUT_CHANNEL, 2, &dsp2, &output}}}
+    {
+        {ItemType::CHANNEL, Target::OUTPUT_CHANNEL, 0, &channel0, &output},
+        {ItemType::CHANNEL, Target::OUTPUT_CHANNEL, 1, &channel1, &output},
+        {ItemType::CHANNEL, Target::OUTPUT_CHANNEL, 2, &channel2, &output},
+        {ItemType::CHANNEL, Target::OUTPUT_CHANNEL, 3, &channel3, &output},
+        {ItemType::CHANNEL, Target::OUTPUT_CHANNEL, 4, &channel4, &output},
+        {ItemType::CHANNEL, Target::OUTPUT_CHANNEL, 5, &channel5, &output},
+        {ItemType::CHANNEL, Target::DSP, 6, &channel6, &(dsp2.frequency)},
+        {ItemType::CHANNEL, Target::CHANNEL, 7, &channel7, &(channel0.pitch)},
+        {ItemType::CHANNEL, Target::OSCILLATOR, 8, &channel8, &(oscillator0.duty_cycle)},
+    },
+    {{ItemType::DSP, Target::OUTPUT_CHANNEL, 0, &dsp0, &output},
+     {ItemType::DSP, Target::OUTPUT_CHANNEL, 1, &dsp1, &output},
+     {ItemType::DSP, Target::OUTPUT_CHANNEL, 2, &dsp2, &output}}
 };

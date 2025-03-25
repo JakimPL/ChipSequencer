@@ -1,16 +1,24 @@
 #include "../constants.hpp"
 #include "../structures.hpp"
+#include "../utils.hpp"
 #include "link.hpp"
 
 void Link::set_pointer() {
+    Channel *channel = static_cast<Channel *>(item);
+    void **dsp_output = reinterpret_cast<void **>(item + DSP_OUTPUT);
+
     switch (type) {
     case ItemType::CHANNEL:
-        Channel *channel = static_cast<Channel *>(item);
         channel->output = pointer;
         break;
     case ItemType::DSP:
-        void **dsp_output = reinterpret_cast<void **>(item + DSP_OUTPUT);
         *dsp_output = pointer;
         break;
     }
+}
+
+void Link::serialize(std::ofstream &file) const {
+    write_data(file, &type, 1);
+    write_data(file, &target, 1);
+    write_data(file, &index, 1);
 }

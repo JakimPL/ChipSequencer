@@ -17,9 +17,9 @@ enum class Target : uint8_t {
     CHANNEL
 };
 
-enum class ItemType : bool {
-    CHANNEL,
-    DSP
+enum class ItemType : u_int8_t {
+    CHANNEL = 0,
+    DSP = 1
 };
 
 struct Link {
@@ -30,8 +30,9 @@ struct Link {
     void *pointer;
 
     void set_pointer();
+    void serialize(std::ofstream &file) const;
 };
 
-typedef std::map<ItemType, std::vector<Link>> Links;
+typedef std::vector<std::vector<Link>> Links;
 
 #endif // SONG_LINK_HPP

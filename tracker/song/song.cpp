@@ -1,11 +1,11 @@
-#include <string>
-#include <fstream>
-#include <sstream>
 #include <filesystem>
-#include <zlib.h>
-#include <vector>
+#include <fstream>
 #include <memory>
+#include <sstream>
 #include <stdexcept>
+#include <string>
+#include <vector>
+#include <zlib.h>
 
 #include "song.hpp"
 #include "../utils.hpp"
@@ -112,6 +112,17 @@ void Song::export_dsps(const std::string &filename) const {
     file.close();
 }
 
+void Song::export_links(const std::string &filename) const {
+    std::ofstream file(filename, std::ios::binary);
+    for (const auto &link : links[0]) {
+        link.serialize(file);
+    }
+    for (const auto &link : links[1]) {
+        link.serialize(file);
+    }
+    file.close();
+}
+
 void Song::save_to_file(const std::string &filename) {
     std::string temp_dir = "temp";
     std::filesystem::create_directory(temp_dir);
@@ -126,6 +137,7 @@ void Song::save_to_file(const std::string &filename) {
         export_structure(temp_dir + "/sequences.bin", sequences);
         export_structure(temp_dir + "/orders.bin", orders);
         export_structure(temp_dir + "/wavetables.bin", wavetables);
+        export_links(temp_dir + "/links.bin");
         compress_directory(temp_dir, filename);
         // std::filesystem::remove_all(temp_dir);
     } catch (const std::exception &e) {
