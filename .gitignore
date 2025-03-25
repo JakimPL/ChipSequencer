@@ -11,6 +11,8 @@
 *.ini
 *.OBJ
 *.obj
+*.SWP
+*.swp
 *.o
 *.a
 *.seq
@@ -23,6 +25,9 @@ CMakeFiles/
 
 bin/
 temp/
+
+apack/
+APACK/
 
 **/*.idea
 **/*.vscode/**
