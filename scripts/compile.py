@@ -4,6 +4,8 @@ import subprocess
 from distutils.dir_util import copy_tree
 from pathlib import Path
 
+from compiler.compiler import Compiler
+
 
 def copy_source(temp_dir: Path, song_dir: Path, apack_dir: Path) -> None:
     copy_tree("src", str(temp_dir / "src"))
@@ -42,17 +44,5 @@ if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument("directory", type=str)
     args = arg_parser.parse_args()
-
-    temp_dir = Path(args.directory)
-    temp_dir.mkdir(exist_ok=True)
-
-    apack_dir = Path("apack")
-
-    bin_dir = temp_dir / "bin"
-    bin_dir.mkdir(exist_ok=True)
-
-    song_dir = temp_dir / "song"
-    copy_source(temp_dir, song_dir, apack_dir)
-    run_dosbox(temp_dir)
-
-    shutil.copy(bin_dir / "PLAYER.EXE", song_dir / "player.exe")
+    compiler = Compiler(args.directory)
+    compiler()
