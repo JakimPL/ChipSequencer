@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "oscillators.hpp"
 
 void GUIOscillatorsPanel::from_oscillator() {

@@ -129,6 +129,54 @@ std::string Song::get_element_path(const std::string &directory, const std::stri
     return directory + separator + prefix + "_" + std::to_string(i) + ".bin";
 }
 
+void Song::serialize_channel(std::ofstream &file, Channel *channel) const {
+    uint16_t null = 0;
+    write_data(file, &channel->envelope_index, sizeof(channel->envelope_index));
+    write_data(file, &channel->order_index, sizeof(channel->order_index));
+    write_data(file, &channel->oscillator_index, sizeof(channel->oscillator_index));
+    write_data(file, &channel->pitch, sizeof(channel->pitch));
+    write_data(file, &null, sizeof(null));
+    write_data(file, &channel->output_flag, sizeof(channel->output_flag));
+}
+
+void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
+    const uint8_t *bytes = static_cast<const uint8_t *>(dsp);
+    uint8_t dsp_type = bytes[1];
+    uint16_t null = 0;
+    if (dsp_type == EFFECT_DELAY) {
+        DSPDelay *delay = reinterpret_cast<DSPDelay *>(dsp);
+        uint8_t size = 12;
+        write_data(file, &size, sizeof(size));
+        write_data(file, &delay->effect_index, sizeof(delay->effect_index));
+        write_data(file, &null, sizeof(null));
+        write_data(file, &delay->output_flag, sizeof(delay->output_flag));
+        write_data(file, &delay->dry, sizeof(delay->dry));
+        write_data(file, &delay->wet, sizeof(delay->wet));
+        write_data(file, &delay->feedback, sizeof(delay->feedback));
+        write_data(file, &delay->delay_time, sizeof(delay->delay_time));
+    } else if (dsp_type == EFFECT_GAINER) {
+        DSPGainer *gainer = reinterpret_cast<DSPGainer *>(dsp);
+        uint16_t null = 0;
+        uint8_t size = 6;
+        write_data(file, &size, sizeof(size));
+        write_data(file, &gainer->effect_index, sizeof(gainer->effect_index));
+        write_data(file, &null, sizeof(null));
+        write_data(file, &gainer->output_flag, sizeof(gainer->output_flag));
+        write_data(file, &gainer->volume, sizeof(gainer->volume));
+    } else if (dsp_type == EFFECT_FILTER) {
+        DSPFilter *filter = reinterpret_cast<DSPFilter *>(dsp);
+        uint16_t null = 0;
+        uint8_t size = 6;
+        write_data(file, &size, sizeof(size));
+        write_data(file, &filter->effect_index, sizeof(filter->effect_index));
+        write_data(file, &null, sizeof(null));
+        write_data(file, &filter->output_flag, sizeof(filter->output_flag));
+        write_data(file, &filter->frequency, sizeof(filter->frequency));
+    } else {
+        throw std::runtime_error("Unknown DSP type: " + std::to_string(dsp_type));
+    }
+}
+
 void Song::export_asm_file(const std::string &directory) const {
     std::string asm_content = generate_asm_file();
     std::ofstream asm_file(directory + "/song.asm");
@@ -161,7 +209,8 @@ void Song::export_channels(const std::string &directory) const {
         std::ofstream file(filename, std::ios::binary);
 
         Channel *channel = channels[i];
-        channel->serialize(file);
+        uint16_t null = 0;
+        serialize_channel(file, channel);
         file.close();
     }
 }
@@ -175,21 +224,7 @@ void Song::export_dsps(const std::string &directory) const {
         std::ofstream file(filename, std::ios::binary);
 
         void *dsp = dsps[i];
-        const uint8_t *bytes = static_cast<const uint8_t *>(dsp);
-        uint8_t dsp_type = bytes[1];
-        switch (dsp_type) {
-        case EFFECT_DELAY:
-            reinterpret_cast<DSPDelay *>(dsp)->serialize(file);
-            break;
-        case EFFECT_GAINER:
-            reinterpret_cast<DSPGainer *>(dsp)->serialize(file);
-            break;
-        case EFFECT_FILTER:
-            reinterpret_cast<DSPFilter *>(dsp)->serialize(file);
-            break;
-        default:
-            throw std::runtime_error("Unknown DSP type: " + std::to_string(dsp_type));
-        }
+        serialize_dsp(file, dsp);
         file.close();
     }
 }

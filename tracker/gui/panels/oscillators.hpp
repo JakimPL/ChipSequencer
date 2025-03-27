@@ -1,8 +1,9 @@
 #ifndef GUI_PANELS_OSCILLATORS_HPP
 #define GUI_PANELS_OSCILLATORS_HPP
 
-#include <algorithm>
 #include <string>
+#include <vector>
+
 #include "../init.hpp"
 #include "../names.hpp"
 #include "utils.hpp"

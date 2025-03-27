@@ -78,6 +78,9 @@ struct Song {
     void set_link(Link &link, void *item, const u_int8_t i) const;
     void set_links();
 
+    void serialize_channel(std::ofstream &file, Channel *channel) const;
+    void serialize_dsp(std::ofstream &file, void *dsp) const;
+
     void export_asm_file(const std::string &directory) const;
     void export_header(const std::string &directory) const;
 
