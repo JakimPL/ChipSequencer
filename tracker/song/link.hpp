@@ -24,10 +24,10 @@ enum class ItemType : u_int8_t {
 
 struct Link {
     ItemType type;
+    uint8_t id;
     Target target;
     uint8_t index;
     uint16_t offset;
-    uint16_t item_offset;
     void *item = nullptr;
     void *base = nullptr;
     void *pointer = nullptr;

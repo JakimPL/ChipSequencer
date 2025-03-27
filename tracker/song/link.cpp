@@ -19,8 +19,8 @@ void Link::assign_output() {
 
 void Link::serialize(std::ofstream &file) const {
     write_data(file, &type, 1);
+    write_data(file, &id, 1);
     write_data(file, &target, 1);
     write_data(file, &index, 1);
     write_data(file, &offset, 2);
-    write_data(file, &item_offset, 2);
 }

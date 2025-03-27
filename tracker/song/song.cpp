@@ -31,8 +31,8 @@ std::string Song::generate_asm_file() const {
     generate_header_vector(asm_content, "envelope", "envel", envelopes.size());
     generate_header_vector(asm_content, "sequence", "seq", sequences.size());
     generate_header_vector(asm_content, "order", "order", orders.size());
-    generate_header_vector(asm_content, "wavetable", "wave", wavetables.size());
     generate_header_vector(asm_content, "oscillator", "osc", oscillators.size());
+    generate_header_vector(asm_content, "wavetable", "wave", wavetables.size());
     generate_header_vector(asm_content, "dsp", "dsp", dsps.size());
     generate_header_vector(asm_content, "channel", "chan", channels.size());
 
@@ -51,11 +51,18 @@ nlohmann::json Song::create_header_json() const {
     json["normalizer"] = normalizer;
     json["output_channels"] = output_channels;
     json["length"] = song_length;
+    json["envelopes"] = envelopes.size();
+    json["sequences"] = sequences.size();
+    json["orders"] = orders.size();
+    json["wavetables"] = wavetables.size();
+    json["oscillators"] = oscillators.size();
+    json["dsps"] = dsps.size();
+    json["channels"] = channels.size();
 
     return json;
 }
 
-void Song::set_link(Link &link, void *item) const {
+void Song::set_link(Link &link, void *item, const u_int8_t i) const {
     switch (link.target) {
     case Target::OUTPUT_CHANNEL:
         link.base = &output;
@@ -85,6 +92,7 @@ void Song::set_link(Link &link, void *item) const {
         link.base = channels[link.index];
         break;
     }
+    link.id = i;
     link.item = item;
     link.pointer = link.base + link.offset;
     link.assign_output();
@@ -94,12 +102,12 @@ void Song::set_links() {
     for (size_t i = 0; i < channels.size(); i++) {
         Link &link = links[0][i];
         void *item = channels[i];
-        set_link(link, item);
+        set_link(link, item, i);
     }
     for (size_t i = 0; i < dsps.size(); i++) {
         Link &link = links[1][i];
         void *item = dsps[i];
-        set_link(link, item);
+        set_link(link, item, i);
     }
 }
 

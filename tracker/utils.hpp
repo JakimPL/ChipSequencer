@@ -51,7 +51,7 @@ template <typename T>
 std::vector<size_t> get_struct_sizes(const std::vector<T> &data) {
     std::vector<size_t> sizes;
     for (const void *pointer : data) {
-        sizes.push_back(get_struct_size(pointer));
+        sizes.push_back(get_struct_size(pointer) + 1);
     }
     return sizes;
 }

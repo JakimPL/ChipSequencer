@@ -1,10 +1,14 @@
+import json
 import os
 import re
 import shutil
+import struct
 import subprocess
 from distutils.dir_util import copy_tree
 from pathlib import Path
-from typing import Dict, Tuple, Union
+from typing import Any, Dict, List, Tuple, Union
+
+from compiler.link import Link, LinkTarget, LinkType
 
 
 class Compiler:
@@ -13,14 +17,24 @@ class Compiler:
         self.apack_dir = Path("apack")
         self.bin_dir = self.temp_dir / "bin"
         self.song_dir = self.temp_dir / "song"
+        self.header_path = self.song_dir / "header.json"
         self.pattern = re.compile(r"^[0-9a-f]{4}:[0-9a-f]{4}")
 
     def __call__(self) -> None:
         self.temp_dir.mkdir(exist_ok=True)
         self.bin_dir.mkdir(exist_ok=True)
         self.copy_source()
-        self.run_dosbox()
+
+        # first pass
+        self.compile()
+
+        links = self.get_links()
         references = self.get_references()
+        self.inject_references(links, references)
+
+        # second pass
+        self.compile(pack=True)
+
         self.copy_executable()
 
     def copy_source(self) -> None:
@@ -36,26 +50,35 @@ class Compiler:
     def copy_executable(self):
         shutil.copy(self.bin_dir / "PLAYER.EXE", self.song_dir / "player.exe")
 
-    def run_dosbox(self) -> None:
-        subprocess.run(
-            [
-                "dosbox",
-                "-noautoexec",
-                "-c",
-                "mount c: .",
-                "-c",
-                "c:",
-                "-c",
-                "call compile.bat",
+    def compile(self, pack: bool = False) -> None:
+        args = ["dosbox", "-noautoexec", "-c", "mount c: .", "-c", "c:", "-c", "call compile.bat"]
+
+        if pack:
+            args += [
                 "-c",
                 "cd apack",
                 "-c",
                 "apack ../bin/MAIN.EXE ../bin/player.exe",
-                "-c",
-                "exit",
-            ],
-            cwd=self.temp_dir,
-        )
+            ]
+
+        args += ["-c", "exit"]
+
+        subprocess.run(args, cwd=self.temp_dir)
+
+    def get_links(self) -> List[Link]:
+        links_path = self.song_dir / "links.bin"
+        binary_data = self.load_binary(links_path)
+
+        links = []
+        format_string = "<BBBBH"
+        struct_size = struct.calcsize(format_string)
+
+        for i in range(0, len(binary_data), struct_size):
+            chunk = binary_data[i : i + struct_size]
+            type_id, item_id, target, index, offset = struct.unpack(format_string, chunk)
+            links.append(Link(LinkType(type_id), item_id, LinkTarget.from_integer(target), index, offset))
+
+        return links
 
     def get_references(self) -> Dict[str, Tuple[int, ...]]:
         map_path = self.bin_dir / "PLAYER.MAP"
@@ -69,3 +92,43 @@ class Compiler:
                     addresses[name] = tuple(map(lambda x: int(x, 16), match[0].split(":")))
 
             return addresses
+
+    def inject_references(self, links: List[Link], references: Dict[str, Tuple[int, ...]]) -> None:
+        for link in links:
+            target = link.target
+            i = link.id
+            if link.type == LinkType.CHANNEL:
+                file = self.song_dir / "chans" / f"chan_{i}.bin"
+                target_slice = slice(7, 9)
+            elif link.type == LinkType.DSP:
+                file = self.song_dir / "dsps" / f"dsp_{i}.bin"
+                target_slice = slice(2, 4)
+            else:
+                raise ValueError(f"Invalid type: {link.type}")
+
+            if target == LinkTarget.OUTPUT:
+                reference = references["output"][1]
+            elif target == LinkTarget.DSP_INPUT:
+                reference = references["dsp_input"][1]
+            else:
+                reference = references[f"{target.value}s.{target.value}_{link.index}"][1]
+            reference += link.offset
+
+            binary_data = bytearray(self.load_binary(file))
+            binary_data[target_slice] = struct.pack("<H", reference)
+            self.save_binary(file, bytes(binary_data))
+
+    @staticmethod
+    def load_json(path: Union[str, os.PathLike]) -> Dict[Any, Any]:
+        with open(path, "r") as file:
+            return json.load(file)
+
+    @staticmethod
+    def load_binary(path: Union[str, os.PathLike]) -> bytes:
+        with open(path, "rb") as file:
+            return file.read()
+
+    @staticmethod
+    def save_binary(path: Union[str, os.PathLike], data: bytes) -> None:
+        with open(path, "wb") as file:
+            file.write(data)

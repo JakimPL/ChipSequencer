@@ -5,13 +5,14 @@
 
 #include "../constants.hpp"
 #include "../structures.hpp"
+#include "../version.hpp"
 #include "link.hpp"
 
 struct Song {
     struct Header {
         std::string author;
         std::string title;
-        std::string version;
+        std::string version = TRACKER_VERSION;
     } header;
 
     uint16_t &bpm;
@@ -74,7 +75,7 @@ struct Song {
 
     std::string get_element_path(const std::string &directory, const std::string prefix, const size_t i, const char separator = '/') const;
 
-    void set_link(Link &link, void *item) const;
+    void set_link(Link &link, void *item, const u_int8_t i) const;
     void set_links();
 
     void export_asm_file(const std::string &directory) const;
