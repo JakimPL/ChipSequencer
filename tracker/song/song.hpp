@@ -68,16 +68,26 @@ struct Song {
     void save_to_file(const std::string &filename);
 
   private:
+    void generate_header_vector(std::stringstream &asm_content, const std::string &name, const std::string &short_name, const size_t size) const;
     std::string generate_asm_file() const;
     nlohmann::json create_header_json() const;
+
+    std::string get_element_path(const std::string &directory, const std::string prefix, const size_t i, const char separator = '/') const;
 
     void set_link(Link &link, void *item) const;
     void set_links();
 
     void export_asm_file(const std::string &directory) const;
     void export_header(const std::string &directory) const;
-    void export_channels(const std::string &filename) const;
-    void export_dsps(const std::string &filename) const;
+
+    template <typename T>
+    void export_series(const std::string &song_dir, const std::string &prefix, const std::vector<T> &series, const std::vector<size_t> &sizes) const;
+
+    template <typename T>
+    void export_arrays(const std::string &directory, const std::string &prefix, const std::vector<T> &arrays) const;
+
+    void export_channels(const std::string &directory) const;
+    void export_dsps(const std::string &directory) const;
     void export_offsets(const std::string &filename) const;
     void export_links(const std::string &filename) const;
 

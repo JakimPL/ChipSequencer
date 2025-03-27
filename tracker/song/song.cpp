@@ -11,6 +11,15 @@
 #include "data.hpp"
 #include "song.hpp"
 
+void Song::generate_header_vector(std::stringstream &asm_content, const std::string &name, const std::string &short_name, const size_t size) const {
+    asm_content << name << "s:\n";
+    for (size_t i = 0; i < size; i++) {
+        asm_content << "global " << name << "s." << name << "_" << i << ":\n";
+        asm_content << "." << name << "_" << i << ":\n";
+        asm_content << "incbin \"song\\" << get_element_path(short_name + "s", short_name, i, '\\') << "\"\n";
+    }
+}
+
 std::string Song::generate_asm_file() const {
     std::stringstream asm_content;
     asm_content << "SEGMENT_DATA\n";
@@ -19,26 +28,13 @@ std::string Song::generate_asm_file() const {
     asm_content << "normalizer:\n";
     asm_content << "dd " << normalizer << "\n\n";
 
-    asm_content << "envelopes:\n";
-    asm_content << "incbin \"song\\envels.bin\"\n\n";
-
-    asm_content << "sequences:\n";
-    asm_content << "incbin \"song\\seqs.bin\"\n\n";
-
-    asm_content << "orders:\n";
-    asm_content << "incbin \"song\\orders.bin\"\n\n";
-
-    asm_content << "oscillators:\n";
-    asm_content << "incbin \"song\\oscs.bin\"\n\n";
-
-    asm_content << "wavetables:\n";
-    asm_content << "incbin \"song\\waves.bin\"\n\n";
-
-    asm_content << "dsps:\n";
-    asm_content << "incbin \"song\\dsps.bin\"\n\n";
-
-    asm_content << "channels:\n";
-    asm_content << "incbin \"song\\channels.bin\"\n\n";
+    generate_header_vector(asm_content, "envelope", "envel", envelopes.size());
+    generate_header_vector(asm_content, "sequence", "seq", sequences.size());
+    generate_header_vector(asm_content, "order", "order", orders.size());
+    generate_header_vector(asm_content, "wavetable", "wave", wavetables.size());
+    generate_header_vector(asm_content, "oscillator", "osc", oscillators.size());
+    generate_header_vector(asm_content, "dsp", "dsp", dsps.size());
+    generate_header_vector(asm_content, "channel", "chan", channels.size());
 
     asm_content << "buffer_offsets:\n";
     asm_content << "incbin \"song\\offsets.bin\"\n";
@@ -121,6 +117,10 @@ void Song::compile_sources(const std::string &directory) const {
     run_command("python scripts/compile.py \"" + directory + "\"");
 }
 
+std::string Song::get_element_path(const std::string &directory, const std::string prefix, const size_t i, const char separator) const {
+    return directory + separator + prefix + "_" + std::to_string(i) + ".bin";
+}
+
 void Song::export_asm_file(const std::string &directory) const {
     std::string asm_content = generate_asm_file();
     std::ofstream asm_file(directory + "/song.asm");
@@ -135,17 +135,38 @@ void Song::export_header(const std::string &directory) const {
     header_file.close();
 }
 
-void Song::export_channels(const std::string &filename) const {
-    std::ofstream file(filename, std::ios::binary);
-    for (const Channel *channel : channels) {
-        channel->serialize(file);
+template <typename T>
+void Song::export_series(const std::string &song_dir, const std::string &prefix, const std::vector<T> &series, const std::vector<size_t> &sizes) const {
+    std::filesystem::path series_dir = song_dir + "/" + prefix + "s";
+    std::filesystem::create_directories(series_dir);
+    for (size_t i = 0; i < series.size(); i++) {
+        std::string filename = get_element_path(series_dir.string(), prefix, i);
+        export_data(filename, series[i], sizes[i % sizes.size()]);
     }
-    file.close();
 }
 
-void Song::export_dsps(const std::string &filename) const {
-    std::ofstream file(filename, std::ios::binary);
-    for (void *dsp : dsps) {
+void Song::export_channels(const std::string &directory) const {
+    std::filesystem::path series_dir = directory + "/chans";
+    std::filesystem::create_directories(series_dir);
+    for (size_t i = 0; i < channels.size(); i++) {
+        std::string filename = get_element_path(series_dir, "chan", i);
+        std::ofstream file(filename, std::ios::binary);
+
+        Channel *channel = channels[i];
+        channel->serialize(file);
+        file.close();
+    }
+}
+
+void Song::export_dsps(const std::string &directory) const {
+    std::filesystem::path dsps_dir = directory + "/dsps";
+    std::filesystem::create_directories(dsps_dir);
+
+    for (size_t i = 0; i < dsps.size(); i++) {
+        std::string filename = get_element_path(dsps_dir, "dsp", i);
+        std::ofstream file(filename, std::ios::binary);
+
+        void *dsp = dsps[i];
         const uint8_t *bytes = static_cast<const uint8_t *>(dsp);
         uint8_t dsp_type = bytes[1];
         switch (dsp_type) {
@@ -161,8 +182,21 @@ void Song::export_dsps(const std::string &filename) const {
         default:
             throw std::runtime_error("Unknown DSP type: " + std::to_string(dsp_type));
         }
+        file.close();
     }
-    file.close();
+}
+
+template <typename T>
+void Song::export_arrays(const std::string &directory, const std::string &prefix, const std::vector<T> &arrays) const {
+    std::filesystem::path series_dir = directory + "/" + prefix + "s";
+    std::filesystem::create_directories(series_dir);
+    for (size_t i = 0; i < arrays.size(); i++) {
+        std::string filename = get_element_path(series_dir, prefix, i);
+        std::ofstream file(filename, std::ios::binary);
+        const T element = arrays[i];
+        element->serialize(file);
+        file.close();
+    }
 }
 
 void Song::export_offsets(const std::string &filename) const {
@@ -186,7 +220,7 @@ void Song::export_links(const std::string &filename) const {
 }
 
 void Song::save_to_file(const std::string &filename) {
-    std::filesystem::path temp_base = std::filesystem::temp_directory_path() / "chipsequencer_temp";
+    std::filesystem::path temp_base = std::filesystem::temp_directory_path() / "chipsequencer";
     std::filesystem::path song_path = temp_base / "song";
     if (std::filesystem::exists(temp_base)) {
         std::filesystem::remove_all(temp_base);
@@ -197,13 +231,13 @@ void Song::save_to_file(const std::string &filename) {
     try {
         export_asm_file(song_dir);
         export_header(song_dir);
-        export_vector(song_dir + "/envels.bin", envelopes, {sizeof(Envelope)});
-        export_channels(song_dir + "/channels.bin");
-        export_vector(song_dir + "/oscs.bin", oscillators, get_struct_sizes(oscillators));
-        export_dsps(song_dir + "/dsps.bin");
-        export_structure(song_dir + "/seqs.bin", sequences);
-        export_structure(song_dir + "/orders.bin", orders);
-        export_structure(song_dir + "/waves.bin", wavetables);
+        export_series(song_dir, "envel", envelopes, {sizeof(Envelope)});
+        export_channels(song_dir);
+        export_series(song_dir, "osc", oscillators, get_struct_sizes(oscillators));
+        export_dsps(song_dir);
+        export_arrays(song_dir, "seq", sequences);
+        export_arrays(song_dir, "order", orders);
+        export_arrays(song_dir, "wave", wavetables);
         export_offsets(song_dir + "/offsets.bin");
         export_links(song_dir + "/links.bin");
         compile_sources(temp_base.string());

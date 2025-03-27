@@ -21,6 +21,17 @@ void write_vector(std::ofstream &file, const std::vector<T> &vector, const std::
 }
 
 template <typename T>
+void export_data(const std::string &filename, const T &data, const size_t size) {
+    std::ofstream file(filename, std::ios::binary);
+    if (!file) {
+        throw std::runtime_error("Failed to create file: " + filename);
+    }
+
+    write_data(file, data, size);
+    file.close();
+}
+
+template <typename T>
 void export_vector(const std::string &filename, const std::vector<T> &vector, const std::vector<size_t> &sizes) {
     std::ofstream file(filename, std::ios::binary);
     if (!file) {
@@ -28,20 +39,6 @@ void export_vector(const std::string &filename, const std::vector<T> &vector, co
     }
 
     write_vector(file, vector, sizes, false);
-    file.close();
-}
-
-template <typename T>
-void export_structure(const std::string &filename, const std::vector<T> &vector) {
-    std::ofstream file(filename, std::ios::binary);
-    if (!file) {
-        throw std::runtime_error("Failed to create file: " + filename);
-    }
-
-    size_t count = vector.size();
-    for (size_t i = 0; i < count; i++) {
-        vector[i]->serialize(file);
-    }
     file.close();
 }
 
