@@ -179,7 +179,7 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
 
 void Song::export_asm_file(const std::string &directory) const {
     std::string asm_content = generate_asm_file();
-    std::ofstream asm_file(directory + "/song.asm");
+    std::ofstream asm_file(directory + "/data.asm");
     asm_file << asm_content;
     asm_file.close();
 }
@@ -285,9 +285,9 @@ void Song::save_to_file(const std::string &filename) {
         export_links(song_dir + "/links.bin");
         compile_sources(temp_base.string());
         compress_directory(song_dir, filename);
-        // std::filesystem::remove_all(temp_dir);
+        std::filesystem::remove_all(temp_base);
     } catch (const std::exception &e) {
-        // std::filesystem::remove_all(temp_dir);
+        std::filesystem::remove_all(temp_base);
         throw;
     }
 }

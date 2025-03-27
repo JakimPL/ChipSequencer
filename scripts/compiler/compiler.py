@@ -44,7 +44,7 @@ class Compiler:
         shutil.copy("cwsdpmi.exe", self.temp_dir / "cwsdpmi.exe")
         shutil.copy("JWlinkd.exe", self.temp_dir / "jwlinkd.exe")
         shutil.copy("linker.lnk", self.temp_dir / "linker.lnk")
-        shutil.copy(self.song_dir / "song.asm", self.temp_dir / "src" / "song" / "data.asm")
+        shutil.copy(self.song_dir / "data.asm", self.temp_dir / "src" / "song" / "data.asm")
         copy_tree(str(self.apack_dir), str(self.temp_dir / self.apack_dir.name))
 
     def copy_executable(self):

@@ -66,7 +66,7 @@ print_message:
 
     SEGMENT_DATA
 message:
-    db 'Chip Sequencer by Jakim, 2024', 13, 10, '$'
+    db 'Chip Sequencer by Jakim, 2025', 13, 10, '$'
 
     segment stack stack
     resb 0x1000
