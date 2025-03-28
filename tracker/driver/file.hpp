@@ -1,8 +1,7 @@
 #ifndef DRIVER_FILE_HPP
 #define DRIVER_FILE_HPP
 
-#include <fstream>
-#include <iostream>
+#include <string>
 #include "driver.hpp"
 
 class FileDriver : public Driver {
@@ -10,34 +9,14 @@ class FileDriver : public Driver {
     FileDriver(
         const std::array<t_output, SONG_LENGTH> &target,
         const std::string &filename
-    )
-        : Driver(target), filename(filename) {}
+    );
 
-    bool initialize() override {
-        return true;
-    }
-
-    void terminate() override {
-        return;
-    }
-
-    void play() override {
-        save_output_to_file();
-    }
+    bool initialize() override;
+    void terminate() override;
+    void play() override;
 
   private:
-    void save_output_to_file() {
-        std::ofstream file(filename);
-        if (file.is_open()) {
-            for (const auto &value : target) {
-                file << value << std::endl;
-            }
-            file.close();
-        } else {
-            std::cerr << "Unable to open file" << std::endl;
-        }
-    }
-
+    void save_output_to_file();
     std::string filename;
 };
 

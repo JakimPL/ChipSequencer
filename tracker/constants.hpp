@@ -71,7 +71,7 @@
 // Saw wave
 #define OSCILLATOR_SAW 1
 #define OSCILLATOR_SAW_PARAMETERS 0
-#define OSCILLATOR_SAW_SIZE 2
+#define OSCILLATOR_SAW_SIZE 1
 
 // Sine wave
 #define OSCILLATOR_SINE 2

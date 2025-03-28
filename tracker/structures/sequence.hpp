@@ -2,6 +2,7 @@
 #define STRUCTURES_SEQUENCE_HPP
 
 #include <cstdint>
+#include <fstream>
 #include <vector>
 
 struct Note {
@@ -12,6 +13,8 @@ struct Note {
 struct Sequence {
     uint8_t data_size;
     Note notes[];
+
+    void serialize(std::ofstream &file) const;
 };
 
 typedef std::vector<Sequence *> Sequences;

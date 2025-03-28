@@ -2,7 +2,10 @@
 #define STRUCTURES_DSP_HPP
 
 #include <cstdint>
+#include <fstream>
 #include <vector>
+
+#include "../constants.hpp"
 
 struct DSP {
     uint8_t dsp_size;

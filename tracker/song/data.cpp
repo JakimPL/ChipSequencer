@@ -1,16 +1,4 @@
-#ifndef SONG_HPP
-#define SONG_HPP
-
-#include "constants.hpp"
-#include "structures.hpp"
-
-#define SONG_LENGTH 186253
-typedef _Float32 t_output;
-
-extern "C" t_output output;
-extern "C" t_output dsp_input;
-extern "C" uint16_t sample_rate;
-extern "C" void calculate_ticks_per_beat();
+#include "data.hpp"
 
 uint16_t bpm = 300;
 _Float32 normalizer = 0.25f;
@@ -101,9 +89,9 @@ Channel channel2 = {2, 2, 0, 0x02000000, &output, 0};
 Channel channel3 = {2, 3, 0, 0x02000000, &output, 0};
 Channel channel4 = {2, 4, 0, 0x02000000, &output, 0};
 Channel channel5 = {2, 5, 0, 0x02000000, &output, 0};
-Channel channel6 = {4, 0xFF, 1, 0x5000, &(dsp2.frequency), 0b01010111};
-Channel channel7 = {3, 0xFF, 2, 0x8000, &(channel0.pitch), 0b01110110};
-Channel channel8 = {0, 0xFF, 2, 0x14800, &(oscillator0.duty_cycle), 0b01101000};
+Channel channel6 = {4, 0xFF, 1, 0x5000, &dsp2.frequency, 0b01010111};
+Channel channel7 = {3, 0xFF, 2, 0x8000, &channel7.pitch, 0b01110110};
+Channel channel8 = {0, 0xFF, 2, 0x44800, &oscillator0.duty_cycle, 0b01101000};
 
 Channels channels = {
     &channel0,
@@ -119,67 +107,24 @@ Channels channels = {
 
 uint16_t buffer_offsets[] = {0, 256, 256};
 
-struct Song {
-    uint16_t &bpm;
-    _Float32 &normalizer;
-    int output_channels;
-    int song_length;
-    Envelopes &envelopes;
-    Sequences &sequences;
-    Orders &orders;
-    Oscillators &oscillators;
-    Wavetables &wavetables;
-    DSPs &dsps;
-    Channels &channels;
-
-    Song(
-        uint16_t &bpm_reference,
-        _Float32 &normalizer_reference,
-        int output_ch,
-        int song_len,
-        Envelopes &env,
-        Sequences &seq,
-        Orders &ord,
-        Oscillators &osc,
-        Wavetables &wav,
-        DSPs &dsp,
-        Channels &chn
-    )
-        : bpm(bpm_reference),
-          normalizer(normalizer_reference),
-          output_channels(output_ch),
-          song_length(song_len),
-          envelopes(env),
-          sequences(seq),
-          orders(ord),
-          oscillators(osc),
-          wavetables(wav),
-          dsps(dsp),
-          channels(chn) {}
-
-    ~Song() {
-        // for (auto env : envelopes) delete env;
-        // for (auto seq : sequences) delete seq;
-        // for (auto ord : orders) delete ord;
-        // for (auto osc : oscillators) delete osc;
-        // for (auto wav : wavetables) delete wav;
-        // for (auto dsp : dsps) delete dsp;
-        // for (auto chn : channels) delete chn;
+Links links = {
+    {
+        {ItemType::CHANNEL, 0, Target::OUTPUT_CHANNEL, 0, 0},
+        {ItemType::CHANNEL, 1, Target::OUTPUT_CHANNEL, 0, 0},
+        {ItemType::CHANNEL, 2, Target::OUTPUT_CHANNEL, 0, 0},
+        {ItemType::CHANNEL, 3, Target::OUTPUT_CHANNEL, 0, 0},
+        {ItemType::CHANNEL, 4, Target::OUTPUT_CHANNEL, 0, 0},
+        {ItemType::CHANNEL, 5, Target::OUTPUT_CHANNEL, 0, 0},
+        {ItemType::CHANNEL, 6, Target::OUTPUT_CHANNEL, 0, 0},
+        {ItemType::CHANNEL, 7, Target::OUTPUT_CHANNEL, 0, 0},
+        {ItemType::CHANNEL, 8, Target::OUTPUT_CHANNEL, 0, 0},
+        // {ItemType::CHANNEL, 6, Target::DSP, 2, DSP_FILTER_FREQUENCY},
+        // {ItemType::CHANNEL, 7, Target::CHANNEL, 7, CHANNEL_PITCH},
+        // {ItemType::CHANNEL, 8, Target::OSCILLATOR, 0, OSCILLATOR_SQUARE_DUTY_CYCLE},
+    },
+    {
+        {ItemType::DSP, 0, Target::OUTPUT_CHANNEL, 0, 0},
+        {ItemType::DSP, 1, Target::OUTPUT_CHANNEL, 0, 0},
+        {ItemType::DSP, 2, Target::OUTPUT_CHANNEL, 0, 0},
     }
 };
-
-Song song = {
-    bpm,
-    normalizer,
-    CHANNEL_SIZE,
-    SONG_LENGTH,
-    envelopes,
-    sequences,
-    orders,
-    oscillators,
-    wavetables,
-    dsps,
-    channels
-};
-
-#endif // SONG_HPP

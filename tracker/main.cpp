@@ -1,6 +1,6 @@
 #include <array>
 #include <iostream>
-#include "song.hpp"
+#include "song/song.hpp"
 #include "driver/file.hpp"
 #include "driver/port.hpp"
 #include "gui/gui.hpp"
@@ -48,6 +48,21 @@ int main() {
     std::array<t_output, SONG_LENGTH> target;
     render(target);
 
+    Song song = {
+        bpm,
+        normalizer,
+        CHANNEL_SIZE,
+        SONG_LENGTH,
+        envelopes,
+        sequences,
+        orders,
+        oscillators,
+        wavetables,
+        dsps,
+        channels,
+        links
+    };
+
 #if SAVE_TO_FILE
     FileDriver file_driver = FileDriver(target, "output.txt");
     file_driver.initialize();
@@ -71,6 +86,8 @@ int main() {
     }
 
     gui.terminate();
+
+    song.save_to_file("song.seq", false);
 
 #endif
 

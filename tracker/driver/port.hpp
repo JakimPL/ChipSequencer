@@ -11,91 +11,17 @@ class PortAudioDriver : public Driver {
         const std::array<t_output, SONG_LENGTH> &target,
         uint16_t sample_rate,
         unsigned long frames_per_buffer = 256
-    )
-        : Driver(target), sample_rate(sample_rate), stream(nullptr), current_index(0), frames_per_buffer(frames_per_buffer) {}
+    );
 
-    void play() override {
-        current_index = 0;
-        if (!open_stream()) {
-            return;
-        }
+    void play() override;
+    void terminate() override;
+    bool initialize() override;
 
-        if (!start_stream()) {
-            close_stream();
-        }
-
-        sleep();
-        stop_stream();
-        close_stream();
-    }
-
-    void terminate() override {
-        Pa_Terminate();
-    }
-
-    bool initialize() override {
-        PaError err = Pa_Initialize();
-        if (err != paNoError) {
-            std::cerr << "PortAudio error: " << Pa_GetErrorText(err) << std::endl;
-            return false;
-        }
-        return true;
-    }
-
-    bool open_stream() {
-        PaError err = Pa_OpenDefaultStream(
-            &stream,
-            0,
-            1,
-            paFloat32,
-            sample_rate,
-            256,
-            audio_callback,
-            this
-        );
-        if (err != paNoError) {
-            std::cerr << "PortAudio error: " << Pa_GetErrorText(err) << std::endl;
-            Pa_Terminate();
-            return false;
-        }
-        return true;
-    }
-
-    bool close_stream() {
-        PaError err = Pa_CloseStream(stream);
-        if (err != paNoError) {
-            std::cerr << "PortAudio error: " << Pa_GetErrorText(err) << std::endl;
-            Pa_Terminate();
-            return false;
-        }
-        return true;
-    }
-
-    bool start_stream() {
-        PaError err = Pa_StartStream(stream);
-        if (err != paNoError) {
-            std::cerr << "PortAudio error: " << Pa_GetErrorText(err) << std::endl;
-            Pa_CloseStream(stream);
-            Pa_Terminate();
-            return false;
-        }
-        return true;
-    }
-
-    bool stop_stream() {
-        PaError err = Pa_StopStream(stream);
-        if (err != paNoError) {
-            std::cerr << "PortAudio error: " << Pa_GetErrorText(err) << std::endl;
-            Pa_CloseStream(stream);
-            Pa_Terminate();
-            return false;
-        }
-        return true;
-    }
-
-    void sleep() {
-        Pa_Sleep(SONG_LENGTH * 1000 / sample_rate);
-    }
+    bool open_stream();
+    bool close_stream();
+    bool start_stream();
+    bool stop_stream();
+    void sleep();
 
   private:
     static int audio_callback(
@@ -105,21 +31,7 @@ class PortAudioDriver : public Driver {
         const PaStreamCallbackTimeInfo *time_info,
         PaStreamCallbackFlags status_flags,
         void *user_data
-    ) {
-        auto *driver = static_cast<PortAudioDriver *>(user_data);
-        float *out = (float *) output_buffer;
-        (void) input_buffer;
-
-        for (unsigned long i = 0; i < frames_per_buffer; ++i) {
-            if (driver->current_index < SONG_LENGTH) {
-                *out++ = driver->target[driver->current_index++];
-            } else {
-                *out++ = 0.0f;
-            }
-        }
-
-        return paContinue;
-    }
+    );
 
     uint16_t sample_rate;
     PaStream *stream;

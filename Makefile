@@ -59,3 +59,4 @@ pre-commit:
 	make config
 	pip install pre-commit
 	pre-commit autoupdate
+
