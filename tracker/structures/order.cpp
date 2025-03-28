@@ -10,7 +10,7 @@ void Order::serialize(std::ofstream &file) const {
 
 Order *Order::deserialize(std::ifstream &file) {
     if (!file.good()) {
-        throw std::runtime_error("File stream is not good");
+        throw std::runtime_error("Order file stream is not good");
     }
 
     uint8_t length;

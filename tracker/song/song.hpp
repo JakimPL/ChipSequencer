@@ -83,6 +83,9 @@ struct Song {
     void serialize_channel(std::ofstream &file, Channel *channel) const;
     void serialize_dsp(std::ofstream &file, void *dsp) const;
 
+    Channel *deserialize_channel(std::ifstream &file) const;
+    void *deserialize_dsp(std::ifstream &file, void *dsp) const;
+
     void export_asm_file(const std::string &directory) const;
     void export_header(const std::string &directory) const;
 
