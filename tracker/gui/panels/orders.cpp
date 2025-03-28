@@ -1,6 +1,10 @@
 #include "orders.hpp"
 
 void GUIOrdersPanel::from_order() {
+    if (orders.empty()) {
+        return;
+    }
+
     Order *order = orders[order_index];
     uint16_t total_length = order->order_length;
     current_order.sequences.resize(total_length);
@@ -9,6 +13,10 @@ void GUIOrdersPanel::from_order() {
 }
 
 void GUIOrdersPanel::to_order() {
+    if (orders.empty()) {
+        return;
+    }
+
     Order *order = orders[order_index];
     const size_t length = current_order.length;
     const size_t structure_size = length + 1;

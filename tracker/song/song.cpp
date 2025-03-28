@@ -324,12 +324,13 @@ void Song::import_orders(const std::string &song_dir, const nlohmann::json &json
 
 void Song::import_wavetables(const std::string &song_dir, const nlohmann::json &json) {
     const size_t wavetable_count = json["wavetables"];
+    wavetables.clear();
     for (size_t i = 0; i < wavetable_count; i++) {
         const std::string filename = get_element_path(song_dir, "wave", i);
         std::ifstream file(filename, std::ios::binary);
-        auto wavetable = new Wavetable();
-        // wavetable->deserialize(file);
-        // wavetables.push_back(wavetable);
+        Wavetable *wavetable = Wavetable::deserialize(file);
+        wavetables.push_back(wavetable);
+        file.close();
     }
 }
 

@@ -45,9 +45,6 @@ int main() {
     std::cout << "ChipSequencer initialized!" << std::endl;
     std::cout << "Sample rate: " << sample_rate << std::endl;
 
-    std::array<t_output, SONG_LENGTH> target;
-    render(target);
-
     Song song = {
         bpm,
         normalizer,
@@ -64,6 +61,9 @@ int main() {
     };
 
     song.load_from_file("song.seq");
+
+    std::array<t_output, SONG_LENGTH> target;
+    // render(target);
 
 #if SAVE_TO_FILE
     FileDriver file_driver = FileDriver(target, "output.txt");

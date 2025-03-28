@@ -1,6 +1,10 @@
 #include "wavetables.hpp"
 
 void GUIWavetablesPanel::from_wavetable() {
+    if (wavetables.empty()) {
+        return;
+    }
+
     const Wavetable *wavetable = wavetables[wavetable_index];
     current_wavetable.size = wavetable->wavetable_size;
     current_wavetable.interpolate = false;
@@ -11,6 +15,10 @@ void GUIWavetablesPanel::from_wavetable() {
 }
 
 void GUIWavetablesPanel::to_wavetable() {
+    if (wavetables.empty()) {
+        return;
+    }
+
     Wavetable *wavetable = wavetables[wavetable_index];
     const size_t size = current_wavetable.size;
     const size_t structure_size = size + 1;

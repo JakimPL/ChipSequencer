@@ -1,6 +1,10 @@
 #include "sequences.hpp"
 
 void GUISequencesPanel::from_sequence() {
+    if (sequences.empty()) {
+        return;
+    }
+
     Sequence *sequence = sequences[sequence_index];
     uint16_t total_length = 0;
 
@@ -37,6 +41,10 @@ std::vector<Note> GUISequencesPanel::pattern_to_sequence() {
 }
 
 void GUISequencesPanel::to_sequence() {
+    if (sequences.empty()) {
+        return;
+    }
+
     Sequence *sequence = sequences[sequence_index];
     const std::vector<Note> note_vector = pattern_to_sequence();
     const size_t length = note_vector.size();

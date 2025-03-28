@@ -17,41 +17,8 @@ Envelopes envelopes = {
     &envelope4
 };
 
-Sequence sequence0 = {16, {{60, 3}, {53, 3}, {51, 3}, {50, 3}, {48, 1}, {-1, 1}, {48, 1}, {46, 1}}};
-Sequence sequence1 = {6, {{45, 2}, {55, 1}, {53, 13}}};
-Sequence sequence2 = {4, {{24, 1}, {-1, 1}}};
-Sequence sequence3 = {4, {{17, 1}, {-1, 1}}};
-Sequence sequence4 = {4, {{48, 16}, {48, 16}}};
-Sequence sequence5 = {4, {{51, 16}, {51, 16}}};
-Sequence sequence6 = {4, {{55, 16}, {53, 16}}};
-Sequence sequence7 = {4, {{58, 16}, {57, 16}}};
-
-Sequences sequences = {
-    &sequence0,
-    &sequence1,
-    &sequence2,
-    &sequence3,
-    &sequence4,
-    &sequence5,
-    &sequence6,
-    &sequence7
-};
-
-Order order0 = {4, {0, 1, 0, 1}};
-Order order1 = {16, {2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3}};
-Order order2 = {1, {4}};
-Order order3 = {1, {5}};
-Order order4 = {1, {6}};
-Order order5 = {1, {7}};
-
-Orders orders = {
-    &order0,
-    &order1,
-    &order2,
-    &order3,
-    &order4,
-    &order5
-};
+Sequences sequences = {};
+Orders orders = {};
 
 OscillatorSquare oscillator0 = {2, OSCILLATOR_SQUARE, 0x20};
 OscillatorSaw oscillator1;
@@ -65,13 +32,7 @@ Oscillators oscillators = {
     &oscillator3
 };
 
-Wavetable wavetable0 = {16, {0x00, 0x1F, 0x3F, 0x5F, 0x7F, 0x9F, 0xBF, 0xDF, 0xFF, 0xDF, 0xBF, 0x9F, 0x7F, 0x5F, 0x3F, 0x1F}};
-Wavetable wavetable1 = {8, {0x00, 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70}};
-
-Wavetables wavetables = {
-    &wavetable0,
-    &wavetable1
-};
+Wavetables wavetables = {};
 
 DSPDelay dsp0 = {DSP_DELAY_SIZE, EFFECT_DELAY, &output, 0, 0x7FFF, 0x6FFF, 0x5FFF, 256};
 DSPGainer dsp1 = {DSP_GAINER_SIZE, EFFECT_GAINER, &output, 0, 0x9FFF};

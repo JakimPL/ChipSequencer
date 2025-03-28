@@ -10,6 +10,7 @@ struct Wavetable {
     uint8_t wavetable[];
 
     void serialize(std::ofstream &file) const;
+    static Wavetable *deserialize(std::ifstream &file);
 };
 
 typedef std::vector<Wavetable *> Wavetables;
