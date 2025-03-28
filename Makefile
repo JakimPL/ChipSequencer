@@ -1,7 +1,12 @@
+.PHONY: apack
 .PHONY: build
 .PHONY: nasm
 .PHONY: nasmfmt
 .PHONY: pre-commit
+
+APACK_DIR = apack
+APACK_ZIP = $(APACK_DIR).zip
+APACK_URL = https://ibsensoftware.com/files/apack-1.00.zip
 
 NASM := nasm-2.16.03
 NASM_DIR := $(NASM)-dos
@@ -18,6 +23,7 @@ build:
 	@cd build && cmake .. && make --no-print-directory
 
 install:
+	make apack
 	make nasm
 	make nasmfmt
 	make pre-commit
@@ -30,6 +36,15 @@ song:
 
 consts:
 	python scripts/constants.py
+
+apack:
+	@echo "Downloading APACK"
+	@wget -q $(APACK_URL) -O $(APACK_ZIP)
+	@echo "Unpacking APACK..."
+	@unzip -q $(APACK_ZIP) -d $(APACK_DIR)
+	@echo "APACK has been unpacked."
+	@rm -f $(APACK_ZIP)
+	@echo "APACK is installed."
 
 nasm:
 	@echo "Downloading NASM..."
