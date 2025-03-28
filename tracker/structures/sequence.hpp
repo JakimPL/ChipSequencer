@@ -15,6 +15,7 @@ struct Sequence {
     Note notes[];
 
     void serialize(std::ofstream &file) const;
+    static Sequence *deserialize(std::ifstream &file);
 };
 
 typedef std::vector<Sequence *> Sequences;

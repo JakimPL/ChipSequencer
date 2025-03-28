@@ -13,6 +13,9 @@ void write_data(std::ofstream &file, const T *data, const size_t size) {
 template <typename T>
 void read_data(std::ifstream &file, T *data, const size_t size) {
     file.read(reinterpret_cast<char *>(data), size);
+    if (!file) {
+        throw std::runtime_error("Failed to read data from file. Bytes read: " + std::to_string(file.gcount()) + " out of " + std::to_string(size));
+    }
 }
 
 template <typename T>

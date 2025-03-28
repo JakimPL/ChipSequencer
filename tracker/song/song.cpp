@@ -1,5 +1,6 @@
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <memory>
 #include <sstream>
 #include <stdexcept>
@@ -299,12 +300,13 @@ void Song::import_envelopes(const std::string &song_dir, const nlohmann::json &j
 
 void Song::import_sequences(const std::string &song_dir, const nlohmann::json &json) {
     const size_t sequence_count = json["sequences"];
+    sequences.clear();
     for (size_t i = 0; i < sequence_count; i++) {
-        const std::string filename = get_element_path(song_dir, "seq", i);
+        const std::string filename = get_element_path(song_dir + "/seqs", "seq", i);
         std::ifstream file(filename, std::ios::binary);
-        auto sequence = new Sequence();
-        // sequence->deserialize(file);
-        // sequences.push_back(sequence);
+        Sequence *sequence = Sequence::deserialize(file);
+        sequences.push_back(sequence);
+        file.close();
     }
 }
 
@@ -312,10 +314,11 @@ void Song::import_orders(const std::string &song_dir, const nlohmann::json &json
     const size_t order_count = json["orders"];
     orders.clear();
     for (size_t i = 0; i < order_count; i++) {
-        const std::string filename = get_element_path(song_dir, "order", i);
+        const std::string filename = get_element_path(song_dir + "/orders", "order", i);
         std::ifstream file(filename, std::ios::binary);
         Order *order = Order::deserialize(file);
         orders.push_back(order);
+        file.close();
     }
 }
 

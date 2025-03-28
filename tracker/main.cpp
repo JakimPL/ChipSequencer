@@ -89,8 +89,6 @@ int main() {
 
     gui.terminate();
 
-    song.save_to_file("song.seq", true);
-
 #endif
 
     return 0;
