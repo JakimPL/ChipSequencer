@@ -41,11 +41,8 @@ class Compiler:
 
     def copy_source(self) -> None:
         copy_tree("src", str(self.temp_dir / "src"))
+        copy_tree("tools", str(self.temp_dir / "tools"))
         shutil.copy("compile.bat", self.temp_dir / "compile.bat")
-        shutil.copy(self.tools_dir / "nasm.exe", self.temp_dir / "nasm.exe")
-        shutil.copy(self.tools_dir / "cwsdpmi.exe", self.temp_dir / "cwsdpmi.exe")
-        shutil.copy(self.tools_dir / "JWlinkd.exe", self.temp_dir / "jwlinkd.exe")
-        shutil.copy(self.tools_dir / "apack.exe", self.temp_dir / "apack.exe")
         shutil.copy("linker.lnk", self.temp_dir / "linker.lnk")
         shutil.copy(self.song_dir / "data.asm", self.temp_dir / "src" / "song" / "data.asm")
 
@@ -57,6 +54,8 @@ class Compiler:
 
         if pack:
             args += [
+                "-c",
+                "cd tools",
                 "-c",
                 "apack ../bin/MAIN.EXE ../bin/player.exe",
             ]
