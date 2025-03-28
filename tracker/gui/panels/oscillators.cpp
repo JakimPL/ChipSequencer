@@ -3,6 +3,10 @@
 #include "oscillators.hpp"
 
 void GUIOscillatorsPanel::from_oscillator() {
+    if (oscillators.empty()) {
+        return;
+    }
+
     void *oscillator = oscillators[oscillator_index];
     const Oscillator *generic = static_cast<Oscillator *>(oscillator);
     current_oscillator.generator_index = generic->generator_index;
@@ -31,6 +35,10 @@ void GUIOscillatorsPanel::from_oscillator() {
 }
 
 void GUIOscillatorsPanel::to_oscillator() {
+    if (oscillators.empty()) {
+        return;
+    }
+
     switch (current_oscillator.generator_index) {
     case OSCILLATOR_SQUARE: {
         OscillatorSquare *new_oscillator = static_cast<OscillatorSquare *>(operator new(sizeof(OscillatorSquare)));

@@ -1,6 +1,10 @@
 #include "channels.hpp"
 
 void GUIChannelsPanel::from_channel() {
+    if (channels.empty()) {
+        return;
+    }
+
     Channel *channel = channels[channel_index];
     current_channel.envelope_index = channel->envelope_index;
     current_channel.constant_pitch = channel->order_index == 0xFF;
@@ -19,6 +23,10 @@ void GUIChannelsPanel::from_channel() {
 }
 
 void GUIChannelsPanel::to_channel() {
+    if (channels.empty()) {
+        return;
+    }
+
     Channel *channel = channels[channel_index];
     channel->envelope_index = current_channel.envelope_index;
     channel->oscillator_index = current_channel.oscillator_index;
