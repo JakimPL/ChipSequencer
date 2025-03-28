@@ -214,40 +214,64 @@ Channel *Song::deserialize_channel(std::ifstream &file) const {
     return channel;
 }
 
-void *Song::deserialize_dsp(std::ifstream &file, void *dsp) const {
-    uint8_t size, effect_index;
+void *Song::deserialize_dsp(std::ifstream &file) const {
+    uint8_t size, effect_type;
     read_data(file, &size, sizeof(size));
-    read_data(file, &effect_index, sizeof(effect_index));
+    read_data(file, &effect_type, sizeof(effect_type));
 
-    if (effect_index == EFFECT_DELAY) {
-        DSPDelay *delay = reinterpret_cast<DSPDelay *>(dsp);
-        read_data(file, &delay->effect_index, sizeof(delay->effect_index));
+    if (effect_type == EFFECT_DELAY) {
+        DSPDelay *delay = new DSPDelay();
+        delay->dsp_size = DSP_DELAY_SIZE;
+        delay->output = &output;
         file.seekg(sizeof(uint16_t), std::ios::cur);
         read_data(file, &delay->output_flag, sizeof(delay->output_flag));
         read_data(file, &delay->dry, sizeof(delay->dry));
         read_data(file, &delay->wet, sizeof(delay->wet));
         read_data(file, &delay->feedback, sizeof(delay->feedback));
         read_data(file, &delay->delay_time, sizeof(delay->delay_time));
-        delay->output = &output;
         return reinterpret_cast<void *>(delay);
-    } else if (effect_index == EFFECT_GAINER) {
-        DSPGainer *gainer = reinterpret_cast<DSPGainer *>(dsp);
-        read_data(file, &gainer->effect_index, sizeof(gainer->effect_index));
+    } else if (effect_type == EFFECT_GAINER) {
+        DSPGainer *gainer = new DSPGainer();
+        gainer->dsp_size = DSP_GAINER_SIZE;
+        gainer->output = &output;
         file.seekg(sizeof(uint16_t), std::ios::cur);
         read_data(file, &gainer->output_flag, sizeof(gainer->output_flag));
         read_data(file, &gainer->volume, sizeof(gainer->volume));
-        gainer->output = &output;
         return reinterpret_cast<void *>(gainer);
-    } else if (effect_index == EFFECT_FILTER) {
-        DSPFilter *filter = reinterpret_cast<DSPFilter *>(dsp);
-        read_data(file, &filter->effect_index, sizeof(filter->effect_index));
+    } else if (effect_type == EFFECT_FILTER) {
+        DSPFilter *filter = new DSPFilter();
+        filter->dsp_size = DSP_FILTER_SIZE;
+        filter->output = &output;
         file.seekg(sizeof(uint16_t), std::ios::cur);
         read_data(file, &filter->output_flag, sizeof(filter->output_flag));
         read_data(file, &filter->frequency, sizeof(filter->frequency));
-        filter->output = &output;
         return reinterpret_cast<void *>(filter);
     } else {
-        throw std::runtime_error("Unknown DSP type: " + std::to_string(effect_index));
+        throw std::runtime_error("Unknown DSP type: " + std::to_string(effect_type));
+    }
+}
+
+void *Song::deserialize_oscillator(std::ifstream &file) const {
+    uint8_t size, oscillator_type;
+    read_data(file, &size, sizeof(size));
+    read_data(file, &oscillator_type, sizeof(oscillator_type));
+
+    if (oscillator_type == OSCILLATOR_SQUARE) {
+        OscillatorSquare *oscillator = new OscillatorSquare();
+        read_data(file, &oscillator->duty_cycle, sizeof(oscillator->duty_cycle));
+        return reinterpret_cast<void *>(oscillator);
+    } else if (oscillator_type == OSCILLATOR_SAW) {
+        OscillatorSaw *oscillator = new OscillatorSaw();
+        return reinterpret_cast<void *>(oscillator);
+    } else if (oscillator_type == OSCILLATOR_SINE) {
+        OscillatorSine *oscillator = new OscillatorSine();
+        return reinterpret_cast<void *>(oscillator);
+    } else if (oscillator_type == OSCILLATOR_WAVETABLE) {
+        OscillatorWavetable *oscillator = new OscillatorWavetable();
+        read_data(file, &oscillator->wavetable_index, sizeof(oscillator->wavetable_index));
+        return reinterpret_cast<void *>(oscillator);
+    } else {
+        throw std::runtime_error("Unknown oscillator type: " + std::to_string(oscillator_type));
     }
 }
 
@@ -385,11 +409,12 @@ void Song::import_wavetables(const std::string &song_dir, const nlohmann::json &
 
 void Song::import_oscillators(const std::string &song_dir, const nlohmann::json &json) {
     const size_t oscillator_count = json["oscillators"];
-    return;
     oscillators.clear();
     for (size_t i = 0; i < oscillator_count; i++) {
         const std::string filename = get_element_path(song_dir + "/oscs", "osc", i);
         std::ifstream file(filename, std::ios::binary);
+        void *oscillator = deserialize_oscillator(file);
+        oscillators.push_back(oscillator);
         file.close();
     }
 }
@@ -400,7 +425,7 @@ void Song::import_dsps(const std::string &song_dir, const nlohmann::json &json) 
     for (size_t i = 0; i < dsp_count; i++) {
         const std::string filename = get_element_path(song_dir + "/dsps", "dsp", i);
         std::ifstream file(filename, std::ios::binary);
-        void *dsp = deserialize_dsp(file, dsp);
+        void *dsp = deserialize_dsp(file);
         dsps.push_back(dsp);
         file.close();
     }
@@ -504,9 +529,8 @@ void Song::load_from_file(const std::string &filename) {
         import_wavetables(song_dir, json);
         import_channels(song_dir, json);
         import_oscillators(song_dir, json);
-        return;
-
         import_dsps(song_dir, json);
+        return;
         import_offsets(song_dir, json);
         import_links(song_dir, json);
         set_links();

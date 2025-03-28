@@ -1,5 +1,7 @@
 # _ChipSequencer_
 
+_ChipSequencer_ is a chiptune tracker that aims for creating small 16-bit DOS executable music programs.
+
 ## Prerequisites
 
 * `nasm`
