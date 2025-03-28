@@ -14,7 +14,7 @@ from compiler.link import Link, LinkTarget, LinkType
 class Compiler:
     def __init__(self, temp_dir: Union[str, os.PathLike]):
         self.temp_dir = Path(temp_dir)
-        self.apack_dir = Path("apack")
+        self.tools_dir = Path.cwd() / "tools"
         self.bin_dir = self.temp_dir / "bin"
         self.build_dir = self.temp_dir / "build"
         self.song_dir = self.temp_dir / "song"
@@ -42,12 +42,12 @@ class Compiler:
     def copy_source(self) -> None:
         copy_tree("src", str(self.temp_dir / "src"))
         shutil.copy("compile.bat", self.temp_dir / "compile.bat")
-        shutil.copy("nasm.exe", self.temp_dir / "nasm.exe")
-        shutil.copy("cwsdpmi.exe", self.temp_dir / "cwsdpmi.exe")
-        shutil.copy("JWlinkd.exe", self.temp_dir / "jwlinkd.exe")
+        shutil.copy(self.tools_dir / "nasm.exe", self.temp_dir / "nasm.exe")
+        shutil.copy(self.tools_dir / "cwsdpmi.exe", self.temp_dir / "cwsdpmi.exe")
+        shutil.copy(self.tools_dir / "JWlinkd.exe", self.temp_dir / "jwlinkd.exe")
+        shutil.copy(self.tools_dir / "apack.exe", self.temp_dir / "apack.exe")
         shutil.copy("linker.lnk", self.temp_dir / "linker.lnk")
         shutil.copy(self.song_dir / "data.asm", self.temp_dir / "src" / "song" / "data.asm")
-        copy_tree(str(self.apack_dir), str(self.temp_dir / self.apack_dir.name))
 
     def copy_executable(self):
         shutil.copy(self.bin_dir / "PLAYER.EXE", self.song_dir / "player.exe")
@@ -57,8 +57,6 @@ class Compiler:
 
         if pack:
             args += [
-                "-c",
-                "cd apack",
                 "-c",
                 "apack ../bin/MAIN.EXE ../bin/player.exe",
             ]
