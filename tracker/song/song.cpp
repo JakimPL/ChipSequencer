@@ -262,7 +262,7 @@ void Song::export_links(const std::string &filename) const {
     file.close();
 }
 
-void Song::save_to_file(const std::string &filename) {
+void Song::save_to_file(const std::string &filename, const bool compile) const {
     std::filesystem::path temp_base = std::filesystem::temp_directory_path() / "chipsequencer";
     std::filesystem::path song_path = temp_base / "song";
     if (std::filesystem::exists(temp_base)) {
@@ -283,7 +283,10 @@ void Song::save_to_file(const std::string &filename) {
         export_arrays(song_dir, "wave", wavetables);
         export_offsets(song_dir + "/offsets.bin");
         export_links(song_dir + "/links.bin");
-        compile_sources(temp_base.string());
+        if (compile) {
+            compile_sources(temp_base.string());
+        }
+
         compress_directory(song_dir, filename);
         std::filesystem::remove_all(temp_base);
     } catch (const std::exception &e) {

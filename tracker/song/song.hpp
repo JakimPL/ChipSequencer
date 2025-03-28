@@ -66,7 +66,7 @@ struct Song {
         // for (auto dsp : dsps) delete dsp;
         // for (auto chn : channels) delete chn;
     }
-    void save_to_file(const std::string &filename);
+    void save_to_file(const std::string &filename, const bool compile = true) const;
 
   private:
     void generate_header_vector(std::stringstream &asm_content, const std::string &name, const std::string &short_name, const size_t size) const;
