@@ -1,6 +1,6 @@
 #include "../constants.hpp"
 #include "../structures.hpp"
-#include "../utils.hpp"
+#include "../utils/file.hpp"
 #include "link.hpp"
 
 void Link::assign_output() {

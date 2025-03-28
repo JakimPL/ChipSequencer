@@ -1,4 +1,4 @@
-#include "../utils.hpp"
+#include "../utils/file.hpp"
 #include "wavetable.hpp"
 
 void Wavetable::serialize(std::ofstream &file) const {

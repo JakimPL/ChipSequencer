@@ -66,12 +66,14 @@ struct Song {
         // for (auto dsp : dsps) delete dsp;
         // for (auto chn : channels) delete chn;
     }
+    void load_from_file(const std::string &filename);
     void save_to_file(const std::string &filename, const bool compile = true) const;
 
   private:
     void generate_header_vector(std::stringstream &asm_content, const std::string &name, const std::string &short_name, const size_t size) const;
     std::string generate_asm_file() const;
     nlohmann::json create_header_json() const;
+    nlohmann::json import_header(const std::string &directory);
 
     std::string get_element_path(const std::string &directory, const std::string prefix, const size_t i, const char separator = '/') const;
 
@@ -95,9 +97,22 @@ struct Song {
     void export_offsets(const std::string &filename) const;
     void export_links(const std::string &filename) const;
 
+    void import_channels(const std::string &song_dir, const nlohmann::json &json);
+    void import_dsps(const std::string &song_dir, const nlohmann::json &json);
+    void import_offsets(const std::string &song_dir, const nlohmann::json &json);
+    void import_links(const std::string &song_dir, const nlohmann::json &json);
+
+    void import_envelopes(const std::string &song_dir, const nlohmann::json &json);
+    void import_sequences(const std::string &song_dir, const nlohmann::json &json);
+    void import_orders(const std::string &song_dir, const nlohmann::json &json);
+    void import_wavetables(const std::string &song_dir, const nlohmann::json &json);
+    void import_oscillators(const std::string &song_dir, const nlohmann::json &json);
+
     int run_command(const std::string &command) const;
     void compile_sources(const std::string &directory) const;
     void compress_directory(const std::string &directory, const std::string &output_file) const;
+    void decompress_archive(const std::string &output_file, const std::string &directory);
+    void clear_data();
 };
 
 #endif // SONG_SONG_HPP

@@ -11,8 +11,6 @@ struct Channel {
     uint32_t pitch;
     void *output;
     uint8_t output_flag;
-
-    void serialize(std::ofstream &file) const;
 };
 
 typedef std::vector<Channel *> Channels;

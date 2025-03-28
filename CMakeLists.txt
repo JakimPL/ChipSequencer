@@ -79,6 +79,7 @@ add_executable(main
     tracker/gui/panels/sequences.cpp
     tracker/gui/panels/utils.cpp
     tracker/gui/panels/wavetables.cpp
+    tracker/utils/temp.cpp
 )
 
 add_dependencies(main asm_objects)

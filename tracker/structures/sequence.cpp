@@ -1,4 +1,4 @@
-#include "../utils.hpp"
+#include "../utils/file.hpp"
 #include "sequence.hpp"
 
 void Sequence::serialize(std::ofstream &file) const {

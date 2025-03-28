@@ -1,12 +1,18 @@
-#ifndef UTILS_HPP
-#define UTILS_HPP
+#ifndef UTILS_FILE_HPP
+#define UTILS_FILE_HPP
 
+#include <filesystem>
 #include <fstream>
 #include <vector>
 
 template <typename T>
 void write_data(std::ofstream &file, const T *data, const size_t size) {
     file.write(reinterpret_cast<const char *>(data), size);
+}
+
+template <typename T>
+void read_data(std::ifstream &file, T *data, const size_t size) {
+    file.read(reinterpret_cast<char *>(data), size);
 }
 
 template <typename T>
@@ -56,4 +62,4 @@ std::vector<size_t> get_struct_sizes(const std::vector<T> &data) {
     return sizes;
 }
 
-#endif // UTILS_HPP
+#endif // UTILS_FILE_HPP

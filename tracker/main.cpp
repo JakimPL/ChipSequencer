@@ -63,6 +63,8 @@ int main() {
         links
     };
 
+    song.load_from_file("song.seq");
+
 #if SAVE_TO_FILE
     FileDriver file_driver = FileDriver(target, "output.txt");
     file_driver.initialize();
