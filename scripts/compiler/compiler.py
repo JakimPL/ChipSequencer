@@ -16,6 +16,7 @@ class Compiler:
         self.temp_dir = Path(temp_dir)
         self.apack_dir = Path("apack")
         self.bin_dir = self.temp_dir / "bin"
+        self.build_dir = self.temp_dir / "build"
         self.song_dir = self.temp_dir / "song"
         self.header_path = self.song_dir / "header.json"
         self.pattern = re.compile(r"^[0-9a-f]{4}:[0-9a-f]{4}")
@@ -23,6 +24,7 @@ class Compiler:
     def __call__(self) -> None:
         self.temp_dir.mkdir(exist_ok=True)
         self.bin_dir.mkdir(exist_ok=True)
+        self.build_dir.mkdir(exist_ok=True)
         self.copy_source()
 
         # first pass
@@ -81,7 +83,7 @@ class Compiler:
         return links
 
     def get_references(self) -> Dict[str, Tuple[int, ...]]:
-        map_path = self.bin_dir / "PLAYER.MAP"
+        map_path = self.build_dir / "PLAYER.MAP"
         with open(map_path, "r") as file:
             addresses = {}
             for line in file.readlines():
