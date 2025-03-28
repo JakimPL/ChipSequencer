@@ -34,6 +34,7 @@ struct Link {
 
     void assign_output();
     void serialize(std::ofstream &file) const;
+    void deserialize(std::ifstream &file);
 };
 
 typedef std::vector<std::vector<Link>> Links;

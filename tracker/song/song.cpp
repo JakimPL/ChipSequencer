@@ -461,19 +461,20 @@ void Song::import_links(const std::string &song_dir, const nlohmann::json &json)
     const size_t dsp_count = json["dsps"];
     const std::string links_filename = song_dir + "/links.bin";
     std::ifstream file(links_filename, std::ios::binary);
-    file.close();
-    return;
-    // for (size_t i = 0; i < channel_count; i++) {
-    //     Link link;
-    //     link.deserialize(links_file);
-    //     links[0].push_back(link);
-    // }
+    for (size_t i = 0; i < channel_count; i++) {
+        Link link;
+        link.deserialize(file);
+        links[0].push_back(link);
+    }
 
-    // for (size_t i = 0; i < dsp_count; i++) {
-    //     Link link;
-    //     link.deserialize(links_file);
-    //     links[1].push_back(link);
-    // }
+    for (size_t i = 0; i < dsp_count; i++) {
+        Link link;
+        link.deserialize(file);
+        links[1].push_back(link);
+    }
+
+    set_links();
+    file.close();
 }
 
 void Song::clear_data() {
@@ -530,10 +531,8 @@ void Song::load_from_file(const std::string &filename) {
         import_channels(song_dir, json);
         import_oscillators(song_dir, json);
         import_dsps(song_dir, json);
-        return;
-        import_offsets(song_dir, json);
         import_links(song_dir, json);
-        set_links();
+        import_offsets(song_dir, json);
 
         std::filesystem::remove_all(temp_base);
     } catch (const std::exception &e) {
