@@ -21,12 +21,15 @@ if(NOT NASM_EXECUTABLE)
     message(FATAL_ERROR "NASM assembler not found")
 endif()
 
+set(ASM_SOURCE_DIR "${CMAKE_SOURCE_DIR}")
 set(ASM_SOURCE_FILE "${CMAKE_SOURCE_DIR}/src/player.asm")
 set(ASM_OBJECT_FILE "${CMAKE_BINARY_DIR}/player.o")
+
 add_custom_command(
     OUTPUT ${ASM_OBJECT_FILE}
     COMMAND ${NASM_EXECUTABLE} -d EXE=1 -d ELF -f elf32 -Fdwarf -g ${ASM_SOURCE_FILE} -o ${ASM_OBJECT_FILE}
     DEPENDS ${ASM_SOURCE_FILE}
+    WORKING_DIRECTORY ${ASM_SOURCE_DIR}
     COMMENT "Assembling ${ASM_SOURCE_FILE}"
 )
 add_custom_target(asm_objects DEPENDS ${ASM_OBJECT_FILE})
@@ -98,5 +101,5 @@ target_link_libraries(main
 )
 
 set_target_properties(main PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../bin"
 )

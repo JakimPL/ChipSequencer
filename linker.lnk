@@ -1,9 +1,9 @@
 FORMAT DOS
-OPTION MAP=bin\player.map
+OPTION MAP=build\player.map
 OPTION ELIMINATE
 OPTION START=_start
 NAME bin\main.exe
-FILE bin\song.obj
-FILE bin\main.obj
-FILE bin\player.obj
-FILE bin\driver.obj
+FILE build\song.obj
+FILE build\main.obj
+FILE build\player.obj
+FILE build\driver.obj
