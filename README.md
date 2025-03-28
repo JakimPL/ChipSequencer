@@ -6,12 +6,26 @@
 
 To install NASM for DOS, use `make nasm`.
 
+### aPACK
+
+_aPACK_ is a DOS 16-bit executable compressor written by [Jørgen Ibsen](https://ibsensoftware.com/products_aPACK.html) that is being used for reducing the executable size.
+
 ### Code formatters
 
 * `nasmfmt`
 * `pre-commit`
 
 To install all of these, run `make install`.
+
+### Build & compile
+
+The project consists of two parts:
+* assembly DOS code
+* tracker source code
+
+To prepare a workspace, run the `build.sh` script. After successful preparation, one can build the project via `make build` or, simply, `make`. The executable should be created in the `bin` directory.
+
+To compile only DOS sources, use `compile.bat` script. It should create a DOS executable.
 
 ## Configuration
 
