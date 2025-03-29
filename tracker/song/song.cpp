@@ -486,6 +486,49 @@ void Song::import_links(const std::string &song_dir, const nlohmann::json &json)
 }
 
 void Song::clear_data() {
+    for (auto *envelope : envelopes) {
+        delete envelope;
+    }
+    for (auto *sequence : sequences) {
+        delete sequence;
+    }
+    for (auto *sequence : sequences) {
+        delete sequence;
+    }
+    for (auto *order : orders) {
+        delete order;
+    }
+    for (auto *wavetable : wavetables) {
+        delete wavetable;
+    }
+    for (auto *oscillator : oscillators) {
+        const uint8_t *bytes = static_cast<const uint8_t *>(oscillator);
+        const uint8_t dsp_type = bytes[1];
+        if (dsp_type == OSCILLATOR_SQUARE) {
+            delete static_cast<OscillatorSquare *>(oscillator);
+        } else if (dsp_type == OSCILLATOR_SAW) {
+            delete static_cast<OscillatorSaw *>(oscillator);
+        } else if (dsp_type == OSCILLATOR_SINE) {
+            delete static_cast<OscillatorSine *>(oscillator);
+        } else if (dsp_type == OSCILLATOR_WAVETABLE) {
+            delete static_cast<OscillatorWavetable *>(oscillator);
+        }
+    }
+    for (auto *dsp : dsps) {
+        const uint8_t *bytes = static_cast<const uint8_t *>(dsp);
+        const uint8_t dsp_type = bytes[1];
+        if (dsp_type == EFFECT_DELAY) {
+            delete static_cast<DSPDelay *>(dsp);
+        } else if (dsp_type == EFFECT_GAINER) {
+            delete static_cast<DSPGainer *>(dsp);
+        } else if (dsp_type == EFFECT_FILTER) {
+            delete static_cast<DSPFilter *>(dsp);
+        }
+    }
+    for (auto *channel : channels) {
+        delete channel;
+    }
+
     envelopes.clear();
     sequences.clear();
     orders.clear();
