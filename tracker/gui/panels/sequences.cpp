@@ -63,6 +63,7 @@ void GUISequencesPanel::to_sequence() {
     }
 
     sequences[sequence_index] = new_sequence;
+    delete sequence;
 }
 
 void GUISequencesPanel::update_sequences() {
@@ -130,6 +131,7 @@ void GUISequencesPanel::draw_sequence() {
 }
 
 GUISequencesPanel::GUISequencesPanel() {
+    from_sequence();
     update_sequences();
 }
 
@@ -139,9 +141,7 @@ void GUISequencesPanel::draw() {
 
     prepare_combo(sequence_names, "##SequenceCombo", sequence_index);
     from_sequence();
-
     draw_sequence();
-
     to_sequence();
 
     ImGui::Columns(1);

@@ -10,8 +10,8 @@
 class GUISequencesPanel {
   private:
     struct CurrentSequence {
-        int steps;
-        std::vector<int8_t> pattern;
+        int steps = 0;
+        std::vector<int8_t> pattern = {};
     } current_sequence;
 
     int sequence_index = 0;

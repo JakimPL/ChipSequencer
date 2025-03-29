@@ -11,15 +11,15 @@
 class GUIChannelsPanel {
   private:
     struct CurrentChannel {
-        int envelope_index;
-        bool constant_pitch;
-        int order_index;
-        int oscillator_index;
-        float pitch;
-        void *output;
-        bool additive;
-        int type;
-        int shift;
+        int envelope_index = 0;
+        bool constant_pitch = false;
+        int order_index = -1;
+        int oscillator_index = -1;
+        float pitch = 1.0f;
+        void *output = nullptr;
+        bool additive = false;
+        int type = -1;
+        int shift = 0;
     } current_channel;
 
     int channel_index = 0;

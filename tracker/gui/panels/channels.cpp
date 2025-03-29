@@ -85,6 +85,7 @@ void GUIChannelsPanel::draw_channel() {
 }
 
 GUIChannelsPanel::GUIChannelsPanel() {
+    from_channel();
     update_channels();
 }
 

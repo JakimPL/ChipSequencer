@@ -17,8 +17,6 @@ struct Song {
 
     uint16_t &bpm;
     _Float32 &normalizer;
-    int output_channels;
-    int song_length;
     Envelopes &envelopes;
     Sequences &sequences;
     Orders &orders;
@@ -33,8 +31,6 @@ struct Song {
     Song(
         uint16_t &bpm_reference,
         _Float32 &normalizer_reference,
-        int output_ch,
-        int song_len,
         Envelopes &env,
         Sequences &seq,
         Orders &ord,
@@ -47,8 +43,6 @@ struct Song {
     )
         : bpm(bpm_reference),
           normalizer(normalizer_reference),
-          output_channels(output_ch),
-          song_length(song_len),
           envelopes(env),
           sequences(seq),
           orders(ord),
@@ -58,13 +52,12 @@ struct Song {
           channels(chn),
           buffer_offsets(offsets),
           links(lnk) {
-        Offsets current_offsets = new uint16_t[0];
+        current_offsets = new uint16_t[0];
         buffer_offsets = current_offsets;
         set_links();
     }
 
     ~Song() {
-        clear_data();
         delete[] current_offsets;
     }
     void load_from_file(const std::string &filename);

@@ -106,6 +106,7 @@ void GUIEnvelopesPanel::draw_envelope_graph() {
 }
 
 GUIEnvelopesPanel::GUIEnvelopesPanel() {
+    from_envelope();
     update_envelopes();
 }
 

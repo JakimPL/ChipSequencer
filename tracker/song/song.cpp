@@ -51,8 +51,6 @@ nlohmann::json Song::create_header_json() const {
     json["version"] = header.version;
     json["bpm"] = bpm;
     json["normalizer"] = normalizer;
-    json["output_channels"] = output_channels;
-    json["length"] = song_length;
 
     json["envelopes"] = envelopes.size();
     json["sequences"] = sequences.size();
@@ -74,8 +72,6 @@ nlohmann::json Song::import_header(const std::string &filename) {
     header.version = json["version"];
     bpm = json["bpm"];
     normalizer = json["normalizer"];
-    output_channels = json["output_channels"];
-    song_length = json["length"];
     file.close();
     return json;
 }
@@ -360,7 +356,6 @@ void Song::export_links(const std::string &filename) const {
 
 void Song::import_envelopes(const std::string &song_dir, const nlohmann::json &json) {
     const size_t envelope_count = json["envelopes"];
-    envelopes.clear();
     for (size_t i = 0; i < envelope_count; i++) {
         const std::string filename = get_element_path(song_dir + "/envels", "envel", i);
         Envelope *envelope = new Envelope();
@@ -373,7 +368,6 @@ void Song::import_envelopes(const std::string &song_dir, const nlohmann::json &j
 
 void Song::import_sequences(const std::string &song_dir, const nlohmann::json &json) {
     const size_t sequence_count = json["sequences"];
-    sequences.clear();
     for (size_t i = 0; i < sequence_count; i++) {
         const std::string filename = get_element_path(song_dir + "/seqs", "seq", i);
         std::ifstream file(filename, std::ios::binary);
@@ -385,7 +379,6 @@ void Song::import_sequences(const std::string &song_dir, const nlohmann::json &j
 
 void Song::import_orders(const std::string &song_dir, const nlohmann::json &json) {
     const size_t order_count = json["orders"];
-    orders.clear();
     for (size_t i = 0; i < order_count; i++) {
         const std::string filename = get_element_path(song_dir + "/orders", "order", i);
         std::ifstream file(filename, std::ios::binary);
@@ -397,7 +390,6 @@ void Song::import_orders(const std::string &song_dir, const nlohmann::json &json
 
 void Song::import_wavetables(const std::string &song_dir, const nlohmann::json &json) {
     const size_t wavetable_count = json["wavetables"];
-    wavetables.clear();
     for (size_t i = 0; i < wavetable_count; i++) {
         const std::string filename = get_element_path(song_dir + "/waves", "wave", i);
         std::ifstream file(filename, std::ios::binary);
@@ -409,7 +401,6 @@ void Song::import_wavetables(const std::string &song_dir, const nlohmann::json &
 
 void Song::import_oscillators(const std::string &song_dir, const nlohmann::json &json) {
     const size_t oscillator_count = json["oscillators"];
-    oscillators.clear();
     for (size_t i = 0; i < oscillator_count; i++) {
         const std::string filename = get_element_path(song_dir + "/oscs", "osc", i);
         std::ifstream file(filename, std::ios::binary);
@@ -421,7 +412,6 @@ void Song::import_oscillators(const std::string &song_dir, const nlohmann::json 
 
 void Song::import_dsps(const std::string &song_dir, const nlohmann::json &json) {
     const size_t dsp_count = json["dsps"];
-    dsps.clear();
     for (size_t i = 0; i < dsp_count; i++) {
         const std::string filename = get_element_path(song_dir + "/dsps", "dsp", i);
         std::ifstream file(filename, std::ios::binary);
@@ -433,7 +423,6 @@ void Song::import_dsps(const std::string &song_dir, const nlohmann::json &json) 
 
 void Song::import_channels(const std::string &song_dir, const nlohmann::json &json) {
     const size_t channel_count = json["channels"];
-    channels.clear();
     for (size_t i = 0; i < channel_count; i++) {
         const std::string filename = get_element_path(song_dir + "/chans", "chan", i);
         std::ifstream file(filename, std::ios::binary);
@@ -464,17 +453,12 @@ void Song::import_links(const std::string &song_dir, const nlohmann::json &json)
     const std::string links_filename = song_dir + "/links.bin";
     std::ifstream file(links_filename, std::ios::binary);
 
-    links.clear();
-    links.resize(2);
-
-    links[0].clear();
     for (size_t i = 0; i < channel_count; i++) {
         Link link;
         link.deserialize(file);
         links[0].push_back(link);
     }
 
-    links[1].clear();
     for (size_t i = 0; i < dsp_count; i++) {
         Link link;
         link.deserialize(file);
@@ -575,6 +559,7 @@ void Song::load_from_file(const std::string &filename) {
     try {
         decompress_archive(filename, song_dir);
         nlohmann::json json = import_header(song_dir + "/header.json");
+        clear_data();
         import_envelopes(song_dir, json);
         import_sequences(song_dir, json);
         import_orders(song_dir, json);

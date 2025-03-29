@@ -34,6 +34,7 @@ void GUIOrdersPanel::to_order() {
     }
 
     orders[order_index] = new_order;
+    delete order;
 }
 
 void GUIOrdersPanel::update_orders() {
@@ -85,6 +86,7 @@ void GUIOrdersPanel::draw_order() {
 }
 
 GUIOrdersPanel::GUIOrdersPanel() {
+    from_order();
     update_orders();
 }
 
@@ -94,9 +96,7 @@ void GUIOrdersPanel::draw() {
 
     prepare_combo(order_names, "##OrderCombo", order_index);
     from_order();
-
     draw_order();
-
     to_order();
 
     ImGui::Columns(1);

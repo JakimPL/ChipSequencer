@@ -48,8 +48,6 @@ int main() {
     Song song = {
         bpm,
         normalizer,
-        CHANNEL_SIZE,
-        SONG_LENGTH,
         envelopes,
         sequences,
         orders,
@@ -63,6 +61,11 @@ int main() {
 
     song.load_from_file("song.seq");
 
+    GUI gui;
+    if (!gui.initialize()) {
+        return 1;
+    }
+
     std::array<t_output, SONG_LENGTH> target;
     // render(target);
 
@@ -73,11 +76,6 @@ int main() {
 #else
     PortAudioDriver port_audio_driver = PortAudioDriver(target, sample_rate);
     port_audio_driver.initialize();
-
-    GUI gui;
-    if (!gui.initialize()) {
-        return 1;
-    }
 
     gui.set_play_callback([&]() {
         std::thread audio_thread(play_audio, std::ref(port_audio_driver), std::ref(target), std::ref(gui));

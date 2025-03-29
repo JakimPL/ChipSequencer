@@ -120,6 +120,7 @@ void GUIOscillatorsPanel::draw_oscillator() {
 }
 
 GUIOscillatorsPanel::GUIOscillatorsPanel() {
+    from_oscillator();
     update_oscillators();
     update_wavetables();
 }
@@ -131,7 +132,6 @@ void GUIOscillatorsPanel::draw() {
     prepare_combo(oscillator_names, "##OscillatorCombo", oscillator_index);
     from_oscillator();
     draw_oscillator();
-
     to_oscillator();
 
     ImGui::Columns(1);

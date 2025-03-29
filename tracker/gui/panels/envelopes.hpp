@@ -10,12 +10,12 @@
 class GUIEnvelopesPanel {
   private:
     struct CurrentEnvelope {
-        float base_volume;
-        float sustain_level;
-        float attack;
-        float decay;
-        float hold;
-        float release;
+        float base_volume = 0.0f;
+        float sustain_level = 0.0f;
+        float attack = 0.0f;
+        float decay = 0.0f;
+        float hold = 0.0f;
+        float release = 0.0f;
     } current_envelope;
 
     int envelope_index = 0;
