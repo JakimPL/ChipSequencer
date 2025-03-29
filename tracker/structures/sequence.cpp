@@ -16,7 +16,7 @@ Sequence *Sequence::deserialize(std::ifstream &file) {
     uint8_t data_size;
     read_data(file, &data_size, sizeof(data_size));
 
-    size_t totalSize = sizeof(uint8_t) + data_size * sizeof(Note);
+    size_t totalSize = sizeof(Sequence) + data_size * sizeof(Note);
     void *memory = malloc(totalSize);
     Sequence *sequence = static_cast<Sequence *>(memory);
     sequence->data_size = data_size;

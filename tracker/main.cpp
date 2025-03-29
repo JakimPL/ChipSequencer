@@ -89,6 +89,5 @@ int main() {
     gui.terminate();
 
 #endif
-
     return 0;
 }

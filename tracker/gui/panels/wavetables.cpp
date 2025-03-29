@@ -9,7 +9,7 @@ void GUIWavetablesPanel::from_wavetable() {
     current_wavetable.size = wavetable->wavetable_size;
     current_wavetable.interpolate = false;
     if (current_wavetable.wave.size() != current_wavetable.size) {
-        current_wavetable.wave.resize(current_wavetable.size);
+        current_wavetable.wave.resize(std::min(current_wavetable.size, max_points));
     }
 
     for (size_t i = 0; i < current_wavetable.wave.size(); ++i) {

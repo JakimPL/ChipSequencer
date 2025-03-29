@@ -12,9 +12,9 @@
 class GUIWavetablesPanel {
   private:
     struct CurrentWavetable {
+        std::vector<float> wave = {};
         int size = 0;
         bool interpolate = false;
-        std::vector<float> wave = {};
     } current_wavetable;
 
     int wavetable_index = 0;
