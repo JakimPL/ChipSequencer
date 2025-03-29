@@ -5,17 +5,7 @@
 #include <map>
 #include <vector>
 
-enum class Target : uint8_t {
-    OUTPUT_CHANNEL,
-    DSP_CHANNEL,
-    ENVELOPE,
-    SEQUENCE,
-    ORDER,
-    OSCILLATOR,
-    WAVETABLE,
-    DSP,
-    CHANNEL
-};
+#include "target.hpp"
 
 enum class ItemType : u_int8_t {
     CHANNEL = 0,

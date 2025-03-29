@@ -14,15 +14,12 @@ void mix();
 }
 
 void sound_driver_initialize() {
-    return;
 }
 
 void sound_driver_terminate() {
-    return;
 }
 
 void sound_driver_step() {
-    return;
 }
 
 void render(std::array<t_output, SONG_LENGTH> &target) {

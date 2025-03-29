@@ -572,7 +572,7 @@ void Song::load_from_file(const std::string &filename) {
 
         std::filesystem::remove_all(temp_base);
     } catch (const std::exception &e) {
-        // std::filesystem::remove_all(temp_base);
+        std::filesystem::remove_all(temp_base);
         throw;
     }
 }
