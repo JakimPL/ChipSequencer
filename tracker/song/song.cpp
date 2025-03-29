@@ -448,12 +448,6 @@ void Song::import_offsets(const std::string &song_dir, const nlohmann::json &jso
     const std::string offsets_filename = song_dir + "/offsets.bin";
     std::ifstream file(offsets_filename, std::ios::binary);
     file.close();
-    // buffer_offsets.clear();
-    // for (size_t i = 0; i < dsp_count; i++) {
-    //     uint16_t offset;
-    //     file.read(reinterpret_cast<char *>(&offset), sizeof(offset));
-    //     buffer_offsets.push_back(offset);
-    // }
 }
 
 void Song::import_links(const std::string &song_dir, const nlohmann::json &json) {
@@ -461,12 +455,18 @@ void Song::import_links(const std::string &song_dir, const nlohmann::json &json)
     const size_t dsp_count = json["dsps"];
     const std::string links_filename = song_dir + "/links.bin";
     std::ifstream file(links_filename, std::ios::binary);
+
+    links.clear();
+    links.resize(2);
+
+    links[0].clear();
     for (size_t i = 0; i < channel_count; i++) {
         Link link;
         link.deserialize(file);
         links[0].push_back(link);
     }
 
+    links[1].clear();
     for (size_t i = 0; i < dsp_count; i++) {
         Link link;
         link.deserialize(file);
