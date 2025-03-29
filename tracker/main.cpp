@@ -57,10 +57,11 @@ int main() {
         wavetables,
         dsps,
         channels,
+        buffer_offsets,
         links
     };
 
-    // song.load_from_file("song.seq");
+    song.load_from_file("song.seq");
 
     std::array<t_output, SONG_LENGTH> target;
     // render(target);

@@ -26,6 +26,8 @@ struct Song {
     Wavetables &wavetables;
     DSPs &dsps;
     Channels &channels;
+    Offsets buffer_offsets;
+    Offsets current_offsets = nullptr;
     Links &links;
 
     Song(
@@ -40,6 +42,7 @@ struct Song {
         Wavetables &wav,
         DSPs &dsp,
         Channels &chn,
+        Offsets &offsets,
         Links &lnk
     )
         : bpm(bpm_reference),
@@ -53,18 +56,20 @@ struct Song {
           wavetables(wav),
           dsps(dsp),
           channels(chn),
+          buffer_offsets(offsets),
           links(lnk) {
+        Offsets current_offsets = new uint16_t[0];
+        buffer_offsets = current_offsets;
         set_links();
     }
 
     ~Song() {
-        // for (auto env : envelopes) delete env;
-        // for (auto seq : sequences) delete seq;
-        // for (auto ord : orders) delete ord;
-        // for (auto osc : oscillators) delete osc;
-        // for (auto wav : wavetables) delete wav;
-        // for (auto dsp : dsps) delete dsp;
-        // for (auto chn : channels) delete chn;
+        for (auto env : envelopes) delete env;
+        for (auto seq : sequences) delete seq;
+        for (auto ord : orders) delete ord;
+        for (auto wav : wavetables) delete wav;
+        for (auto chn : channels) delete chn;
+        delete[] buffer_offsets;
     }
     void load_from_file(const std::string &filename);
     void save_to_file(const std::string &filename, const bool compile = true) const;

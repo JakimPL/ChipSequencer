@@ -94,7 +94,7 @@ void GUIOscillatorsPanel::draw_oscillator() {
     ImGui::Text("Oscillator:");
 
     if (oscillators.empty()) {
-        ImGui::Text("No oscillators available");
+        ImGui::Text("No oscillator available");
         ImGui::Columns(1);
         return;
     }

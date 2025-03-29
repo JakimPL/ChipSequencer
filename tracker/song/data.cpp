@@ -10,6 +10,6 @@ Oscillators oscillators;
 Wavetables wavetables;
 DSPs dsps;
 Channels channels;
-
-uint16_t buffer_offsets[] = {0, 256, 256};
+Offsets buffer_offsets;
+Offsets current_offsets = nullptr;
 Links links;

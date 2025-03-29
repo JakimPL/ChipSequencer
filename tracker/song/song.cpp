@@ -447,6 +447,14 @@ void Song::import_offsets(const std::string &song_dir, const nlohmann::json &jso
     const size_t dsp_count = json["dsps"];
     const std::string offsets_filename = song_dir + "/offsets.bin";
     std::ifstream file(offsets_filename, std::ios::binary);
+
+    delete[] current_offsets;
+    current_offsets = new uint16_t[dsp_count];
+    buffer_offsets = current_offsets;
+    for (size_t i = 0; i < dsp_count; i++) {
+        read_data(file, &buffer_offsets[i], sizeof(uint16_t));
+    }
+
     file.close();
 }
 
@@ -485,8 +493,8 @@ void Song::clear_data() {
     wavetables.clear();
     dsps.clear();
     channels.clear();
-    links[0].clear();
-    links[1].clear();
+    links.clear();
+    links.resize(2);
 }
 
 void Song::save_to_file(const std::string &filename, const bool compile) const {
