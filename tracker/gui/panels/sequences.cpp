@@ -83,6 +83,14 @@ void GUISequencesPanel::draw_sequence() {
     ImGui::Separator();
     ImGui::Text("Pattern:");
 
+    if (sequences.empty()) {
+        ImGui::Text("No sequences available.");
+        ImGui::Columns(1);
+        return;
+    }
+
+    draw_sequence_length();
+
     const float height = std::max(5.0f, ImGui::GetContentRegionAvail().y - 5.0f);
     ImGui::BeginChild("PatternScroll", ImVec2(0, height), true);
     ImGui::Columns(2, "pattern_columns", false);
@@ -132,7 +140,6 @@ void GUISequencesPanel::draw() {
     prepare_combo(sequence_names, "##SequenceCombo", sequence_index);
     from_sequence();
 
-    draw_sequence_length();
     draw_sequence();
 
     to_sequence();

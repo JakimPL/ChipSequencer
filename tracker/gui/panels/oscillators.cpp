@@ -92,6 +92,13 @@ void GUIOscillatorsPanel::draw_oscillator_type() {
 void GUIOscillatorsPanel::draw_oscillator() {
     ImGui::Separator();
     ImGui::Text("Oscillator:");
+
+    if (oscillators.empty()) {
+        ImGui::Text("No oscillators available");
+        ImGui::Columns(1);
+        return;
+    }
+
     ImGui::Columns(2, "oscillator_columns", false);
     ImGui::SetColumnWidth(0, 150.0f);
     draw_oscillator_type();

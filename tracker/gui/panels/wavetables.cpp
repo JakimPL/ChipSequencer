@@ -46,12 +46,19 @@ void GUIWavetablesPanel::draw_wavetable_length() {
 void GUIWavetablesPanel::draw_waveform() {
     ImGui::Separator();
     ImGui::Checkbox("Interpolate", &current_wavetable.interpolate);
-    ImGui::Text("Waveform:");
 
+    if (wavetables.empty()) {
+        ImGui::Text("No wavetables available.");
+        return;
+    }
+
+    ImGui::Text("Waveform:");
     if (current_wavetable.wave.empty()) {
         ImGui::Text("No data to display.");
         return;
     }
+
+    draw_wavetable_length();
 
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
     const ImVec2 p = ImGui::GetCursorScreenPos();
@@ -140,7 +147,6 @@ void GUIWavetablesPanel::draw() {
     prepare_combo(wavetable_names, "##WavetableCombo", wavetable_index);
     from_wavetable();
 
-    draw_wavetable_length();
     draw_waveform();
 
     to_wavetable();

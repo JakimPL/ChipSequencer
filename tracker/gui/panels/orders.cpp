@@ -53,6 +53,8 @@ void GUIOrdersPanel::draw_order() {
     ImGui::Separator();
     ImGui::Text("Order:");
 
+    draw_order_length();
+
     const float height = std::max(5.0f, ImGui::GetContentRegionAvail().y - 5.0f);
     ImGui::BeginChild("OrderScroll", ImVec2(0, height), true);
     ImGui::Columns(1, "order_columns");
@@ -93,7 +95,6 @@ void GUIOrdersPanel::draw() {
     prepare_combo(order_names, "##OrderCombo", order_index);
     from_order();
 
-    draw_order_length();
     draw_order();
 
     to_order();
