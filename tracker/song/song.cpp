@@ -217,7 +217,7 @@ void *Song::deserialize_dsp(std::ifstream &file) const {
 
     if (effect_type == EFFECT_DELAY) {
         DSPDelay *delay = new DSPDelay();
-        delay->dsp_size = DSP_DELAY_SIZE;
+        delay->dsp_size = SIZE_DSP_DELAY;
         delay->output = &output;
         file.seekg(sizeof(uint16_t), std::ios::cur);
         read_data(file, &delay->output_flag, sizeof(delay->output_flag));
@@ -228,7 +228,7 @@ void *Song::deserialize_dsp(std::ifstream &file) const {
         return reinterpret_cast<void *>(delay);
     } else if (effect_type == EFFECT_GAINER) {
         DSPGainer *gainer = new DSPGainer();
-        gainer->dsp_size = DSP_GAINER_SIZE;
+        gainer->dsp_size = SIZE_DSP_GAINER;
         gainer->output = &output;
         file.seekg(sizeof(uint16_t), std::ios::cur);
         read_data(file, &gainer->output_flag, sizeof(gainer->output_flag));
@@ -236,7 +236,7 @@ void *Song::deserialize_dsp(std::ifstream &file) const {
         return reinterpret_cast<void *>(gainer);
     } else if (effect_type == EFFECT_FILTER) {
         DSPFilter *filter = new DSPFilter();
-        filter->dsp_size = DSP_FILTER_SIZE;
+        filter->dsp_size = SIZE_DSP_FILTER;
         filter->output = &output;
         file.seekg(sizeof(uint16_t), std::ios::cur);
         read_data(file, &filter->output_flag, sizeof(filter->output_flag));
@@ -252,17 +252,17 @@ void *Song::deserialize_oscillator(std::ifstream &file) const {
     read_data(file, &size, sizeof(size));
     read_data(file, &oscillator_type, sizeof(oscillator_type));
 
-    if (oscillator_type == OSCILLATOR_SQUARE) {
+    if (oscillator_type == GENERATOR_SQUARE) {
         OscillatorSquare *oscillator = new OscillatorSquare();
         read_data(file, &oscillator->duty_cycle, sizeof(oscillator->duty_cycle));
         return reinterpret_cast<void *>(oscillator);
-    } else if (oscillator_type == OSCILLATOR_SAW) {
+    } else if (oscillator_type == GENERATOR_SAW) {
         OscillatorSaw *oscillator = new OscillatorSaw();
         return reinterpret_cast<void *>(oscillator);
-    } else if (oscillator_type == OSCILLATOR_SINE) {
+    } else if (oscillator_type == GENERATOR_SINE) {
         OscillatorSine *oscillator = new OscillatorSine();
         return reinterpret_cast<void *>(oscillator);
-    } else if (oscillator_type == OSCILLATOR_WAVETABLE) {
+    } else if (oscillator_type == GENERATOR_WAVETABLE) {
         OscillatorWavetable *oscillator = new OscillatorWavetable();
         read_data(file, &oscillator->wavetable_index, sizeof(oscillator->wavetable_index));
         return reinterpret_cast<void *>(oscillator);
@@ -488,13 +488,13 @@ void Song::clear_data() {
     for (auto *oscillator : oscillators) {
         const uint8_t *bytes = static_cast<const uint8_t *>(oscillator);
         const uint8_t dsp_type = bytes[1];
-        if (dsp_type == OSCILLATOR_SQUARE) {
+        if (dsp_type == GENERATOR_SQUARE) {
             delete static_cast<OscillatorSquare *>(oscillator);
-        } else if (dsp_type == OSCILLATOR_SAW) {
+        } else if (dsp_type == GENERATOR_SAW) {
             delete static_cast<OscillatorSaw *>(oscillator);
-        } else if (dsp_type == OSCILLATOR_SINE) {
+        } else if (dsp_type == GENERATOR_SINE) {
             delete static_cast<OscillatorSine *>(oscillator);
-        } else if (dsp_type == OSCILLATOR_WAVETABLE) {
+        } else if (dsp_type == GENERATOR_WAVETABLE) {
             delete static_cast<OscillatorWavetable *>(oscillator);
         }
     }

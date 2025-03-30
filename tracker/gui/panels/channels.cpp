@@ -10,9 +10,9 @@ void GUIChannelsPanel::from_channel() {
     current_channel.constant_pitch = channel->order_index == 0xFF;
     current_channel.order_index = std::max(0, static_cast<int>(channel->order_index));
     current_channel.oscillator_index = channel->oscillator_index;
-    current_channel.additive = !(channel->output_flag & CHANNEL_MASK_ADDITIVE);
-    current_channel.type = (channel->output_flag & CHANNEL_MASK_VARIABLE_TYPE) >> 4;
-    current_channel.shift = current_channel.type == 0 ? 0 : channel->output_flag & CHANNEL_MASK_SHIFT;
+    current_channel.additive = !(channel->output_flag & MASK_ADDITIVE);
+    current_channel.type = (channel->output_flag & MASK_VARIABLE_TYPE) >> 4;
+    current_channel.shift = current_channel.type == 0 ? 0 : channel->output_flag & MASK_SHIFT;
     current_channel.output = channel->output;
 
     if (current_channel.constant_pitch) {
@@ -31,7 +31,7 @@ void GUIChannelsPanel::to_channel() {
     channel->envelope_index = current_channel.envelope_index;
     channel->oscillator_index = current_channel.oscillator_index;
 
-    channel->output_flag = current_channel.additive ? 0 : CHANNEL_MASK_ADDITIVE;
+    channel->output_flag = current_channel.additive ? 0 : MASK_ADDITIVE;
     channel->output_flag |= (current_channel.type << 4) | current_channel.shift;
     channel->output = current_channel.output;
 

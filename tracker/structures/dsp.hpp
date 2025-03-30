@@ -15,7 +15,7 @@ struct DSP {
 };
 
 struct DSPDelay {
-    uint8_t dsp_size = DSP_DELAY_SIZE;
+    uint8_t dsp_size = SIZE_DSP_DELAY;
     uint8_t effect_index = EFFECT_DELAY;
     void *output;
     uint8_t output_flag;
@@ -26,7 +26,7 @@ struct DSPDelay {
 };
 
 struct DSPGainer {
-    uint8_t dsp_size = DSP_GAINER_SIZE;
+    uint8_t dsp_size = SIZE_DSP_GAINER;
     uint8_t effect_index = EFFECT_GAINER;
     void *output;
     uint8_t output_flag;
@@ -34,7 +34,7 @@ struct DSPGainer {
 };
 
 struct DSPFilter {
-    uint8_t dsp_size = DSP_FILTER_SIZE;
+    uint8_t dsp_size = SIZE_DSP_FILTER;
     uint8_t effect_index = EFFECT_FILTER;
     void *output;
     uint8_t output_flag;
