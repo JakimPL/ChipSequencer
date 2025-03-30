@@ -5,7 +5,7 @@
 #include <map>
 #include <vector>
 
-const std::vector<std::map<uint8_t, uint8_t>> x16_to_x32 = {
+const std::vector<std::map<uint16_t, uint16_t>> x16_to_x32 = {
     {},
     {},
     {
@@ -45,7 +45,7 @@ const std::vector<std::map<uint8_t, uint8_t>> x16_to_x32 = {
         {9, 11},
     },
 };
-const std::vector<std::map<uint8_t, uint8_t>> x32_to_x16 = {
+const std::vector<std::map<uint16_t, uint16_t>> x32_to_x16 = {
     {},
     {},
     {

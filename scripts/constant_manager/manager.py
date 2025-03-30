@@ -106,7 +106,7 @@ class ConstantManager:
 
     @staticmethod
     def compose_offset_hpp_file(x16_to_x32: List[Dict[int, int]], x32_to_x16: List[Dict[int, int]]) -> str:
-        declaration = "const std::vector<std::map<uint8_t, uint8_t>> "
+        declaration = "const std::vector<std::map<uint16_t, uint16_t>> "
 
         header = """#ifndef MAPS_OFFSETS_HPP
 #define MAPS_OFFSETS_HPP
