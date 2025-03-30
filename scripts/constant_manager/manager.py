@@ -3,7 +3,7 @@ import re
 from collections import defaultdict
 from typing import DefaultDict, Dict, List, Tuple, Union
 
-from pyconf import CONSTANTS_ASM_FILE, CONSTANTS_CPP_FILE, TARGET_HPP_FILE, X16_TO_X32_FILE, X32_TO_X16_FILE
+from pyconf import CONSTANTS_ASM_FILE, CONSTANTS_CPP_FILE, OFFSETS_HPP_FILE, TARGET_HPP_FILE
 
 from utils import load_text, save_json, save_text
 
@@ -14,14 +14,12 @@ class ConstantManager:
         constants_asm_file: Union[str, os.PathLike] = CONSTANTS_ASM_FILE,
         constants_cpp_file: Union[str, os.PathLike] = CONSTANTS_CPP_FILE,
         target_hpp_file: Union[str, os.PathLike] = TARGET_HPP_FILE,
-        x16_to_x32_file: Union[str, os.PathLike] = X16_TO_X32_FILE,
-        x32_to_x16_file: Union[str, os.PathLike] = X32_TO_X16_FILE,
+        offsets_hpp_file: Union[str, os.PathLike] = OFFSETS_HPP_FILE,
     ):
         self.constants_asm_file = constants_asm_file
         self.constants_cpp_file = constants_cpp_file
         self.target_hpp_file = target_hpp_file
-        self.x16_to_x32_file = x16_to_x32_file
-        self.x32_to_x16_file = x32_to_x16_file
+        self.offsets_hpp_file = offsets_hpp_file
 
     def __call__(self):
         asm_constants = load_text(self.constants_asm_file)
@@ -33,8 +31,8 @@ class ConstantManager:
         x16, x32 = self.parse_cpp_constants(cpp_constants)
         x16_to_x32 = self.get_offset_map(x16, x32, groups)
         x32_to_x16 = self.get_offset_map(x32, x16, groups)
-        save_json(x16_to_x32, self.x16_to_x32_file)
-        save_json(x32_to_x16, self.x32_to_x16_file)
+        offsets = self.compose_offset_hpp_file(x16_to_x32, x32_to_x16)
+        save_text(offsets, self.offsets_hpp_file)
 
     @staticmethod
     def extract_groups_from_targets(target: str) -> List[str]:
@@ -91,3 +89,44 @@ class ConstantManager:
         source: DefaultDict[str, Dict[str, int]], target: DefaultDict[str, Dict[str, int]], groups: List[str]
     ) -> List[Dict[int, int]]:
         return [{source[group][key]: target[group][key] for key in source[group]} for group in groups]
+
+    @staticmethod
+    def compose_definition(source: List[Dict[int, int]], name: str) -> str:
+        lines = [f"{name} = {{"]
+        for mapping in source:
+            if not mapping:
+                lines += ["    {},"]
+            else:
+                lines += ["    {"]
+                for key, value in mapping.items():
+                    lines += [f"        {{{key}, {value}}},"]
+                lines += ["    },"]
+        lines += ["};", ""]
+        return "\n".join(lines)
+
+    @staticmethod
+    def compose_offset_hpp_file(x16_to_x32: List[Dict[int, int]], x32_to_x16: List[Dict[int, int]]) -> str:
+        declaration = "const std::vector<std::map<uint8_t, uint8_t>> "
+
+        header = """#ifndef MAPS_OFFSETS_HPP
+#define MAPS_OFFSETS_HPP
+
+#include <cstdint>
+#include <map>
+#include <vector>
+
+"""
+        end = """
+#endif // MAPS_OFFSETS_HPP
+"""
+
+        return "".join(
+            [
+                header,
+                declaration,
+                ConstantManager.compose_definition(x16_to_x32, "x16_to_x32"),
+                declaration,
+                ConstantManager.compose_definition(x32_to_x16, "x32_to_x16"),
+                end,
+            ]
+        )

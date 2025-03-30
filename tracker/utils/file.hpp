@@ -3,6 +3,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <nlohmann/json.hpp>
 #include <vector>
 
 template <typename T>
@@ -63,6 +64,16 @@ std::vector<size_t> get_struct_sizes(const std::vector<T> &data) {
         sizes.push_back(get_struct_size(pointer) + 1);
     }
     return sizes;
+}
+
+inline nlohmann::json read_json(const std::string &filename) {
+    std::ifstream file(filename);
+    if (!file) {
+        throw std::runtime_error("Failed to open file: " + filename);
+    }
+    nlohmann::json json;
+    file >> json;
+    return json;
 }
 
 #endif // UTILS_FILE_HPP

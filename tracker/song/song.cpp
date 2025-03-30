@@ -64,15 +64,12 @@ nlohmann::json Song::create_header_json() const {
 }
 
 nlohmann::json Song::import_header(const std::string &filename) {
-    std::ifstream file(filename);
-    nlohmann::json json;
-    file >> json;
+    nlohmann::json json = read_json(filename);
     header.title = json["title"];
     header.author = json["author"];
     header.version = json["version"];
     bpm = json["bpm"];
     normalizer = json["normalizer"];
-    file.close();
     return json;
 }
 

@@ -17,9 +17,6 @@
 *.a
 *.seq
 
-!tracker/maps/x16_to_x32.json
-!tracker/maps/x32_to_x16.json
-
 !CMakeLists.txt
 cmake_install.cmake
 CMakeFiles/

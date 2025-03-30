@@ -23,7 +23,7 @@ repos:
         entry: make consts
         language: system
         always_run: true
-        files: "tracker/constants.hpp tracker/maps/x16_to_x32.json tracker/maps/x32_to_x16.json"
+        files: "tracker/constants.hpp tracker/maps/offsets.hpp"
       - id: nasmfmt-hook
         name: nasmfmt formatting
         entry: nasmfmt
