@@ -13,6 +13,70 @@
 #include "data.hpp"
 #include "song.hpp"
 
+void Song::new_song() {
+    clear_data();
+    bpm = 120;
+    normalizer = 0.5f;
+    header = {
+        "Untitled",
+        "Unknown",
+        TRACKER_VERSION
+    };
+}
+
+void Song::save_to_file(const std::string &filename, const bool compile) const {
+    const auto [temp_base, song_path] = prepare_temp_directory();
+    const std::string song_dir = song_path.string();
+
+    try {
+        export_asm_file(song_dir);
+        export_header(song_dir);
+        export_series(song_dir, "envel", envelopes, {sizeof(Envelope)});
+        export_channels(song_dir);
+        export_series(song_dir, "osc", oscillators, get_struct_sizes(oscillators));
+        export_dsps(song_dir);
+        export_arrays(song_dir, "seq", sequences);
+        export_arrays(song_dir, "order", orders);
+        export_arrays(song_dir, "wave", wavetables);
+        export_offsets(song_dir + "/offsets.bin");
+        export_links(song_dir + "/links.bin");
+        if (compile) {
+            compile_sources(temp_base.string());
+        }
+
+        compress_directory(song_dir, filename);
+        std::filesystem::remove_all(temp_base);
+    } catch (const std::exception &e) {
+        std::filesystem::remove_all(temp_base);
+        throw;
+    }
+}
+
+void Song::load_from_file(const std::string &filename) {
+    const auto [temp_base, song_path] = prepare_temp_directory();
+    const std::string song_dir = song_path.string();
+
+    try {
+        decompress_archive(filename, song_dir);
+        nlohmann::json json = import_header(song_dir + "/header.json");
+        clear_data();
+        import_envelopes(song_dir, json);
+        import_sequences(song_dir, json);
+        import_orders(song_dir, json);
+        import_wavetables(song_dir, json);
+        import_channels(song_dir, json);
+        import_oscillators(song_dir, json);
+        import_dsps(song_dir, json);
+        import_links(song_dir, json);
+        import_offsets(song_dir, json);
+
+        std::filesystem::remove_all(temp_base);
+    } catch (const std::exception &e) {
+        std::filesystem::remove_all(temp_base);
+        throw;
+    }
+}
+
 void Song::generate_header_vector(std::stringstream &asm_content, const std::string &name, const std::string &short_name, const size_t size) const {
     asm_content << name << "s:\n";
     for (size_t i = 0; i < size; i++) {
@@ -516,57 +580,4 @@ void Song::clear_data() {
     channels.clear();
     links.clear();
     links.resize(2);
-}
-
-void Song::save_to_file(const std::string &filename, const bool compile) const {
-    const auto [temp_base, song_path] = prepare_temp_directory();
-    const std::string song_dir = song_path.string();
-
-    try {
-        export_asm_file(song_dir);
-        export_header(song_dir);
-        export_series(song_dir, "envel", envelopes, {sizeof(Envelope)});
-        export_channels(song_dir);
-        export_series(song_dir, "osc", oscillators, get_struct_sizes(oscillators));
-        export_dsps(song_dir);
-        export_arrays(song_dir, "seq", sequences);
-        export_arrays(song_dir, "order", orders);
-        export_arrays(song_dir, "wave", wavetables);
-        export_offsets(song_dir + "/offsets.bin");
-        export_links(song_dir + "/links.bin");
-        if (compile) {
-            compile_sources(temp_base.string());
-        }
-
-        compress_directory(song_dir, filename);
-        std::filesystem::remove_all(temp_base);
-    } catch (const std::exception &e) {
-        std::filesystem::remove_all(temp_base);
-        throw;
-    }
-}
-
-void Song::load_from_file(const std::string &filename) {
-    const auto [temp_base, song_path] = prepare_temp_directory();
-    const std::string song_dir = song_path.string();
-
-    try {
-        decompress_archive(filename, song_dir);
-        nlohmann::json json = import_header(song_dir + "/header.json");
-        clear_data();
-        import_envelopes(song_dir, json);
-        import_sequences(song_dir, json);
-        import_orders(song_dir, json);
-        import_wavetables(song_dir, json);
-        import_channels(song_dir, json);
-        import_oscillators(song_dir, json);
-        import_dsps(song_dir, json);
-        import_links(song_dir, json);
-        import_offsets(song_dir, json);
-
-        std::filesystem::remove_all(temp_base);
-    } catch (const std::exception &e) {
-        std::filesystem::remove_all(temp_base);
-        throw;
-    }
 }

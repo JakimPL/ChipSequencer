@@ -5,6 +5,7 @@
 #include "panels/channels.hpp"
 #include "panels/envelopes.hpp"
 #include "panels/general.hpp"
+#include "panels/menu.hpp"
 #include "panels/oscillators.hpp"
 #include "panels/orders.hpp"
 #include "panels/sequences.hpp"
@@ -30,6 +31,7 @@ class GUI {
     ImGuiIO *io;
     ImFont *font;
     bool done = false;
+    GUIMenu menu;
     GUIGeneralPanel general_panel;
     GUIChannelsPanel channels_panel;
     GUIEnvelopesPanel envelopes_panel;

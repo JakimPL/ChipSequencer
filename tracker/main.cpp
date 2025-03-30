@@ -1,5 +1,7 @@
 #include <array>
 #include <iostream>
+
+#include "general.hpp"
 #include "song/song.hpp"
 #include "driver/file.hpp"
 #include "driver/port.hpp"
@@ -42,31 +44,12 @@ int main() {
     std::cout << "ChipSequencer initialized!" << std::endl;
     std::cout << "Sample rate: " << sample_rate << std::endl;
 
-    Song song = {
-        bpm,
-        normalizer,
-        envelopes,
-        sequences,
-        orders,
-        oscillators,
-        wavetables,
-        dsps,
-        channels,
-        buffer_offsets,
-        links
-    };
-
-    song.load_from_file("song.seq");
-    song.save_to_file("temp.seq");
-    song.load_from_file("temp.seq");
-
     GUI gui;
     if (!gui.initialize()) {
         return 1;
     }
 
     std::array<t_output, SONG_LENGTH> target;
-    // render(target);
 
 #if SAVE_TO_FILE
     FileDriver file_driver = FileDriver(target, "output.txt");

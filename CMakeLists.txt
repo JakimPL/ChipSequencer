@@ -62,6 +62,7 @@ target_link_libraries(song PUBLIC imgui imgui_knobs)
 
 add_executable(main
     tracker/main.cpp
+    tracker/general.cpp
     tracker/song/data.cpp
     tracker/song/link.cpp
     tracker/song/song.cpp
@@ -74,6 +75,7 @@ add_executable(main
     tracker/gui/panels/channels.cpp
     tracker/gui/panels/envelopes.cpp
     tracker/gui/panels/general.cpp
+    tracker/gui/panels/menu.cpp
     tracker/gui/panels/orders.cpp
     tracker/gui/panels/oscillators.cpp
     tracker/gui/panels/sequences.cpp

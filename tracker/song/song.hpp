@@ -60,6 +60,8 @@ struct Song {
     ~Song() {
         delete[] current_offsets;
     }
+
+    void new_song();
     void load_from_file(const std::string &filename);
     void save_to_file(const std::string &filename, const bool compile = true) const;
 
