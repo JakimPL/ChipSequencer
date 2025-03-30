@@ -34,6 +34,11 @@ build:
 	@mkdir -p build
 	@cd build && cmake .. && make --no-print-directory
 
+clean:
+	@echo "Cleaning the project..."
+	@mkdir -p build
+	@cd build && cmake .. && make clean --no-print-directory
+
 install:
 	mkdir -p $(TOOLS_DIR)
 	make apack

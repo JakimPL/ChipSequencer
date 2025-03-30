@@ -50,7 +50,7 @@ class Compiler:
     def copy_executable(self):
         shutil.copy(self.bin_dir / "PLAYER.EXE", self.song_dir / "player.exe")
 
-    def compile(self, pack: bool = False) -> None:
+    def compile(self, pack: bool = False, terminate: bool = True) -> None:
         args = ["dosbox", "-noautoexec", "-c", "mount c: .", "-c", "c:", "-c", "call compile.bat"]
 
         if pack:
@@ -61,7 +61,8 @@ class Compiler:
                 "apack ../bin/MAIN.EXE ../bin/player.exe",
             ]
 
-        args += ["-c", "exit"]
+        if terminate:
+            args += ["-c", "exit"]
 
         subprocess.run(args, cwd=self.temp_dir)
 

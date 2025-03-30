@@ -2,10 +2,10 @@
 load_offsets:
 .load_channel:
     movzx ebx, byte [current_channel]
-    LOAD_ARRAY_ITEM channels, channel_offset, CHANNEL_SIZE
+    LOAD_ARRAY_ITEM channels, channel_offset, SIZE_CHANNEL
 .load_envelope:
     movzx ebx, byte [CHANNEL_ENVELOPE_INDEX + ecx]
-    LOAD_ARRAY_ITEM envelopes, envelope_offset, ENVELOPE_SIZE
+    LOAD_ARRAY_ITEM envelopes, envelope_offset, SIZE_ENVELOPE
 .load_order:
     call check_fixed_frequency
     je .load_oscillator

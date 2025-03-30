@@ -473,9 +473,6 @@ void Song::clear_data() {
     for (auto *sequence : sequences) {
         delete sequence;
     }
-    for (auto *sequence : sequences) {
-        delete sequence;
-    }
     for (auto *order : orders) {
         delete order;
     }

@@ -57,6 +57,8 @@ int main() {
     };
 
     song.load_from_file("song.seq");
+    song.save_to_file("temp.seq");
+    song.load_from_file("temp.seq");
 
     GUI gui;
     if (!gui.initialize()) {
