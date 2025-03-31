@@ -27,12 +27,12 @@ class GUIChannelsPanel {
     bool is_index_valid() const;
     void from_channel();
     void to_channel();
-    void update_channels();
     void draw_channel();
 
   public:
     GUIChannelsPanel();
     void draw();
+    void update();
 };
 
 #endif // GUI_PANELS_CHANNELS_HPP

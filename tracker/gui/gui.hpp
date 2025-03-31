@@ -24,6 +24,7 @@ class GUI {
     bool is_done();
     void set_play_callback(std::function<void()> callback);
     void set_playing_status(bool status);
+    void update();
 
   private:
     SDL_Window *window;

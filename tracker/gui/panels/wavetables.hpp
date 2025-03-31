@@ -25,11 +25,11 @@ class GUIWavetablesPanel {
     void to_wavetable();
     void draw_wavetable_length();
     void draw_waveform();
-    void update_wavetables();
 
   public:
     GUIWavetablesPanel();
     void draw();
+    void update();
 };
 
 #endif // GUI_PANELS_WAVETABLES_HPP

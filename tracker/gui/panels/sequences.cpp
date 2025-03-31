@@ -2,7 +2,7 @@
 
 GUISequencesPanel::GUISequencesPanel() {
     from_sequence();
-    update_sequences();
+    update();
 }
 
 void GUISequencesPanel::draw() {
@@ -88,7 +88,7 @@ void GUISequencesPanel::to_sequence() {
     delete sequence;
 }
 
-void GUISequencesPanel::update_sequences() {
+void GUISequencesPanel::update() {
     update_items(sequence_names, sequences.size(), "Sequence ", sequence_index);
 }
 

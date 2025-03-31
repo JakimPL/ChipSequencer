@@ -2,7 +2,7 @@
 
 GUIOrdersPanel::GUIOrdersPanel() {
     from_order();
-    update_orders();
+    update();
 }
 
 void GUIOrdersPanel::draw() {
@@ -59,7 +59,7 @@ void GUIOrdersPanel::to_order() {
     delete order;
 }
 
-void GUIOrdersPanel::update_orders() {
+void GUIOrdersPanel::update() {
     update_items(order_names, orders.size(), "Order ", order_index);
 }
 

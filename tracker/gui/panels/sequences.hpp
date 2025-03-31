@@ -22,13 +22,13 @@ class GUISequencesPanel {
     void from_sequence();
     std::vector<Note> pattern_to_sequence();
     void to_sequence();
-    void update_sequences();
     void draw_sequence_length();
     void draw_sequence();
 
   public:
     GUISequencesPanel();
     void draw();
+    void update();
 };
 
 #endif // GUI_PANELS_SEQUENCES_HPP

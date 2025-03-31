@@ -23,13 +23,13 @@ class GUIOrdersPanel {
     bool is_index_valid() const;
     void from_order();
     void to_order();
-    void update_orders();
     void draw_order_length();
     void draw_order();
 
   public:
     GUIOrdersPanel();
     void draw();
+    void update();
 };
 
 #endif // GUI_PANELS_ORDERS_HPP

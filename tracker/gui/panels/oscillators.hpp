@@ -31,6 +31,7 @@ class GUIOscillatorsPanel {
   public:
     GUIOscillatorsPanel();
     void draw();
+    void update();
 };
 
 #endif // GUI_PANELS_OSCILLATORS_HPP

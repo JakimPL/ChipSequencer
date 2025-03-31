@@ -115,3 +115,12 @@ void GUI::set_play_callback(std::function<void()> callback) {
 void GUI::set_playing_status(bool status) {
     general_panel.is_playing = status;
 }
+
+void GUI::update() {
+    channels_panel.update();
+    envelopes_panel.update();
+    orders_panel.update();
+    oscillators_panel.update();
+    sequences_panel.update();
+    wavetables_panel.update();
+}

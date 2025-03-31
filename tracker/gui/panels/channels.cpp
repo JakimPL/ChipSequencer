@@ -2,7 +2,7 @@
 
 GUIChannelsPanel::GUIChannelsPanel() {
     from_channel();
-    update_channels();
+    update();
 }
 
 void GUIChannelsPanel::draw() {
@@ -65,7 +65,7 @@ void GUIChannelsPanel::to_channel() {
     }
 }
 
-void GUIChannelsPanel::update_channels() {
+void GUIChannelsPanel::update() {
     update_items(channel_names, channels.size(), "Channel ", channel_index);
     update_items(envelope_names, envelopes.size(), "Envelope ", current_channel.envelope_index);
     update_items(order_names, orders.size(), "Order ", current_channel.order_index);

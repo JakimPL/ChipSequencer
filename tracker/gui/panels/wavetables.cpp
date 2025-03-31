@@ -2,7 +2,7 @@
 
 GUIWavetablesPanel::GUIWavetablesPanel() {
     from_wavetable();
-    update_wavetables();
+    update();
 }
 
 void GUIWavetablesPanel::draw() {
@@ -167,6 +167,6 @@ void GUIWavetablesPanel::draw_waveform() {
     }
 }
 
-void GUIWavetablesPanel::update_wavetables() {
+void GUIWavetablesPanel::update() {
     update_items(wavetable_names, wavetables.size(), "Wavetable ", wavetable_index);
 }

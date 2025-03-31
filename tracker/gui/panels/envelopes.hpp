@@ -28,7 +28,6 @@ class GUIEnvelopesPanel {
     bool is_index_valid() const;
     void from_envelope();
     void to_envelope() const;
-    void update_envelopes();
     void draw_levels();
     void draw_timers();
     void draw_envelope_graph();
@@ -36,6 +35,7 @@ class GUIEnvelopesPanel {
   public:
     GUIEnvelopesPanel();
     void draw();
+    void update();
 };
 
 #endif // GUI_PANELS_ENVELOPES_HPP

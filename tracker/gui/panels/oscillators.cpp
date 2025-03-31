@@ -5,8 +5,7 @@
 
 GUIOscillatorsPanel::GUIOscillatorsPanel() {
     from_oscillator();
-    update_oscillators();
-    update_wavetables();
+    update();
 }
 
 void GUIOscillatorsPanel::draw() {
@@ -94,6 +93,11 @@ void GUIOscillatorsPanel::to_oscillator() {
         break;
     }
     }
+}
+
+void GUIOscillatorsPanel::update() {
+    update_oscillators();
+    update_wavetables();
 }
 
 void GUIOscillatorsPanel::update_oscillators() {

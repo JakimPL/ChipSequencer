@@ -2,7 +2,7 @@
 
 GUIEnvelopesPanel::GUIEnvelopesPanel() {
     from_envelope();
-    update_envelopes();
+    update();
 }
 
 void GUIEnvelopesPanel::draw() {
@@ -70,7 +70,7 @@ void GUIEnvelopesPanel::to_envelope() const {
     envelope->release = cast_to_int(current_envelope.release, timer_constant);
 }
 
-void GUIEnvelopesPanel::update_envelopes() {
+void GUIEnvelopesPanel::update() {
     update_items(envelope_names, envelopes.size(), "Envelope ", envelope_index);
 }
 
