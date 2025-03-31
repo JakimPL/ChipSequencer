@@ -9,6 +9,11 @@ uint16_t GUIEnvelopesPanel::cast_to_int(float value, float scale) {
 }
 
 void GUIEnvelopesPanel::from_envelope() {
+    if (envelopes.empty()) {
+        return;
+    }
+
+    envelope_index = clamp_index(envelope_index, envelopes.size());
     const Envelope *envelope = envelopes[envelope_index];
     current_envelope.base_volume = cast_to_float(envelope->base_volume);
     current_envelope.sustain_level = cast_to_float(envelope->sustain_level);
@@ -19,6 +24,10 @@ void GUIEnvelopesPanel::from_envelope() {
 }
 
 void GUIEnvelopesPanel::to_envelope() const {
+    if (envelopes.empty()) {
+        return;
+    }
+
     Envelope *envelope = envelopes[envelope_index];
     envelope->base_volume = cast_to_int(current_envelope.base_volume);
     envelope->sustain_level = cast_to_int(current_envelope.sustain_level);
@@ -98,6 +107,7 @@ void GUIEnvelopesPanel::draw_envelope_graph() {
 }
 
 GUIEnvelopesPanel::GUIEnvelopesPanel() {
+    from_envelope();
     update_envelopes();
 }
 

@@ -60,6 +60,7 @@ bool GUI::render() {
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
+    menu.draw();
     channels_panel.draw();
     envelopes_panel.draw();
     orders_panel.draw();

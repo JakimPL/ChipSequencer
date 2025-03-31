@@ -4,3 +4,6 @@
 [submodule "imgui-knobs"]
 	path = imgui-knobs
 	url = https://github.com/altschuler/imgui-knobs
+[submodule "nfd"]
+	path = nfd
+	url = https://github.com/mlabbe/nativefiledialog.git

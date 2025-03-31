@@ -1,6 +1,7 @@
 #include "../constants.hpp"
+#include "../maps/offsets.hpp"
 #include "../structures.hpp"
-#include "../utils.hpp"
+#include "../utils/file.hpp"
 #include "link.hpp"
 
 void Link::assign_output() {
@@ -18,9 +19,27 @@ void Link::assign_output() {
 }
 
 void Link::serialize(std::ofstream &file) const {
-    write_data(file, &type, 1);
-    write_data(file, &id, 1);
-    write_data(file, &target, 1);
-    write_data(file, &index, 1);
-    write_data(file, &offset, 2);
+    const size_t group = static_cast<size_t>(target);
+    write_data(file, &type, sizeof(type));
+    write_data(file, &id, sizeof(id));
+    write_data(file, &target, sizeof(target));
+    write_data(file, &index, sizeof(index));
+    if (group >= 2) {
+        const uint8_t _offset = x32_to_x16[group].at(offset);
+        write_data(file, &_offset, sizeof(offset));
+    } else {
+        write_data(file, &offset, sizeof(offset));
+    }
+}
+
+void Link::deserialize(std::ifstream &file) {
+    read_data(file, &type, sizeof(type));
+    read_data(file, &id, sizeof(id));
+    read_data(file, &target, sizeof(target));
+    read_data(file, &index, sizeof(index));
+    read_data(file, &offset, sizeof(offset));
+    const size_t group = static_cast<size_t>(target);
+    if (group >= 2) {
+        offset = x16_to_x32[group].at(offset);
+    }
 }

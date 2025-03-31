@@ -12,8 +12,8 @@
 class GUIOrdersPanel {
   private:
     struct CurrentOrder {
-        int length;
-        std::vector<int> sequences;
+        int length = 0;
+        std::vector<int> sequences = {};
     } current_order;
 
     int order_index = 0;

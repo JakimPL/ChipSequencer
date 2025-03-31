@@ -9,6 +9,7 @@
 #include "structures/wavetable.hpp"
 #include "structures/dsp.hpp"
 #include "structures/channel.hpp"
+#include "structures/offsets.hpp"
 #pragma pack(pop)
 
 #endif // STRUCTURES_HPP

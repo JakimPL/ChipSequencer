@@ -1,6 +1,7 @@
 #include <array>
 #include <iostream>
-#include "song/song.hpp"
+
+#include "general.hpp"
 #include "driver/file.hpp"
 #include "driver/port.hpp"
 #include "gui/gui.hpp"
@@ -14,15 +15,12 @@ void mix();
 }
 
 void sound_driver_initialize() {
-    return;
 }
 
 void sound_driver_terminate() {
-    return;
 }
 
 void sound_driver_step() {
-    return;
 }
 
 void render(std::array<t_output, SONG_LENGTH> &target) {
@@ -45,23 +43,11 @@ int main() {
     std::cout << "ChipSequencer initialized!" << std::endl;
     std::cout << "Sample rate: " << sample_rate << std::endl;
 
-    std::array<t_output, SONG_LENGTH> target;
-    render(target);
+    if (!gui.initialize()) {
+        return 1;
+    }
 
-    Song song = {
-        bpm,
-        normalizer,
-        CHANNEL_SIZE,
-        SONG_LENGTH,
-        envelopes,
-        sequences,
-        orders,
-        oscillators,
-        wavetables,
-        dsps,
-        channels,
-        links
-    };
+    std::array<t_output, SONG_LENGTH> target;
 
 #if SAVE_TO_FILE
     FileDriver file_driver = FileDriver(target, "output.txt");
@@ -70,11 +56,6 @@ int main() {
 #else
     PortAudioDriver port_audio_driver = PortAudioDriver(target, sample_rate);
     port_audio_driver.initialize();
-
-    GUI gui;
-    if (!gui.initialize()) {
-        return 1;
-    }
 
     gui.set_play_callback([&]() {
         std::thread audio_thread(play_audio, std::ref(port_audio_driver), std::ref(target), std::ref(gui));
@@ -85,11 +66,8 @@ int main() {
         gui.render();
     }
 
-    gui.terminate();
-
-    song.save_to_file("song.seq", true);
+    terminate();
 
 #endif
-
     return 0;
 }

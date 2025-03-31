@@ -5,17 +5,7 @@
 #include <map>
 #include <vector>
 
-enum class Target : uint8_t {
-    OUTPUT_CHANNEL,
-    DSP_CHANNEL,
-    ENVELOPE,
-    SEQUENCE,
-    ORDER,
-    OSCILLATOR,
-    WAVETABLE,
-    DSP,
-    CHANNEL
-};
+#include "target.hpp"
 
 enum class ItemType : u_int8_t {
     CHANNEL = 0,
@@ -34,6 +24,7 @@ struct Link {
 
     void assign_output();
     void serialize(std::ofstream &file) const;
+    void deserialize(std::ifstream &file);
 };
 
 typedef std::vector<std::vector<Link>> Links;

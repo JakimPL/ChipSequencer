@@ -1,4 +1,3 @@
-import json
 import os
 import re
 import shutil
@@ -6,15 +5,17 @@ import struct
 import subprocess
 from distutils.dir_util import copy_tree
 from pathlib import Path
-from typing import Any, Dict, List, Tuple, Union
+from typing import Dict, List, Tuple, Union
 
 from compiler.link import Link, LinkTarget, LinkType
+
+from utils import load_binary, save_binary
 
 
 class Compiler:
     def __init__(self, temp_dir: Union[str, os.PathLike]):
         self.temp_dir = Path(temp_dir)
-        self.apack_dir = Path("apack")
+        self.tools_dir = Path.cwd() / "tools"
         self.bin_dir = self.temp_dir / "bin"
         self.build_dir = self.temp_dir / "build"
         self.song_dir = self.temp_dir / "song"
@@ -41,35 +42,33 @@ class Compiler:
 
     def copy_source(self) -> None:
         copy_tree("src", str(self.temp_dir / "src"))
+        copy_tree("tools", str(self.temp_dir / "tools"))
         shutil.copy("compile.bat", self.temp_dir / "compile.bat")
-        shutil.copy("nasm.exe", self.temp_dir / "nasm.exe")
-        shutil.copy("cwsdpmi.exe", self.temp_dir / "cwsdpmi.exe")
-        shutil.copy("JWlinkd.exe", self.temp_dir / "jwlinkd.exe")
         shutil.copy("linker.lnk", self.temp_dir / "linker.lnk")
         shutil.copy(self.song_dir / "data.asm", self.temp_dir / "src" / "song" / "data.asm")
-        copy_tree(str(self.apack_dir), str(self.temp_dir / self.apack_dir.name))
 
     def copy_executable(self):
         shutil.copy(self.bin_dir / "PLAYER.EXE", self.song_dir / "player.exe")
 
-    def compile(self, pack: bool = False) -> None:
+    def compile(self, pack: bool = False, terminate: bool = True) -> None:
         args = ["dosbox", "-noautoexec", "-c", "mount c: .", "-c", "c:", "-c", "call compile.bat"]
 
         if pack:
             args += [
                 "-c",
-                "cd apack",
+                "cd tools",
                 "-c",
                 "apack ../bin/MAIN.EXE ../bin/player.exe",
             ]
 
-        args += ["-c", "exit"]
+        if terminate:
+            args += ["-c", "exit"]
 
         subprocess.run(args, cwd=self.temp_dir)
 
     def get_links(self) -> List[Link]:
         links_path = self.song_dir / "links.bin"
-        binary_data = self.load_binary(links_path)
+        binary_data = load_binary(links_path)
 
         links = []
         format_string = "<BBBBH"
@@ -100,10 +99,10 @@ class Compiler:
             target = link.target
             i = link.id
             if link.type == LinkType.CHANNEL:
-                file = self.song_dir / "chans" / f"chan_{i}.bin"
+                filename = self.song_dir / "chans" / f"chan_{i}.bin"
                 target_slice = slice(7, 9)
             elif link.type == LinkType.DSP:
-                file = self.song_dir / "dsps" / f"dsp_{i}.bin"
+                filename = self.song_dir / "dsps" / f"dsp_{i}.bin"
                 target_slice = slice(2, 4)
             else:
                 raise ValueError(f"Invalid type: {link.type}")
@@ -116,21 +115,6 @@ class Compiler:
                 reference = references[f"{target.value}s.{target.value}_{link.index}"][1]
             reference += link.offset
 
-            binary_data = bytearray(self.load_binary(file))
+            binary_data = bytearray(load_binary(filename))
             binary_data[target_slice] = struct.pack("<H", reference)
-            self.save_binary(file, bytes(binary_data))
-
-    @staticmethod
-    def load_json(path: Union[str, os.PathLike]) -> Dict[Any, Any]:
-        with open(path, "r") as file:
-            return json.load(file)
-
-    @staticmethod
-    def load_binary(path: Union[str, os.PathLike]) -> bytes:
-        with open(path, "rb") as file:
-            return file.read()
-
-    @staticmethod
-    def save_binary(path: Union[str, os.PathLike], data: bytes) -> None:
-        with open(path, "wb") as file:
-            file.write(data)
+            save_binary(bytes(binary_data), filename)

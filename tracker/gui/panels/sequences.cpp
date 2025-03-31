@@ -1,6 +1,11 @@
 #include "sequences.hpp"
 
 void GUISequencesPanel::from_sequence() {
+    if (sequences.empty()) {
+        return;
+    }
+
+    sequence_index = clamp_index(sequence_index, sequences.size());
     Sequence *sequence = sequences[sequence_index];
     uint16_t total_length = 0;
 
@@ -37,6 +42,10 @@ std::vector<Note> GUISequencesPanel::pattern_to_sequence() {
 }
 
 void GUISequencesPanel::to_sequence() {
+    if (sequences.empty()) {
+        return;
+    }
+
     Sequence *sequence = sequences[sequence_index];
     const std::vector<Note> note_vector = pattern_to_sequence();
     const size_t length = note_vector.size();
@@ -55,6 +64,7 @@ void GUISequencesPanel::to_sequence() {
     }
 
     sequences[sequence_index] = new_sequence;
+    delete sequence;
 }
 
 void GUISequencesPanel::update_sequences() {
@@ -74,6 +84,14 @@ void GUISequencesPanel::draw_sequence() {
 
     ImGui::Separator();
     ImGui::Text("Pattern:");
+
+    if (sequences.empty()) {
+        ImGui::Text("No sequences available.");
+        ImGui::Columns(1);
+        return;
+    }
+
+    draw_sequence_length();
 
     const float height = std::max(5.0f, ImGui::GetContentRegionAvail().y - 5.0f);
     ImGui::BeginChild("PatternScroll", ImVec2(0, height), true);
@@ -114,6 +132,7 @@ void GUISequencesPanel::draw_sequence() {
 }
 
 GUISequencesPanel::GUISequencesPanel() {
+    from_sequence();
     update_sequences();
 }
 
@@ -123,10 +142,7 @@ void GUISequencesPanel::draw() {
 
     prepare_combo(sequence_names, "##SequenceCombo", sequence_index);
     from_sequence();
-
-    draw_sequence_length();
     draw_sequence();
-
     to_sequence();
 
     ImGui::Columns(1);

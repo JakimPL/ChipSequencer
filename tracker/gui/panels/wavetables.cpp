@@ -1,16 +1,28 @@
 #include "wavetables.hpp"
 
 void GUIWavetablesPanel::from_wavetable() {
+    if (wavetables.empty()) {
+        return;
+    }
+
+    wavetable_index = clamp_index(wavetable_index, wavetables.size());
     const Wavetable *wavetable = wavetables[wavetable_index];
     current_wavetable.size = wavetable->wavetable_size;
     current_wavetable.interpolate = false;
-    current_wavetable.wave.resize(current_wavetable.size);
+    if (current_wavetable.wave.size() != current_wavetable.size) {
+        current_wavetable.wave.resize(std::min(current_wavetable.size, max_points));
+    }
+
     for (size_t i = 0; i < current_wavetable.wave.size(); ++i) {
         current_wavetable.wave[i] = (2.0f * wavetable->wavetable[i]) / UINT8_MAX - 1.0f;
     }
 }
 
 void GUIWavetablesPanel::to_wavetable() {
+    if (wavetables.empty()) {
+        return;
+    }
+
     Wavetable *wavetable = wavetables[wavetable_index];
     const size_t size = current_wavetable.size;
     const size_t structure_size = size + 1;
@@ -29,21 +41,39 @@ void GUIWavetablesPanel::to_wavetable() {
     }
 
     wavetables[wavetable_index] = new_wavetable;
+    delete wavetable;
 }
 
 void GUIWavetablesPanel::draw_wavetable_length() {
+    int old_size = current_wavetable.size;
     draw_number_of_items("Points", "##WavetableLength", current_wavetable.size, 1, max_points);
+
+    if (old_size != current_wavetable.size) {
+        current_wavetable.wave.resize(current_wavetable.size);
+        if (current_wavetable.size > old_size) {
+            for (int i = old_size; i < current_wavetable.size; i++) {
+                current_wavetable.wave[i] = 0.0f;
+            }
+        }
+    }
 }
 
 void GUIWavetablesPanel::draw_waveform() {
     ImGui::Separator();
     ImGui::Checkbox("Interpolate", &current_wavetable.interpolate);
-    ImGui::Text("Waveform:");
 
+    if (wavetables.empty()) {
+        ImGui::Text("No wavetables available.");
+        return;
+    }
+
+    ImGui::Text("Waveform:");
     if (current_wavetable.wave.empty()) {
         ImGui::Text("No data to display.");
         return;
     }
+
+    draw_wavetable_length();
 
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
     const ImVec2 p = ImGui::GetCursorScreenPos();
@@ -117,6 +147,7 @@ void GUIWavetablesPanel::update_wavetables() {
 }
 
 GUIWavetablesPanel::GUIWavetablesPanel() {
+    from_wavetable();
     update_wavetables();
 }
 
@@ -131,10 +162,7 @@ void GUIWavetablesPanel::draw() {
 
     prepare_combo(wavetable_names, "##WavetableCombo", wavetable_index);
     from_wavetable();
-
-    draw_wavetable_length();
     draw_waveform();
-
     to_wavetable();
 
     ImGui::End();

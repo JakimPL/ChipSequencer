@@ -1,6 +1,11 @@
 #include "orders.hpp"
 
 void GUIOrdersPanel::from_order() {
+    if (orders.empty()) {
+        return;
+    }
+
+    order_index = clamp_index(order_index, orders.size());
     Order *order = orders[order_index];
     uint16_t total_length = order->order_length;
     current_order.sequences.resize(total_length);
@@ -9,6 +14,10 @@ void GUIOrdersPanel::from_order() {
 }
 
 void GUIOrdersPanel::to_order() {
+    if (orders.empty()) {
+        return;
+    }
+
     Order *order = orders[order_index];
     const size_t length = current_order.length;
     const size_t structure_size = length + 1;
@@ -26,6 +35,7 @@ void GUIOrdersPanel::to_order() {
     }
 
     orders[order_index] = new_order;
+    delete order;
 }
 
 void GUIOrdersPanel::update_orders() {
@@ -44,6 +54,8 @@ void GUIOrdersPanel::draw_order() {
 
     ImGui::Separator();
     ImGui::Text("Order:");
+
+    draw_order_length();
 
     const float height = std::max(5.0f, ImGui::GetContentRegionAvail().y - 5.0f);
     ImGui::BeginChild("OrderScroll", ImVec2(0, height), true);
@@ -75,6 +87,7 @@ void GUIOrdersPanel::draw_order() {
 }
 
 GUIOrdersPanel::GUIOrdersPanel() {
+    from_order();
     update_orders();
 }
 
@@ -84,10 +97,7 @@ void GUIOrdersPanel::draw() {
 
     prepare_combo(order_names, "##OrderCombo", order_index);
     from_order();
-
-    draw_order_length();
     draw_order();
-
     to_order();
 
     ImGui::Columns(1);

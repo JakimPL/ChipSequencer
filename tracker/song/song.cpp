@@ -1,5 +1,6 @@
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <memory>
 #include <sstream>
 #include <stdexcept>
@@ -7,9 +8,78 @@
 #include <vector>
 #include <zlib.h>
 
-#include "../utils.hpp"
+#include "../utils/file.hpp"
+#include "../utils/temp.hpp"
 #include "data.hpp"
 #include "song.hpp"
+
+void Song::new_song() {
+    clear_data();
+    bpm = 120;
+    normalizer = 0.5f;
+    header = {
+        "Unknown",
+        "Untitled",
+        TRACKER_VERSION
+    };
+}
+
+void Song::save_to_file(const std::string &filename, const bool compile) const {
+    const auto [temp_base, song_path] = prepare_temp_directory();
+    const std::string song_dir = song_path.string();
+
+    try {
+        export_asm_file(song_dir);
+        export_header(song_dir);
+        export_series(song_dir, "envel", envelopes, {sizeof(Envelope)});
+        export_channels(song_dir);
+        export_series(song_dir, "osc", oscillators, get_struct_sizes(oscillators));
+        export_dsps(song_dir);
+        export_arrays(song_dir, "seq", sequences);
+        export_arrays(song_dir, "order", orders);
+        export_arrays(song_dir, "wave", wavetables);
+        export_offsets(song_dir + "/offsets.bin");
+        export_links(song_dir + "/links.bin");
+        if (compile) {
+            compile_sources(temp_base.string());
+        }
+
+        compress_directory(song_dir, filename);
+        std::filesystem::remove_all(temp_base);
+    } catch (const std::exception &e) {
+        std::filesystem::remove_all(temp_base);
+        throw;
+    }
+}
+
+void Song::load_from_file(const std::string &filename) {
+    if (!std::filesystem::exists(filename)) {
+        throw std::runtime_error("File does not exist: " + filename);
+    }
+
+    const auto [temp_base, song_path] = prepare_temp_directory();
+    const std::string song_dir = song_path.string();
+
+    try {
+        decompress_archive(filename, song_dir);
+        nlohmann::json json = import_header(song_dir + "/header.json");
+        clear_data();
+        import_envelopes(song_dir, json);
+        import_sequences(song_dir, json);
+        import_orders(song_dir, json);
+        import_wavetables(song_dir, json);
+        import_channels(song_dir, json);
+        import_oscillators(song_dir, json);
+        import_dsps(song_dir, json);
+        import_links(song_dir, json);
+        import_offsets(song_dir, json);
+
+        std::filesystem::remove_all(temp_base);
+    } catch (const std::exception &e) {
+        std::filesystem::remove_all(temp_base);
+        throw;
+    }
+}
 
 void Song::generate_header_vector(std::stringstream &asm_content, const std::string &name, const std::string &short_name, const size_t size) const {
     asm_content << name << "s:\n";
@@ -49,8 +119,7 @@ nlohmann::json Song::create_header_json() const {
     json["version"] = header.version;
     json["bpm"] = bpm;
     json["normalizer"] = normalizer;
-    json["output_channels"] = output_channels;
-    json["length"] = song_length;
+
     json["envelopes"] = envelopes.size();
     json["sequences"] = sequences.size();
     json["orders"] = orders.size();
@@ -59,6 +128,16 @@ nlohmann::json Song::create_header_json() const {
     json["dsps"] = dsps.size();
     json["channels"] = channels.size();
 
+    return json;
+}
+
+nlohmann::json Song::import_header(const std::string &filename) {
+    nlohmann::json json = read_json(filename);
+    header.title = json["title"];
+    header.author = json["author"];
+    header.version = json["version"];
+    bpm = json["bpm"];
+    normalizer = json["normalizer"];
     return json;
 }
 
@@ -121,6 +200,13 @@ void Song::compress_directory(const std::string &directory, const std::string &o
     run_command(tar_command);
 }
 
+void Song::decompress_archive(const std::string &output_file, const std::string &directory) {
+    const std::string extract_command = "tar -xf \"" + output_file + "\" -C \"" + directory + "\"";
+    if (run_command(extract_command) != 0) {
+        throw std::runtime_error("Failed to extract song file: " + output_file);
+    }
+}
+
 void Song::compile_sources(const std::string &directory) const {
     run_command("python scripts/compile.py \"" + directory + "\"");
 }
@@ -141,7 +227,7 @@ void Song::serialize_channel(std::ofstream &file, Channel *channel) const {
 
 void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
     const uint8_t *bytes = static_cast<const uint8_t *>(dsp);
-    uint8_t dsp_type = bytes[1];
+    const uint8_t dsp_type = bytes[1];
     uint16_t null = 0;
     if (dsp_type == EFFECT_DELAY) {
         DSPDelay *delay = reinterpret_cast<DSPDelay *>(dsp);
@@ -177,6 +263,79 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
     }
 }
 
+Channel *Song::deserialize_channel(std::ifstream &file) const {
+    Channel *channel = new Channel();
+    read_data(file, &channel->envelope_index, sizeof(channel->envelope_index));
+    read_data(file, &channel->order_index, sizeof(channel->order_index));
+    read_data(file, &channel->oscillator_index, sizeof(channel->oscillator_index));
+    read_data(file, &channel->pitch, sizeof(channel->pitch));
+    file.seekg(sizeof(uint16_t), std::ios::cur);
+    read_data(file, &channel->output_flag, sizeof(channel->output_flag));
+    channel->output = &output;
+    return channel;
+}
+
+void *Song::deserialize_dsp(std::ifstream &file) const {
+    uint8_t size, effect_type;
+    read_data(file, &size, sizeof(size));
+    read_data(file, &effect_type, sizeof(effect_type));
+
+    if (effect_type == EFFECT_DELAY) {
+        DSPDelay *delay = new DSPDelay();
+        delay->dsp_size = SIZE_DSP_DELAY;
+        delay->output = &output;
+        file.seekg(sizeof(uint16_t), std::ios::cur);
+        read_data(file, &delay->output_flag, sizeof(delay->output_flag));
+        read_data(file, &delay->dry, sizeof(delay->dry));
+        read_data(file, &delay->wet, sizeof(delay->wet));
+        read_data(file, &delay->feedback, sizeof(delay->feedback));
+        read_data(file, &delay->delay_time, sizeof(delay->delay_time));
+        return reinterpret_cast<void *>(delay);
+    } else if (effect_type == EFFECT_GAINER) {
+        DSPGainer *gainer = new DSPGainer();
+        gainer->dsp_size = SIZE_DSP_GAINER;
+        gainer->output = &output;
+        file.seekg(sizeof(uint16_t), std::ios::cur);
+        read_data(file, &gainer->output_flag, sizeof(gainer->output_flag));
+        read_data(file, &gainer->volume, sizeof(gainer->volume));
+        return reinterpret_cast<void *>(gainer);
+    } else if (effect_type == EFFECT_FILTER) {
+        DSPFilter *filter = new DSPFilter();
+        filter->dsp_size = SIZE_DSP_FILTER;
+        filter->output = &output;
+        file.seekg(sizeof(uint16_t), std::ios::cur);
+        read_data(file, &filter->output_flag, sizeof(filter->output_flag));
+        read_data(file, &filter->frequency, sizeof(filter->frequency));
+        return reinterpret_cast<void *>(filter);
+    } else {
+        throw std::runtime_error("Unknown DSP type: " + std::to_string(effect_type));
+    }
+}
+
+void *Song::deserialize_oscillator(std::ifstream &file) const {
+    uint8_t size, oscillator_type;
+    read_data(file, &size, sizeof(size));
+    read_data(file, &oscillator_type, sizeof(oscillator_type));
+
+    if (oscillator_type == GENERATOR_SQUARE) {
+        OscillatorSquare *oscillator = new OscillatorSquare();
+        read_data(file, &oscillator->duty_cycle, sizeof(oscillator->duty_cycle));
+        return reinterpret_cast<void *>(oscillator);
+    } else if (oscillator_type == GENERATOR_SAW) {
+        OscillatorSaw *oscillator = new OscillatorSaw();
+        return reinterpret_cast<void *>(oscillator);
+    } else if (oscillator_type == GENERATOR_SINE) {
+        OscillatorSine *oscillator = new OscillatorSine();
+        return reinterpret_cast<void *>(oscillator);
+    } else if (oscillator_type == GENERATOR_WAVETABLE) {
+        OscillatorWavetable *oscillator = new OscillatorWavetable();
+        read_data(file, &oscillator->wavetable_index, sizeof(oscillator->wavetable_index));
+        return reinterpret_cast<void *>(oscillator);
+    } else {
+        throw std::runtime_error("Unknown oscillator type: " + std::to_string(oscillator_type));
+    }
+}
+
 void Song::export_asm_file(const std::string &directory) const {
     std::string asm_content = generate_asm_file();
     std::ofstream asm_file(directory + "/data.asm");
@@ -185,7 +344,7 @@ void Song::export_asm_file(const std::string &directory) const {
 }
 
 void Song::export_header(const std::string &directory) const {
-    nlohmann::json header = create_header_json();
+    const nlohmann::json header = create_header_json();
     std::ofstream header_file(directory + "/header.json");
     header_file << header.dump(4);
     header_file.close();
@@ -193,34 +352,32 @@ void Song::export_header(const std::string &directory) const {
 
 template <typename T>
 void Song::export_series(const std::string &song_dir, const std::string &prefix, const std::vector<T> &series, const std::vector<size_t> &sizes) const {
-    std::filesystem::path series_dir = song_dir + "/" + prefix + "s";
+    const std::filesystem::path series_dir = song_dir + "/" + prefix + "s";
     std::filesystem::create_directories(series_dir);
     for (size_t i = 0; i < series.size(); i++) {
-        std::string filename = get_element_path(series_dir.string(), prefix, i);
+        const std::string filename = get_element_path(series_dir.string(), prefix, i);
         export_data(filename, series[i], sizes[i % sizes.size()]);
     }
 }
 
 void Song::export_channels(const std::string &directory) const {
-    std::filesystem::path series_dir = directory + "/chans";
+    const std::filesystem::path series_dir = directory + "/chans";
     std::filesystem::create_directories(series_dir);
     for (size_t i = 0; i < channels.size(); i++) {
-        std::string filename = get_element_path(series_dir, "chan", i);
+        const std::string filename = get_element_path(series_dir, "chan", i);
         std::ofstream file(filename, std::ios::binary);
-
         Channel *channel = channels[i];
-        uint16_t null = 0;
         serialize_channel(file, channel);
         file.close();
     }
 }
 
 void Song::export_dsps(const std::string &directory) const {
-    std::filesystem::path dsps_dir = directory + "/dsps";
+    const std::filesystem::path dsps_dir = directory + "/dsps";
     std::filesystem::create_directories(dsps_dir);
 
     for (size_t i = 0; i < dsps.size(); i++) {
-        std::string filename = get_element_path(dsps_dir, "dsp", i);
+        const std::string filename = get_element_path(dsps_dir, "dsp", i);
         std::ofstream file(filename, std::ios::binary);
 
         void *dsp = dsps[i];
@@ -231,10 +388,10 @@ void Song::export_dsps(const std::string &directory) const {
 
 template <typename T>
 void Song::export_arrays(const std::string &directory, const std::string &prefix, const std::vector<T> &arrays) const {
-    std::filesystem::path series_dir = directory + "/" + prefix + "s";
+    const std::filesystem::path series_dir = directory + "/" + prefix + "s";
     std::filesystem::create_directories(series_dir);
     for (size_t i = 0; i < arrays.size(); i++) {
-        std::string filename = get_element_path(series_dir, prefix, i);
+        const std::string filename = get_element_path(series_dir, prefix, i);
         std::ofstream file(filename, std::ios::binary);
         const T element = arrays[i];
         element->serialize(file);
@@ -245,7 +402,7 @@ void Song::export_arrays(const std::string &directory, const std::string &prefix
 void Song::export_offsets(const std::string &filename) const {
     std::ofstream file(filename, std::ios::binary);
     for (size_t i = 0; i < dsps.size(); i++) {
-        uint16_t offset = buffer_offsets[i];
+        const uint16_t offset = buffer_offsets[i];
         write_data(file, &offset, sizeof(offset));
     }
     file.close();
@@ -262,35 +419,169 @@ void Song::export_links(const std::string &filename) const {
     file.close();
 }
 
-void Song::save_to_file(const std::string &filename, const bool compile) const {
-    std::filesystem::path temp_base = std::filesystem::temp_directory_path() / "chipsequencer";
-    std::filesystem::path song_path = temp_base / "song";
-    if (std::filesystem::exists(temp_base)) {
-        std::filesystem::remove_all(temp_base);
+void Song::import_envelopes(const std::string &song_dir, const nlohmann::json &json) {
+    const size_t envelope_count = json["envelopes"];
+    for (size_t i = 0; i < envelope_count; i++) {
+        const std::string filename = get_element_path(song_dir + "/envels", "envel", i);
+        Envelope *envelope = new Envelope();
+        std::ifstream file(filename, std::ios::binary);
+        read_data(file, envelope, sizeof(Envelope));
+        envelopes.push_back(envelope);
+        file.close();
     }
-    std::filesystem::create_directories(song_path);
-    std::string song_dir = song_path.string();
+}
 
-    try {
-        export_asm_file(song_dir);
-        export_header(song_dir);
-        export_series(song_dir, "envel", envelopes, {sizeof(Envelope)});
-        export_channels(song_dir);
-        export_series(song_dir, "osc", oscillators, get_struct_sizes(oscillators));
-        export_dsps(song_dir);
-        export_arrays(song_dir, "seq", sequences);
-        export_arrays(song_dir, "order", orders);
-        export_arrays(song_dir, "wave", wavetables);
-        export_offsets(song_dir + "/offsets.bin");
-        export_links(song_dir + "/links.bin");
-        if (compile) {
-            compile_sources(temp_base.string());
+void Song::import_sequences(const std::string &song_dir, const nlohmann::json &json) {
+    const size_t sequence_count = json["sequences"];
+    for (size_t i = 0; i < sequence_count; i++) {
+        const std::string filename = get_element_path(song_dir + "/seqs", "seq", i);
+        std::ifstream file(filename, std::ios::binary);
+        Sequence *sequence = Sequence::deserialize(file);
+        sequences.push_back(sequence);
+        file.close();
+    }
+}
+
+void Song::import_orders(const std::string &song_dir, const nlohmann::json &json) {
+    const size_t order_count = json["orders"];
+    for (size_t i = 0; i < order_count; i++) {
+        const std::string filename = get_element_path(song_dir + "/orders", "order", i);
+        std::ifstream file(filename, std::ios::binary);
+        Order *order = Order::deserialize(file);
+        orders.push_back(order);
+        file.close();
+    }
+}
+
+void Song::import_wavetables(const std::string &song_dir, const nlohmann::json &json) {
+    const size_t wavetable_count = json["wavetables"];
+    for (size_t i = 0; i < wavetable_count; i++) {
+        const std::string filename = get_element_path(song_dir + "/waves", "wave", i);
+        std::ifstream file(filename, std::ios::binary);
+        Wavetable *wavetable = Wavetable::deserialize(file);
+        wavetables.push_back(wavetable);
+        file.close();
+    }
+}
+
+void Song::import_oscillators(const std::string &song_dir, const nlohmann::json &json) {
+    const size_t oscillator_count = json["oscillators"];
+    for (size_t i = 0; i < oscillator_count; i++) {
+        const std::string filename = get_element_path(song_dir + "/oscs", "osc", i);
+        std::ifstream file(filename, std::ios::binary);
+        void *oscillator = deserialize_oscillator(file);
+        oscillators.push_back(oscillator);
+        file.close();
+    }
+}
+
+void Song::import_dsps(const std::string &song_dir, const nlohmann::json &json) {
+    const size_t dsp_count = json["dsps"];
+    for (size_t i = 0; i < dsp_count; i++) {
+        const std::string filename = get_element_path(song_dir + "/dsps", "dsp", i);
+        std::ifstream file(filename, std::ios::binary);
+        void *dsp = deserialize_dsp(file);
+        dsps.push_back(dsp);
+        file.close();
+    }
+}
+
+void Song::import_channels(const std::string &song_dir, const nlohmann::json &json) {
+    const size_t channel_count = json["channels"];
+    for (size_t i = 0; i < channel_count; i++) {
+        const std::string filename = get_element_path(song_dir + "/chans", "chan", i);
+        std::ifstream file(filename, std::ios::binary);
+        Channel *channel = deserialize_channel(file);
+        channels.push_back(channel);
+        file.close();
+    }
+}
+
+void Song::import_offsets(const std::string &song_dir, const nlohmann::json &json) {
+    const size_t dsp_count = json["dsps"];
+    const std::string offsets_filename = song_dir + "/offsets.bin";
+    std::ifstream file(offsets_filename, std::ios::binary);
+
+    delete[] current_offsets;
+    current_offsets = new uint16_t[dsp_count];
+    buffer_offsets = current_offsets;
+    for (size_t i = 0; i < dsp_count; i++) {
+        read_data(file, &buffer_offsets[i], sizeof(uint16_t));
+    }
+
+    file.close();
+}
+
+void Song::import_links(const std::string &song_dir, const nlohmann::json &json) {
+    const size_t channel_count = json["channels"];
+    const size_t dsp_count = json["dsps"];
+    const std::string links_filename = song_dir + "/links.bin";
+    std::ifstream file(links_filename, std::ios::binary);
+
+    for (size_t i = 0; i < channel_count; i++) {
+        Link link;
+        link.deserialize(file);
+        links[0].push_back(link);
+    }
+
+    for (size_t i = 0; i < dsp_count; i++) {
+        Link link;
+        link.deserialize(file);
+        links[1].push_back(link);
+    }
+
+    set_links();
+    file.close();
+}
+
+void Song::clear_data() {
+    for (auto *envelope : envelopes) {
+        delete envelope;
+    }
+    for (auto *sequence : sequences) {
+        delete sequence;
+    }
+    for (auto *order : orders) {
+        delete order;
+    }
+    for (auto *wavetable : wavetables) {
+        delete wavetable;
+    }
+    for (auto *oscillator : oscillators) {
+        const uint8_t *bytes = static_cast<const uint8_t *>(oscillator);
+        const uint8_t dsp_type = bytes[1];
+        if (dsp_type == GENERATOR_SQUARE) {
+            delete static_cast<OscillatorSquare *>(oscillator);
+        } else if (dsp_type == GENERATOR_SAW) {
+            delete static_cast<OscillatorSaw *>(oscillator);
+        } else if (dsp_type == GENERATOR_SINE) {
+            delete static_cast<OscillatorSine *>(oscillator);
+        } else if (dsp_type == GENERATOR_WAVETABLE) {
+            delete static_cast<OscillatorWavetable *>(oscillator);
         }
-
-        compress_directory(song_dir, filename);
-        std::filesystem::remove_all(temp_base);
-    } catch (const std::exception &e) {
-        std::filesystem::remove_all(temp_base);
-        throw;
     }
+    for (auto *dsp : dsps) {
+        const uint8_t *bytes = static_cast<const uint8_t *>(dsp);
+        const uint8_t dsp_type = bytes[1];
+        if (dsp_type == EFFECT_DELAY) {
+            delete static_cast<DSPDelay *>(dsp);
+        } else if (dsp_type == EFFECT_GAINER) {
+            delete static_cast<DSPGainer *>(dsp);
+        } else if (dsp_type == EFFECT_FILTER) {
+            delete static_cast<DSPFilter *>(dsp);
+        }
+    }
+    for (auto *channel : channels) {
+        delete channel;
+    }
+
+    envelopes.clear();
+    sequences.clear();
+    orders.clear();
+    oscillators.clear();
+    wavetables.clear();
+    dsps.clear();
+    channels.clear();
+    links.clear();
+    links.resize(2);
 }

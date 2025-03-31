@@ -10,6 +10,7 @@ struct Order {
     uint8_t sequences[];
 
     void serialize(std::ofstream &file) const;
+    static Order *deserialize(std::ifstream &file);
 };
 
 typedef std::vector<Order *> Orders;

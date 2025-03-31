@@ -19,11 +19,11 @@ repos:
         always_run: true
         files: "src/song/header.asm src/song/data.asm"
       - id: make-consts
-        name: make song
+        name: make consts
         entry: make consts
         language: system
         always_run: true
-        files: "scripts/constants.hpp"
+        files: "tracker/constants.hpp tracker/maps/offsets.hpp"
       - id: nasmfmt-hook
         name: nasmfmt formatting
         entry: nasmfmt
