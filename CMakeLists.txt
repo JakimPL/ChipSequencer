@@ -97,6 +97,7 @@ add_executable(main
     tracker/gui/panels/menu.cpp
     tracker/gui/panels/orders.cpp
     tracker/gui/panels/oscillators.cpp
+    tracker/gui/panels/panel.cpp
     tracker/gui/panels/sequences.cpp
     tracker/gui/panels/utils.cpp
     tracker/gui/panels/wavetables.cpp

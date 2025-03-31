@@ -7,9 +7,10 @@
 #include <vector>
 #include "../init.hpp"
 #include "../names.hpp"
+#include "panel.hpp"
 #include "utils.hpp"
 
-class GUIOrdersPanel {
+class GUIOrdersPanel : GUIPanel {
   private:
     struct CurrentOrder {
         int length = 0;
@@ -21,10 +22,13 @@ class GUIOrdersPanel {
     const int max_items = 64;
 
     bool is_index_valid() const;
-    void from_order();
-    void to_order();
     void draw_order_length();
     void draw_order();
+
+    void from() override;
+    void to() const override;
+    void add() override;
+    void remove() override;
 
   public:
     GUIOrdersPanel();

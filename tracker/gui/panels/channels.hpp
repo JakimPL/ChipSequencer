@@ -6,9 +6,10 @@
 #include <string>
 #include "../init.hpp"
 #include "../names.hpp"
+#include "panel.hpp"
 #include "utils.hpp"
 
-class GUIChannelsPanel {
+class GUIChannelsPanel : GUIPanel {
   private:
     struct CurrentChannel {
         int envelope_index = 0;
@@ -25,9 +26,12 @@ class GUIChannelsPanel {
     int channel_index = 0;
 
     bool is_index_valid() const;
-    void from_channel();
-    void to_channel();
     void draw_channel();
+
+    void from() override;
+    void to() const override;
+    void add() override;
+    void remove() override;
 
   public:
     GUIChannelsPanel();

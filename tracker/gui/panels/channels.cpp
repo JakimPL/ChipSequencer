@@ -1,7 +1,8 @@
+#include "../../general.hpp"
 #include "channels.hpp"
 
 GUIChannelsPanel::GUIChannelsPanel() {
-    from_channel();
+    from();
     update();
 }
 
@@ -9,10 +10,11 @@ void GUIChannelsPanel::draw() {
     ImGui::Begin("Channel Editor");
     ImGui::Columns(1, "channel_columns");
 
+    draw_add_or_remove();
     prepare_combo(channel_names, "##ChannelCombo", channel_index);
-    from_channel();
+    from();
     draw_channel();
-    to_channel();
+    to();
 
     ImGui::Columns(1);
     ImGui::End();
@@ -22,7 +24,7 @@ bool GUIChannelsPanel::is_index_valid() const {
     return channel_index >= 0 && channel_index < channels.size();
 }
 
-void GUIChannelsPanel::from_channel() {
+void GUIChannelsPanel::from() {
     if (!is_index_valid()) {
         return;
     }
@@ -40,11 +42,11 @@ void GUIChannelsPanel::from_channel() {
     if (current_channel.constant_pitch) {
         current_channel.pitch = static_cast<float>(channel->pitch) / 0x10000;
     } else {
-        current_channel.pitch = 12 * log2(static_cast<float>(channel->pitch) / 0x02000000);
+        current_channel.pitch = 12 * log2(static_cast<float>(channel->pitch) / DEFAULT_CHANNEL_PITCH);
     }
 }
 
-void GUIChannelsPanel::to_channel() {
+void GUIChannelsPanel::to() const {
     if (!is_index_valid()) {
         return;
     }
@@ -62,6 +64,24 @@ void GUIChannelsPanel::to_channel() {
         channel->pitch = static_cast<uint32_t>(std::round(current_channel.pitch * 0x10000));
     } else {
         channel->pitch = static_cast<uint32_t>(std::round(0x02000000 * pow(2, current_channel.pitch / 12)));
+    }
+}
+
+void GUIChannelsPanel::add() {
+    Channel *new_channel = song.add_channel();
+    if (new_channel == nullptr) {
+        return;
+    }
+
+    channel_index = channels.size() - 1;
+    update();
+}
+
+void GUIChannelsPanel::remove() {
+    if (is_index_valid()) {
+        song.remove_channel(channel_index);
+        channel_index = std::max(0, channel_index - 1);
+        update();
     }
 }
 

@@ -1,10 +1,11 @@
 #include <algorithm>
 #include <cmath>
 
+#include "../../general.hpp"
 #include "oscillators.hpp"
 
 GUIOscillatorsPanel::GUIOscillatorsPanel() {
-    from_oscillator();
+    from();
     update();
 }
 
@@ -12,10 +13,11 @@ void GUIOscillatorsPanel::draw() {
     ImGui::Begin("Oscillator Editor");
     ImGui::Columns(1, "oscillator_columns");
 
+    draw_add_or_remove();
     prepare_combo(oscillator_names, "##OscillatorCombo", oscillator_index);
-    from_oscillator();
+    from();
     draw_oscillator();
-    to_oscillator();
+    to();
 
     ImGui::Columns(1);
     ImGui::End();
@@ -24,7 +26,7 @@ bool GUIOscillatorsPanel::is_index_valid() const {
     return oscillator_index >= 0 && oscillator_index < oscillators.size();
 }
 
-void GUIOscillatorsPanel::from_oscillator() {
+void GUIOscillatorsPanel::from() {
     if (!is_index_valid()) {
         return;
     }
@@ -56,7 +58,7 @@ void GUIOscillatorsPanel::from_oscillator() {
     }
 }
 
-void GUIOscillatorsPanel::to_oscillator() {
+void GUIOscillatorsPanel::to() const {
     if (!is_index_valid()) {
         return;
     }
@@ -92,6 +94,24 @@ void GUIOscillatorsPanel::to_oscillator() {
         oscillators[oscillator_index] = new_oscillator;
         break;
     }
+    }
+}
+
+void GUIOscillatorsPanel::add() {
+    void *new_oscillator = song.add_oscillator();
+    if (new_oscillator == nullptr) {
+        return;
+    }
+
+    oscillator_index = oscillators.size() - 1;
+    update();
+}
+
+void GUIOscillatorsPanel::remove() {
+    if (is_index_valid()) {
+        song.remove_oscillator(oscillator_index);
+        oscillator_index = std::max(0, oscillator_index - 1);
+        update();
     }
 }
 

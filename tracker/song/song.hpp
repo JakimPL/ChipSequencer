@@ -65,6 +65,22 @@ struct Song {
     void load_from_file(const std::string &filename);
     void save_to_file(const std::string &filename, const bool compile = true) const;
 
+    Envelope *add_envelope();
+    Sequence *add_sequence();
+    Order *add_order();
+    Wavetable *add_wavetable();
+    void *add_oscillator();
+    Channel *add_channel();
+    void *add_dsp();
+
+    void remove_envelope(const size_t index);
+    void remove_sequence(const size_t index);
+    void remove_order(const size_t index);
+    void remove_wavetable(const size_t index);
+    void remove_oscillator(const size_t index);
+    void remove_channel(const size_t index);
+    void remove_dsp(const size_t index);
+
   private:
     void generate_header_vector(std::stringstream &asm_content, const std::string &name, const std::string &short_name, const size_t size) const;
     std::string generate_asm_file() const;
@@ -112,7 +128,10 @@ struct Song {
     void compile_sources(const std::string &directory) const;
     void compress_directory(const std::string &directory, const std::string &output_file) const;
     void decompress_archive(const std::string &output_file, const std::string &directory);
+
     void clear_data();
+    void delete_oscillator(void *oscillator);
+    void delete_dsp(void *dsp);
 };
 
 #endif // SONG_SONG_HPP

@@ -7,9 +7,10 @@
 #include <vector>
 #include "../init.hpp"
 #include "../names.hpp"
+#include "panel.hpp"
 #include "utils.hpp"
 
-class GUIWavetablesPanel {
+class GUIWavetablesPanel : GUIPanel {
   private:
     struct CurrentWavetable {
         std::vector<float> wave = {};
@@ -21,10 +22,13 @@ class GUIWavetablesPanel {
     const int max_points = 128;
 
     bool is_index_valid() const;
-    void from_wavetable();
-    void to_wavetable();
     void draw_wavetable_length();
     void draw_waveform();
+
+    void from() override;
+    void to() const override;
+    void add() override;
+    void remove() override;
 
   public:
     GUIWavetablesPanel();

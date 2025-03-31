@@ -3,6 +3,8 @@
 
 #include <filesystem>
 
+class GUI;
+
 #include "gui/gui.hpp"
 #include "song/song.hpp"
 

@@ -1,7 +1,8 @@
+#include "../../general.hpp"
 #include "wavetables.hpp"
 
 GUIWavetablesPanel::GUIWavetablesPanel() {
-    from_wavetable();
+    from();
     update();
 }
 
@@ -14,10 +15,11 @@ void GUIWavetablesPanel::draw() {
         return;
     }
 
+    draw_add_or_remove();
     prepare_combo(wavetable_names, "##WavetableCombo", wavetable_index);
-    from_wavetable();
+    from();
     draw_waveform();
-    to_wavetable();
+    to();
 
     ImGui::End();
 }
@@ -26,7 +28,7 @@ bool GUIWavetablesPanel::is_index_valid() const {
     return wavetable_index >= 0 && wavetable_index < wavetables.size();
 }
 
-void GUIWavetablesPanel::from_wavetable() {
+void GUIWavetablesPanel::from() {
     if (!is_index_valid()) {
         return;
     }
@@ -43,7 +45,7 @@ void GUIWavetablesPanel::from_wavetable() {
     }
 }
 
-void GUIWavetablesPanel::to_wavetable() {
+void GUIWavetablesPanel::to() const {
     if (!is_index_valid()) {
         return;
     }
@@ -67,6 +69,24 @@ void GUIWavetablesPanel::to_wavetable() {
 
     wavetables[wavetable_index] = new_wavetable;
     delete wavetable;
+}
+
+void GUIWavetablesPanel::add() {
+    Wavetable *new_wavetable = song.add_wavetable();
+    if (new_wavetable == nullptr) {
+        return;
+    }
+
+    wavetable_index = wavetables.size() - 1;
+    update();
+}
+
+void GUIWavetablesPanel::remove() {
+    if (is_index_valid()) {
+        song.remove_wavetable(wavetable_index);
+        wavetable_index = std::max(0, wavetable_index - 1);
+        update();
+    }
 }
 
 void GUIWavetablesPanel::draw_wavetable_length() {

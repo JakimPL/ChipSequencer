@@ -1,7 +1,8 @@
+#include "../../general.hpp"
 #include "orders.hpp"
 
 GUIOrdersPanel::GUIOrdersPanel() {
-    from_order();
+    from();
     update();
 }
 
@@ -9,10 +10,11 @@ void GUIOrdersPanel::draw() {
     ImGui::Begin("Order Editor");
     ImGui::Columns(1, "order_columns");
 
+    draw_add_or_remove();
     prepare_combo(order_names, "##OrderCombo", order_index);
-    from_order();
+    from();
     draw_order();
-    to_order();
+    to();
 
     ImGui::Columns(1);
     ImGui::End();
@@ -22,7 +24,7 @@ bool GUIOrdersPanel::is_index_valid() const {
     return order_index >= 0 && order_index < orders.size();
 }
 
-void GUIOrdersPanel::from_order() {
+void GUIOrdersPanel::from() {
     if (!is_index_valid()) {
         return;
     }
@@ -34,7 +36,7 @@ void GUIOrdersPanel::from_order() {
     std::copy(order->sequences, order->sequences + total_length, current_order.sequences.begin());
 }
 
-void GUIOrdersPanel::to_order() {
+void GUIOrdersPanel::to() const {
     if (!is_index_valid()) {
         return;
     }
@@ -57,6 +59,24 @@ void GUIOrdersPanel::to_order() {
 
     orders[order_index] = new_order;
     delete order;
+}
+
+void GUIOrdersPanel::add() {
+    Order *new_order = song.add_order();
+    if (new_order == nullptr) {
+        return;
+    }
+
+    order_index = orders.size() - 1;
+    update();
+}
+
+void GUIOrdersPanel::remove() {
+    if (is_index_valid()) {
+        song.remove_order(order_index);
+        order_index = std::max(0, order_index - 1);
+        update();
+    }
 }
 
 void GUIOrdersPanel::update() {

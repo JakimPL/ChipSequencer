@@ -5,9 +5,10 @@
 #include <string>
 #include "../init.hpp"
 #include "../names.hpp"
+#include "panel.hpp"
 #include "utils.hpp"
 
-class GUIEnvelopesPanel {
+class GUIEnvelopesPanel : GUIPanel {
   private:
     struct CurrentEnvelope {
         float base_volume = 0.0f;
@@ -26,11 +27,14 @@ class GUIEnvelopesPanel {
     static uint16_t cast_to_int(float value, float scale = 1.0f);
 
     bool is_index_valid() const;
-    void from_envelope();
-    void to_envelope() const;
     void draw_levels();
     void draw_timers();
     void draw_envelope_graph();
+
+    void from() override;
+    void to() const override;
+    void add() override;
+    void remove() override;
 
   public:
     GUIEnvelopesPanel();

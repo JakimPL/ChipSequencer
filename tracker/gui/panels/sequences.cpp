@@ -1,7 +1,8 @@
+#include "../../general.hpp"
 #include "sequences.hpp"
 
 GUISequencesPanel::GUISequencesPanel() {
-    from_sequence();
+    from();
     update();
 }
 
@@ -9,10 +10,11 @@ void GUISequencesPanel::draw() {
     ImGui::Begin("Sequence Editor");
     ImGui::Columns(1, "sequence_columns");
 
+    draw_add_or_remove();
     prepare_combo(sequence_names, "##SequenceCombo", sequence_index);
-    from_sequence();
+    from();
     draw_sequence();
-    to_sequence();
+    to();
 
     ImGui::Columns(1);
     ImGui::End();
@@ -22,7 +24,7 @@ bool GUISequencesPanel::is_index_valid() const {
     return sequence_index >= 0 && sequence_index < sequences.size();
 }
 
-void GUISequencesPanel::from_sequence() {
+void GUISequencesPanel::from() {
     if (!is_index_valid()) {
         return;
     }
@@ -42,7 +44,7 @@ void GUISequencesPanel::from_sequence() {
     current_sequence.steps = total_length;
 }
 
-std::vector<Note> GUISequencesPanel::pattern_to_sequence() {
+std::vector<Note> GUISequencesPanel::pattern_to_sequence() const {
     std::vector<Note> note_vector;
 
     uint8_t duration = 1;
@@ -62,7 +64,7 @@ std::vector<Note> GUISequencesPanel::pattern_to_sequence() {
     return note_vector;
 }
 
-void GUISequencesPanel::to_sequence() {
+void GUISequencesPanel::to() const {
     if (!is_index_valid()) {
         return;
     }
@@ -86,6 +88,24 @@ void GUISequencesPanel::to_sequence() {
 
     sequences[sequence_index] = new_sequence;
     delete sequence;
+}
+
+void GUISequencesPanel::add() {
+    Sequence *new_sequence = song.add_sequence();
+    if (new_sequence == nullptr) {
+        return;
+    }
+
+    sequence_index = sequences.size() - 1;
+    update();
+}
+
+void GUISequencesPanel::remove() {
+    if (is_index_valid()) {
+        song.remove_sequence(sequence_index);
+        sequence_index = std::max(0, sequence_index - 1);
+        update();
+    }
 }
 
 void GUISequencesPanel::update() {
