@@ -25,6 +25,7 @@ class GUIEnvelopesPanel {
     static float cast_to_float(int value, float scale = 1.0f);
     static uint16_t cast_to_int(float value, float scale = 1.0f);
 
+    bool is_index_valid() const;
     void from_envelope();
     void to_envelope() const;
     void update_envelopes();

@@ -82,7 +82,9 @@ void GUIMenu::file_open() {
 
 void GUIMenu::file_compile() {
     file_save();
-    song.save_to_file(current_path, true);
+    if (!current_path.empty()) {
+        song.save_to_file(current_path, true);
+    }
 }
 
 void GUIMenu::file_exit() {

@@ -20,6 +20,7 @@ class GUIOrdersPanel {
     int selected_sequence = 0;
     const int max_items = 64;
 
+    bool is_index_valid() const;
     void from_order();
     void to_order();
     void update_orders();

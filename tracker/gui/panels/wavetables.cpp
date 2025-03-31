@@ -1,11 +1,36 @@
 #include "wavetables.hpp"
 
-void GUIWavetablesPanel::from_wavetable() {
+GUIWavetablesPanel::GUIWavetablesPanel() {
+    from_wavetable();
+    update_wavetables();
+}
+
+void GUIWavetablesPanel::draw() {
+    ImGui::Begin("Wavetable Editor");
+
     if (wavetables.empty()) {
+        ImGui::Text("No wavetables available.");
+        ImGui::End();
         return;
     }
 
-    wavetable_index = clamp_index(wavetable_index, wavetables.size());
+    prepare_combo(wavetable_names, "##WavetableCombo", wavetable_index);
+    from_wavetable();
+    draw_waveform();
+    to_wavetable();
+
+    ImGui::End();
+}
+
+bool GUIWavetablesPanel::is_index_valid() const {
+    return wavetable_index >= 0 && wavetable_index < wavetables.size();
+}
+
+void GUIWavetablesPanel::from_wavetable() {
+    if (!is_index_valid()) {
+        return;
+    }
+
     const Wavetable *wavetable = wavetables[wavetable_index];
     current_wavetable.size = wavetable->wavetable_size;
     current_wavetable.interpolate = false;
@@ -19,7 +44,7 @@ void GUIWavetablesPanel::from_wavetable() {
 }
 
 void GUIWavetablesPanel::to_wavetable() {
-    if (wavetables.empty()) {
+    if (!is_index_valid()) {
         return;
     }
 
@@ -144,26 +169,4 @@ void GUIWavetablesPanel::draw_waveform() {
 
 void GUIWavetablesPanel::update_wavetables() {
     update_items(wavetable_names, wavetables.size(), "Wavetable ", wavetable_index);
-}
-
-GUIWavetablesPanel::GUIWavetablesPanel() {
-    from_wavetable();
-    update_wavetables();
-}
-
-void GUIWavetablesPanel::draw() {
-    ImGui::Begin("Wavetable Editor");
-
-    if (wavetables.empty()) {
-        ImGui::Text("No wavetables available.");
-        ImGui::End();
-        return;
-    }
-
-    prepare_combo(wavetable_names, "##WavetableCombo", wavetable_index);
-    from_wavetable();
-    draw_waveform();
-    to_wavetable();
-
-    ImGui::End();
 }

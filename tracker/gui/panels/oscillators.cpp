@@ -3,12 +3,33 @@
 
 #include "oscillators.hpp"
 
+GUIOscillatorsPanel::GUIOscillatorsPanel() {
+    from_oscillator();
+    update_oscillators();
+    update_wavetables();
+}
+
+void GUIOscillatorsPanel::draw() {
+    ImGui::Begin("Oscillator Editor");
+    ImGui::Columns(1, "oscillator_columns");
+
+    prepare_combo(oscillator_names, "##OscillatorCombo", oscillator_index);
+    from_oscillator();
+    draw_oscillator();
+    to_oscillator();
+
+    ImGui::Columns(1);
+    ImGui::End();
+}
+bool GUIOscillatorsPanel::is_index_valid() const {
+    return oscillator_index >= 0 && oscillator_index < oscillators.size();
+}
+
 void GUIOscillatorsPanel::from_oscillator() {
-    if (oscillators.empty()) {
+    if (!is_index_valid()) {
         return;
     }
 
-    oscillator_index = clamp_index(oscillator_index, oscillators.size());
     void *oscillator = oscillators[oscillator_index];
     const Oscillator *generic = static_cast<Oscillator *>(oscillator);
     current_oscillator.generator_index = generic->generator_index;
@@ -37,7 +58,7 @@ void GUIOscillatorsPanel::from_oscillator() {
 }
 
 void GUIOscillatorsPanel::to_oscillator() {
-    if (oscillators.empty()) {
+    if (!is_index_valid()) {
         return;
     }
 
@@ -119,23 +140,4 @@ void GUIOscillatorsPanel::draw_oscillator() {
     }
 
     ImGui::Columns(1);
-}
-
-GUIOscillatorsPanel::GUIOscillatorsPanel() {
-    from_oscillator();
-    update_oscillators();
-    update_wavetables();
-}
-
-void GUIOscillatorsPanel::draw() {
-    ImGui::Begin("Oscillator Editor");
-    ImGui::Columns(1, "oscillator_columns");
-
-    prepare_combo(oscillator_names, "##OscillatorCombo", oscillator_index);
-    from_oscillator();
-    draw_oscillator();
-    to_oscillator();
-
-    ImGui::Columns(1);
-    ImGui::End();
 }

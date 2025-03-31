@@ -18,6 +18,7 @@ class GUISequencesPanel {
     int selected_step = 0;
     const int max_steps = 64;
 
+    bool is_index_valid() const;
     void from_sequence();
     std::vector<Note> pattern_to_sequence();
     void to_sequence();

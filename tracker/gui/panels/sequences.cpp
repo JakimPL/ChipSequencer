@@ -1,11 +1,32 @@
 #include "sequences.hpp"
 
+GUISequencesPanel::GUISequencesPanel() {
+    from_sequence();
+    update_sequences();
+}
+
+void GUISequencesPanel::draw() {
+    ImGui::Begin("Sequence Editor");
+    ImGui::Columns(1, "sequence_columns");
+
+    prepare_combo(sequence_names, "##SequenceCombo", sequence_index);
+    from_sequence();
+    draw_sequence();
+    to_sequence();
+
+    ImGui::Columns(1);
+    ImGui::End();
+}
+
+bool GUISequencesPanel::is_index_valid() const {
+    return sequence_index >= 0 && sequence_index < sequences.size();
+}
+
 void GUISequencesPanel::from_sequence() {
-    if (sequences.empty()) {
+    if (!is_index_valid()) {
         return;
     }
 
-    sequence_index = clamp_index(sequence_index, sequences.size());
     Sequence *sequence = sequences[sequence_index];
     uint16_t total_length = 0;
 
@@ -42,7 +63,7 @@ std::vector<Note> GUISequencesPanel::pattern_to_sequence() {
 }
 
 void GUISequencesPanel::to_sequence() {
-    if (sequences.empty()) {
+    if (!is_index_valid()) {
         return;
     }
 
@@ -85,8 +106,8 @@ void GUISequencesPanel::draw_sequence() {
     ImGui::Separator();
     ImGui::Text("Pattern:");
 
-    if (sequences.empty()) {
-        ImGui::Text("No sequences available.");
+    if (!is_index_valid()) {
+        ImGui::Text("No sequence available.");
         ImGui::Columns(1);
         return;
     }
@@ -129,22 +150,4 @@ void GUISequencesPanel::draw_sequence() {
 
     ImGui::Columns(1);
     ImGui::EndChild();
-}
-
-GUISequencesPanel::GUISequencesPanel() {
-    from_sequence();
-    update_sequences();
-}
-
-void GUISequencesPanel::draw() {
-    ImGui::Begin("Sequence Editor");
-    ImGui::Columns(1, "sequence_columns");
-
-    prepare_combo(sequence_names, "##SequenceCombo", sequence_index);
-    from_sequence();
-    draw_sequence();
-    to_sequence();
-
-    ImGui::Columns(1);
-    ImGui::End();
 }

@@ -1,11 +1,32 @@
 #include "orders.hpp"
 
+GUIOrdersPanel::GUIOrdersPanel() {
+    from_order();
+    update_orders();
+}
+
+void GUIOrdersPanel::draw() {
+    ImGui::Begin("Order Editor");
+    ImGui::Columns(1, "order_columns");
+
+    prepare_combo(order_names, "##OrderCombo", order_index);
+    from_order();
+    draw_order();
+    to_order();
+
+    ImGui::Columns(1);
+    ImGui::End();
+}
+
+bool GUIOrdersPanel::is_index_valid() const {
+    return order_index >= 0 && order_index < orders.size();
+}
+
 void GUIOrdersPanel::from_order() {
-    if (orders.empty()) {
+    if (!is_index_valid()) {
         return;
     }
 
-    order_index = clamp_index(order_index, orders.size());
     Order *order = orders[order_index];
     uint16_t total_length = order->order_length;
     current_order.sequences.resize(total_length);
@@ -14,7 +35,7 @@ void GUIOrdersPanel::from_order() {
 }
 
 void GUIOrdersPanel::to_order() {
-    if (orders.empty()) {
+    if (!is_index_valid()) {
         return;
     }
 
@@ -47,8 +68,8 @@ void GUIOrdersPanel::draw_order_length() {
 }
 
 void GUIOrdersPanel::draw_order() {
-    if (orders.empty()) {
-        ImGui::Text("No orders available.");
+    if (!is_index_valid()) {
+        ImGui::Text("No order available.");
         return;
     }
 
@@ -84,22 +105,4 @@ void GUIOrdersPanel::draw_order() {
     }
 
     ImGui::EndChild();
-}
-
-GUIOrdersPanel::GUIOrdersPanel() {
-    from_order();
-    update_orders();
-}
-
-void GUIOrdersPanel::draw() {
-    ImGui::Begin("Order Editor");
-    ImGui::Columns(1, "order_columns");
-
-    prepare_combo(order_names, "##OrderCombo", order_index);
-    from_order();
-    draw_order();
-    to_order();
-
-    ImGui::Columns(1);
-    ImGui::End();
 }

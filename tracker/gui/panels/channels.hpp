@@ -24,6 +24,7 @@ class GUIChannelsPanel {
 
     int channel_index = 0;
 
+    bool is_index_valid() const;
     void from_channel();
     void to_channel();
     void update_channels();

@@ -20,6 +20,7 @@ class GUIOscillatorsPanel {
     int oscillator_index = 0;
     std::vector<std::string> generator_names;
 
+    bool is_index_valid() const;
     void from_oscillator();
     void to_oscillator();
     void update_oscillators();

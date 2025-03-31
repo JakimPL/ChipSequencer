@@ -20,6 +20,7 @@ class GUIWavetablesPanel {
     int wavetable_index = 0;
     const int max_points = 128;
 
+    bool is_index_valid() const;
     void from_wavetable();
     void to_wavetable();
     void draw_wavetable_length();

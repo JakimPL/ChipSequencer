@@ -1,11 +1,32 @@
 #include "channels.hpp"
 
+GUIChannelsPanel::GUIChannelsPanel() {
+    from_channel();
+    update_channels();
+}
+
+void GUIChannelsPanel::draw() {
+    ImGui::Begin("Channel Editor");
+    ImGui::Columns(1, "channel_columns");
+
+    prepare_combo(channel_names, "##ChannelCombo", channel_index);
+    from_channel();
+    draw_channel();
+    to_channel();
+
+    ImGui::Columns(1);
+    ImGui::End();
+}
+
+bool GUIChannelsPanel::is_index_valid() const {
+    return channel_index >= 0 && channel_index < channels.size();
+}
+
 void GUIChannelsPanel::from_channel() {
-    if (channels.empty()) {
+    if (!is_index_valid()) {
         return;
     }
 
-    channel_index = clamp_index(channel_index, channels.size());
     Channel *channel = channels[channel_index];
     current_channel.envelope_index = channel->envelope_index;
     current_channel.constant_pitch = channel->order_index == 0xFF;
@@ -24,7 +45,7 @@ void GUIChannelsPanel::from_channel() {
 }
 
 void GUIChannelsPanel::to_channel() {
-    if (channels.empty()) {
+    if (!is_index_valid()) {
         return;
     }
 
@@ -83,22 +104,4 @@ void GUIChannelsPanel::draw_channel() {
     ImGui::BeginDisabled(current_channel.type == 0);
     draw_int_slider("Shift", current_channel.shift, 0, 15);
     ImGui::EndDisabled();
-}
-
-GUIChannelsPanel::GUIChannelsPanel() {
-    from_channel();
-    update_channels();
-}
-
-void GUIChannelsPanel::draw() {
-    ImGui::Begin("Channel Editor");
-    ImGui::Columns(1, "channel_columns");
-
-    prepare_combo(channel_names, "##ChannelCombo", channel_index);
-    from_channel();
-    draw_channel();
-    to_channel();
-
-    ImGui::Columns(1);
-    ImGui::End();
 }
