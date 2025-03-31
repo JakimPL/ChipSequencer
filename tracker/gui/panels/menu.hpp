@@ -16,6 +16,7 @@ class GUIMenu {
     void file_save();
     void file_save_as();
     void file_open();
+    void file_compile();
     void file_exit();
 };
 

@@ -12,6 +12,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_PATH /usr/lib/i386-linux-gnu ${CMAKE_LIBRARY_PATH})
 set(OPENGL_INCLUDE_DIRS "/usr/include")
 set(OPENGL_LIBRARIES "/usr/lib/i386-linux-gnu/libGL.so.1")
+set(ENV{PKG_CONFIG_PATH} "/usr/lib/i386-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig")
 
 set(SDL2_INCLUDE_DIRS "/usr/include/SDL2")
 set(SDL2_LIBRARIES "-lSDL2")
@@ -20,6 +21,14 @@ find_program(NASM_EXECUTABLE NAMES nasm)
 if(NOT NASM_EXECUTABLE)
     message(FATAL_ERROR "NASM assembler not found")
 endif()
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GTK REQUIRED gtk+-3.0)
+
+if (NOT GTK_FOUND)
+    message(FATAL_ERROR "GTK not found")
+endif()
+
 
 set(ASM_SOURCE_DIR "${CMAKE_SOURCE_DIR}")
 set(ASM_SOURCE_FILE "${CMAKE_SOURCE_DIR}/src/player.asm")
@@ -59,6 +68,16 @@ target_include_directories(song PUBLIC
     ${CMAKE_SOURCE_DIR}/imgui-knobs
 )
 target_link_libraries(song PUBLIC imgui imgui_knobs)
+
+add_library(nfd STATIC
+    nfd/src/nfd_common.c
+    nfd/src/nfd_gtk.c
+)
+target_include_directories(nfd PUBLIC
+    ${CMAKE_SOURCE_DIR}/nfd/src/include
+    ${GTK_INCLUDE_DIRS}
+)
+target_link_libraries(nfd PUBLIC ${GTK_LIBRARIES})
 
 add_executable(main
     tracker/main.cpp
@@ -101,6 +120,7 @@ target_link_libraries(main
     dl
     pthread
     z
+    nfd
 )
 
 set_target_properties(main PROPERTIES

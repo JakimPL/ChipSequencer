@@ -16,6 +16,7 @@ Song song = {
 };
 
 GUI gui = GUI();
+std::filesystem::path current_path;
 
 void terminate() {
     gui.terminate();
