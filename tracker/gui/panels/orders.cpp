@@ -48,11 +48,9 @@ void GUIOrdersPanel::to() const {
     Order *new_order = static_cast<Order *>(operator new(structure_size));
     new_order->order_length = length;
     for (size_t i = 0; i < length; ++i) {
-        new_order->sequences[i] = current_order.sequences[i];
-    }
-
-    if (new_order->order_length > order->order_length) {
-        for (size_t i = order->order_length; i < new_order->order_length; ++i) {
+        if (i < current_order.sequences.size()) {
+            new_order->sequences[i] = current_order.sequences[i];
+        } else {
             new_order->sequences[i] = 0;
         }
     }
