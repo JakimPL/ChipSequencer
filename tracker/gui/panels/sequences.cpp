@@ -49,7 +49,14 @@ std::vector<Note> GUISequencesPanel::pattern_to_sequence() const {
 
     uint8_t duration = 1;
     int8_t pitch;
-    for (int i = current_sequence.pattern.size() - 1; i >= 0; --i) {
+    for (int i = current_sequence.steps - 1; i >= 0; --i) {
+        if (i >= current_sequence.pattern.size()) {
+            if (note_vector.empty()) {
+                note_vector.push_back({NOTE_REST, 1});
+            }
+            continue;
+        }
+
         pitch = current_sequence.pattern[i];
         if (pitch == NOTE_REST && i > 0) {
             ++duration;
@@ -71,6 +78,7 @@ void GUISequencesPanel::to() const {
 
     Sequence *sequence = sequences[sequence_index];
     const std::vector<Note> note_vector = pattern_to_sequence();
+
     const size_t length = note_vector.size();
     const uint8_t data_size = static_cast<uint8_t>(length * sizeof(Note));
     const size_t structure_size = data_size + 1;
@@ -78,13 +86,6 @@ void GUISequencesPanel::to() const {
     Sequence *new_sequence = static_cast<Sequence *>(operator new(structure_size));
     new_sequence->data_size = data_size;
     std::copy(note_vector.begin(), note_vector.end(), new_sequence->notes);
-
-    if (new_sequence->data_size > sequence->data_size) {
-        for (size_t i = sequence->data_size / 2; i < new_sequence->data_size / 2; ++i) {
-            new_sequence->notes[i].pitch = NOTE_REST;
-            new_sequence->notes[i].duration = 1;
-        }
-    }
 
     sequences[sequence_index] = new_sequence;
     delete sequence;
@@ -145,7 +146,7 @@ void GUISequencesPanel::draw_sequence() {
 
     ImGui::Separator();
 
-    for (int i = 0; i < current_sequence.steps; ++i) {
+    for (int i = 0; i < current_sequence.pattern.size(); ++i) {
         ImGui::PushID(i);
         ImGui::Text("%d", i);
         ImGui::NextColumn();

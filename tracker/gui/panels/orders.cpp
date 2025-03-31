@@ -104,7 +104,7 @@ void GUIOrdersPanel::draw_order() {
     ImGui::Text("Sequence");
     ImGui::Separator();
 
-    for (size_t i = 0; i < current_order.length; ++i) {
+    for (size_t i = 0; i < current_order.sequences.size(); ++i) {
         int &item = current_order.sequences[i];
 
         ImGui::PushID(i);
