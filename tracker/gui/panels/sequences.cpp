@@ -123,7 +123,6 @@ void GUISequencesPanel::draw_sequence() {
         current_sequence.pattern.resize(current_sequence.steps);
     }
 
-    ImGui::Separator();
     ImGui::Text("Pattern:");
 
     if (!is_index_valid()) {

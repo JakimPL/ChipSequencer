@@ -9,14 +9,15 @@ GUIEnvelopesPanel::GUIEnvelopesPanel() {
 void GUIEnvelopesPanel::draw() {
     ImGui::Begin("Envelope Editor");
 
+    draw_add_or_remove();
+    prepare_combo(envelope_names, "##EnvelopeCombo", envelope_index);
+
     if (envelopes.empty()) {
         ImGui::Text("No envelopes available.");
         ImGui::End();
         return;
     }
 
-    draw_add_or_remove();
-    prepare_combo(envelope_names, "##EnvelopeCombo", envelope_index);
     from();
 
     ImGui::Columns(2, "envelope_top_columns");

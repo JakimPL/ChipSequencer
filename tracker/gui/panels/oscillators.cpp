@@ -137,7 +137,6 @@ void GUIOscillatorsPanel::draw_oscillator_type() {
 }
 
 void GUIOscillatorsPanel::draw_oscillator() {
-    ImGui::Separator();
     ImGui::Text("Oscillator:");
 
     if (oscillators.empty()) {

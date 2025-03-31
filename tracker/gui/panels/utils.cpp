@@ -190,6 +190,7 @@ void prepare_combo(const std::vector<std::string> &names, std::string label, int
     float combo_width = ImGui::GetContentRegionAvail().x;
     ImGui::SetNextItemWidth(combo_width);
     ImGui::Combo(label.c_str(), &index, names_cstr.data(), names_cstr.size());
+    ImGui::Separator();
 }
 
 void update_items(std::vector<std::string> &names, size_t size, std::string label, int &index) {
