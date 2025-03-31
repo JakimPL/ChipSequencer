@@ -2,7 +2,6 @@
 #include <iostream>
 
 #include "general.hpp"
-#include "song/song.hpp"
 #include "driver/file.hpp"
 #include "driver/port.hpp"
 #include "gui/gui.hpp"
@@ -44,7 +43,6 @@ int main() {
     std::cout << "ChipSequencer initialized!" << std::endl;
     std::cout << "Sample rate: " << sample_rate << std::endl;
 
-    GUI gui;
     if (!gui.initialize()) {
         return 1;
     }
@@ -68,7 +66,7 @@ int main() {
         gui.render();
     }
 
-    gui.terminate();
+    terminate();
 
 #endif
     return 0;

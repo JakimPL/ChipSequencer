@@ -18,8 +18,8 @@ void Song::new_song() {
     bpm = 120;
     normalizer = 0.5f;
     header = {
-        "Untitled",
         "Unknown",
+        "Untitled",
         TRACKER_VERSION
     };
 }
@@ -53,6 +53,10 @@ void Song::save_to_file(const std::string &filename, const bool compile) const {
 }
 
 void Song::load_from_file(const std::string &filename) {
+    if (!std::filesystem::exists(filename)) {
+        throw std::runtime_error("File does not exist: " + filename);
+    }
+
     const auto [temp_base, song_path] = prepare_temp_directory();
     const std::string song_dir = song_path.string();
 

@@ -5,6 +5,7 @@ void GUIChannelsPanel::from_channel() {
         return;
     }
 
+    channel_index = clamp_index(channel_index, channels.size());
     Channel *channel = channels[channel_index];
     current_channel.envelope_index = channel->envelope_index;
     current_channel.constant_pitch = channel->order_index == 0xFF;

@@ -13,6 +13,7 @@ void GUIEnvelopesPanel::from_envelope() {
         return;
     }
 
+    envelope_index = clamp_index(envelope_index, envelopes.size());
     const Envelope *envelope = envelopes[envelope_index];
     current_envelope.base_volume = cast_to_float(envelope->base_volume);
     current_envelope.sustain_level = cast_to_float(envelope->sustain_level);

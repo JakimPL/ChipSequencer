@@ -15,6 +15,10 @@ Song song = {
     links
 };
 
-static void new_song() {
-    song.new_song();
+GUI gui = GUI();
+
+void terminate() {
+    gui.terminate();
+    SDL_Quit();
+    exit(0);
 }

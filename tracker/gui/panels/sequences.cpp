@@ -5,6 +5,7 @@ void GUISequencesPanel::from_sequence() {
         return;
     }
 
+    sequence_index = clamp_index(sequence_index, sequences.size());
     Sequence *sequence = sequences[sequence_index];
     uint16_t total_length = 0;
 

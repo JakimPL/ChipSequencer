@@ -8,6 +8,7 @@ void GUIOscillatorsPanel::from_oscillator() {
         return;
     }
 
+    oscillator_index = clamp_index(oscillator_index, oscillators.size());
     void *oscillator = oscillators[oscillator_index];
     const Oscillator *generic = static_cast<Oscillator *>(oscillator);
     current_oscillator.generator_index = generic->generator_index;

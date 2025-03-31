@@ -10,8 +10,8 @@
 
 struct Song {
     struct Header {
-        std::string author;
-        std::string title;
+        std::string author = "Unknown";
+        std::string title = "Untitled";
         std::string version = TRACKER_VERSION;
     } header;
 

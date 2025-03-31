@@ -5,6 +5,7 @@ void GUIWavetablesPanel::from_wavetable() {
         return;
     }
 
+    wavetable_index = clamp_index(wavetable_index, wavetables.size());
     const Wavetable *wavetable = wavetables[wavetable_index];
     current_wavetable.size = wavetable->wavetable_size;
     current_wavetable.interpolate = false;

@@ -5,6 +5,7 @@ void GUIOrdersPanel::from_order() {
         return;
     }
 
+    order_index = clamp_index(order_index, orders.size());
     Order *order = orders[order_index];
     uint16_t total_length = order->order_length;
     current_order.sequences.resize(total_length);

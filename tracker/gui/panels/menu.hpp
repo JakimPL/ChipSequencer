@@ -3,17 +3,20 @@
 
 #include <functional>
 
+#include "../init.hpp"
+
 class GUIMenu {
   public:
-    std::function<void()> callback_new;
-    std::function<void()> callback_save;
-    std::function<void()> callback_save_as;
-    std::function<void()> callback_open;
-    std::function<void()> callback_exit;
-
     GUIMenu();
 
     void draw();
+
+  private:
+    void file_new();
+    void file_save();
+    void file_save_as();
+    void file_open();
+    void file_exit();
 };
 
 #endif // GUI_PANELS_MENU_HPP

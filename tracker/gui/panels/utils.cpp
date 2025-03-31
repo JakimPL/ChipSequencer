@@ -126,6 +126,10 @@ const char *note_names[] = {
     "C-10"
 };
 
+int clamp_index(int index, const int size) {
+    return std::clamp(index, 0, size - 1);
+}
+
 void draw_number_of_items(const std::string &label, const char *label_id, int &value, int min, int max, float label_length) {
     ImGui::PushID(label_id);
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - label_length);
