@@ -13,6 +13,29 @@
 #include "data.hpp"
 #include "song.hpp"
 
+Song::Song(uint16_t &bpm_reference, _Float32 &normalizer_reference, uint8_t &num_channels_reference, uint8_t &num_dsps_reference, Envelopes &env, Sequences &seq, Orders &ord, Oscillators &osc, Wavetables &wav, DSPs &dsp, Channels &chn, Offsets &offsets, Links &lnk)
+    : bpm(bpm_reference),
+      normalizer(normalizer_reference),
+      num_channels(num_channels_reference),
+      num_dsps(num_dsps_reference),
+      envelopes(env),
+      sequences(seq),
+      orders(ord),
+      oscillators(osc),
+      wavetables(wav),
+      dsps(dsp),
+      channels(chn),
+      buffer_offsets(offsets),
+      links(lnk) {
+    current_offsets = new uint16_t[0];
+    buffer_offsets = current_offsets;
+    new_song();
+}
+
+Song::~Song() {
+    delete[] current_offsets;
+}
+
 void Song::new_song() {
     clear_data();
     bpm = 120;
@@ -22,6 +45,7 @@ void Song::new_song() {
         "Untitled",
         TRACKER_VERSION
     };
+    set_links();
 }
 
 void Song::save_to_file(const std::string &filename, const bool compile) const {
@@ -156,6 +180,8 @@ Channel *Song::add_channel() {
     channel->output = &output;
     channels.push_back(channel);
     num_channels = channels.size();
+    links[0].push_back(Link());
+    set_links();
     return channel;
 }
 
@@ -167,6 +193,8 @@ void *Song::add_dsp() {
     void *dsp = new DSPGainer();
     dsps.push_back(dsp);
     num_dsps = dsps.size();
+    links[1].push_back(Link());
+    set_links();
     return dsp;
 }
 
@@ -209,7 +237,9 @@ void Song::remove_channel(const size_t index) {
     if (index < channels.size()) {
         delete channels[index];
         channels.erase(channels.begin() + index);
+        links[0].erase(links[0].begin() + index);
         num_channels = channels.size();
+        set_links();
     }
 }
 
@@ -217,7 +247,9 @@ void Song::remove_dsp(const size_t index) {
     if (index < dsps.size()) {
         delete_dsp(dsps[index]);
         dsps.erase(dsps.begin() + index);
+        links[1].erase(links[1].begin() + index);
         num_dsps = dsps.size();
+        set_links();
     }
 }
 
@@ -733,7 +765,6 @@ void Song::clear_data() {
     channels.clear();
     links.clear();
     links.resize(2);
-
     num_channels = 0;
     num_dsps = 0;
 }

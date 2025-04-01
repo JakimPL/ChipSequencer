@@ -49,28 +49,9 @@ struct Song {
         Channels &chn,
         Offsets &offsets,
         Links &lnk
-    )
-        : bpm(bpm_reference),
-          normalizer(normalizer_reference),
-          num_channels(num_channels_reference),
-          num_dsps(num_dsps_reference),
-          envelopes(env),
-          sequences(seq),
-          orders(ord),
-          oscillators(osc),
-          wavetables(wav),
-          dsps(dsp),
-          channels(chn),
-          buffer_offsets(offsets),
-          links(lnk) {
-        current_offsets = new uint16_t[0];
-        buffer_offsets = current_offsets;
-        set_links();
-    }
+    );
 
-    ~Song() {
-        delete[] current_offsets;
-    }
+    ~Song();
 
     void new_song();
     void load_from_file(const std::string &filename);

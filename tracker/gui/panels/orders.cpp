@@ -150,6 +150,7 @@ void GUIOrdersPanel::check_keyboard_input() {
             value = std::clamp(value, 0, 255);
             current_order.sequences[selected_sequence] = value;
         } catch (std::out_of_range &) {
+            digit_buffer.clear();
         }
     }
 
