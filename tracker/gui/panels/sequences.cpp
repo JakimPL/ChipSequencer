@@ -1,4 +1,5 @@
 #include "../../general.hpp"
+#include "../mapping.hpp"
 #include "sequences.hpp"
 
 GUISequencesPanel::GUISequencesPanel() {
@@ -173,4 +174,56 @@ void GUISequencesPanel::draw_sequence() {
 
     ImGui::Columns(1);
     ImGui::EndChild();
+
+    check_keyboard_input();
+}
+
+void GUISequencesPanel::check_keyboard_input() {
+    const bool valid = selected_step >= 0 && selected_step < current_sequence.pattern.size();
+    if (!valid) {
+        return;
+    }
+
+    for (const auto &mapping : key_note_mappings) {
+        if (ImGui::IsKeyPressed(mapping.key)) {
+            current_sequence.pattern[selected_step] = mapping.note_index + TUNING_EDO * gui.get_current_octave();
+            jump();
+        }
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_Delete) || ImGui::IsKeyPressed(ImGuiKey_Space)) {
+        current_sequence.pattern[selected_step] = NOTE_REST;
+        jump();
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_Apostrophe) || ImGui::IsKeyPressed(ImGuiKey_Equal)) {
+        current_sequence.pattern[selected_step] = NOTE_OFF;
+        jump();
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_Backspace)) {
+        current_sequence.pattern[selected_step] = NOTE_REST;
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_UpArrow)) {
+        selected_step = std::max(0, selected_step - 1);
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_DownArrow)) {
+        selected_step = std::min(current_sequence.steps - 1, selected_step + 1);
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_KeypadAdd)) {
+        current_sequence.steps = std::min(current_sequence.steps, max_steps);
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_KeypadSubtract)) {
+        current_sequence.steps = std::max(current_sequence.steps, 1);
+    }
+}
+
+void GUISequencesPanel::jump() {
+    if (selected_step < current_sequence.steps - 1) {
+        selected_step += jump_step;
+    }
 }

@@ -34,6 +34,10 @@
 #define MAX_WAVETABLE_SIZE 512
 #define MAX_DSP_BUFFER_SIZE 512
 
+// General
+#define TUNING_EDO 12
+#define TUNING_MAX_OCTAVE 8
+
 // Phases
 #define ATTACK 0
 #define DECAY 1

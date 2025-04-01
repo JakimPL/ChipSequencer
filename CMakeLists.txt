@@ -92,6 +92,7 @@ add_executable(main
     tracker/structures/wavetable.cpp
     tracker/gui/gui.cpp
     tracker/gui/panels/channels.cpp
+    tracker/gui/panels/editor.cpp
     tracker/gui/panels/envelopes.cpp
     tracker/gui/panels/general.cpp
     tracker/gui/panels/menu.cpp

@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "gui.hpp"
 
 GUI::GUI()
@@ -6,6 +8,10 @@ GUI::GUI()
 
 GUI::~GUI() {
     terminate();
+}
+
+int GUI::get_current_octave() const {
+    return std::clamp(0, current_octave, TUNING_MAX_OCTAVE);
 }
 
 bool GUI::initialize() {
@@ -61,6 +67,7 @@ bool GUI::render() {
     ImGui::NewFrame();
 
     menu.draw();
+    editor.draw();
     channels_panel.draw();
     envelopes_panel.draw();
     orders_panel.draw();

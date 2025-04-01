@@ -1,8 +1,11 @@
 #ifndef GUI_GUI_HPP
 #define GUI_GUI_HPP
 
+#include <functional>
+
 #include "init.hpp"
 #include "panels/channels.hpp"
+#include "panels/editor.hpp"
 #include "panels/envelopes.hpp"
 #include "panels/general.hpp"
 #include "panels/menu.hpp"
@@ -10,7 +13,6 @@
 #include "panels/orders.hpp"
 #include "panels/sequences.hpp"
 #include "panels/wavetables.hpp"
-#include <functional>
 
 class GUI {
   public:
@@ -26,7 +28,11 @@ class GUI {
     void set_playing_status(bool status);
     void update();
 
+    int current_octave = 3;
+    int get_current_octave() const;
+
     GUIMenu menu;
+    GUIEditor editor = GUIEditor(current_octave);
     GUIGeneralPanel general_panel;
     GUIChannelsPanel channels_panel;
     GUIEnvelopesPanel envelopes_panel;

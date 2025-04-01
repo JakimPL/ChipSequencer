@@ -19,11 +19,15 @@ class GUISequencesPanel : GUIPanel {
     int sequence_index = 0;
     int selected_step = 0;
     const int max_steps = 64;
+    int jump_step = 1;
 
     bool is_index_valid() const;
     std::vector<Note> pattern_to_sequence() const;
     void draw_sequence_length();
     void draw_sequence();
+
+    void check_keyboard_input();
+    void jump();
 
     void from() override;
     void to() const override;
