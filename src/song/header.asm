@@ -15,3 +15,9 @@
     %define DSP_1_BUFFER_SIZE 0
     %define DSP_2_BUFFER_SIZE 0
     %define DSP_BUFFER_SIZE 256
+
+    SEGMENT_DATA
+num_channels:
+    db CHANNELS
+num_dsps:
+    db DSPS

@@ -1,14 +1,14 @@
     SEGMENT_BSS
-    envelope_timer resd CHANNELS
-    sequence_timer resd CHANNELS
-    oscillator_timer resd CHANNELS
-    pitch resb CHANNELS
+    envelope_timer resd MAX_CHANNELS
+    sequence_timer resd MAX_CHANNELS
+    oscillator_timer resd MAX_CHANNELS
+    pitch resb MAX_CHANNELS
 
-    envelope_mode resb CHANNELS
-    current_order resb CHANNELS
-    sequence_current_note resb CHANNELS
+    envelope_mode resb MAX_CHANNELS
+    current_order resb MAX_CHANNELS
+    sequence_current_note resb MAX_CHANNELS
 
-    dsp_input resd DSPS
-    dsp_timer resw DSPS
+    dsp_input resd MAX_DSPS
+    dsp_timer resw MAX_DSPS
 
-    wavetable_samples resw WAVETABLE_SIZE
+    wavetable_samples resw MAX_WAVETABLE_SIZE

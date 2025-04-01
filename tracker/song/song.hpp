@@ -28,6 +28,9 @@ struct Song {
     Offsets current_offsets = nullptr;
     Links &links;
 
+    uint8_t output_channels = 1;
+    uint32_t song_length = 186253;
+
     Song(
         uint16_t &bpm_reference,
         _Float32 &normalizer_reference,
@@ -83,7 +86,8 @@ struct Song {
 
   private:
     void generate_header_vector(std::stringstream &asm_content, const std::string &name, const std::string &short_name, const size_t size) const;
-    std::string generate_asm_file() const;
+    std::string generate_header_asm_file() const;
+    std::string generate_data_asm_file() const;
     nlohmann::json create_header_json() const;
     nlohmann::json import_header(const std::string &directory);
 
@@ -99,7 +103,8 @@ struct Song {
     void *deserialize_dsp(std::ifstream &file) const;
     void *deserialize_oscillator(std::ifstream &file) const;
 
-    void export_asm_file(const std::string &directory) const;
+    void export_header_asm_file(const std::string &directory) const;
+    void export_data_asm_file(const std::string &directory) const;
     void export_header(const std::string &directory) const;
 
     template <typename T>

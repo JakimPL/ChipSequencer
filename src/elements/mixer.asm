@@ -5,7 +5,7 @@ mix:
     mov eax, dword __float32__(0.0)
     mov [output], eax
 .mix:
-    mov cl, CHANNELS
+    mov cl, [num_channels]
 .mix_loop:
     cmp cl, 0
     je .dsp
@@ -27,7 +27,7 @@ mix:
 
 .dsp:
     xor eax, eax
-    mov cl, DSPS
+    mov cl, [num_dsps]
 .dsp_loop:
     cmp cl, 0
     je .normalize

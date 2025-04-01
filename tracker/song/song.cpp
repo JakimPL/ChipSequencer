@@ -29,7 +29,8 @@ void Song::save_to_file(const std::string &filename, const bool compile) const {
     const std::string song_dir = song_path.string();
 
     try {
-        export_asm_file(song_dir);
+        export_header_asm_file(song_dir);
+        export_data_asm_file(song_dir);
         export_header(song_dir);
         export_series(song_dir, "envel", envelopes, {sizeof(Envelope)});
         export_channels(song_dir);
@@ -98,7 +99,7 @@ Envelope *Song::add_envelope() {
 }
 
 Sequence *Song::add_sequence() {
-    if (sequences.size() >= UINT8_MAX) {
+    if (sequences.size() >= MAX_SEQUENCES) {
         return nullptr;
     }
 
@@ -109,7 +110,7 @@ Sequence *Song::add_sequence() {
 }
 
 Order *Song::add_order() {
-    if (orders.size() >= UINT8_MAX) {
+    if (orders.size() >= MAX_ORDERS) {
         return nullptr;
     }
 
@@ -120,7 +121,7 @@ Order *Song::add_order() {
 }
 
 Wavetable *Song::add_wavetable() {
-    if (wavetables.size() >= UINT8_MAX) {
+    if (wavetables.size() >= MAX_WAVETABLES) {
         return nullptr;
     }
 
@@ -131,7 +132,7 @@ Wavetable *Song::add_wavetable() {
 }
 
 void *Song::add_oscillator() {
-    if (oscillators.size() >= UINT8_MAX) {
+    if (oscillators.size() >= MAX_OSCILLATORS) {
         return nullptr;
     }
 
@@ -141,7 +142,7 @@ void *Song::add_oscillator() {
 }
 
 Channel *Song::add_channel() {
-    if (envelopes.size() >= UINT8_MAX) {
+    if (envelopes.size() >= MAX_CHANNELS) {
         return nullptr;
     }
 
@@ -157,7 +158,7 @@ Channel *Song::add_channel() {
 }
 
 void *Song::add_dsp() {
-    if (dsps.size() >= UINT8_MAX) {
+    if (dsps.size() >= MAX_DSPS) {
         return nullptr;
     }
 
@@ -224,7 +225,19 @@ void Song::generate_header_vector(std::stringstream &asm_content, const std::str
     }
 }
 
-std::string Song::generate_asm_file() const {
+std::string Song::generate_header_asm_file() const {
+    std::stringstream asm_content;
+    asm_content << "    \%define CHANNELS" << channels.size() << "\n";
+    asm_content << "    \%define DSPS" << dsps.size() << "\n";
+    asm_content << "    \%define WAVETABLES" << wavetables.size() << "\n";
+    asm_content << "\n";
+    asm_content << "    \%define OUTPUT_CHANNELS" << output_channels << "\n";
+    asm_content << "    \%define SONG_LENGTH" << song_length << "\n";
+    asm_content << "\n";
+    return asm_content.str();
+}
+
+std::string Song::generate_data_asm_file() const {
     std::stringstream asm_content;
     asm_content << "SEGMENT_DATA\n";
     asm_content << "bpm:\n";
@@ -253,6 +266,9 @@ nlohmann::json Song::create_header_json() const {
     json["version"] = header.version;
     json["bpm"] = bpm;
     json["normalizer"] = normalizer;
+
+    json["output_channels"] = output_channels;
+    json["song_length"] = song_length;
 
     json["envelopes"] = envelopes.size();
     json["sequences"] = sequences.size();
@@ -470,8 +486,15 @@ void *Song::deserialize_oscillator(std::ifstream &file) const {
     }
 }
 
-void Song::export_asm_file(const std::string &directory) const {
-    std::string asm_content = generate_asm_file();
+void Song::export_header_asm_file(const std::string &directory) const {
+    std::string asm_content = generate_header_asm_file();
+    std::ofstream asm_file(directory + "/header.asm");
+    asm_file << asm_content;
+    asm_file.close();
+}
+
+void Song::export_data_asm_file(const std::string &directory) const {
+    std::string asm_content = generate_data_asm_file();
     std::ofstream asm_file(directory + "/data.asm");
     asm_file << asm_content;
     asm_file.close();
