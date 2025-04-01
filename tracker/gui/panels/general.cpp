@@ -56,6 +56,7 @@ void GUIGeneralPanel::draw() {
     from();
     draw_play_button();
     draw_song_info();
+    check_keyboard_input();
     to();
     ImGui::End();
 }

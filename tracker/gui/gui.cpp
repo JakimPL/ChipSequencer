@@ -11,7 +11,7 @@ GUI::~GUI() {
 }
 
 int GUI::get_jump_step() const {
-    return std::clamp(1, jump_step, GUI_MAX_JUMP_STEP);
+    return std::clamp(0, jump_step, GUI_MAX_JUMP_STEP);
 }
 
 int GUI::get_current_octave() const {

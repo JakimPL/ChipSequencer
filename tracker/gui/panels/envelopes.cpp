@@ -28,7 +28,7 @@ void GUIEnvelopesPanel::draw() {
 
     ImGui::Columns(1, "envelope_bottom_columns");
     draw_envelope_graph();
-
+    check_keyboard_input();
     to();
 
     ImGui::End();

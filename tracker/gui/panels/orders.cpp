@@ -16,6 +16,7 @@ void GUIOrdersPanel::draw() {
 
     from();
     draw_order();
+    check_keyboard_input();
     to();
 
     ImGui::Columns(1);
@@ -129,4 +130,40 @@ void GUIOrdersPanel::draw_order() {
 }
 
 void GUIOrdersPanel::check_keyboard_input() {
+    if (selected_sequence < 0 || selected_sequence >= current_order.sequences.size())
+        return;
+
+    for (int key = ImGuiKey_0; key <= ImGuiKey_9; key++) {
+        if (ImGui::IsKeyPressed((ImGuiKey) key))
+            digit_buffer.push_back('0' + (key - ImGuiKey_0));
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_Backspace)) {
+        if (!digit_buffer.empty()) {
+            digit_buffer.pop_back();
+        }
+    }
+
+    if (!digit_buffer.empty()) {
+        try {
+            int value = std::stoi(digit_buffer);
+            value = std::clamp(value, 0, 255);
+            current_order.sequences[selected_sequence] = value;
+        } catch (std::out_of_range &) {
+        }
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_Enter)) {
+        digit_buffer = std::to_string(current_order.sequences[selected_sequence]);
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_UpArrow)) {
+        selected_sequence = std::max(0, selected_sequence - 1);
+        digit_buffer.clear();
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_DownArrow)) {
+        selected_sequence = std::min((int) current_order.sequences.size() - 1, selected_sequence + 1);
+        digit_buffer.clear();
+    }
 }

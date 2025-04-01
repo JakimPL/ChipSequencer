@@ -21,6 +21,7 @@ void GUIWavetablesPanel::draw() {
 
     from();
     draw_waveform();
+    check_keyboard_input();
     to();
 
     ImGui::End();

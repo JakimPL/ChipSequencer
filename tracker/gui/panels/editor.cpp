@@ -6,6 +6,11 @@ GUIEditorPanel::GUIEditorPanel(int &octave, int &step)
 }
 
 void GUIEditorPanel::draw() {
+    check_keyboard_input();
+    draw_panels();
+}
+
+void GUIEditorPanel::draw_panels() {
     ImGui::Begin("Editor");
     ImGui::Text("Current octave:");
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);

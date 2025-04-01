@@ -11,6 +11,8 @@ class GUIEditorPanel : public GUIPanel {
     int &current_octave;
     int &jump_step;
 
+    void draw_panels();
+
     void from() override {};
     void to() const override {};
     void add() override {};

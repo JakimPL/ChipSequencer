@@ -2,7 +2,6 @@
 #include <cmath>
 
 #include "../../general.hpp"
-#include "oscillators.hpp"
 
 GUIOscillatorsPanel::GUIOscillatorsPanel() {
     from();
@@ -19,6 +18,7 @@ void GUIOscillatorsPanel::draw() {
 
     from();
     draw_oscillator();
+    check_keyboard_input();
     to();
 
     ImGui::Columns(1);

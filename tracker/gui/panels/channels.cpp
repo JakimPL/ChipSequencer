@@ -16,6 +16,7 @@ void GUIChannelsPanel::draw() {
 
     from();
     draw_channel();
+    check_keyboard_input();
     to();
 
     ImGui::Columns(1);

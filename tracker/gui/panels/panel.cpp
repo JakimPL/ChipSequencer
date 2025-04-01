@@ -12,6 +12,5 @@ void GUIPanel::draw_add_or_remove() {
 }
 
 void GUIPanel::frame() {
-    check_keyboard_input();
     draw();
 }

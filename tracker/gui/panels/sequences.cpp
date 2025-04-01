@@ -17,6 +17,7 @@ void GUISequencesPanel::draw() {
 
     from();
     draw_sequence();
+    check_keyboard_input();
     to();
 
     ImGui::Columns(1);
@@ -184,7 +185,8 @@ void GUISequencesPanel::check_keyboard_input() {
 
     for (const auto &mapping : key_note_mappings) {
         if (ImGui::IsKeyPressed(mapping.key)) {
-            current_sequence.pattern[selected_step] = mapping.note_index + TUNING_EDO * gui.get_current_octave();
+            const int note = mapping.note_index + TUNING_EDO * gui.get_current_octave();
+            current_sequence.pattern[selected_step] = note;
             jump();
         }
     }
