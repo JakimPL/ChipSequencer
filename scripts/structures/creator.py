@@ -171,11 +171,16 @@ class Creator:
         self.comment()
 
     def counts(self):
+        self.add("    %ifdef ELF")
+        self.add("    extern num_channels")
+        self.add("    extern num_dsps")
+        self.add("    %else")
         self.add("    SEGMENT_DATA")
         self.label("num_channels")
         self.reference(Byte, "CHANNELS")
         self.label("num_dsps")
         self.reference(Byte, "DSPS")
+        self.add("    %endif")
         self.comment()
 
     def song_header(self):

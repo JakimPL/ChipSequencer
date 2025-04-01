@@ -74,6 +74,7 @@ void Song::load_from_file(const std::string &filename) {
         import_dsps(song_dir, json);
         import_links(song_dir, json);
         import_offsets(song_dir, json);
+        update_sizes();
 
         std::filesystem::remove_all(temp_base);
     } catch (const std::exception &e) {
@@ -154,6 +155,7 @@ Channel *Song::add_channel() {
     channel->pitch = DEFAULT_CHANNEL_PITCH;
     channel->output = &output;
     channels.push_back(channel);
+    num_channels = channels.size();
     return channel;
 }
 
@@ -164,6 +166,7 @@ void *Song::add_dsp() {
 
     void *dsp = new DSPGainer();
     dsps.push_back(dsp);
+    num_dsps = dsps.size();
     return dsp;
 }
 
@@ -206,6 +209,7 @@ void Song::remove_channel(const size_t index) {
     if (index < channels.size()) {
         delete channels[index];
         channels.erase(channels.begin() + index);
+        num_channels = channels.size();
     }
 }
 
@@ -213,6 +217,7 @@ void Song::remove_dsp(const size_t index) {
     if (index < dsps.size()) {
         delete_dsp(dsps[index]);
         dsps.erase(dsps.begin() + index);
+        num_dsps = dsps.size();
     }
 }
 
@@ -691,6 +696,11 @@ void Song::import_links(const std::string &song_dir, const nlohmann::json &json)
     file.close();
 }
 
+void Song::update_sizes() {
+    num_channels = channels.size();
+    num_dsps = dsps.size();
+}
+
 void Song::clear_data() {
     for (auto *envelope : envelopes) {
         delete envelope;
@@ -723,6 +733,9 @@ void Song::clear_data() {
     channels.clear();
     links.clear();
     links.resize(2);
+
+    num_channels = 0;
+    num_dsps = 0;
 }
 
 void Song::delete_oscillator(void *oscillator) {

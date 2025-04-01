@@ -16,6 +16,9 @@ extern "C" void calculate_ticks_per_beat();
 extern uint16_t bpm;
 extern _Float32 normalizer;
 
+extern uint8_t num_channels;
+extern uint8_t num_dsps;
+
 extern Envelopes envelopes;
 extern Sequences sequences;
 extern Orders orders;

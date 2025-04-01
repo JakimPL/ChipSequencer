@@ -1,5 +1,9 @@
     global bpm
     global normalizer
+
+    extern num_channels
+    extern num_dsps
+
     global envelopes
     global sequences
     global orders

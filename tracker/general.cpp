@@ -4,6 +4,8 @@
 Song song = {
     bpm,
     normalizer,
+    num_channels,
+    num_dsps,
     envelopes,
     sequences,
     orders,

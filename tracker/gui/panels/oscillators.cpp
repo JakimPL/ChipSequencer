@@ -15,6 +15,8 @@ void GUIOscillatorsPanel::draw() {
 
     draw_add_or_remove();
     prepare_combo(oscillator_names, "##OscillatorCombo", oscillator_index);
+    ImGui::Separator();
+
     from();
     draw_oscillator();
     to();
@@ -118,6 +120,7 @@ void GUIOscillatorsPanel::remove() {
 void GUIOscillatorsPanel::update() {
     update_oscillators();
     update_wavetables();
+    gui.channels_panel.update();
 }
 
 void GUIOscillatorsPanel::update_oscillators() {

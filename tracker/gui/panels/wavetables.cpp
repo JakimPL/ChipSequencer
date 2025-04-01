@@ -11,6 +11,7 @@ void GUIWavetablesPanel::draw() {
 
     draw_add_or_remove();
     prepare_combo(wavetable_names, "##WavetableCombo", wavetable_index);
+    ImGui::Separator();
 
     if (wavetables.empty()) {
         ImGui::Text("No wavetables available.");
@@ -189,4 +190,5 @@ void GUIWavetablesPanel::draw_waveform() {
 
 void GUIWavetablesPanel::update() {
     update_items(wavetable_names, wavetables.size(), "Wavetable ", wavetable_index);
+    gui.oscillators_panel.update();
 }

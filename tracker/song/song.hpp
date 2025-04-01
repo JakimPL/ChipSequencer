@@ -17,6 +17,10 @@ struct Song {
 
     uint16_t &bpm;
     _Float32 &normalizer;
+
+    uint8_t &num_channels;
+    uint8_t &num_dsps;
+
     Envelopes &envelopes;
     Sequences &sequences;
     Orders &orders;
@@ -34,6 +38,8 @@ struct Song {
     Song(
         uint16_t &bpm_reference,
         _Float32 &normalizer_reference,
+        uint8_t &num_channels_reference,
+        uint8_t &num_dsps_reference,
         Envelopes &env,
         Sequences &seq,
         Orders &ord,
@@ -46,6 +52,8 @@ struct Song {
     )
         : bpm(bpm_reference),
           normalizer(normalizer_reference),
+          num_channels(num_channels_reference),
+          num_dsps(num_dsps_reference),
           envelopes(env),
           sequences(seq),
           orders(ord),
@@ -134,6 +142,7 @@ struct Song {
     void compress_directory(const std::string &directory, const std::string &output_file) const;
     void decompress_archive(const std::string &output_file, const std::string &directory);
 
+    void update_sizes();
     void clear_data();
     void delete_oscillator(void *oscillator);
     void delete_dsp(void *dsp);

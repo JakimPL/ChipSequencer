@@ -11,6 +11,7 @@ void GUIEnvelopesPanel::draw() {
 
     draw_add_or_remove();
     prepare_combo(envelope_names, "##EnvelopeCombo", envelope_index);
+    ImGui::Separator();
 
     if (envelopes.empty()) {
         ImGui::Text("No envelopes available.");
@@ -93,6 +94,7 @@ void GUIEnvelopesPanel::remove() {
 
 void GUIEnvelopesPanel::update() {
     update_items(envelope_names, envelopes.size(), "Envelope ", envelope_index);
+    gui.channels_panel.update();
 }
 
 void GUIEnvelopesPanel::draw_levels() {

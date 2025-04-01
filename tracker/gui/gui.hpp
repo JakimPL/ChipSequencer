@@ -26,12 +26,6 @@ class GUI {
     void set_playing_status(bool status);
     void update();
 
-  private:
-    SDL_Window *window;
-    SDL_GLContext gl_context;
-    ImGuiIO *io;
-    ImFont *font;
-    bool done = false;
     GUIMenu menu;
     GUIGeneralPanel general_panel;
     GUIChannelsPanel channels_panel;
@@ -40,6 +34,13 @@ class GUI {
     GUIOscillatorsPanel oscillators_panel;
     GUISequencesPanel sequences_panel;
     GUIWavetablesPanel wavetables_panel;
+
+  private:
+    SDL_Window *window;
+    SDL_GLContext gl_context;
+    ImGuiIO *io;
+    ImFont *font;
+    bool done = false;
 };
 
 #endif // GUI_GUI_HPP

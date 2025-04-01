@@ -12,6 +12,8 @@ void GUISequencesPanel::draw() {
 
     draw_add_or_remove();
     prepare_combo(sequence_names, "##SequenceCombo", sequence_index);
+    ImGui::Separator();
+
     from();
     draw_sequence();
     to();
@@ -111,6 +113,7 @@ void GUISequencesPanel::remove() {
 
 void GUISequencesPanel::update() {
     update_items(sequence_names, sequences.size(), "Sequence ", sequence_index);
+    gui.orders_panel.update();
 }
 
 void GUISequencesPanel::draw_sequence_length() {

@@ -12,6 +12,8 @@ void GUIOrdersPanel::draw() {
 
     draw_add_or_remove();
     prepare_combo(order_names, "##OrderCombo", order_index);
+    ImGui::Separator();
+
     from();
     draw_order();
     to();
@@ -79,6 +81,7 @@ void GUIOrdersPanel::remove() {
 
 void GUIOrdersPanel::update() {
     update_items(order_names, orders.size(), "Order ", order_index);
+    gui.channels_panel.update();
 }
 
 void GUIOrdersPanel::draw_order_length() {
