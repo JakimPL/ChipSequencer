@@ -1,12 +1,32 @@
+#include "../constants.hpp"
 #include "editor.hpp"
 
-GUIEditor::GUIEditor(int &octave)
-    : current_octave(octave) {
+GUIEditorPanel::GUIEditorPanel(int &octave, int &step)
+    : current_octave(octave), jump_step(step) {
 }
 
-void GUIEditor::draw() {
+void GUIEditorPanel::draw() {
     ImGui::Begin("Editor");
     ImGui::Text("Current octave:");
-    ImGui::SliderInt("##CurrentOctave", &current_octave, 0, 8);
+    ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+    ImGui::SliderInt("##CurrentOctave", &current_octave, 0, TUNING_MAX_OCTAVE);
+    ImGui::Text("Jump step:");
+    ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+    ImGui::SliderInt("##JumpStep", &jump_step, 0, GUI_MAX_JUMP_STEP);
     ImGui::End();
+}
+
+void GUIEditorPanel::check_keyboard_input() {
+    if (ImGui::IsKeyPressed(ImGuiKey_KeypadMultiply)) {
+        current_octave = std::min(current_octave + 1, TUNING_MAX_OCTAVE);
+    }
+    if (ImGui::IsKeyPressed(ImGuiKey_KeypadDivide)) {
+        current_octave = std::max(current_octave - 1, 0);
+    }
+    if (ImGui::IsKeyPressed(ImGuiKey_PageDown)) {
+        jump_step = std::max(jump_step - 1, 0);
+    }
+    if (ImGui::IsKeyPressed(ImGuiKey_PageUp)) {
+        jump_step = std::min(jump_step + 1, GUI_MAX_JUMP_STEP);
+    }
 }

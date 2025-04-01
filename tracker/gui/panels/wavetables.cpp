@@ -192,3 +192,6 @@ void GUIWavetablesPanel::update() {
     update_items(wavetable_names, wavetables.size(), "Wavetable ", wavetable_index);
     gui.oscillators_panel.update();
 }
+
+void GUIWavetablesPanel::check_keyboard_input() {
+}

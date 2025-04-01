@@ -167,3 +167,6 @@ void GUIOscillatorsPanel::draw_oscillator() {
 
     ImGui::Columns(1);
 }
+
+void GUIOscillatorsPanel::check_keyboard_input() {
+}

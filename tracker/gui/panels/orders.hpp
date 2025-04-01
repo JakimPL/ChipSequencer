@@ -5,12 +5,14 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+
+#include "../constants.hpp"
 #include "../init.hpp"
 #include "../names.hpp"
 #include "panel.hpp"
 #include "utils.hpp"
 
-class GUIOrdersPanel : GUIPanel {
+class GUIOrdersPanel : public GUIPanel {
   private:
     struct CurrentOrder {
         int length = 0;
@@ -19,7 +21,7 @@ class GUIOrdersPanel : GUIPanel {
 
     int order_index = 0;
     int selected_sequence = 0;
-    const int max_items = 64;
+    const int max_items = GUI_MAX_ITEMS;
 
     bool is_index_valid() const;
     void draw_order_length();
@@ -29,11 +31,12 @@ class GUIOrdersPanel : GUIPanel {
     void to() const override;
     void add() override;
     void remove() override;
+    void draw() override;
+    void check_keyboard_input() override;
 
   public:
     GUIOrdersPanel();
-    void draw();
-    void update();
+    void update() override;
 };
 
 #endif // GUI_PANELS_ORDERS_HPP

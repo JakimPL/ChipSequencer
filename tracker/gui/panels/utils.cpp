@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "../constants.hpp"
 #include "../mapping.hpp"
 #include "utils.hpp"
 

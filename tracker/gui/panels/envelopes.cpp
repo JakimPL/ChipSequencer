@@ -39,11 +39,11 @@ bool GUIEnvelopesPanel::is_index_valid() const {
 }
 
 float GUIEnvelopesPanel::cast_to_float(int value, float scale) {
-    return scale * static_cast<float>(value) / UINT16_MAX;
+    return scale * static_cast<float>(value) / (0.5 * UINT16_MAX);
 }
 
 uint16_t GUIEnvelopesPanel::cast_to_int(float value, float scale) {
-    return static_cast<uint16_t>(value / scale * UINT16_MAX);
+    return static_cast<uint16_t>(value / scale * (0.5 * UINT16_MAX));
 }
 
 void GUIEnvelopesPanel::from() {
@@ -160,4 +160,7 @@ void GUIEnvelopesPanel::draw_envelope_graph() {
     draw_list->AddCircleFilled(p2, 3.0f, IM_COL32(255, 165, 0, 255));
     draw_list->AddCircleFilled(p3, 3.0f, IM_COL32(75, 255, 130, 255));
     draw_list->AddCircleFilled(p4, 3.0f, IM_COL32(0, 144, 255, 255));
+}
+
+void GUIEnvelopesPanel::check_keyboard_input() {
 }

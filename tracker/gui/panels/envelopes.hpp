@@ -8,7 +8,7 @@
 #include "panel.hpp"
 #include "utils.hpp"
 
-class GUIEnvelopesPanel : GUIPanel {
+class GUIEnvelopesPanel : public GUIPanel {
   private:
     struct CurrentEnvelope {
         float base_volume = 0.0f;
@@ -35,11 +35,12 @@ class GUIEnvelopesPanel : GUIPanel {
     void to() const override;
     void add() override;
     void remove() override;
+    void draw() override;
+    void check_keyboard_input() override;
 
   public:
     GUIEnvelopesPanel();
-    void draw();
-    void update();
+    void update() override;
 };
 
 #endif // GUI_PANELS_ENVELOPES_HPP

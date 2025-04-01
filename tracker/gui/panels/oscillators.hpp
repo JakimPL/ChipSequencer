@@ -9,7 +9,7 @@
 #include "panel.hpp"
 #include "utils.hpp"
 
-class GUIOscillatorsPanel : GUIPanel {
+class GUIOscillatorsPanel : public GUIPanel {
   private:
     struct CurrentOscillator {
         int generator_index = -1;
@@ -31,11 +31,12 @@ class GUIOscillatorsPanel : GUIPanel {
     void to() const override;
     void add() override;
     void remove() override;
+    void draw() override;
+    void check_keyboard_input() override;
 
   public:
     GUIOscillatorsPanel();
-    void draw();
-    void update();
+    void update() override;
 };
 
 #endif // GUI_PANELS_OSCILLATORS_HPP

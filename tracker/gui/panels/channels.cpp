@@ -127,3 +127,6 @@ void GUIChannelsPanel::draw_channel() {
     draw_int_slider("Shift", current_channel.shift, 0, 15);
     ImGui::EndDisabled();
 }
+
+void GUIChannelsPanel::check_keyboard_input() {
+}

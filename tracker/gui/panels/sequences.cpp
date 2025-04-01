@@ -174,8 +174,6 @@ void GUISequencesPanel::draw_sequence() {
 
     ImGui::Columns(1);
     ImGui::EndChild();
-
-    check_keyboard_input();
 }
 
 void GUISequencesPanel::check_keyboard_input() {
@@ -223,7 +221,5 @@ void GUISequencesPanel::check_keyboard_input() {
 }
 
 void GUISequencesPanel::jump() {
-    if (selected_step < current_sequence.steps - 1) {
-        selected_step += jump_step;
-    }
+    selected_step = std::min(selected_step + gui.get_jump_step(), current_sequence.steps - 1);
 }

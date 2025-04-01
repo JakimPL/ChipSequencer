@@ -28,11 +28,11 @@ class GUI {
     void set_playing_status(bool status);
     void update();
 
-    int current_octave = 3;
     int get_current_octave() const;
+    int get_jump_step() const;
 
     GUIMenu menu;
-    GUIEditor editor = GUIEditor(current_octave);
+    GUIEditorPanel editor = GUIEditorPanel(current_octave, jump_step);
     GUIGeneralPanel general_panel;
     GUIChannelsPanel channels_panel;
     GUIEnvelopesPanel envelopes_panel;
@@ -47,6 +47,9 @@ class GUI {
     ImGuiIO *io;
     ImFont *font;
     bool done = false;
+
+    int current_octave = 3;
+    int jump_step = 1;
 };
 
 #endif // GUI_GUI_HPP

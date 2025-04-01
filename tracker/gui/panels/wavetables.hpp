@@ -10,7 +10,7 @@
 #include "panel.hpp"
 #include "utils.hpp"
 
-class GUIWavetablesPanel : GUIPanel {
+class GUIWavetablesPanel : public GUIPanel {
   private:
     struct CurrentWavetable {
         std::vector<float> wave = {};
@@ -29,10 +29,11 @@ class GUIWavetablesPanel : GUIPanel {
     void to() const override;
     void add() override;
     void remove() override;
+    void draw() override;
+    void check_keyboard_input() override;
 
   public:
     GUIWavetablesPanel();
-    void draw();
     void update();
 };
 

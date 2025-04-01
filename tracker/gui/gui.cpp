@@ -10,6 +10,10 @@ GUI::~GUI() {
     terminate();
 }
 
+int GUI::get_jump_step() const {
+    return std::clamp(1, jump_step, GUI_MAX_JUMP_STEP);
+}
+
 int GUI::get_current_octave() const {
     return std::clamp(0, current_octave, TUNING_MAX_OCTAVE);
 }
@@ -66,15 +70,15 @@ bool GUI::render() {
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
-    menu.draw();
-    editor.draw();
-    channels_panel.draw();
-    envelopes_panel.draw();
-    orders_panel.draw();
-    oscillators_panel.draw();
-    sequences_panel.draw();
-    wavetables_panel.draw();
-    general_panel.draw();
+    menu.frame();
+    editor.frame();
+    channels_panel.frame();
+    envelopes_panel.frame();
+    orders_panel.frame();
+    oscillators_panel.frame();
+    sequences_panel.frame();
+    wavetables_panel.frame();
+    general_panel.frame();
 
     ImGui::Render();
     glViewport(0, 0, (int) io->DisplaySize.x, (int) io->DisplaySize.y);

@@ -127,3 +127,6 @@ void GUIOrdersPanel::draw_order() {
 
     ImGui::EndChild();
 }
+
+void GUIOrdersPanel::check_keyboard_input() {
+}

@@ -10,3 +10,8 @@ void GUIPanel::draw_add_or_remove() {
     }
     ImGui::SameLine();
 }
+
+void GUIPanel::frame() {
+    check_keyboard_input();
+    draw();
+}

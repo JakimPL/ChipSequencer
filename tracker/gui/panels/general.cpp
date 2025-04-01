@@ -1,11 +1,11 @@
 #include "general.hpp"
 
-void GUIGeneralPanel::from_song() {
+void GUIGeneralPanel::from() {
     current_song.bpm = bpm;
     current_song.normalizer = normalizer;
 }
 
-void GUIGeneralPanel::to_song() {
+void GUIGeneralPanel::to() const {
     bpm = current_song.bpm;
     normalizer = current_song.normalizer;
     calculate_ticks_per_beat();
@@ -53,9 +53,9 @@ GUIGeneralPanel::GUIGeneralPanel()
 
 void GUIGeneralPanel::draw() {
     ImGui::Begin("General");
-    from_song();
+    from();
     draw_play_button();
     draw_song_info();
-    to_song();
+    to();
     ImGui::End();
 }
