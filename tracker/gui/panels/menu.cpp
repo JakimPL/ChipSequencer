@@ -21,12 +21,16 @@ void GUIMenu::draw() {
             if (ImGui::MenuItem("Save As")) {
                 file_save_as();
             }
-            if (ImGui::MenuItem("Compile")) {
-                file_compile();
-            }
             ImGui::Separator();
             if (ImGui::MenuItem("Open")) {
                 file_open();
+            }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Compile")) {
+                file_compile(true);
+            }
+            if (ImGui::MenuItem("Compile uncompressed")) {
+                file_compile(false);
             }
             ImGui::Separator();
             if (ImGui::MenuItem("Exit")) {
@@ -109,7 +113,7 @@ void GUIMenu::file_open() {
     }
 }
 
-void GUIMenu::file_compile() {
+void GUIMenu::file_compile(const bool compress) {
     nfdchar_t *target_path = nullptr;
     nfdresult_t result = NFD_SaveDialog("exe", nullptr, &target_path);
     if (result == NFD_OKAY) {
@@ -117,7 +121,7 @@ void GUIMenu::file_compile() {
         new_path = check_and_correct_path_by_extension(new_path, ".exe");
 
         gui.stop();
-        song.compile(new_path);
+        song.compile(new_path, compress);
         compilation_status = std::filesystem::exists(new_path);
         gui.update();
     } else if (result != NFD_CANCEL) {

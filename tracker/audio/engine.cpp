@@ -17,7 +17,6 @@ AudioEngine::~AudioEngine() {
 }
 
 void AudioEngine::play() {
-    initialize();
     if (!driver.initialize()) {
         std::cerr << "Failed to initialize PortAudio." << std::endl;
         return;
@@ -35,6 +34,8 @@ void AudioEngine::play() {
         driver.close_stream();
         return;
     }
+
+    initialize();
     playing = true;
     paused = false;
     playback_thread = std::thread(&AudioEngine::playback_function, this);
