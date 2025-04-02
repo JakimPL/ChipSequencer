@@ -30,6 +30,7 @@ class PortAudioDriver : public Driver {
     bool stop_stream();
     void sleep();
 
+    void reset_buffer();
     void submit_buffer(const t_output *data, size_t size);
 
     friend int audio_callback(

@@ -21,6 +21,15 @@ PortAudioDriver::PortAudioDriver(
     current_phase.store(0);
 }
 
+void PortAudioDriver::reset_buffer() {
+    std::lock_guard<std::mutex> lock(buffer_mutex);
+    std::fill(pingpong_buffer.begin(), pingpong_buffer.end(), 0);
+    half_consumed[0].store(true);
+    half_consumed[1].store(true);
+    current_phase.store(0);
+    buffer_cv.notify_all();
+}
+
 void PortAudioDriver::submit_buffer(const t_output *data, size_t size) {
     std::unique_lock<std::mutex> lock(buffer_mutex);
     if (size > pingpong_buffer.size()) {

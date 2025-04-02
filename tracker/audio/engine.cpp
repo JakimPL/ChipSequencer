@@ -41,6 +41,10 @@ void AudioEngine::pause() {
 
 void AudioEngine::stop() {
     playing = false;
+    driver.reset_buffer();
+    if (playback_thread.joinable()) {
+        playback_thread.join();
+    }
 }
 
 bool AudioEngine::is_playing() const {
