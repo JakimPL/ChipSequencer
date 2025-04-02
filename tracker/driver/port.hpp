@@ -30,7 +30,6 @@ class PortAudioDriver : public Driver {
     bool stop_stream();
     void sleep();
 
-    // keep the old submit_buffer if needed for fallback
     void submit_buffer(const t_output *data, size_t size);
 
     friend int audio_callback(
@@ -42,15 +41,13 @@ class PortAudioDriver : public Driver {
         void *user_data
     );
 
-    /* The double-buffer (ping-pong) is public to let the AudioEngine refill it */
-    std::vector<t_output> pingpong_buffer; // size = 2 * frames_per_buffer
+    std::vector<t_output> pingpong_buffer;
     unsigned long get_frames_per_buffer() const { return frames_per_buffer; }
 
-    /* Synchronization primitives used between callback (consumer) and playback thread (producer) */
     std::mutex buffer_mutex;
     std::condition_variable buffer_cv;
-    std::atomic<bool> half_consumed[2]; // true if the half has been consumed and is ready for refill
-    std::atomic<int> current_phase;     // indicates which half is being played by the callback
+    std::atomic<bool> half_consumed[2];
+    std::atomic<int> current_phase;
 
   private:
     uint16_t sample_rate;

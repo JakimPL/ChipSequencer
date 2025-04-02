@@ -7,10 +7,7 @@
 #include <thread>
 #include <vector>
 
-#include "../constants.hpp"
-#include "../general.hpp"
 #include "../driver/port.hpp"
-#include "../song/data.hpp"
 
 class AudioEngine {
   public:

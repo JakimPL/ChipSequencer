@@ -28,16 +28,7 @@ int main() {
     PortAudioDriver port_audio_driver = PortAudioDriver(target, sample_rate);
     port_audio_driver.initialize();
     AudioEngine audio_engine(port_audio_driver);
-
-    gui.set_play_callback([&]() {
-        audio_engine.play();
-    });
-    gui.set_pause_callback([&]() {
-        audio_engine.pause();
-    });
-    gui.set_stop_callback([&]() {
-        audio_engine.stop();
-    });
+    gui.set_audio_engine(&audio_engine);
 
     while (!gui.is_done()) {
         gui.render();

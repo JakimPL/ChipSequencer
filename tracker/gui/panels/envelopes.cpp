@@ -1,4 +1,5 @@
 #include "../../general.hpp"
+#include "../enums.hpp"
 #include "envelopes.hpp"
 
 GUIEnvelopesPanel::GUIEnvelopesPanel() {
@@ -94,7 +95,7 @@ void GUIEnvelopesPanel::remove() {
 
 void GUIEnvelopesPanel::update() {
     update_items(envelope_names, envelopes.size(), "Envelope ", envelope_index);
-    gui.channels_panel.update();
+    gui.update(GUIElement::Channels);
 }
 
 void GUIEnvelopesPanel::draw_levels() {

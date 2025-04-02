@@ -2,6 +2,7 @@
 #include <cmath>
 
 #include "../../general.hpp"
+#include "../enums.hpp"
 
 GUIOscillatorsPanel::GUIOscillatorsPanel() {
     from();
@@ -120,7 +121,7 @@ void GUIOscillatorsPanel::remove() {
 void GUIOscillatorsPanel::update() {
     update_oscillators();
     update_wavetables();
-    gui.channels_panel.update();
+    gui.update(GUIElement::Channels);
 }
 
 void GUIOscillatorsPanel::update_oscillators() {

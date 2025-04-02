@@ -1,4 +1,18 @@
+#include "../../general.hpp"
 #include "general.hpp"
+
+GUIGeneralPanel::GUIGeneralPanel() {
+}
+
+void GUIGeneralPanel::draw() {
+    ImGui::Begin("General");
+    from();
+    draw_play_button();
+    draw_song_info();
+    check_keyboard_input();
+    to();
+    ImGui::End();
+}
 
 void GUIGeneralPanel::from() {
     current_song.bpm = bpm;
@@ -29,11 +43,10 @@ void GUIGeneralPanel::draw_play_button() {
     ImGui::InvisibleButton("PlayButton", ImVec2(sz, sz));
     const bool clicked = ImGui::IsItemClicked();
 
-    if (clicked && !is_playing && play_callback) {
-        is_playing = true;
-        play_callback();
+    if (clicked && !gui.is_playing()) {
+        gui.play();
     }
-    if (is_playing) {
+    if (gui.is_playing()) {
         ImGui::SameLine();
         ImGui::Text("Playing audio...");
     }
@@ -45,18 +58,4 @@ void GUIGeneralPanel::draw_song_info() {
     ImGui::InputText("Name", current_song.name, IM_ARRAYSIZE(current_song.name));
     draw_int_slider("BPM", current_song.bpm, 32, 1024);
     draw_float_slider("Normalizer", current_song.normalizer, 0.01f, 2.0f);
-}
-
-GUIGeneralPanel::GUIGeneralPanel()
-    : is_playing(false), play_callback(nullptr) {
-}
-
-void GUIGeneralPanel::draw() {
-    ImGui::Begin("General");
-    from();
-    draw_play_button();
-    draw_song_info();
-    check_keyboard_input();
-    to();
-    ImGui::End();
 }
