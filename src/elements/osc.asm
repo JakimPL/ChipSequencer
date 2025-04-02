@@ -43,22 +43,22 @@ reduce:
     ret
 
 initialize_frequencies:
-    mov ecx, 12
+    mov ecx, 128
+    lea edi, [frequencies + 4 * ecx]
+
+    fild dword [ref_frequency]
+    fdiv dword [f_65536]
+
 .loop:
-    dec cl
-    mov eax, [frequency_data + 4 * ecx]
-    mov ebx, 116
-    add bl, cl
-.fill_loop:
-    cmp bl, 0
-    jl .next_note
-    mov [frequencies + 4 * ebx], eax
-    shr eax, 1
-    sub bl, 12
-    jmp .fill_loop
-.next_note:
-    cmp cl, 0
-    jnz .loop
+    sub edi, 4
+    fld st0
+    fld dword [f_65536]
+    fmulp st1, st0
+    fistp dword [edi]
+
+    fdiv dword [note_divisor]
+
+    loop .loop
     ret
 
 load_timer:
@@ -82,19 +82,12 @@ apply_volume:
     %include "src/osc/wave.asm"
 
     SEGMENT_DATA
-frequency_data:
-    dd 0x454BB03A
-    dd 0x496A8B8F
-    dd 0x4DC82080
-    dd 0x526829E4
-    dd 0x574E9B58
-    dd 0x5C7FA49F
-    dd 0x61FFB539
-    dd 0x67D3802A
-    dd 0x6E000000
-    dd 0x748A7B12
-    dd 0x7B788802
-    dd 0x82D01286
+ref_frequency:
+    dd 0x67D40000
+note_divisor:
+    dd 1.0594630943592953
+f_65536:
+    dd 65536.0
 
 oscillators_table:
     %ifdef ELF
