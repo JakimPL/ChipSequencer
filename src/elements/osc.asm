@@ -1,3 +1,8 @@
+    %ifdef ELF
+    extern reference_frequency
+    extern note_divisor
+    %endif
+
     SEGMENT_CODE
 oscillator:
     LOAD_OFFSET eax, oscillator_offset
@@ -46,7 +51,8 @@ initialize_frequencies:
     mov ecx, 128
     lea edi, [frequencies + 4 * ecx]
 
-    fild dword [ref_frequency]
+    fild dword [reference_frequency]
+    fadd st0, st0
     fdiv dword [f_65536]
 
 .loop:
@@ -82,10 +88,12 @@ apply_volume:
     %include "src/osc/wave.asm"
 
     SEGMENT_DATA
-ref_frequency:
-    dd 0x67D40000
+    %ifndef ELF
+reference_frequency:
+    dd TUNING_FREQUENCY
 note_divisor:
-    dd 1.0594630943592953
+    dd TUNING_NOTE_DIVISOR
+    %endif
 f_65536:
     dd 65536.0
 

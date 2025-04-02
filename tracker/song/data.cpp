@@ -16,3 +16,6 @@ Channels channels;
 Offsets buffer_offsets;
 Offsets current_offsets = nullptr;
 Links links;
+
+uint32_t reference_frequency = 0x41680943;
+_Float32 note_divisor = 1.0594630943592953f;

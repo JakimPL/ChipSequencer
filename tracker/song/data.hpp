@@ -32,4 +32,7 @@ extern Links links;
 
 extern Offsets current_offsets;
 
+extern uint32_t reference_frequency;
+extern _Float32 note_divisor;
+
 #endif // SONG_DATA_HPP
