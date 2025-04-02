@@ -20,6 +20,7 @@ class Creator:
         self.define_header()
         self.define_wavetables()
         self.define_buffers()
+        self.counts()
         header = "\n".join(self.lines)
 
         self.lines.clear()
@@ -167,6 +168,19 @@ class Creator:
             total_size += size
 
         self.define("DSP_BUFFER_SIZE", total_size)
+        self.comment()
+
+    def counts(self):
+        self.add("    %ifdef ELF")
+        self.add("    extern num_channels")
+        self.add("    extern num_dsps")
+        self.add("    %else")
+        self.add("    SEGMENT_DATA")
+        self.label("num_channels")
+        self.reference(Byte, "CHANNELS")
+        self.label("num_dsps")
+        self.reference(Byte, "DSPS")
+        self.add("    %endif")
         self.comment()
 
     def song_header(self):

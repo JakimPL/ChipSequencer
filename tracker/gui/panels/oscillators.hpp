@@ -6,9 +6,10 @@
 
 #include "../init.hpp"
 #include "../names.hpp"
+#include "panel.hpp"
 #include "utils.hpp"
 
-class GUIOscillatorsPanel {
+class GUIOscillatorsPanel : public GUIPanel {
   private:
     struct CurrentOscillator {
         int generator_index = -1;
@@ -20,16 +21,22 @@ class GUIOscillatorsPanel {
     int oscillator_index = 0;
     std::vector<std::string> generator_names;
 
-    void from_oscillator();
-    void to_oscillator();
+    bool is_index_valid() const;
     void update_oscillators();
     void update_wavetables();
     void draw_oscillator_type();
     void draw_oscillator();
 
+    void from() override;
+    void to() const override;
+    void add() override;
+    void remove() override;
+    void draw() override;
+    void check_keyboard_input() override;
+
   public:
     GUIOscillatorsPanel();
-    void draw();
+    void update() override;
 };
 
 #endif // GUI_PANELS_OSCILLATORS_HPP

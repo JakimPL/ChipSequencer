@@ -13,6 +13,29 @@
 #include "data.hpp"
 #include "song.hpp"
 
+Song::Song(uint16_t &bpm_reference, _Float32 &normalizer_reference, uint8_t &num_channels_reference, uint8_t &num_dsps_reference, Envelopes &env, Sequences &seq, Orders &ord, Oscillators &osc, Wavetables &wav, DSPs &dsp, Channels &chn, Offsets &offsets, Links &lnk)
+    : bpm(bpm_reference),
+      normalizer(normalizer_reference),
+      num_channels(num_channels_reference),
+      num_dsps(num_dsps_reference),
+      envelopes(env),
+      sequences(seq),
+      orders(ord),
+      oscillators(osc),
+      wavetables(wav),
+      dsps(dsp),
+      channels(chn),
+      buffer_offsets(offsets),
+      links(lnk) {
+    current_offsets = new uint16_t[0];
+    buffer_offsets = current_offsets;
+    new_song();
+}
+
+Song::~Song() {
+    delete[] current_offsets;
+}
+
 void Song::new_song() {
     clear_data();
     bpm = 120;
@@ -22,6 +45,7 @@ void Song::new_song() {
         "Untitled",
         TRACKER_VERSION
     };
+    set_links();
 }
 
 void Song::save_to_file(const std::string &filename, const bool compile) const {
@@ -29,7 +53,8 @@ void Song::save_to_file(const std::string &filename, const bool compile) const {
     const std::string song_dir = song_path.string();
 
     try {
-        export_asm_file(song_dir);
+        export_header_asm_file(song_dir);
+        export_data_asm_file(song_dir);
         export_header(song_dir);
         export_series(song_dir, "envel", envelopes, {sizeof(Envelope)});
         export_channels(song_dir);
@@ -73,11 +98,158 @@ void Song::load_from_file(const std::string &filename) {
         import_dsps(song_dir, json);
         import_links(song_dir, json);
         import_offsets(song_dir, json);
+        update_sizes();
 
         std::filesystem::remove_all(temp_base);
     } catch (const std::exception &e) {
         std::filesystem::remove_all(temp_base);
         throw;
+    }
+}
+
+Envelope *Song::add_envelope() {
+    if (envelopes.size() >= UINT8_MAX) {
+        return nullptr;
+    }
+
+    Envelope *envelope = new Envelope();
+    envelope->base_volume = DEFAULT_ENVELOPE_BASE_VOLUME;
+    envelope->sustain_level = DEFAULT_ENVELOPE_SUSTAIN_LEVEL;
+    envelope->attack = DEFAULT_ENVELOPE_ATTACK;
+    envelope->decay = DEFAULT_ENVELOPE_DECAY;
+    envelope->hold = DEFAULT_ENVELOPE_HOLD;
+    envelope->release = DEFAULT_ENVELOPE_RELEASE;
+    envelopes.push_back(envelope);
+    return envelope;
+}
+
+Sequence *Song::add_sequence() {
+    if (sequences.size() >= MAX_SEQUENCES) {
+        return nullptr;
+    }
+
+    Sequence *sequence = new Sequence();
+    sequence->data_size = 0;
+    sequences.push_back(sequence);
+    return sequence;
+}
+
+Order *Song::add_order() {
+    if (orders.size() >= MAX_ORDERS) {
+        return nullptr;
+    }
+
+    Order *order = new Order();
+    order->order_length = 0;
+    orders.push_back(order);
+    return order;
+}
+
+Wavetable *Song::add_wavetable() {
+    if (wavetables.size() >= MAX_WAVETABLES) {
+        return nullptr;
+    }
+
+    Wavetable *wavetable = new Wavetable();
+    wavetable->wavetable_size = 0;
+    wavetables.push_back(wavetable);
+    return wavetable;
+}
+
+void *Song::add_oscillator() {
+    if (oscillators.size() >= MAX_OSCILLATORS) {
+        return nullptr;
+    }
+
+    void *oscillator = new OscillatorSquare();
+    oscillators.push_back(oscillator);
+    return oscillator;
+}
+
+Channel *Song::add_channel() {
+    if (envelopes.size() >= MAX_CHANNELS) {
+        return nullptr;
+    }
+
+    Channel *channel = new Channel();
+    channel->envelope_index = 0;
+    channel->order_index = 0;
+    channel->oscillator_index = 0;
+    channel->output_flag = 0;
+    channel->pitch = DEFAULT_CHANNEL_PITCH;
+    channel->output = &output;
+    channels.push_back(channel);
+    num_channels = channels.size();
+    links[0].push_back(Link());
+    set_links();
+    return channel;
+}
+
+void *Song::add_dsp() {
+    if (dsps.size() >= MAX_DSPS) {
+        return nullptr;
+    }
+
+    void *dsp = new DSPGainer();
+    dsps.push_back(dsp);
+    num_dsps = dsps.size();
+    links[1].push_back(Link());
+    set_links();
+    return dsp;
+}
+
+void Song::remove_envelope(const size_t index) {
+    if (index < envelopes.size()) {
+        delete envelopes[index];
+        envelopes.erase(envelopes.begin() + index);
+    }
+}
+
+void Song::remove_sequence(const size_t index) {
+    if (index < sequences.size()) {
+        delete sequences[index];
+        sequences.erase(sequences.begin() + index);
+    }
+}
+
+void Song::remove_order(const size_t index) {
+    if (index < orders.size()) {
+        delete orders[index];
+        orders.erase(orders.begin() + index);
+    }
+}
+
+void Song::remove_wavetable(const size_t index) {
+    if (index < wavetables.size()) {
+        delete wavetables[index];
+        wavetables.erase(wavetables.begin() + index);
+    }
+}
+
+void Song::remove_oscillator(const size_t index) {
+    if (index < oscillators.size()) {
+        delete_oscillator(oscillators[index]);
+        oscillators.erase(oscillators.begin() + index);
+    }
+}
+
+void Song::remove_channel(const size_t index) {
+    if (index < channels.size()) {
+        delete channels[index];
+        channels.erase(channels.begin() + index);
+        links[0].erase(links[0].begin() + index);
+        num_channels = channels.size();
+        set_links();
+    }
+}
+
+void Song::remove_dsp(const size_t index) {
+    if (index < dsps.size()) {
+        delete_dsp(dsps[index]);
+        dsps.erase(dsps.begin() + index);
+        links[1].erase(links[1].begin() + index);
+        num_dsps = dsps.size();
+        set_links();
     }
 }
 
@@ -90,7 +262,19 @@ void Song::generate_header_vector(std::stringstream &asm_content, const std::str
     }
 }
 
-std::string Song::generate_asm_file() const {
+std::string Song::generate_header_asm_file() const {
+    std::stringstream asm_content;
+    asm_content << "    \%define CHANNELS" << channels.size() << "\n";
+    asm_content << "    \%define DSPS" << dsps.size() << "\n";
+    asm_content << "    \%define WAVETABLES" << wavetables.size() << "\n";
+    asm_content << "\n";
+    asm_content << "    \%define OUTPUT_CHANNELS" << output_channels << "\n";
+    asm_content << "    \%define SONG_LENGTH" << song_length << "\n";
+    asm_content << "\n";
+    return asm_content.str();
+}
+
+std::string Song::generate_data_asm_file() const {
     std::stringstream asm_content;
     asm_content << "SEGMENT_DATA\n";
     asm_content << "bpm:\n";
@@ -119,6 +303,9 @@ nlohmann::json Song::create_header_json() const {
     json["version"] = header.version;
     json["bpm"] = bpm;
     json["normalizer"] = normalizer;
+
+    json["output_channels"] = output_channels;
+    json["song_length"] = song_length;
 
     json["envelopes"] = envelopes.size();
     json["sequences"] = sequences.size();
@@ -336,8 +523,15 @@ void *Song::deserialize_oscillator(std::ifstream &file) const {
     }
 }
 
-void Song::export_asm_file(const std::string &directory) const {
-    std::string asm_content = generate_asm_file();
+void Song::export_header_asm_file(const std::string &directory) const {
+    std::string asm_content = generate_header_asm_file();
+    std::ofstream asm_file(directory + "/header.asm");
+    asm_file << asm_content;
+    asm_file.close();
+}
+
+void Song::export_data_asm_file(const std::string &directory) const {
+    std::string asm_content = generate_data_asm_file();
     std::ofstream asm_file(directory + "/data.asm");
     asm_file << asm_content;
     asm_file.close();
@@ -534,6 +728,11 @@ void Song::import_links(const std::string &song_dir, const nlohmann::json &json)
     file.close();
 }
 
+void Song::update_sizes() {
+    num_channels = channels.size();
+    num_dsps = dsps.size();
+}
+
 void Song::clear_data() {
     for (auto *envelope : envelopes) {
         delete envelope;
@@ -548,28 +747,10 @@ void Song::clear_data() {
         delete wavetable;
     }
     for (auto *oscillator : oscillators) {
-        const uint8_t *bytes = static_cast<const uint8_t *>(oscillator);
-        const uint8_t dsp_type = bytes[1];
-        if (dsp_type == GENERATOR_SQUARE) {
-            delete static_cast<OscillatorSquare *>(oscillator);
-        } else if (dsp_type == GENERATOR_SAW) {
-            delete static_cast<OscillatorSaw *>(oscillator);
-        } else if (dsp_type == GENERATOR_SINE) {
-            delete static_cast<OscillatorSine *>(oscillator);
-        } else if (dsp_type == GENERATOR_WAVETABLE) {
-            delete static_cast<OscillatorWavetable *>(oscillator);
-        }
+        delete_oscillator(oscillator);
     }
     for (auto *dsp : dsps) {
-        const uint8_t *bytes = static_cast<const uint8_t *>(dsp);
-        const uint8_t dsp_type = bytes[1];
-        if (dsp_type == EFFECT_DELAY) {
-            delete static_cast<DSPDelay *>(dsp);
-        } else if (dsp_type == EFFECT_GAINER) {
-            delete static_cast<DSPGainer *>(dsp);
-        } else if (dsp_type == EFFECT_FILTER) {
-            delete static_cast<DSPFilter *>(dsp);
-        }
+        delete_dsp(dsp);
     }
     for (auto *channel : channels) {
         delete channel;
@@ -584,4 +765,40 @@ void Song::clear_data() {
     channels.clear();
     links.clear();
     links.resize(2);
+    num_channels = 0;
+    num_dsps = 0;
+}
+
+void Song::delete_oscillator(void *oscillator) {
+    if (oscillator == nullptr) {
+        return;
+    }
+
+    const uint8_t *bytes = static_cast<const uint8_t *>(oscillator);
+    const uint8_t dsp_type = bytes[1];
+    if (dsp_type == GENERATOR_SQUARE) {
+        delete static_cast<OscillatorSquare *>(oscillator);
+    } else if (dsp_type == GENERATOR_SAW) {
+        delete static_cast<OscillatorSaw *>(oscillator);
+    } else if (dsp_type == GENERATOR_SINE) {
+        delete static_cast<OscillatorSine *>(oscillator);
+    } else if (dsp_type == GENERATOR_WAVETABLE) {
+        delete static_cast<OscillatorWavetable *>(oscillator);
+    }
+}
+
+void Song::delete_dsp(void *dsp) {
+    if (dsp == nullptr) {
+        return;
+    }
+
+    const uint8_t *bytes = static_cast<const uint8_t *>(dsp);
+    const uint8_t dsp_type = bytes[1];
+    if (dsp_type == EFFECT_DELAY) {
+        delete static_cast<DSPDelay *>(dsp);
+    } else if (dsp_type == EFFECT_GAINER) {
+        delete static_cast<DSPGainer *>(dsp);
+    } else if (dsp_type == EFFECT_FILTER) {
+        delete static_cast<DSPFilter *>(dsp);
+    }
 }

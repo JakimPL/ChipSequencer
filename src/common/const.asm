@@ -9,12 +9,32 @@
     %define DOS_TERMINATE 0x4C
     %define DOS_PRINT_STRING 0x09
 
-; Envelope
-    %define ENVELOPE_BASE_VOLUME 0
-    %define ENVELOPE_SUSTAIN_LEVEL 2
-    %define ENVELOPE_BIAS 4
-    %define ENVELOPE_ATTACK 6
-    %define SIZE_ENVELOPE 14
+; Defaults
+    %define DEFAULT_ENVELOPE_BASE_VOLUME 0x7FFF
+    %define DEFAULT_ENVELOPE_SUSTAIN_LEVEL 0x7FFF
+    %define DEFAULT_ENVELOPE_BIAS 0x0000
+    %define DEFAULT_ENVELOPE_ATTACK 125
+    %define DEFAULT_ENVELOPE_DECAY 125
+    %define DEFAULT_ENVELOPE_HOLD 250
+    %define DEFAULT_ENVELOPE_RELEASE 250
+
+    %define DEFAULT_CHANNEL_PITCH 0x02000000
+
+; Limits
+    %define MAX_ENVELOPES 32
+    %define MAX_SEQUENCES 64
+    %define MAX_ORDERS 64
+    %define MAX_OSCILLATORS 32
+    %define MAX_WAVETABLES 16
+    %define MAX_CHANNELS 32
+    %define MAX_DSPS 16
+
+    %define MAX_WAVETABLE_SIZE 512
+    %define MAX_DSP_BUFFER_SIZE 512
+
+; General
+    %define TUNING_EDO 12
+    %define TUNING_MAX_OCTAVE 8
 
 ; Phases
     %define ATTACK 0
@@ -22,6 +42,13 @@
     %define HOLD 2
     %define RELEASE 3
     %define NOTE_CUT 4
+
+; Envelope
+    %define ENVELOPE_BASE_VOLUME 0
+    %define ENVELOPE_SUSTAIN_LEVEL 2
+    %define ENVELOPE_BIAS 4
+    %define ENVELOPE_ATTACK 6
+    %define SIZE_ENVELOPE 14
 
 ; Sequence
     %define SEQUENCE_NOTES 1

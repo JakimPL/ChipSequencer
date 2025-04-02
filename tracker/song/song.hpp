@@ -17,6 +17,10 @@ struct Song {
 
     uint16_t &bpm;
     _Float32 &normalizer;
+
+    uint8_t &num_channels;
+    uint8_t &num_dsps;
+
     Envelopes &envelopes;
     Sequences &sequences;
     Orders &orders;
@@ -28,9 +32,14 @@ struct Song {
     Offsets current_offsets = nullptr;
     Links &links;
 
+    uint8_t output_channels = 1;
+    uint32_t song_length = 186253;
+
     Song(
         uint16_t &bpm_reference,
         _Float32 &normalizer_reference,
+        uint8_t &num_channels_reference,
+        uint8_t &num_dsps_reference,
         Envelopes &env,
         Sequences &seq,
         Orders &ord,
@@ -40,34 +49,34 @@ struct Song {
         Channels &chn,
         Offsets &offsets,
         Links &lnk
-    )
-        : bpm(bpm_reference),
-          normalizer(normalizer_reference),
-          envelopes(env),
-          sequences(seq),
-          orders(ord),
-          oscillators(osc),
-          wavetables(wav),
-          dsps(dsp),
-          channels(chn),
-          buffer_offsets(offsets),
-          links(lnk) {
-        current_offsets = new uint16_t[0];
-        buffer_offsets = current_offsets;
-        set_links();
-    }
+    );
 
-    ~Song() {
-        delete[] current_offsets;
-    }
+    ~Song();
 
     void new_song();
     void load_from_file(const std::string &filename);
     void save_to_file(const std::string &filename, const bool compile = true) const;
 
+    Envelope *add_envelope();
+    Sequence *add_sequence();
+    Order *add_order();
+    Wavetable *add_wavetable();
+    void *add_oscillator();
+    Channel *add_channel();
+    void *add_dsp();
+
+    void remove_envelope(const size_t index);
+    void remove_sequence(const size_t index);
+    void remove_order(const size_t index);
+    void remove_wavetable(const size_t index);
+    void remove_oscillator(const size_t index);
+    void remove_channel(const size_t index);
+    void remove_dsp(const size_t index);
+
   private:
     void generate_header_vector(std::stringstream &asm_content, const std::string &name, const std::string &short_name, const size_t size) const;
-    std::string generate_asm_file() const;
+    std::string generate_header_asm_file() const;
+    std::string generate_data_asm_file() const;
     nlohmann::json create_header_json() const;
     nlohmann::json import_header(const std::string &directory);
 
@@ -83,7 +92,8 @@ struct Song {
     void *deserialize_dsp(std::ifstream &file) const;
     void *deserialize_oscillator(std::ifstream &file) const;
 
-    void export_asm_file(const std::string &directory) const;
+    void export_header_asm_file(const std::string &directory) const;
+    void export_data_asm_file(const std::string &directory) const;
     void export_header(const std::string &directory) const;
 
     template <typename T>
@@ -112,7 +122,11 @@ struct Song {
     void compile_sources(const std::string &directory) const;
     void compress_directory(const std::string &directory, const std::string &output_file) const;
     void decompress_archive(const std::string &output_file, const std::string &directory);
+
+    void update_sizes();
     void clear_data();
+    void delete_oscillator(void *oscillator);
+    void delete_dsp(void *dsp);
 };
 
 #endif // SONG_SONG_HPP

@@ -6,12 +6,6 @@
 
 #include "../init.hpp"
 
-#define NOTE_REST -2
-#define NOTE_OFF -1
-#define CONSTANT_PITCH 0xFF
-
-extern const char *note_names[];
-
 int clamp_index(int index, const int max);
 void draw_number_of_items(const std::string &label, const char *label_id, int &value, int min, int max, float label_length = 50.0f);
 void draw_int_slider(const char *label, int &reference, int min, int max);

@@ -15,3 +15,14 @@
     %define DSP_1_BUFFER_SIZE 0
     %define DSP_2_BUFFER_SIZE 0
     %define DSP_BUFFER_SIZE 256
+
+    %ifdef ELF
+    extern num_channels
+    extern num_dsps
+    %else
+    SEGMENT_DATA
+num_channels:
+    db CHANNELS
+num_dsps:
+    db DSPS
+    %endif

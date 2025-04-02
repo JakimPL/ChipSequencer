@@ -1,11 +1,41 @@
+#include "../../general.hpp"
 #include "wavetables.hpp"
 
-void GUIWavetablesPanel::from_wavetable() {
+GUIWavetablesPanel::GUIWavetablesPanel() {
+    from();
+    update();
+}
+
+void GUIWavetablesPanel::draw() {
+    ImGui::Begin("Wavetable Editor");
+
+    draw_add_or_remove();
+    prepare_combo(wavetable_names, "##WavetableCombo", wavetable_index);
+    ImGui::Separator();
+
     if (wavetables.empty()) {
+        ImGui::Text("No wavetables available.");
+        ImGui::End();
         return;
     }
 
-    wavetable_index = clamp_index(wavetable_index, wavetables.size());
+    from();
+    draw_waveform();
+    check_keyboard_input();
+    to();
+
+    ImGui::End();
+}
+
+bool GUIWavetablesPanel::is_index_valid() const {
+    return wavetable_index >= 0 && wavetable_index < wavetables.size();
+}
+
+void GUIWavetablesPanel::from() {
+    if (!is_index_valid()) {
+        return;
+    }
+
     const Wavetable *wavetable = wavetables[wavetable_index];
     current_wavetable.size = wavetable->wavetable_size;
     current_wavetable.interpolate = false;
@@ -18,8 +48,8 @@ void GUIWavetablesPanel::from_wavetable() {
     }
 }
 
-void GUIWavetablesPanel::to_wavetable() {
-    if (wavetables.empty()) {
+void GUIWavetablesPanel::to() const {
+    if (!is_index_valid()) {
         return;
     }
 
@@ -44,6 +74,24 @@ void GUIWavetablesPanel::to_wavetable() {
     delete wavetable;
 }
 
+void GUIWavetablesPanel::add() {
+    Wavetable *new_wavetable = song.add_wavetable();
+    if (new_wavetable == nullptr) {
+        return;
+    }
+
+    wavetable_index = wavetables.size() - 1;
+    update();
+}
+
+void GUIWavetablesPanel::remove() {
+    if (is_index_valid()) {
+        song.remove_wavetable(wavetable_index);
+        wavetable_index = std::max(0, wavetable_index - 1);
+        update();
+    }
+}
+
 void GUIWavetablesPanel::draw_wavetable_length() {
     int old_size = current_wavetable.size;
     draw_number_of_items("Points", "##WavetableLength", current_wavetable.size, 1, max_points);
@@ -59,7 +107,6 @@ void GUIWavetablesPanel::draw_wavetable_length() {
 }
 
 void GUIWavetablesPanel::draw_waveform() {
-    ImGui::Separator();
     ImGui::Checkbox("Interpolate", &current_wavetable.interpolate);
 
     if (wavetables.empty()) {
@@ -68,12 +115,12 @@ void GUIWavetablesPanel::draw_waveform() {
     }
 
     ImGui::Text("Waveform:");
+    draw_wavetable_length();
+
     if (current_wavetable.wave.empty()) {
         ImGui::Text("No data to display.");
         return;
     }
-
-    draw_wavetable_length();
 
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
     const ImVec2 p = ImGui::GetCursorScreenPos();
@@ -142,28 +189,10 @@ void GUIWavetablesPanel::draw_waveform() {
     }
 }
 
-void GUIWavetablesPanel::update_wavetables() {
+void GUIWavetablesPanel::update() {
     update_items(wavetable_names, wavetables.size(), "Wavetable ", wavetable_index);
+    gui.oscillators_panel.update();
 }
 
-GUIWavetablesPanel::GUIWavetablesPanel() {
-    from_wavetable();
-    update_wavetables();
-}
-
-void GUIWavetablesPanel::draw() {
-    ImGui::Begin("Wavetable Editor");
-
-    if (wavetables.empty()) {
-        ImGui::Text("No wavetables available.");
-        ImGui::End();
-        return;
-    }
-
-    prepare_combo(wavetable_names, "##WavetableCombo", wavetable_index);
-    from_wavetable();
-    draw_waveform();
-    to_wavetable();
-
-    ImGui::End();
+void GUIWavetablesPanel::check_keyboard_input() {
 }

@@ -1,14 +1,38 @@
 #include <algorithm>
 #include <cmath>
 
-#include "oscillators.hpp"
+#include "../../general.hpp"
 
-void GUIOscillatorsPanel::from_oscillator() {
-    if (oscillators.empty()) {
+GUIOscillatorsPanel::GUIOscillatorsPanel() {
+    from();
+    update();
+}
+
+void GUIOscillatorsPanel::draw() {
+    ImGui::Begin("Oscillator Editor");
+    ImGui::Columns(1, "oscillator_columns");
+
+    draw_add_or_remove();
+    prepare_combo(oscillator_names, "##OscillatorCombo", oscillator_index);
+    ImGui::Separator();
+
+    from();
+    draw_oscillator();
+    check_keyboard_input();
+    to();
+
+    ImGui::Columns(1);
+    ImGui::End();
+}
+bool GUIOscillatorsPanel::is_index_valid() const {
+    return oscillator_index >= 0 && oscillator_index < oscillators.size();
+}
+
+void GUIOscillatorsPanel::from() {
+    if (!is_index_valid()) {
         return;
     }
 
-    oscillator_index = clamp_index(oscillator_index, oscillators.size());
     void *oscillator = oscillators[oscillator_index];
     const Oscillator *generic = static_cast<Oscillator *>(oscillator);
     current_oscillator.generator_index = generic->generator_index;
@@ -36,8 +60,8 @@ void GUIOscillatorsPanel::from_oscillator() {
     }
 }
 
-void GUIOscillatorsPanel::to_oscillator() {
-    if (oscillators.empty()) {
+void GUIOscillatorsPanel::to() const {
+    if (!is_index_valid()) {
         return;
     }
 
@@ -75,6 +99,30 @@ void GUIOscillatorsPanel::to_oscillator() {
     }
 }
 
+void GUIOscillatorsPanel::add() {
+    void *new_oscillator = song.add_oscillator();
+    if (new_oscillator == nullptr) {
+        return;
+    }
+
+    oscillator_index = oscillators.size() - 1;
+    update();
+}
+
+void GUIOscillatorsPanel::remove() {
+    if (is_index_valid()) {
+        song.remove_oscillator(oscillator_index);
+        oscillator_index = std::max(0, oscillator_index - 1);
+        update();
+    }
+}
+
+void GUIOscillatorsPanel::update() {
+    update_oscillators();
+    update_wavetables();
+    gui.channels_panel.update();
+}
+
 void GUIOscillatorsPanel::update_oscillators() {
     update_items(oscillator_names, oscillators.size(), "Oscillator ", oscillator_index);
     generator_names = {"Square", "Saw", "Sine", "Wavetable"};
@@ -92,7 +140,6 @@ void GUIOscillatorsPanel::draw_oscillator_type() {
 }
 
 void GUIOscillatorsPanel::draw_oscillator() {
-    ImGui::Separator();
     ImGui::Text("Oscillator:");
 
     if (oscillators.empty()) {
@@ -121,21 +168,5 @@ void GUIOscillatorsPanel::draw_oscillator() {
     ImGui::Columns(1);
 }
 
-GUIOscillatorsPanel::GUIOscillatorsPanel() {
-    from_oscillator();
-    update_oscillators();
-    update_wavetables();
-}
-
-void GUIOscillatorsPanel::draw() {
-    ImGui::Begin("Oscillator Editor");
-    ImGui::Columns(1, "oscillator_columns");
-
-    prepare_combo(oscillator_names, "##OscillatorCombo", oscillator_index);
-    from_oscillator();
-    draw_oscillator();
-    to_oscillator();
-
-    ImGui::Columns(1);
-    ImGui::End();
+void GUIOscillatorsPanel::check_keyboard_input() {
 }

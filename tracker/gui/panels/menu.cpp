@@ -75,6 +75,7 @@ void GUIMenu::file_open() {
         free(target_path);
         current_path = file_path;
         song.load_from_file(current_path);
+        gui.update();
     } else if (result != NFD_CANCEL) {
         std::cerr << "Error: " << NFD_GetError() << std::endl;
     }
@@ -82,7 +83,9 @@ void GUIMenu::file_open() {
 
 void GUIMenu::file_compile() {
     file_save();
-    song.save_to_file(current_path, true);
+    if (!current_path.empty()) {
+        song.save_to_file(current_path, true);
+    }
 }
 
 void GUIMenu::file_exit() {

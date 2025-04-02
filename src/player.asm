@@ -65,8 +65,8 @@ dividend:
     dd SAMPLE_RATE << 16
 
     SEGMENT_BSS
-    output resd OUTPUT_CHANNELS
-    dsp_buffer resd DSP_BUFFER_SIZE
+    output resd MAX_CHANNELS
+    dsp_buffer resd MAX_DSP_BUFFER_SIZE
 
     %ifndef ELF
     group dgroup bss data

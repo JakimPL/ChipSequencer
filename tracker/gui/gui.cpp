@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "gui.hpp"
 
 GUI::GUI()
@@ -6,6 +8,14 @@ GUI::GUI()
 
 GUI::~GUI() {
     terminate();
+}
+
+int GUI::get_jump_step() const {
+    return std::clamp(0, jump_step, GUI_MAX_JUMP_STEP);
+}
+
+int GUI::get_current_octave() const {
+    return std::clamp(0, current_octave, TUNING_MAX_OCTAVE);
 }
 
 bool GUI::initialize() {
@@ -60,14 +70,15 @@ bool GUI::render() {
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
-    menu.draw();
-    channels_panel.draw();
-    envelopes_panel.draw();
-    orders_panel.draw();
-    oscillators_panel.draw();
-    sequences_panel.draw();
-    wavetables_panel.draw();
-    general_panel.draw();
+    menu.frame();
+    editor.frame();
+    channels_panel.frame();
+    envelopes_panel.frame();
+    orders_panel.frame();
+    oscillators_panel.frame();
+    sequences_panel.frame();
+    wavetables_panel.frame();
+    general_panel.frame();
 
     ImGui::Render();
     glViewport(0, 0, (int) io->DisplaySize.x, (int) io->DisplaySize.y);
@@ -114,4 +125,13 @@ void GUI::set_play_callback(std::function<void()> callback) {
 
 void GUI::set_playing_status(bool status) {
     general_panel.is_playing = status;
+}
+
+void GUI::update() {
+    channels_panel.update();
+    envelopes_panel.update();
+    orders_panel.update();
+    oscillators_panel.update();
+    sequences_panel.update();
+    wavetables_panel.update();
 }

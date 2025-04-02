@@ -5,12 +5,7 @@
 
 #include "../init.hpp"
 
-class GUIMenu {
-  public:
-    GUIMenu();
-
-    void draw();
-
+class GUIMenu : public GUIPanel {
   private:
     void file_new();
     void file_save();
@@ -18,6 +13,17 @@ class GUIMenu {
     void file_open();
     void file_compile();
     void file_exit();
+
+    void from() override {};
+    void to() const override {};
+    void add() override {};
+    void remove() override {};
+    void draw() override;
+    void check_keyboard_input() override {};
+
+  public:
+    GUIMenu();
+    void update() override {};
 };
 
 #endif // GUI_PANELS_MENU_HPP

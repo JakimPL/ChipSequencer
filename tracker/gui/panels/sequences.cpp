@@ -1,11 +1,38 @@
+#include "../../general.hpp"
+#include "../mapping.hpp"
 #include "sequences.hpp"
 
-void GUISequencesPanel::from_sequence() {
-    if (sequences.empty()) {
+GUISequencesPanel::GUISequencesPanel() {
+    from();
+    update();
+}
+
+void GUISequencesPanel::draw() {
+    ImGui::Begin("Sequence Editor");
+    ImGui::Columns(1, "sequence_columns");
+
+    draw_add_or_remove();
+    prepare_combo(sequence_names, "##SequenceCombo", sequence_index);
+    ImGui::Separator();
+
+    from();
+    draw_sequence();
+    check_keyboard_input();
+    to();
+
+    ImGui::Columns(1);
+    ImGui::End();
+}
+
+bool GUISequencesPanel::is_index_valid() const {
+    return sequence_index >= 0 && sequence_index < sequences.size();
+}
+
+void GUISequencesPanel::from() {
+    if (!is_index_valid()) {
         return;
     }
 
-    sequence_index = clamp_index(sequence_index, sequences.size());
     Sequence *sequence = sequences[sequence_index];
     uint16_t total_length = 0;
 
@@ -21,12 +48,19 @@ void GUISequencesPanel::from_sequence() {
     current_sequence.steps = total_length;
 }
 
-std::vector<Note> GUISequencesPanel::pattern_to_sequence() {
+std::vector<Note> GUISequencesPanel::pattern_to_sequence() const {
     std::vector<Note> note_vector;
 
     uint8_t duration = 1;
     int8_t pitch;
-    for (int i = current_sequence.pattern.size() - 1; i >= 0; --i) {
+    for (int i = current_sequence.steps - 1; i >= 0; --i) {
+        if (i >= current_sequence.pattern.size()) {
+            if (note_vector.empty()) {
+                note_vector.push_back({NOTE_REST, 1});
+            }
+            continue;
+        }
+
         pitch = current_sequence.pattern[i];
         if (pitch == NOTE_REST && i > 0) {
             ++duration;
@@ -41,13 +75,14 @@ std::vector<Note> GUISequencesPanel::pattern_to_sequence() {
     return note_vector;
 }
 
-void GUISequencesPanel::to_sequence() {
-    if (sequences.empty()) {
+void GUISequencesPanel::to() const {
+    if (!is_index_valid()) {
         return;
     }
 
     Sequence *sequence = sequences[sequence_index];
     const std::vector<Note> note_vector = pattern_to_sequence();
+
     const size_t length = note_vector.size();
     const uint8_t data_size = static_cast<uint8_t>(length * sizeof(Note));
     const size_t structure_size = data_size + 1;
@@ -56,19 +91,31 @@ void GUISequencesPanel::to_sequence() {
     new_sequence->data_size = data_size;
     std::copy(note_vector.begin(), note_vector.end(), new_sequence->notes);
 
-    if (new_sequence->data_size > sequence->data_size) {
-        for (size_t i = sequence->data_size / 2; i < new_sequence->data_size / 2; ++i) {
-            new_sequence->notes[i].pitch = NOTE_REST;
-            new_sequence->notes[i].duration = 1;
-        }
-    }
-
     sequences[sequence_index] = new_sequence;
     delete sequence;
 }
 
-void GUISequencesPanel::update_sequences() {
+void GUISequencesPanel::add() {
+    Sequence *new_sequence = song.add_sequence();
+    if (new_sequence == nullptr) {
+        return;
+    }
+
+    sequence_index = sequences.size() - 1;
+    update();
+}
+
+void GUISequencesPanel::remove() {
+    if (is_index_valid()) {
+        song.remove_sequence(sequence_index);
+        sequence_index = std::max(0, sequence_index - 1);
+        update();
+    }
+}
+
+void GUISequencesPanel::update() {
     update_items(sequence_names, sequences.size(), "Sequence ", sequence_index);
+    gui.orders_panel.update();
 }
 
 void GUISequencesPanel::draw_sequence_length() {
@@ -82,11 +129,10 @@ void GUISequencesPanel::draw_sequence() {
         current_sequence.pattern.resize(current_sequence.steps);
     }
 
-    ImGui::Separator();
     ImGui::Text("Pattern:");
 
-    if (sequences.empty()) {
-        ImGui::Text("No sequences available.");
+    if (!is_index_valid()) {
+        ImGui::Text("No sequence available.");
         ImGui::Columns(1);
         return;
     }
@@ -105,7 +151,7 @@ void GUISequencesPanel::draw_sequence() {
 
     ImGui::Separator();
 
-    for (int i = 0; i < current_sequence.steps; ++i) {
+    for (int i = 0; i < current_sequence.pattern.size(); ++i) {
         ImGui::PushID(i);
         ImGui::Text("%d", i);
         ImGui::NextColumn();
@@ -131,20 +177,55 @@ void GUISequencesPanel::draw_sequence() {
     ImGui::EndChild();
 }
 
-GUISequencesPanel::GUISequencesPanel() {
-    from_sequence();
-    update_sequences();
+void GUISequencesPanel::check_keyboard_input() {
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+        return;
+    }
+
+    const bool valid = selected_step >= 0 && selected_step < current_sequence.pattern.size();
+    if (!valid) {
+        return;
+    }
+
+    for (const auto &mapping : key_note_mappings) {
+        if (ImGui::IsKeyPressed(mapping.key)) {
+            const int note = mapping.note_index + TUNING_EDO * gui.get_current_octave();
+            current_sequence.pattern[selected_step] = note;
+            jump();
+        }
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_Delete) || ImGui::IsKeyPressed(ImGuiKey_Space)) {
+        current_sequence.pattern[selected_step] = NOTE_REST;
+        jump();
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_Apostrophe) || ImGui::IsKeyPressed(ImGuiKey_Equal)) {
+        current_sequence.pattern[selected_step] = NOTE_OFF;
+        jump();
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_Backspace)) {
+        current_sequence.pattern[selected_step] = NOTE_REST;
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_UpArrow)) {
+        selected_step = std::max(0, selected_step - 1);
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_DownArrow)) {
+        selected_step = std::min(current_sequence.steps - 1, selected_step + 1);
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_KeypadAdd)) {
+        current_sequence.steps = std::min(current_sequence.steps, max_steps);
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_KeypadSubtract)) {
+        current_sequence.steps = std::max(current_sequence.steps, 1);
+    }
 }
 
-void GUISequencesPanel::draw() {
-    ImGui::Begin("Sequence Editor");
-    ImGui::Columns(1, "sequence_columns");
-
-    prepare_combo(sequence_names, "##SequenceCombo", sequence_index);
-    from_sequence();
-    draw_sequence();
-    to_sequence();
-
-    ImGui::Columns(1);
-    ImGui::End();
+void GUISequencesPanel::jump() {
+    selected_step = std::min(selected_step + gui.get_jump_step(), current_sequence.steps - 1);
 }

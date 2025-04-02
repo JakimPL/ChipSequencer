@@ -3,11 +3,14 @@
 
 #include <algorithm>
 #include <string>
+
+#include "../constants.hpp"
 #include "../init.hpp"
 #include "../names.hpp"
+#include "panel.hpp"
 #include "utils.hpp"
 
-class GUISequencesPanel {
+class GUISequencesPanel : public GUIPanel {
   private:
     struct CurrentSequence {
         int steps = 0;
@@ -16,18 +19,26 @@ class GUISequencesPanel {
 
     int sequence_index = 0;
     int selected_step = 0;
-    const int max_steps = 64;
+    const int max_steps = GUI_MAX_STEPS;
+    int jump_step = 1;
 
-    void from_sequence();
-    std::vector<Note> pattern_to_sequence();
-    void to_sequence();
-    void update_sequences();
+    bool is_index_valid() const;
+    std::vector<Note> pattern_to_sequence() const;
     void draw_sequence_length();
     void draw_sequence();
 
+    void jump();
+
+    void from() override;
+    void to() const override;
+    void add() override;
+    void remove() override;
+    void draw() override;
+    void check_keyboard_input() override;
+
   public:
     GUISequencesPanel();
-    void draw();
+    void update() override;
 };
 
 #endif // GUI_PANELS_SEQUENCES_HPP

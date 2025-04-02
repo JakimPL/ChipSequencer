@@ -1,0 +1,12 @@
+#ifndef GUI_CONSTANTS_HPP
+#define GUI_CONSTANTS_HPP
+
+#define NOTE_REST -2
+#define NOTE_OFF -1
+#define CONSTANT_PITCH 0xFF
+
+#define GUI_MAX_JUMP_STEP 32
+#define GUI_MAX_ITEMS 64
+#define GUI_MAX_STEPS 64
+
+#endif // GUI_CONSTANTS_HPP

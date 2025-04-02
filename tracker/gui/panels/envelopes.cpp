@@ -1,19 +1,56 @@
+#include "../../general.hpp"
 #include "envelopes.hpp"
 
-float GUIEnvelopesPanel::cast_to_float(int value, float scale) {
-    return scale * static_cast<float>(value) / UINT16_MAX;
+GUIEnvelopesPanel::GUIEnvelopesPanel() {
+    from();
+    update();
 }
 
-uint16_t GUIEnvelopesPanel::cast_to_int(float value, float scale) {
-    return static_cast<uint16_t>(value / scale * UINT16_MAX);
-}
+void GUIEnvelopesPanel::draw() {
+    ImGui::Begin("Envelope Editor");
 
-void GUIEnvelopesPanel::from_envelope() {
+    draw_add_or_remove();
+    prepare_combo(envelope_names, "##EnvelopeCombo", envelope_index);
+    ImGui::Separator();
+
     if (envelopes.empty()) {
+        ImGui::Text("No envelopes available.");
+        ImGui::End();
         return;
     }
 
-    envelope_index = clamp_index(envelope_index, envelopes.size());
+    from();
+
+    ImGui::Columns(2, "envelope_top_columns");
+    draw_levels();
+    ImGui::NextColumn();
+    draw_timers();
+
+    ImGui::Columns(1, "envelope_bottom_columns");
+    draw_envelope_graph();
+    check_keyboard_input();
+    to();
+
+    ImGui::End();
+}
+
+bool GUIEnvelopesPanel::is_index_valid() const {
+    return envelope_index >= 0 && envelope_index < envelopes.size();
+}
+
+float GUIEnvelopesPanel::cast_to_float(int value, float scale) {
+    return scale * static_cast<float>(value) / (0.5 * UINT16_MAX);
+}
+
+uint16_t GUIEnvelopesPanel::cast_to_int(float value, float scale) {
+    return static_cast<uint16_t>(value / scale * (0.5 * UINT16_MAX));
+}
+
+void GUIEnvelopesPanel::from() {
+    if (!is_index_valid()) {
+        return;
+    }
+
     const Envelope *envelope = envelopes[envelope_index];
     current_envelope.base_volume = cast_to_float(envelope->base_volume);
     current_envelope.sustain_level = cast_to_float(envelope->sustain_level);
@@ -23,8 +60,8 @@ void GUIEnvelopesPanel::from_envelope() {
     current_envelope.release = cast_to_float(envelope->release, timer_constant);
 }
 
-void GUIEnvelopesPanel::to_envelope() const {
-    if (envelopes.empty()) {
+void GUIEnvelopesPanel::to() const {
+    if (!is_index_valid()) {
         return;
     }
 
@@ -37,8 +74,27 @@ void GUIEnvelopesPanel::to_envelope() const {
     envelope->release = cast_to_int(current_envelope.release, timer_constant);
 }
 
-void GUIEnvelopesPanel::update_envelopes() {
+void GUIEnvelopesPanel::add() {
+    Envelope *new_envelope = song.add_envelope();
+    if (new_envelope == nullptr) {
+        return;
+    }
+
+    envelope_index = envelopes.size() - 1;
+    update();
+}
+
+void GUIEnvelopesPanel::remove() {
+    if (is_index_valid()) {
+        song.remove_envelope(envelope_index);
+        envelope_index = std::max(0, envelope_index - 1);
+        update();
+    }
+}
+
+void GUIEnvelopesPanel::update() {
     update_items(envelope_names, envelopes.size(), "Envelope ", envelope_index);
+    gui.channels_panel.update();
 }
 
 void GUIEnvelopesPanel::draw_levels() {
@@ -106,32 +162,5 @@ void GUIEnvelopesPanel::draw_envelope_graph() {
     draw_list->AddCircleFilled(p4, 3.0f, IM_COL32(0, 144, 255, 255));
 }
 
-GUIEnvelopesPanel::GUIEnvelopesPanel() {
-    from_envelope();
-    update_envelopes();
-}
-
-void GUIEnvelopesPanel::draw() {
-    ImGui::Begin("Envelope Editor");
-
-    if (envelopes.empty()) {
-        ImGui::Text("No envelopes available.");
-        ImGui::End();
-        return;
-    }
-
-    prepare_combo(envelope_names, "##EnvelopeCombo", envelope_index);
-    from_envelope();
-
-    ImGui::Columns(2, "envelope_top_columns");
-    draw_levels();
-    ImGui::NextColumn();
-    draw_timers();
-
-    ImGui::Columns(1, "envelope_bottom_columns");
-    draw_envelope_graph();
-
-    to_envelope();
-
-    ImGui::End();
+void GUIEnvelopesPanel::check_keyboard_input() {
 }

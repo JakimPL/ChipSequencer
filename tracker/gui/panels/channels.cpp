@@ -1,11 +1,37 @@
+#include "../../general.hpp"
 #include "channels.hpp"
 
-void GUIChannelsPanel::from_channel() {
-    if (channels.empty()) {
+GUIChannelsPanel::GUIChannelsPanel() {
+    from();
+    update();
+}
+
+void GUIChannelsPanel::draw() {
+    ImGui::Begin("Channel Editor");
+    ImGui::Columns(1, "channel_columns");
+
+    draw_add_or_remove();
+    prepare_combo(channel_names, "##ChannelCombo", channel_index);
+    ImGui::Separator();
+
+    from();
+    draw_channel();
+    check_keyboard_input();
+    to();
+
+    ImGui::Columns(1);
+    ImGui::End();
+}
+
+bool GUIChannelsPanel::is_index_valid() const {
+    return channel_index >= 0 && channel_index < channels.size();
+}
+
+void GUIChannelsPanel::from() {
+    if (!is_index_valid()) {
         return;
     }
 
-    channel_index = clamp_index(channel_index, channels.size());
     Channel *channel = channels[channel_index];
     current_channel.envelope_index = channel->envelope_index;
     current_channel.constant_pitch = channel->order_index == 0xFF;
@@ -19,12 +45,12 @@ void GUIChannelsPanel::from_channel() {
     if (current_channel.constant_pitch) {
         current_channel.pitch = static_cast<float>(channel->pitch) / 0x10000;
     } else {
-        current_channel.pitch = 12 * log2(static_cast<float>(channel->pitch) / 0x02000000);
+        current_channel.pitch = 12 * log2(static_cast<float>(channel->pitch) / DEFAULT_CHANNEL_PITCH);
     }
 }
 
-void GUIChannelsPanel::to_channel() {
-    if (channels.empty()) {
+void GUIChannelsPanel::to() const {
+    if (!is_index_valid()) {
         return;
     }
 
@@ -44,7 +70,25 @@ void GUIChannelsPanel::to_channel() {
     }
 }
 
-void GUIChannelsPanel::update_channels() {
+void GUIChannelsPanel::add() {
+    Channel *new_channel = song.add_channel();
+    if (new_channel == nullptr) {
+        return;
+    }
+
+    channel_index = channels.size() - 1;
+    update();
+}
+
+void GUIChannelsPanel::remove() {
+    if (is_index_valid()) {
+        song.remove_channel(channel_index);
+        channel_index = std::max(0, channel_index - 1);
+        update();
+    }
+}
+
+void GUIChannelsPanel::update() {
     update_items(channel_names, channels.size(), "Channel ", channel_index);
     update_items(envelope_names, envelopes.size(), "Envelope ", current_channel.envelope_index);
     update_items(order_names, orders.size(), "Order ", current_channel.order_index);
@@ -57,9 +101,9 @@ void GUIChannelsPanel::draw_channel() {
         return;
     }
 
-    ImGui::Separator();
-    ImGui::Text("Channel:");
+    ImGui::Text("Envelope:");
     prepare_combo(envelope_names, "##EnvelopeCombo", current_channel.envelope_index);
+    ImGui::Text("Oscillator:");
     prepare_combo(oscillator_names, "##OscillatorCombo", current_channel.oscillator_index);
     if (ImGui::Checkbox("Constant Pitch", &current_channel.constant_pitch) && !orders.empty()) {
         current_channel.order_index = 0;
@@ -85,20 +129,5 @@ void GUIChannelsPanel::draw_channel() {
     ImGui::EndDisabled();
 }
 
-GUIChannelsPanel::GUIChannelsPanel() {
-    from_channel();
-    update_channels();
-}
-
-void GUIChannelsPanel::draw() {
-    ImGui::Begin("Channel Editor");
-    ImGui::Columns(1, "channel_columns");
-
-    prepare_combo(channel_names, "##ChannelCombo", channel_index);
-    from_channel();
-    draw_channel();
-    to_channel();
-
-    ImGui::Columns(1);
-    ImGui::End();
+void GUIChannelsPanel::check_keyboard_input() {
 }
