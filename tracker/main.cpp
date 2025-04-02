@@ -9,11 +9,6 @@
 #include "song/functions.hpp"
 
 int main() {
-    std::cout << "Starting the program..." << std::endl;
-    initialize();
-    std::cout << "ChipSequencer initialized!" << std::endl;
-    std::cout << "Sample rate: " << sample_rate << std::endl;
-
     if (!gui.initialize()) {
         return 1;
     }

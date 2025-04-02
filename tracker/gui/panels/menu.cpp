@@ -43,7 +43,7 @@ void GUIMenu::draw() {
     }
 
     if (ImGui::BeginPopupModal("Success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::Text("File successfully compiled!");
+        ImGui::Text("File compiled successfully!");
         float buttonWidth = 60.0f;
         float windowWidth = ImGui::GetWindowSize().x;
         ImGui::SetCursorPosX((windowWidth - buttonWidth) * 0.5f);

@@ -6,6 +6,7 @@
 
 AudioEngine::AudioEngine(PortAudioDriver &driver)
     : driver(driver), playing(false), paused(false) {
+    std::cout << "Starting playback with " << sample_rate << " Hz" << std::endl;
 }
 
 AudioEngine::~AudioEngine() {
@@ -17,6 +18,7 @@ AudioEngine::~AudioEngine() {
 }
 
 void AudioEngine::play() {
+    initialize();
     if (playing) {
         paused = false;
         return;

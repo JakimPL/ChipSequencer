@@ -31,6 +31,8 @@ void GUIGeneralPanel::draw_play_button() {
     } else {
         draw_pause_rectangles();
     }
+    ImGui::SameLine();
+    draw_stop_square();
 
     if (gui.is_playing()) {
         ImGui::SameLine();
@@ -84,6 +86,22 @@ void GUIGeneralPanel::draw_pause_rectangles() const {
     ImGui::InvisibleButton("Pause", ImVec2(sz, sz));
     if (ImGui::IsItemClicked()) {
         gui.play();
+    }
+}
+
+void GUIGeneralPanel::draw_stop_square() const {
+    ImVec2 p = ImGui::GetCursorScreenPos();
+    float sz = 20.0f;
+    ImDrawList *draw_list = ImGui::GetWindowDrawList();
+    ImVec2 p_min = p;
+    ImVec2 p_max = ImVec2(p.x + sz, p.y + sz);
+    // Draw a filled red square.
+    draw_list->AddRectFilled(p_min, p_max, IM_COL32(255, 0, 0, 255));
+
+    ImGui::SetCursorScreenPos(p);
+    ImGui::InvisibleButton("Stop", ImVec2(sz, sz));
+    if (ImGui::IsItemClicked()) {
+        gui.stop();
     }
 }
 

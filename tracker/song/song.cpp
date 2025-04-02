@@ -90,7 +90,7 @@ void Song::compile(const std::string &filename, bool compress) const {
 
     try {
         export_all(song_dir);
-        compile_sources(temp_base.string(), filename);
+        compile_sources(temp_base.string(), filename, compress);
         std::filesystem::remove_all(temp_base);
     } catch (const std::exception &e) {
         std::filesystem::remove_all(temp_base);
@@ -412,8 +412,12 @@ void Song::decompress_archive(const std::string &output_file, const std::string 
     }
 }
 
-void Song::compile_sources(const std::string &directory, const std::string &filename) const {
-    run_command("python scripts/compile.py \"" + directory + "\" \"" + filename + "\"");
+void Song::compile_sources(const std::string &directory, const std::string &filename, const bool compress) const {
+    std::string compile_command = "python scripts/compile.py \"" + directory + "\" \"" + filename + "\"";
+    if (!compress) {
+        compile_command += " --uncompressed";
+    }
+    run_command(compile_command);
 }
 
 std::string Song::get_element_path(const std::string &directory, const std::string prefix, const size_t i, const char separator) const {

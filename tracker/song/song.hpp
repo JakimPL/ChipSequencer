@@ -84,7 +84,7 @@ class Song {
     void import_oscillators(const std::string &song_dir, const nlohmann::json &json);
 
     int run_command(const std::string &command) const;
-    void compile_sources(const std::string &directory, const std::string &filename) const;
+    void compile_sources(const std::string &directory, const std::string &filename, const bool compress) const;
     void compress_directory(const std::string &directory, const std::string &output_file) const;
     void decompress_archive(const std::string &output_file, const std::string &directory);
 
