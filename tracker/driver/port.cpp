@@ -1,11 +1,35 @@
 #include "port.hpp"
+#include <iostream>
+#include <portaudio.h>
 
 PortAudioDriver::PortAudioDriver(
     const std::array<t_output, SONG_LENGTH> &target,
     uint16_t sample_rate,
     unsigned long frames_per_buffer
 )
-    : Driver(target), sample_rate(sample_rate), stream(nullptr), current_index(0), frames_per_buffer(frames_per_buffer) {
+    : Driver(target),
+      sample_rate(sample_rate),
+      stream(nullptr),
+      current_index(0),
+      frames_per_buffer(frames_per_buffer),
+      write_index(0),
+      read_index(0),
+      target(target) {
+    circ_buffer_size = CIRC_BUFFER_CAPACITY;
+    circ_buffer.resize(circ_buffer_size, 0);
+}
+
+void PortAudioDriver::submit_buffer(const t_output *data, size_t size) {
+    for (size_t i = 0; i < size; ++i) {
+        size_t current_write = write_index.load(std::memory_order_relaxed);
+        size_t next_write = (current_write + 1) % circ_buffer_size;
+        if (next_write == read_index.load(std::memory_order_acquire)) {
+            /* Buffer full; drop sample */
+            break;
+        }
+        circ_buffer[current_write] = data[i];
+        write_index.store(next_write, std::memory_order_release);
+    }
 }
 
 void PortAudioDriver::play() {
@@ -13,11 +37,9 @@ void PortAudioDriver::play() {
     if (!open_stream()) {
         return;
     }
-
     if (!start_stream()) {
         close_stream();
     }
-
     sleep();
     stop_stream();
     close_stream();
@@ -43,7 +65,7 @@ bool PortAudioDriver::open_stream() {
         1,
         paFloat32,
         sample_rate,
-        256,
+        frames_per_buffer,
         audio_callback,
         this
     );
@@ -100,16 +122,17 @@ int PortAudioDriver::audio_callback(
     void *user_data
 ) {
     auto *driver = static_cast<PortAudioDriver *>(user_data);
-    float *out = (float *) output_buffer;
+    float *out = reinterpret_cast<float *>(output_buffer);
     (void) input_buffer;
-
     for (unsigned long i = 0; i < frames_per_buffer; ++i) {
-        if (driver->current_index < SONG_LENGTH) {
-            *out++ = driver->target[driver->current_index++];
+        size_t current_read = driver->read_index.load(std::memory_order_relaxed);
+        if (current_read != driver->write_index.load(std::memory_order_acquire)) {
+            *out++ = driver->circ_buffer[current_read];
+            size_t next_read = (current_read + 1) % driver->circ_buffer_size;
+            driver->read_index.store(next_read, std::memory_order_release);
         } else {
             *out++ = 0.0f;
         }
     }
-
     return paContinue;
 }

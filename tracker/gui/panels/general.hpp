@@ -29,6 +29,8 @@ class GUIGeneralPanel : public GUIPanel {
 
   public:
     std::function<void()> play_callback;
+    std::function<void()> pause_callback;
+    std::function<void()> stop_callback;
     std::atomic<bool> is_playing;
 
     GUIGeneralPanel();

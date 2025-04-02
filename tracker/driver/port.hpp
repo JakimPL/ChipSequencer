@@ -1,9 +1,13 @@
 #ifndef DRIVER_PORT_HPP
 #define DRIVER_PORT_HPP
 
-#include <iostream>
+#include <array>
+#include <vector>
+#include <atomic>
 #include <portaudio.h>
 #include "driver.hpp"
+
+#define CIRC_BUFFER_CAPACITY 4096
 
 class PortAudioDriver : public Driver {
   public:
@@ -23,8 +27,9 @@ class PortAudioDriver : public Driver {
     bool stop_stream();
     void sleep();
 
-  private:
-    static int audio_callback(
+    void submit_buffer(const t_output *data, size_t size);
+
+    friend int audio_callback(
         const void *input_buffer,
         void *output_buffer,
         unsigned long frames_per_buffer,
@@ -33,10 +38,27 @@ class PortAudioDriver : public Driver {
         void *user_data
     );
 
+  private:
     uint16_t sample_rate;
     PaStream *stream;
     uint current_index;
     unsigned long frames_per_buffer;
+
+    std::vector<t_output> circ_buffer;
+    std::atomic<size_t> write_index;
+    std::atomic<size_t> read_index;
+    size_t circ_buffer_size;
+
+    const std::array<t_output, SONG_LENGTH> &target;
+
+    static int audio_callback(
+        const void *input_buffer,
+        void *output_buffer,
+        unsigned long frames_per_buffer,
+        const PaStreamCallbackTimeInfo *time_info,
+        PaStreamCallbackFlags status_flags,
+        void *user_data
+    );
 };
 
 #endif // DRIVER_PORT_HPP

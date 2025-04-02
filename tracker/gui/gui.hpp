@@ -25,6 +25,8 @@ class GUI {
     void terminate();
     bool is_done();
     void set_play_callback(std::function<void()> callback);
+    void set_pause_callback(std::function<void()> callback);
+    void set_stop_callback(std::function<void()> callback);
     void set_playing_status(bool status);
     void update();
 

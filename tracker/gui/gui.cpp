@@ -123,6 +123,14 @@ void GUI::set_play_callback(std::function<void()> callback) {
     general_panel.play_callback = callback;
 }
 
+void GUI::set_pause_callback(std::function<void()> callback) {
+    general_panel.pause_callback = callback;
+}
+
+void GUI::set_stop_callback(std::function<void()> callback) {
+    general_panel.stop_callback = callback;
+}
+
 void GUI::set_playing_status(bool status) {
     general_panel.is_playing = status;
 }
