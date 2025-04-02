@@ -36,6 +36,32 @@ void GUIMenu::draw() {
         }
         ImGui::EndMainMenuBar();
     }
+
+    if (compilation_status.has_value()) {
+        ImGui::OpenPopup(compilation_status.value() ? "Success" : "Failure");
+        compilation_status = std::nullopt;
+    }
+
+    if (ImGui::BeginPopupModal("Success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::Text("File successfully compiled!");
+        float buttonWidth = 60.0f;
+        float windowWidth = ImGui::GetWindowSize().x;
+        ImGui::SetCursorPosX((windowWidth - buttonWidth) * 0.5f);
+        if (ImGui::Button("Close", ImVec2(buttonWidth, 0))) {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+    if (ImGui::BeginPopupModal("Failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::Text("Compilation failed!");
+        float buttonWidth = 60.0f;
+        float windowWidth = ImGui::GetWindowSize().x;
+        ImGui::SetCursorPosX((windowWidth - buttonWidth) * 0.5f);
+        if (ImGui::Button("Close", ImVec2(buttonWidth, 0))) {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
 }
 
 void GUIMenu::file_new() {
@@ -85,13 +111,14 @@ void GUIMenu::file_open() {
 
 void GUIMenu::file_compile() {
     nfdchar_t *target_path = nullptr;
-    nfdresult_t result = NFD_SaveDialog("seq", nullptr, &target_path);
+    nfdresult_t result = NFD_SaveDialog("exe", nullptr, &target_path);
     if (result == NFD_OKAY) {
         std::filesystem::path new_path(target_path);
         new_path = check_and_correct_path_by_extension(new_path, ".exe");
 
         gui.stop();
-        song.compile(target_path);
+        song.compile(new_path);
+        compilation_status = std::filesystem::exists(new_path);
         gui.update();
     } else if (result != NFD_CANCEL) {
         std::cerr << "Error: " << NFD_GetError() << std::endl;

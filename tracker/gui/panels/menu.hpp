@@ -2,11 +2,14 @@
 #define GUI_PANELS_MENU_HPP
 
 #include <functional>
+#include <optional>
 
 #include "../init.hpp"
 
 class GUIMenu : public GUIPanel {
   private:
+    std::optional<bool> compilation_status;
+
     void file_new();
     void file_save();
     void file_save_as();
