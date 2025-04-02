@@ -1,6 +1,8 @@
 #include "port.hpp"
 #include <iostream>
 #include <portaudio.h>
+#include <algorithm>
+#include <mutex>
 
 PortAudioDriver::PortAudioDriver(
     const std::array<t_output, SONG_LENGTH> &target,
@@ -12,24 +14,21 @@ PortAudioDriver::PortAudioDriver(
       stream(nullptr),
       current_index(0),
       frames_per_buffer(frames_per_buffer),
-      write_index(0),
-      read_index(0),
       target(target) {
-    circ_buffer_size = CIRC_BUFFER_CAPACITY;
-    circ_buffer.resize(circ_buffer_size, 0);
+    pingpong_buffer.resize(2 * frames_per_buffer, 0);
+    half_consumed[0].store(true);
+    half_consumed[1].store(true);
+    current_phase.store(0);
 }
 
 void PortAudioDriver::submit_buffer(const t_output *data, size_t size) {
-    for (size_t i = 0; i < size; ++i) {
-        size_t current_write = write_index.load(std::memory_order_relaxed);
-        size_t next_write = (current_write + 1) % circ_buffer_size;
-        if (next_write == read_index.load(std::memory_order_acquire)) {
-            /* Buffer full; drop sample */
-            break;
-        }
-        circ_buffer[current_write] = data[i];
-        write_index.store(next_write, std::memory_order_release);
+    std::unique_lock<std::mutex> lock(buffer_mutex);
+    if (size > pingpong_buffer.size()) {
+        size = pingpong_buffer.size();
     }
+    std::copy(data, data + size, pingpong_buffer.begin());
+    lock.unlock();
+    buffer_cv.notify_one();
 }
 
 void PortAudioDriver::play() {
@@ -39,6 +38,7 @@ void PortAudioDriver::play() {
     }
     if (!start_stream()) {
         close_stream();
+        return;
     }
     sleep();
     stop_stream();
@@ -123,16 +123,13 @@ int PortAudioDriver::audio_callback(
 ) {
     auto *driver = static_cast<PortAudioDriver *>(user_data);
     float *out = reinterpret_cast<float *>(output_buffer);
-    (void) input_buffer;
-    for (unsigned long i = 0; i < frames_per_buffer; ++i) {
-        size_t current_read = driver->read_index.load(std::memory_order_relaxed);
-        if (current_read != driver->write_index.load(std::memory_order_acquire)) {
-            *out++ = driver->circ_buffer[current_read];
-            size_t next_read = (current_read + 1) % driver->circ_buffer_size;
-            driver->read_index.store(next_read, std::memory_order_release);
-        } else {
-            *out++ = 0.0f;
-        }
+    int phase = driver->current_phase.load();
+    unsigned long offset = phase * driver->frames_per_buffer;
+    for (unsigned long i = 0; i < driver->frames_per_buffer; ++i) {
+        *out++ = driver->pingpong_buffer[offset + i];
     }
+    driver->half_consumed[phase].store(true);
+    driver->buffer_cv.notify_one();
+    driver->current_phase.store(1 - phase);
     return paContinue;
 }

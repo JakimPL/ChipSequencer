@@ -4,10 +4,13 @@
 #include <array>
 #include <vector>
 #include <atomic>
+#include <mutex>
+#include <condition_variable>
 #include <portaudio.h>
 #include "driver.hpp"
 
-#define CIRC_BUFFER_CAPACITY 4096
+#define CIRC_BUFFER_CAPACITY 4096 /* no longer used in the double-buffer design */
+#define DOUBLE_BUFFER             /* using double buffering in place of circular buffer */
 
 class PortAudioDriver : public Driver {
   public:
@@ -27,6 +30,7 @@ class PortAudioDriver : public Driver {
     bool stop_stream();
     void sleep();
 
+    // keep the old submit_buffer if needed for fallback
     void submit_buffer(const t_output *data, size_t size);
 
     friend int audio_callback(
@@ -38,16 +42,21 @@ class PortAudioDriver : public Driver {
         void *user_data
     );
 
+    /* The double-buffer (ping-pong) is public to let the AudioEngine refill it */
+    std::vector<t_output> pingpong_buffer; // size = 2 * frames_per_buffer
+    unsigned long get_frames_per_buffer() const { return frames_per_buffer; }
+
+    /* Synchronization primitives used between callback (consumer) and playback thread (producer) */
+    std::mutex buffer_mutex;
+    std::condition_variable buffer_cv;
+    std::atomic<bool> half_consumed[2]; // true if the half has been consumed and is ready for refill
+    std::atomic<int> current_phase;     // indicates which half is being played by the callback
+
   private:
     uint16_t sample_rate;
     PaStream *stream;
     uint current_index;
     unsigned long frames_per_buffer;
-
-    std::vector<t_output> circ_buffer;
-    std::atomic<size_t> write_index;
-    std::atomic<size_t> read_index;
-    size_t circ_buffer_size;
 
     const std::array<t_output, SONG_LENGTH> &target;
 

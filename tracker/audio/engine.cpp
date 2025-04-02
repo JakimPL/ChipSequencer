@@ -48,16 +48,22 @@ bool AudioEngine::is_playing() const {
 }
 
 void AudioEngine::playback_function() {
-    std::vector<t_output> buffer(buffer_size);
     while (playing) {
-        if (paused) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
-            continue;
+        std::unique_lock<std::mutex> lock(driver.buffer_mutex);
+        driver.buffer_cv.wait(lock, [&] {
+            return !playing || driver.half_consumed[0].load() || driver.half_consumed[1].load();
+        });
+        if (!playing) break;
+        for (int phase = 0; phase < 2; ++phase) {
+            if (driver.half_consumed[phase].load()) {
+                const unsigned long offset = phase * driver.get_frames_per_buffer();
+                for (unsigned long i = 0; i < driver.get_frames_per_buffer(); ++i) {
+                    mix();
+                    driver.pingpong_buffer[offset + i] = output;
+                }
+                driver.half_consumed[phase].store(false);
+            }
         }
-        for (size_t i = 0; i < buffer_size; ++i) {
-            mix();
-            buffer[i] = output;
-        }
-        driver.submit_buffer(buffer.data(), buffer_size);
+        lock.unlock();
     }
 }
