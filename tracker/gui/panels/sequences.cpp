@@ -178,6 +178,10 @@ void GUISequencesPanel::draw_sequence() {
 }
 
 void GUISequencesPanel::check_keyboard_input() {
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+        return;
+    }
+
     const bool valid = selected_step >= 0 && selected_step < current_sequence.pattern.size();
     if (!valid) {
         return;

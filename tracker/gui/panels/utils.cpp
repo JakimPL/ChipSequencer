@@ -74,7 +74,7 @@ void prepare_combo(const std::vector<std::string> &names, std::string label, int
 void update_items(std::vector<std::string> &names, size_t size, std::string label, int &index) {
     names.clear();
     for (size_t i = 0; i < size; ++i) {
-        names.emplace_back(label + std::to_string(i + 1));
+        names.emplace_back(label + std::to_string(i));
     }
     if (index >= static_cast<int>(names.size())) {
         index = static_cast<int>(names.size()) - 1;

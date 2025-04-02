@@ -130,6 +130,10 @@ void GUIOrdersPanel::draw_order() {
 }
 
 void GUIOrdersPanel::check_keyboard_input() {
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+        return;
+    }
+
     if (selected_sequence < 0 || selected_sequence >= current_order.sequences.size())
         return;
 
@@ -147,7 +151,7 @@ void GUIOrdersPanel::check_keyboard_input() {
     if (!digit_buffer.empty()) {
         try {
             int value = std::stoi(digit_buffer);
-            value = std::clamp(value, 0, 255);
+            value = std::max(std::min(value, static_cast<int>(sequences.size()) - 1), 0);
             current_order.sequences[selected_sequence] = value;
         } catch (std::out_of_range &) {
             digit_buffer.clear();
