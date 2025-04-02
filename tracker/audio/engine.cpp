@@ -1,4 +1,3 @@
-#include <chrono>
 #include <iostream>
 
 #include "../song/functions.hpp"
@@ -19,6 +18,10 @@ AudioEngine::~AudioEngine() {
 
 void AudioEngine::play() {
     initialize();
+    if (!driver.initialize()) {
+        std::cerr << "Failed to initialize PortAudio." << std::endl;
+        return;
+    }
     if (playing) {
         paused = false;
         return;
@@ -43,10 +46,13 @@ void AudioEngine::pause() {
 
 void AudioEngine::stop() {
     playing = false;
-    driver.reset_buffer();
+    driver.buffer_cv.notify_all();
     if (playback_thread.joinable()) {
         playback_thread.join();
     }
+    driver.stop_stream();
+    driver.close_stream();
+    driver.reset_buffer();
 }
 
 bool AudioEngine::is_playing() const {
