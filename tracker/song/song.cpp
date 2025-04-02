@@ -48,27 +48,12 @@ void Song::new_song() {
     set_links();
 }
 
-void Song::save_to_file(const std::string &filename, const bool compile) const {
+void Song::save_to_file(const std::string &filename) const {
     const auto [temp_base, song_path] = prepare_temp_directory();
     const std::string song_dir = song_path.string();
 
     try {
-        export_header_asm_file(song_dir);
-        export_data_asm_file(song_dir);
-        export_header(song_dir);
-        export_series(song_dir, "envel", envelopes, {sizeof(Envelope)});
-        export_channels(song_dir);
-        export_series(song_dir, "osc", oscillators, get_struct_sizes(oscillators));
-        export_dsps(song_dir);
-        export_arrays(song_dir, "seq", sequences);
-        export_arrays(song_dir, "order", orders);
-        export_arrays(song_dir, "wave", wavetables);
-        export_offsets(song_dir + "/offsets.bin");
-        export_links(song_dir + "/links.bin");
-        if (compile) {
-            compile_sources(temp_base.string());
-        }
-
+        export_all(song_dir);
         compress_directory(song_dir, filename);
         std::filesystem::remove_all(temp_base);
     } catch (const std::exception &e) {
@@ -89,15 +74,7 @@ void Song::load_from_file(const std::string &filename) {
         decompress_archive(filename, song_dir);
         nlohmann::json json = import_header(song_dir + "/header.json");
         clear_data();
-        import_envelopes(song_dir, json);
-        import_sequences(song_dir, json);
-        import_orders(song_dir, json);
-        import_wavetables(song_dir, json);
-        import_channels(song_dir, json);
-        import_oscillators(song_dir, json);
-        import_dsps(song_dir, json);
-        import_links(song_dir, json);
-        import_offsets(song_dir, json);
+        import_all(song_dir, json);
         update_sizes();
 
         std::filesystem::remove_all(temp_base);
@@ -105,6 +82,47 @@ void Song::load_from_file(const std::string &filename) {
         std::filesystem::remove_all(temp_base);
         throw;
     }
+}
+
+void Song::compile(const std::string &filename, bool compress) const {
+    const auto [temp_base, song_path] = prepare_temp_directory();
+    const std::string song_dir = song_path.string();
+
+    try {
+        export_all(song_dir);
+        compile_sources(temp_base.string(), filename);
+        std::filesystem::remove_all(temp_base);
+    } catch (const std::exception &e) {
+        std::filesystem::remove_all(temp_base);
+        throw;
+    }
+}
+
+void Song::export_all(const std::string &directory) const {
+    export_header_asm_file(directory);
+    export_data_asm_file(directory);
+    export_header(directory);
+    export_series(directory, "envel", envelopes, {sizeof(Envelope)});
+    export_channels(directory);
+    export_series(directory, "osc", oscillators, get_struct_sizes(oscillators));
+    export_dsps(directory);
+    export_arrays(directory, "seq", sequences);
+    export_arrays(directory, "order", orders);
+    export_arrays(directory, "wave", wavetables);
+    export_offsets(directory + "/offsets.bin");
+    export_links(directory + "/links.bin");
+}
+
+void Song::import_all(const std::string &directory, const nlohmann::json &json) {
+    import_envelopes(directory, json);
+    import_sequences(directory, json);
+    import_orders(directory, json);
+    import_wavetables(directory, json);
+    import_channels(directory, json);
+    import_oscillators(directory, json);
+    import_dsps(directory, json);
+    import_links(directory, json);
+    import_offsets(directory, json);
 }
 
 Envelope *Song::add_envelope() {
@@ -394,8 +412,8 @@ void Song::decompress_archive(const std::string &output_file, const std::string 
     }
 }
 
-void Song::compile_sources(const std::string &directory) const {
-    run_command("python scripts/compile.py \"" + directory + "\"");
+void Song::compile_sources(const std::string &directory, const std::string &filename) const {
+    run_command("python scripts/compile.py \"" + directory + "\" \"" + filename + "\"");
 }
 
 std::string Song::get_element_path(const std::string &directory, const std::string prefix, const size_t i, const char separator) const {

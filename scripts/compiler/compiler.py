@@ -13,8 +13,9 @@ from utils import load_binary, save_binary
 
 
 class Compiler:
-    def __init__(self, temp_dir: Union[str, os.PathLike]):
+    def __init__(self, temp_dir: Union[str, os.PathLike], target_path: Union[str, os.PathLike]):
         self.temp_dir = Path(temp_dir)
+        self.target_path = Path(target_path)
         self.tools_dir = Path.cwd() / "tools"
         self.bin_dir = self.temp_dir / "bin"
         self.build_dir = self.temp_dir / "build"
@@ -49,7 +50,7 @@ class Compiler:
         shutil.copy(self.song_dir / "data.asm", self.temp_dir / "src" / "song" / "data.asm")
 
     def copy_executable(self):
-        shutil.copy(self.bin_dir / "PLAYER.EXE", self.song_dir / "player.exe")
+        shutil.copy(self.bin_dir / "PLAYER.EXE", self.target_path)
 
     def compile(self, pack: bool = False, terminate: bool = True) -> None:
         args = ["dosbox", "-noautoexec", "-c", "mount c: .", "-c", "c:", "-c", "call compile.bat"]
