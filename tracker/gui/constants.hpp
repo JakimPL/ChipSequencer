@@ -9,4 +9,7 @@
 #define GUI_MAX_ITEMS 64
 #define GUI_MAX_STEPS 64
 
+#define GUI_MIN_BPM 16
+#define GUI_MAX_BPM 4096
+
 #endif // GUI_CONSTANTS_HPP

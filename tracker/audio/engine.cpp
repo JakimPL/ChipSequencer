@@ -44,7 +44,11 @@ void AudioEngine::stop() {
 }
 
 bool AudioEngine::is_playing() const {
-    return playing;
+    return playing && !paused;
+}
+
+bool AudioEngine::is_paused() const {
+    return playing && paused;
 }
 
 void AudioEngine::playback_function() {
@@ -53,15 +57,31 @@ void AudioEngine::playback_function() {
         driver.buffer_cv.wait(lock, [&] {
             return !playing || driver.half_consumed[0].load() || driver.half_consumed[1].load();
         });
-        if (!playing) break;
-        for (int phase = 0; phase < 2; ++phase) {
-            if (driver.half_consumed[phase].load()) {
-                const unsigned long offset = phase * driver.get_frames_per_buffer();
-                for (unsigned long i = 0; i < driver.get_frames_per_buffer(); ++i) {
-                    mix();
-                    driver.pingpong_buffer[offset + i] = output;
+
+        if (!playing) {
+            break;
+        }
+
+        if (paused) {
+            for (int phase = 0; phase < 2; ++phase) {
+                if (driver.half_consumed[phase].load()) {
+                    unsigned long offset = phase * driver.get_frames_per_buffer();
+                    for (unsigned long i = 0; i < driver.get_frames_per_buffer(); ++i) {
+                        driver.pingpong_buffer[offset + i] = 0;
+                    }
+                    driver.half_consumed[phase].store(false);
                 }
-                driver.half_consumed[phase].store(false);
+            }
+        } else {
+            for (int phase = 0; phase < 2; ++phase) {
+                if (driver.half_consumed[phase].load()) {
+                    unsigned long offset = phase * driver.get_frames_per_buffer();
+                    for (unsigned long i = 0; i < driver.get_frames_per_buffer(); ++i) {
+                        mix();
+                        driver.pingpong_buffer[offset + i] = output;
+                    }
+                    driver.half_consumed[phase].store(false);
+                }
             }
         }
         lock.unlock();

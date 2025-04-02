@@ -18,6 +18,8 @@ class GUIGeneralPanel : public GUIPanel {
     } current_song;
 
     void draw_play_button();
+    void draw_pause_rectangles() const;
+    void draw_play_triangle() const;
     void draw_song_info();
 
     void from() override;

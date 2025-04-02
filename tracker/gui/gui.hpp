@@ -27,9 +27,11 @@ class GUI {
     void terminate();
     bool is_done();
 
+    void frame();
     void play() const;
     void stop() const;
     bool is_playing() const;
+    bool is_paused() const;
 
     void set_audio_engine(AudioEngine *engine);
     void update(GUIElement element = GUIElement::All);

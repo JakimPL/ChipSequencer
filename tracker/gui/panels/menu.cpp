@@ -38,6 +38,7 @@ void GUIMenu::draw() {
 }
 
 void GUIMenu::file_new() {
+    gui.stop();
     song.new_song();
     current_path = std::filesystem::path();
 }
@@ -74,6 +75,7 @@ void GUIMenu::file_open() {
         std::filesystem::path file_path(target_path);
         free(target_path);
         current_path = file_path;
+        gui.stop();
         song.load_from_file(current_path);
         gui.update();
     } else if (result != NFD_CANCEL) {
@@ -82,6 +84,7 @@ void GUIMenu::file_open() {
 }
 
 void GUIMenu::file_compile() {
+    gui.stop();
     file_save();
     if (!current_path.empty()) {
         song.save_to_file(current_path, true);
@@ -89,5 +92,6 @@ void GUIMenu::file_compile() {
 }
 
 void GUIMenu::file_exit() {
+    gui.stop();
     terminate();
 }

@@ -70,15 +70,7 @@ bool GUI::render() {
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
-    menu.frame();
-    editor.frame();
-    channels_panel.frame();
-    envelopes_panel.frame();
-    orders_panel.frame();
-    oscillators_panel.frame();
-    sequences_panel.frame();
-    wavetables_panel.frame();
-    general_panel.frame();
+    frame();
 
     ImGui::Render();
     glViewport(0, 0, (int) io->DisplaySize.x, (int) io->DisplaySize.y);
@@ -162,13 +154,25 @@ void GUI::update_all() {
     wavetables_panel.update();
 }
 
+void GUI::frame() {
+    menu.frame();
+    editor.frame();
+    channels_panel.frame();
+    envelopes_panel.frame();
+    orders_panel.frame();
+    oscillators_panel.frame();
+    sequences_panel.frame();
+    wavetables_panel.frame();
+    general_panel.frame();
+}
+
 void GUI::play() const {
     if (audio_engine != nullptr) {
         if (audio_engine->is_playing()) {
             audio_engine->pause();
-            return;
+        } else {
+            audio_engine->play();
         }
-        audio_engine->play();
     }
 }
 
@@ -182,5 +186,14 @@ bool GUI::is_playing() const {
     if (audio_engine) {
         return audio_engine->is_playing();
     }
+
+    return false;
+}
+
+bool GUI::is_paused() const {
+    if (audio_engine) {
+        return audio_engine->is_paused();
+    }
+
     return false;
 }

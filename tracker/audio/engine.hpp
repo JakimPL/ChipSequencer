@@ -18,6 +18,7 @@ class AudioEngine {
     void pause();
     void stop();
     bool is_playing() const;
+    bool is_paused() const;
 
   private:
     void playback_function();
