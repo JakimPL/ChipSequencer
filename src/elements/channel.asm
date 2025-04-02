@@ -24,7 +24,7 @@ load_offsets:
     ret
 
 reset_channels:
-    mov bx, [num_channels]
+    movzx bx, [num_channels]
     mov esi, reset_channel
     call reset
     ret

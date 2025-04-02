@@ -124,17 +124,17 @@ orders:
 oscillators:
 .oscillator_0:
     db 2                     ; oscillator_size
-    db OSCILLATOR_SQUARE     ; generator_index
+    db GENERATOR_SQUARE      ; generator_index
     db 0x20                  ; duty_cycle
 .oscillator_1:
     db 1                     ; oscillator_size
-    db OSCILLATOR_SAW        ; generator_index
+    db GENERATOR_SAW         ; generator_index
 .oscillator_2:
     db 1                     ; oscillator_size
-    db OSCILLATOR_SINE       ; generator_index
+    db GENERATOR_SINE        ; generator_index
 .oscillator_3:
     db 2                     ; oscillator_size
-    db OSCILLATOR_WAVETABLE  ; generator_index
+    db GENERATOR_WAVETABLE   ; generator_index
     db 1                     ; wavetable_index
 
 wavetables:

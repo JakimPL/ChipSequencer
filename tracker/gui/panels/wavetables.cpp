@@ -1,4 +1,5 @@
 #include "../../general.hpp"
+#include "../enums.hpp"
 #include "wavetables.hpp"
 
 GUIWavetablesPanel::GUIWavetablesPanel() {
@@ -191,7 +192,7 @@ void GUIWavetablesPanel::draw_waveform() {
 
 void GUIWavetablesPanel::update() {
     update_items(wavetable_names, wavetables.size(), "Wavetable ", wavetable_index);
-    gui.oscillators_panel.update();
+    gui.update(GUIElement::Oscillators);
 }
 
 void GUIWavetablesPanel::check_keyboard_input() {

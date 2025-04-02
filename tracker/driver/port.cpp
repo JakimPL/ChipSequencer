@@ -1,11 +1,43 @@
 #include "port.hpp"
+#include <iostream>
+#include <portaudio.h>
+#include <algorithm>
+#include <mutex>
 
 PortAudioDriver::PortAudioDriver(
     const std::array<t_output, SONG_LENGTH> &target,
     uint16_t sample_rate,
     unsigned long frames_per_buffer
 )
-    : Driver(target), sample_rate(sample_rate), stream(nullptr), current_index(0), frames_per_buffer(frames_per_buffer) {
+    : Driver(target),
+      sample_rate(sample_rate),
+      stream(nullptr),
+      current_index(0),
+      frames_per_buffer(frames_per_buffer),
+      target(target) {
+    pingpong_buffer.resize(2 * frames_per_buffer, 0);
+    half_consumed[0].store(true);
+    half_consumed[1].store(true);
+    current_phase.store(0);
+}
+
+void PortAudioDriver::reset_buffer() {
+    std::lock_guard<std::mutex> lock(buffer_mutex);
+    std::fill(pingpong_buffer.begin(), pingpong_buffer.end(), 0);
+    half_consumed[0].store(true);
+    half_consumed[1].store(true);
+    current_phase.store(0);
+    buffer_cv.notify_all();
+}
+
+void PortAudioDriver::submit_buffer(const t_output *data, size_t size) {
+    std::unique_lock<std::mutex> lock(buffer_mutex);
+    if (size > pingpong_buffer.size()) {
+        size = pingpong_buffer.size();
+    }
+    std::copy(data, data + size, pingpong_buffer.begin());
+    lock.unlock();
+    buffer_cv.notify_one();
 }
 
 void PortAudioDriver::play() {
@@ -13,11 +45,10 @@ void PortAudioDriver::play() {
     if (!open_stream()) {
         return;
     }
-
     if (!start_stream()) {
         close_stream();
+        return;
     }
-
     sleep();
     stop_stream();
     close_stream();
@@ -43,7 +74,7 @@ bool PortAudioDriver::open_stream() {
         1,
         paFloat32,
         sample_rate,
-        256,
+        frames_per_buffer,
         audio_callback,
         this
     );
@@ -100,16 +131,14 @@ int PortAudioDriver::audio_callback(
     void *user_data
 ) {
     auto *driver = static_cast<PortAudioDriver *>(user_data);
-    float *out = (float *) output_buffer;
-    (void) input_buffer;
-
-    for (unsigned long i = 0; i < frames_per_buffer; ++i) {
-        if (driver->current_index < SONG_LENGTH) {
-            *out++ = driver->target[driver->current_index++];
-        } else {
-            *out++ = 0.0f;
-        }
+    float *out = reinterpret_cast<float *>(output_buffer);
+    int phase = driver->current_phase.load();
+    unsigned long offset = phase * driver->frames_per_buffer;
+    for (unsigned long i = 0; i < driver->frames_per_buffer; ++i) {
+        *out++ = driver->pingpong_buffer[offset + i];
     }
-
+    driver->half_consumed[phase].store(true);
+    driver->buffer_cv.notify_one();
+    driver->current_phase.store(1 - phase);
     return paContinue;
 }

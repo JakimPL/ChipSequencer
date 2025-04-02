@@ -12,7 +12,7 @@ load_dsp:
     ret
 
 reset_dsps:
-    mov bx, [num_dsps]
+    movzx bx, [num_dsps]
     mov esi, reset_dsp
     call reset
     ret
@@ -23,7 +23,7 @@ reset_dsp:
     ret
 
 clear_dsps:
-    mov bx, [num_dsps]
+    movzx bx, [num_dsps]
     mov esi, clear_dsp
     call reset
     ret

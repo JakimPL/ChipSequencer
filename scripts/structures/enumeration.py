@@ -6,11 +6,11 @@ class Enumeration(Enum):
         return super().__str__().split(".")[1]
 
 
-class Oscillators(Enumeration):
-    OSCILLATOR_SQUARE = 0
-    OSCILLATOR_SAW = 1
-    OSCILLATOR_SINE = 2
-    OSCILLATOR_WAVETABLE = 3
+class Generators(Enumeration):
+    GENERATOR_SQUARE = 0
+    GENERATOR_SAW = 1
+    GENERATOR_SINE = 2
+    GENERATOR_WAVETABLE = 3
 
 
 class Effects(Enumeration):

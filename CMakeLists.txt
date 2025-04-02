@@ -82,6 +82,7 @@ target_link_libraries(nfd PUBLIC ${GTK_LIBRARIES})
 add_executable(main
     tracker/main.cpp
     tracker/general.cpp
+    tracker/audio/engine.cpp
     tracker/song/data.cpp
     tracker/song/link.cpp
     tracker/song/song.cpp

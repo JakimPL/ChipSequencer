@@ -70,15 +70,7 @@ bool GUI::render() {
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
-    menu.frame();
-    editor.frame();
-    channels_panel.frame();
-    envelopes_panel.frame();
-    orders_panel.frame();
-    oscillators_panel.frame();
-    sequences_panel.frame();
-    wavetables_panel.frame();
-    general_panel.frame();
+    frame();
 
     ImGui::Render();
     glViewport(0, 0, (int) io->DisplaySize.x, (int) io->DisplaySize.y);
@@ -119,19 +111,89 @@ bool GUI::is_done() {
     return done;
 }
 
-void GUI::set_play_callback(std::function<void()> callback) {
-    general_panel.play_callback = callback;
+void GUI::set_audio_engine(AudioEngine *engine) {
+    audio_engine = engine;
 }
 
-void GUI::set_playing_status(bool status) {
-    general_panel.is_playing = status;
+void GUI::update(GUIElement element) {
+    if (element == GUIElement::All) {
+        return update_all();
+    }
+
+    switch (element) {
+    case GUIElement::Menu:
+        return menu.update();
+    case GUIElement::Editor:
+        return editor.update();
+    case GUIElement::General:
+        return general_panel.update();
+    case GUIElement::Channels:
+        return channels_panel.update();
+    case GUIElement::Envelopes:
+        return envelopes_panel.update();
+    case GUIElement::Orders:
+        return orders_panel.update();
+    case GUIElement::Oscillators:
+        return oscillators_panel.update();
+    case GUIElement::Sequences:
+        return sequences_panel.update();
+    case GUIElement::Wavetables:
+        return wavetables_panel.update();
+    }
 }
 
-void GUI::update() {
+void GUI::update_all() {
+    menu.update();
+    editor.update();
+    general_panel.update();
     channels_panel.update();
     envelopes_panel.update();
     orders_panel.update();
     oscillators_panel.update();
     sequences_panel.update();
     wavetables_panel.update();
+}
+
+void GUI::frame() {
+    menu.frame();
+    editor.frame();
+    channels_panel.frame();
+    envelopes_panel.frame();
+    orders_panel.frame();
+    oscillators_panel.frame();
+    sequences_panel.frame();
+    wavetables_panel.frame();
+    general_panel.frame();
+}
+
+void GUI::play() const {
+    if (audio_engine != nullptr) {
+        if (audio_engine->is_playing()) {
+            audio_engine->pause();
+        } else {
+            audio_engine->play();
+        }
+    }
+}
+
+void GUI::stop() const {
+    if (audio_engine) {
+        audio_engine->stop();
+    }
+}
+
+bool GUI::is_playing() const {
+    if (audio_engine) {
+        return audio_engine->is_playing();
+    }
+
+    return false;
+}
+
+bool GUI::is_paused() const {
+    if (audio_engine) {
+        return audio_engine->is_paused();
+    }
+
+    return false;
 }

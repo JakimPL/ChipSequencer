@@ -76,4 +76,15 @@ inline nlohmann::json read_json(const std::string &filename) {
     return json;
 }
 
+inline std::filesystem::path check_and_correct_path_by_extension(const std::filesystem::path &path, const std::string &extension) {
+    std::filesystem::path new_path = path;
+    std::string ext = path.extension().string();
+    std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+    if (ext != extension) {
+        new_path.replace_extension(extension);
+    }
+
+    return new_path;
+}
+
 #endif // UTILS_FILE_HPP

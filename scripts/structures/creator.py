@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Tuple, Union
 
 from pyconf import CLASSES, NOTES, PADDING
 from structures.dsp import DSP
-from structures.enumeration import Effects, Oscillators
+from structures.enumeration import Effects, Generators
 from structures.output import Output
 from structures.song import Song
 from structures.types import Byte, Data, Word, convert
@@ -233,9 +233,9 @@ class Creator:
             self.value(Byte(len(oscillator)), "oscillator_size")
             self.reference(Byte, str(oscillator.generator_index), "generator_index")
             match oscillator.generator_index:
-                case Oscillators.OSCILLATOR_SQUARE:
+                case Generators.GENERATOR_SQUARE:
                     self.value(oscillator.duty_cycle, "duty_cycle", fmt="x")
-                case Oscillators.OSCILLATOR_WAVETABLE:
+                case Generators.GENERATOR_WAVETABLE:
                     self.value(oscillator.wavetable_index, "wavetable_index")
 
         self.comment()

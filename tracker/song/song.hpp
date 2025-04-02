@@ -8,7 +8,8 @@
 #include "../version.hpp"
 #include "link.hpp"
 
-struct Song {
+class Song {
+  private:
     struct Header {
         std::string author = "Unknown";
         std::string title = "Untitled";
@@ -35,45 +36,6 @@ struct Song {
     uint8_t output_channels = 1;
     uint32_t song_length = 186253;
 
-    Song(
-        uint16_t &bpm_reference,
-        _Float32 &normalizer_reference,
-        uint8_t &num_channels_reference,
-        uint8_t &num_dsps_reference,
-        Envelopes &env,
-        Sequences &seq,
-        Orders &ord,
-        Oscillators &osc,
-        Wavetables &wav,
-        DSPs &dsp,
-        Channels &chn,
-        Offsets &offsets,
-        Links &lnk
-    );
-
-    ~Song();
-
-    void new_song();
-    void load_from_file(const std::string &filename);
-    void save_to_file(const std::string &filename, const bool compile = true) const;
-
-    Envelope *add_envelope();
-    Sequence *add_sequence();
-    Order *add_order();
-    Wavetable *add_wavetable();
-    void *add_oscillator();
-    Channel *add_channel();
-    void *add_dsp();
-
-    void remove_envelope(const size_t index);
-    void remove_sequence(const size_t index);
-    void remove_order(const size_t index);
-    void remove_wavetable(const size_t index);
-    void remove_oscillator(const size_t index);
-    void remove_channel(const size_t index);
-    void remove_dsp(const size_t index);
-
-  private:
     void generate_header_vector(std::stringstream &asm_content, const std::string &name, const std::string &short_name, const size_t size) const;
     std::string generate_header_asm_file() const;
     std::string generate_data_asm_file() const;
@@ -91,6 +53,9 @@ struct Song {
     Channel *deserialize_channel(std::ifstream &file) const;
     void *deserialize_dsp(std::ifstream &file) const;
     void *deserialize_oscillator(std::ifstream &file) const;
+
+    void export_all(const std::string &directory) const;
+    void import_all(const std::string &directory, const nlohmann::json &json);
 
     void export_header_asm_file(const std::string &directory) const;
     void export_data_asm_file(const std::string &directory) const;
@@ -119,7 +84,7 @@ struct Song {
     void import_oscillators(const std::string &song_dir, const nlohmann::json &json);
 
     int run_command(const std::string &command) const;
-    void compile_sources(const std::string &directory) const;
+    void compile_sources(const std::string &directory, const std::string &filename, const bool compress) const;
     void compress_directory(const std::string &directory, const std::string &output_file) const;
     void decompress_archive(const std::string &output_file, const std::string &directory);
 
@@ -127,6 +92,46 @@ struct Song {
     void clear_data();
     void delete_oscillator(void *oscillator);
     void delete_dsp(void *dsp);
+
+  public:
+    Song(
+        uint16_t &bpm_reference,
+        _Float32 &normalizer_reference,
+        uint8_t &num_channels_reference,
+        uint8_t &num_dsps_reference,
+        Envelopes &env,
+        Sequences &seq,
+        Orders &ord,
+        Oscillators &osc,
+        Wavetables &wav,
+        DSPs &dsp,
+        Channels &chn,
+        Offsets &offsets,
+        Links &lnk
+    );
+
+    ~Song();
+
+    void new_song();
+    void load_from_file(const std::string &filename);
+    void save_to_file(const std::string &filename) const;
+    void compile(const std::string &filename, bool compress = true) const;
+
+    Envelope *add_envelope();
+    Sequence *add_sequence();
+    Order *add_order();
+    Wavetable *add_wavetable();
+    void *add_oscillator();
+    Channel *add_channel();
+    void *add_dsp();
+
+    void remove_envelope(const size_t index);
+    void remove_sequence(const size_t index);
+    void remove_order(const size_t index);
+    void remove_wavetable(const size_t index);
+    void remove_oscillator(const size_t index);
+    void remove_channel(const size_t index);
+    void remove_dsp(const size_t index);
 };
 
 #endif // SONG_SONG_HPP

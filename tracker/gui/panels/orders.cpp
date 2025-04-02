@@ -1,4 +1,5 @@
 #include "../../general.hpp"
+#include "../enums.hpp"
 #include "orders.hpp"
 
 GUIOrdersPanel::GUIOrdersPanel() {
@@ -82,7 +83,7 @@ void GUIOrdersPanel::remove() {
 
 void GUIOrdersPanel::update() {
     update_items(order_names, orders.size(), "Order ", order_index);
-    gui.channels_panel.update();
+    gui.update(GUIElement::Channels);
 }
 
 void GUIOrdersPanel::draw_order_length() {

@@ -1,4 +1,5 @@
 #include "../../general.hpp"
+#include "../enums.hpp"
 #include "../mapping.hpp"
 #include "sequences.hpp"
 
@@ -115,7 +116,7 @@ void GUISequencesPanel::remove() {
 
 void GUISequencesPanel::update() {
     update_items(sequence_names, sequences.size(), "Sequence ", sequence_index);
-    gui.orders_panel.update();
+    gui.update(GUIElement::Orders);
 }
 
 void GUISequencesPanel::draw_sequence_length() {
