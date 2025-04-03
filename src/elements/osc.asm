@@ -92,7 +92,7 @@ apply_volume:
 reference_frequency:
     dd TUNING_FREQUENCY
 note_divisor:
-    dd TUNING_NOTE_DIVISOR
+    dd __float32__(TUNING_NOTE_DIVISOR)
     %endif
 f_65536:
     dd 65536.0

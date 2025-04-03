@@ -13,11 +13,29 @@
 #include "data.hpp"
 #include "song.hpp"
 
-Song::Song(uint16_t &bpm_reference, _Float32 &normalizer_reference, uint8_t &num_channels_reference, uint8_t &num_dsps_reference, Envelopes &env, Sequences &seq, Orders &ord, Oscillators &osc, Wavetables &wav, DSPs &dsp, Channels &chn, Offsets &offsets, Links &lnk)
+Song::Song(
+    uint16_t &bpm_reference,
+    _Float32 &normalizer_reference,
+    uint8_t &num_channels_reference,
+    uint8_t &num_dsps_reference,
+    uint32_t &reference_frequency_reference,
+    _Float32 &note_divisor_reference,
+    Envelopes &env,
+    Sequences &seq,
+    Orders &ord,
+    Oscillators &osc,
+    Wavetables &wav,
+    DSPs &dsp,
+    Channels &chn,
+    Offsets &offsets,
+    Links &lnk
+)
     : bpm(bpm_reference),
       normalizer(normalizer_reference),
       num_channels(num_channels_reference),
       num_dsps(num_dsps_reference),
+      reference_frequency(reference_frequency_reference),
+      note_divisor(note_divisor_reference),
       envelopes(env),
       sequences(seq),
       orders(ord),

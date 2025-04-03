@@ -33,11 +33,12 @@ endif()
 set(ASM_SOURCE_DIR "${CMAKE_SOURCE_DIR}")
 set(ASM_SOURCE_FILE "${CMAKE_SOURCE_DIR}/src/player.asm")
 set(ASM_OBJECT_FILE "${CMAKE_BINARY_DIR}/player.o")
+
 add_custom_target(asm_objects ALL
     COMMAND ${CMAKE_COMMAND} -E remove -f ${ASM_OBJECT_FILE}
     COMMAND ${NASM_EXECUTABLE} -d EXE=1 -d ELF -f elf32 -Fdwarf -g ${ASM_SOURCE_FILE} -o ${ASM_OBJECT_FILE}
     WORKING_DIRECTORY ${ASM_SOURCE_DIR}
-    COMMENT "Forcing reassembly of ${ASM_SOURCE_FILE}"
+    COMMENT "Assembling ${ASM_SOURCE_FILE}"
 )
 
 file(GLOB IMGUI_SOURCES

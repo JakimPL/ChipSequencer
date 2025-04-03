@@ -18,6 +18,7 @@ class Creator:
     def __call__(self) -> Tuple[str, str]:
         self.lines.clear()
         self.define_header()
+        self.define_tuning()
         self.define_wavetables()
         self.define_buffers()
         self.counts()
@@ -146,6 +147,12 @@ class Creator:
 
         self.define("OUTPUT_CHANNELS", self.song.output_channels)
         self.define("SONG_LENGTH", self.song.song_length)
+        self.comment()
+
+    def define_tuning(self):
+        self.comment("Tuning")
+        self.define("TUNING_FREQUENCY", self.song.reference_frequency)
+        self.define("TUNING_NOTE_DIVISOR", self.song.note_divisor)
         self.comment()
 
     def define_wavetables(self):

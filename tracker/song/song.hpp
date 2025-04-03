@@ -22,6 +22,9 @@ class Song {
     uint8_t &num_channels;
     uint8_t &num_dsps;
 
+    uint32_t &reference_frequency;
+    _Float32 &note_divisor;
+
     Envelopes &envelopes;
     Sequences &sequences;
     Orders &orders;
@@ -99,6 +102,8 @@ class Song {
         _Float32 &normalizer_reference,
         uint8_t &num_channels_reference,
         uint8_t &num_dsps_reference,
+        uint32_t &reference_frequency_reference,
+        _Float32 &note_divisor_reference,
         Envelopes &env,
         Sequences &seq,
         Orders &ord,

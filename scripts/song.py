@@ -24,6 +24,8 @@ def main():
     normalizer = Float(0.25)
     output_channels = 2
     song_length = 186253
+    reference_frequency = 0x41680943
+    note_divisor = 1.0594630943592953
 
     envelopes = [
         Envelope(
@@ -279,6 +281,8 @@ def main():
         normalizer=normalizer,
         output_channels=output_channels,
         song_length=song_length,
+        reference_frequency=reference_frequency,
+        note_divisor=note_divisor,
         envelopes=envelopes,
         sequences=sequences,
         orders=orders,

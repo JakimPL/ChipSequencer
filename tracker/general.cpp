@@ -6,6 +6,8 @@ Song song = {
     normalizer,
     num_channels,
     num_dsps,
+    reference_frequency,
+    note_divisor,
     envelopes,
     sequences,
     orders,
