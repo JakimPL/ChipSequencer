@@ -6,7 +6,7 @@ _Float32 normalizer = 0.25f;
 uint8_t num_channels = 0;
 uint8_t num_dsps = 0;
 
-uint32_t reference_frequency = 0x41680943;
+uint64_t reference_frequency = 0x2FE15A183;
 _Float32 note_divisor = 1.0594630943592953;
 
 Envelopes envelopes;

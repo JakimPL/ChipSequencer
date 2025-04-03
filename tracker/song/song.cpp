@@ -18,7 +18,7 @@ Song::Song(
     _Float32 &normalizer_reference,
     uint8_t &num_channels_reference,
     uint8_t &num_dsps_reference,
-    uint32_t &reference_frequency_reference,
+    uint64_t &reference_frequency_reference,
     _Float32 &note_divisor_reference,
     Envelopes &env,
     Sequences &seq,
@@ -114,6 +114,10 @@ void Song::compile(const std::string &filename, bool compress) const {
         std::filesystem::remove_all(temp_base);
         throw;
     }
+}
+
+void Song::change_tuning(const uint8_t new_edo, const uint32_t base_frequency) {
+    note_divisor = pow(2.0f, 1.0f / new_edo);
 }
 
 void Song::export_all(const std::string &directory) const {

@@ -33,6 +33,7 @@
     %define MAX_DSP_BUFFER_SIZE 512
 
 ; General
+    %define NOTES 250
     %define TUNING_EDO 12
     %define TUNING_MAX_OCTAVE 8
 

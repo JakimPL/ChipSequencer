@@ -22,7 +22,7 @@ class Song {
     uint8_t &num_channels;
     uint8_t &num_dsps;
 
-    uint32_t &reference_frequency;
+    uint64_t &reference_frequency;
     _Float32 &note_divisor;
 
     Envelopes &envelopes;
@@ -36,6 +36,7 @@ class Song {
     Offsets current_offsets = nullptr;
     Links &links;
 
+    uint8_t edo = 12;
     uint8_t output_channels = 1;
     uint32_t song_length = 186253;
 
@@ -102,7 +103,7 @@ class Song {
         _Float32 &normalizer_reference,
         uint8_t &num_channels_reference,
         uint8_t &num_dsps_reference,
-        uint32_t &reference_frequency_reference,
+        uint64_t &reference_frequency_reference,
         _Float32 &note_divisor_reference,
         Envelopes &env,
         Sequences &seq,
@@ -121,6 +122,8 @@ class Song {
     void load_from_file(const std::string &filename);
     void save_to_file(const std::string &filename) const;
     void compile(const std::string &filename, bool compress = true) const;
+
+    void change_tuning(const uint8_t new_edo, const uint32_t base_frequency);
 
     Envelope *add_envelope();
     Sequence *add_sequence();

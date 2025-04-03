@@ -48,11 +48,10 @@ reduce:
     ret
 
 initialize_frequencies:
-    mov ecx, 128
+    mov ecx, NOTES
     lea edi, [frequencies + 4 * ecx]
 
-    fild dword [reference_frequency]
-    fadd st0, st0
+    fild qword [reference_frequency]
     fdiv dword [f_65536]
 
 .loop:
@@ -90,7 +89,7 @@ apply_volume:
     SEGMENT_DATA
     %ifndef ELF
 reference_frequency:
-    dd TUNING_FREQUENCY
+    dq TUNING_FREQUENCY
 note_divisor:
     dd __float32__(TUNING_NOTE_DIVISOR)
     %endif
@@ -112,4 +111,4 @@ oscillators_table:
 
     SEGMENT_BSS
     volume resw 1
-    frequencies resd 128
+    frequencies resd NOTES
