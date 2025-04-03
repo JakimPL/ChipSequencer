@@ -11,13 +11,16 @@ class ScaleComposer {
   public:
     ScaleComposer();
     void compose(const int new_edo);
+    int get_edo() const;
+    size_t get_a_index() const;
+    std::vector<std::string> get_scale() const;
 
   private:
     std::string render(const std::string &name, const int offset) const;
     void get_note_centers_and_limits();
 
     int edo = 0;
-    int a4_index = -1;
+    int a_index = -1;
     std::vector<double> centers;
     std::vector<double> limits;
     std::vector<std::string> scale;

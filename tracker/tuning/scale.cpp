@@ -52,12 +52,24 @@ void ScaleComposer::compose(const int new_edo) {
 
             scale.push_back(note_name);
             if (note_name == "A") {
-                a4_index = pos;
+                a_index = pos;
             }
         }
 
         start = end;
     }
+}
+
+int ScaleComposer::get_edo() const {
+    return edo;
+}
+
+size_t ScaleComposer::get_a_index() const {
+    return a_index;
+}
+
+std::vector<std::string> ScaleComposer::get_scale() const {
+    return scale;
 }
 
 std::string ScaleComposer::render(const std::string &name, const int offset) const {

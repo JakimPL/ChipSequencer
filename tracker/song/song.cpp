@@ -10,6 +10,7 @@
 
 #include "../utils/file.hpp"
 #include "../utils/temp.hpp"
+#include "../tuning/frequencies.hpp"
 #include "../tuning/scale.hpp"
 #include "data.hpp"
 #include "song.hpp"
@@ -121,6 +122,9 @@ void Song::compile(const std::string &filename, bool compress) const {
 void Song::change_tuning(const uint8_t new_edo, const uint32_t base_frequency) {
     ScaleComposer scale_composer;
     scale_composer.compose(new_edo);
+    FrequencyTable frequency_table(scale_composer, base_frequency, NOTES);
+    reference_frequency = frequency_table.get_last_frequency();
+    std::cout << "Reference frequency: " << reference_frequency << std::endl;
     note_divisor = pow(2.0f, 1.0f / new_edo);
 }
 
