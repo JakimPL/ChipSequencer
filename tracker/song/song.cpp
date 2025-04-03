@@ -10,6 +10,7 @@
 
 #include "../utils/file.hpp"
 #include "../utils/temp.hpp"
+#include "../tuning/scale.hpp"
 #include "data.hpp"
 #include "song.hpp"
 
@@ -64,6 +65,7 @@ void Song::new_song() {
         TRACKER_VERSION
     };
     set_links();
+    change_tuning(12, 440);
 }
 
 void Song::save_to_file(const std::string &filename) const {
@@ -117,6 +119,8 @@ void Song::compile(const std::string &filename, bool compress) const {
 }
 
 void Song::change_tuning(const uint8_t new_edo, const uint32_t base_frequency) {
+    ScaleComposer scale_composer;
+    scale_composer.compose(new_edo);
     note_divisor = pow(2.0f, 1.0f / new_edo);
 }
 

@@ -1,0 +1,7 @@
+#ifndef TUNING_CONSTANTS_HPP
+#define TUNING_CONSTANTS_HPP
+
+#define MIN_EDO 7
+#define MAX_EDO 32
+
+#endif // TUNING_CONSTANTS_HPP
