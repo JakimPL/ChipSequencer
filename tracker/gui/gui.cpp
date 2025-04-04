@@ -153,6 +153,8 @@ void GUI::update(GUIElement element) {
         return sequences_panel.update();
     case GUIElement::Wavetables:
         return wavetables_panel.update();
+    case GUIElement::Patterns:
+        return patterns_panel.update();
     }
 }
 
@@ -166,6 +168,7 @@ void GUI::update_all() {
     oscillators_panel.update();
     sequences_panel.update();
     wavetables_panel.update();
+    patterns_panel.update();
 }
 
 void GUI::frame() {
@@ -178,6 +181,7 @@ void GUI::frame() {
     oscillators_panel.frame();
     sequences_panel.frame();
     wavetables_panel.frame();
+    patterns_panel.frame();
 }
 
 void GUI::play() const {

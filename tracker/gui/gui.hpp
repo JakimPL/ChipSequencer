@@ -13,6 +13,7 @@
 #include "panels/menu.hpp"
 #include "panels/oscillators.hpp"
 #include "panels/orders.hpp"
+#include "panels/patterns.hpp"
 #include "panels/sequences.hpp"
 #include "panels/wavetables.hpp"
 
@@ -53,6 +54,7 @@ class GUI {
     GUIOscillatorsPanel oscillators_panel;
     GUISequencesPanel sequences_panel;
     GUIWavetablesPanel wavetables_panel;
+    GUIPatternsPanel patterns_panel;
 
     SDL_Window *window;
     SDL_GLContext gl_context;
