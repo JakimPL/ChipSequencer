@@ -8,6 +8,7 @@ class FrequencyTable {
   public:
     FrequencyTable(const ScaleComposer &scale_composer, const double a4_frequency, const int notes = NOTES);
 
+    void calculate(const double a4_frequency = DEFAULT_A4_FREQUENCY);
     std::vector<double> get_frequencies() const;
     std::vector<std::string> get_note_names() const;
     std::map<std::pair<std::string, int>, size_t> get_note_values() const;
@@ -15,11 +16,11 @@ class FrequencyTable {
 
   private:
     const ScaleComposer &scale_composer;
-    int edo;
-    int notes;
     double a4_index;
-    double a4_frequency;
-    double note_divisor;
+
+    int notes = NOTES;
+    double a4_frequency = DEFAULT_A4_FREQUENCY;
+    double note_divisor = DEFAULT_NOTE_DIVISOR;
 
     std::vector<double> frequencies;
     std::vector<std::string> note_names;

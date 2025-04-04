@@ -49,11 +49,13 @@ class ConstantManager:
         return "#define ELF\n\n" + output
 
     @staticmethod
-    def parse(string: str) -> int:
+    def parse(string: str) -> Union[float, int]:
         if string.startswith("0x"):
             return int(string, 16)
         if string.startswith("0b"):
             return int(string, 2)
+        if "." in string:
+            return float(string)
 
         return int(string)
 

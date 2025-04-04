@@ -4,7 +4,8 @@
 
 #include "scale.hpp"
 
-ScaleComposer::ScaleComposer() {
+ScaleComposer::ScaleComposer()
+    : symbols(std::begin(scale_symbols), std::end(scale_symbols)) {
 }
 
 void ScaleComposer::compose(const int new_edo) {
@@ -73,15 +74,16 @@ std::vector<std::string> ScaleComposer::get_scale() const {
 }
 
 std::string ScaleComposer::render(const std::string &name, const int offset) const {
-    std::string symbol;
-    if (offset == 0) {
-        symbol = scale_symbols.at(0);
-    } else if (offset > 0) {
-        symbol = scale_symbols.at(1);
-    } else {
-        symbol = scale_symbols.at(-1);
+    const int key = (offset == 0 ? 0 : (offset > 0 ? 1 : -1));
+    const std::pair<int, const char *> *found = nullptr;
+    for (const auto &p : scale_symbols) {
+        if (p.first == key) {
+            found = &p;
+            break;
+        }
     }
 
+    const std::string symbol = (found ? found->second : "");
     std::string repeated;
     int count = std::abs(offset);
     for (int i = 0; i < count; ++i) {
@@ -94,7 +96,7 @@ std::string ScaleComposer::render(const std::string &name, const int offset) con
 void ScaleComposer::get_note_centers_and_limits() {
     centers.clear();
     limits.clear();
-    for (size_t i = 0; i + 1 < scale_intervals.size(); ++i) {
+    for (size_t i = 0; i + 1 < scale_intervals_count; ++i) {
         double x = std::log2(scale_intervals[i]);
         double y = std::log2(scale_intervals[i + 1]);
         centers.push_back(x);

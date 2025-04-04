@@ -7,6 +7,11 @@ class GUI;
 
 #include "gui/gui.hpp"
 #include "song/song.hpp"
+#include "tuning/frequencies.hpp"
+#include "tuning/scale.hpp"
+
+extern ScaleComposer scale_composer;
+extern FrequencyTable frequency_table;
 
 extern Song song;
 extern GUI gui;

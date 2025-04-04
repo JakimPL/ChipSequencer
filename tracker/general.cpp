@@ -1,6 +1,9 @@
 #include "general.hpp"
 #include "song/data.hpp"
 
+ScaleComposer scale_composer = ScaleComposer();
+FrequencyTable frequency_table = FrequencyTable(scale_composer, DEFAULT_A4_FREQUENCY);
+
 Song song = {
     bpm,
     normalizer,
@@ -16,7 +19,9 @@ Song song = {
     dsps,
     channels,
     buffer_offsets,
-    links
+    links,
+    scale_composer,
+    frequency_table,
 };
 
 GUI gui = GUI();

@@ -1,13 +1,15 @@
 #include <cmath>
 #include <algorithm>
-#include <sstream>
 
 #include "constants.hpp"
 #include "frequencies.hpp"
 
 FrequencyTable::FrequencyTable(const ScaleComposer &scale_composer, const double a4_frequency, const int notes)
     : scale_composer(scale_composer), notes(notes), a4_frequency(a4_frequency) {
-    edo = scale_composer.get_edo();
+}
+
+void FrequencyTable::calculate(const double a4_freq) {
+    a4_frequency = a4_freq;
     calculate_note_divisor();
     calculate_frequency_table();
     assign_note_names();
@@ -30,10 +32,12 @@ double FrequencyTable::get_last_frequency() const {
 }
 
 void FrequencyTable::calculate_note_divisor() {
+    const int edo = scale_composer.get_edo();
     note_divisor = std::pow(2.0, 1.0 / static_cast<double>(edo));
 }
 
 void FrequencyTable::calculate_frequency_table() {
+    const int edo = scale_composer.get_edo();
     a4_index = notes / 2 - static_cast<int>(std::round(edo * std::log2(range_mean / a4_frequency)));
     double freq = a4_frequency * std::pow(note_divisor, static_cast<double>(notes - a4_index - 1));
     frequencies.resize(notes);
@@ -44,6 +48,7 @@ void FrequencyTable::calculate_frequency_table() {
 }
 
 void FrequencyTable::assign_note_names() {
+    const int edo = scale_composer.get_edo();
     const auto scale = scale_composer.get_scale();
     const size_t a_index = scale_composer.get_a_index();
     note_values.clear();

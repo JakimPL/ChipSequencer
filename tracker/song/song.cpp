@@ -10,8 +10,6 @@
 
 #include "../utils/file.hpp"
 #include "../utils/temp.hpp"
-#include "../tuning/frequencies.hpp"
-#include "../tuning/scale.hpp"
 #include "data.hpp"
 #include "song.hpp"
 
@@ -22,15 +20,17 @@ Song::Song(
     uint8_t &num_dsps_reference,
     uint64_t &reference_frequency_reference,
     _Float32 &note_divisor_reference,
-    Envelopes &env,
-    Sequences &seq,
-    Orders &ord,
-    Oscillators &osc,
-    Wavetables &wav,
-    DSPs &dsp,
-    Channels &chn,
-    Offsets &offsets,
-    Links &lnk
+    Envelopes &envelopes_reference,
+    Sequences &sequences_reference,
+    Orders &orders_reference,
+    Oscillators &oscillators_reference,
+    Wavetables &wavetables_reference,
+    DSPs &dsps_reference,
+    Channels &channels_reference,
+    Offsets &buffer_offsets_reference,
+    Links &links_reference,
+    ScaleComposer &scale_composer_reference,
+    FrequencyTable &frequency_table_reference
 )
     : bpm(bpm_reference),
       normalizer(normalizer_reference),
@@ -38,15 +38,17 @@ Song::Song(
       num_dsps(num_dsps_reference),
       reference_frequency(reference_frequency_reference),
       note_divisor(note_divisor_reference),
-      envelopes(env),
-      sequences(seq),
-      orders(ord),
-      oscillators(osc),
-      wavetables(wav),
-      dsps(dsp),
-      channels(chn),
-      buffer_offsets(offsets),
-      links(lnk) {
+      envelopes(envelopes_reference),
+      sequences(sequences_reference),
+      orders(orders_reference),
+      oscillators(oscillators_reference),
+      wavetables(wavetables_reference),
+      dsps(dsps_reference),
+      channels(channels_reference),
+      buffer_offsets(buffer_offsets_reference),
+      links(links_reference),
+      scale_composer(scale_composer_reference),
+      frequency_table(frequency_table_reference) {
     current_offsets = new uint16_t[0];
     buffer_offsets = current_offsets;
     new_song();
@@ -58,15 +60,15 @@ Song::~Song() {
 
 void Song::new_song() {
     clear_data();
-    bpm = 120;
-    normalizer = 0.5f;
+    bpm = DEFAULT_BPM;
+    normalizer = DEFAULT_NORMALIZER;
     header = {
         "Unknown",
         "Untitled",
         TRACKER_VERSION
     };
     set_links();
-    change_tuning(12, 440);
+    change_tuning(DEFAULT_EDO, DEFAULT_A4_FREQUENCY);
 }
 
 void Song::save_to_file(const std::string &filename) const {
@@ -120,11 +122,12 @@ void Song::compile(const std::string &filename, bool compress) const {
 }
 
 void Song::change_tuning(const uint8_t new_edo, const uint32_t base_frequency) {
-    ScaleComposer scale_composer;
     scale_composer.compose(new_edo);
-    FrequencyTable frequency_table(scale_composer, base_frequency, NOTES);
-    reference_frequency = frequency_table.get_last_frequency();
-    std::cout << "Reference frequency: " << reference_frequency << std::endl;
+    frequency_table.calculate(base_frequency);
+    double frequency = frequency_table.get_last_frequency();
+    std::cout << "New tuning: " << static_cast<int>(new_edo) << "-edo" << std::endl;
+    std::cout << "Reference frequency: " << static_cast<float>(frequency) << " Hz" << std::endl;
+    reference_frequency = static_cast<uint64_t>(frequency * 65536.0);
     note_divisor = pow(2.0f, 1.0f / new_edo);
 }
 

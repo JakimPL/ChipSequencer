@@ -6,6 +6,8 @@
 #include "../constants.hpp"
 #include "../structures.hpp"
 #include "../version.hpp"
+#include "../tuning/frequencies.hpp"
+#include "../tuning/scale.hpp"
 #include "link.hpp"
 
 class Song {
@@ -36,7 +38,9 @@ class Song {
     Offsets current_offsets = nullptr;
     Links &links;
 
-    uint8_t edo = 12;
+    ScaleComposer &scale_composer;
+    FrequencyTable &frequency_table;
+
     uint8_t output_channels = 1;
     uint32_t song_length = 186253;
 
@@ -105,15 +109,17 @@ class Song {
         uint8_t &num_dsps_reference,
         uint64_t &reference_frequency_reference,
         _Float32 &note_divisor_reference,
-        Envelopes &env,
-        Sequences &seq,
-        Orders &ord,
-        Oscillators &osc,
-        Wavetables &wav,
-        DSPs &dsp,
-        Channels &chn,
-        Offsets &offsets,
-        Links &lnk
+        Envelopes &envelopes_reference,
+        Sequences &sequences_reference,
+        Orders &orders_reference,
+        Oscillators &oscillators_reference,
+        Wavetables &wavetables_reference,
+        DSPs &dsps_reference,
+        Channels &channels_reference,
+        Offsets &buffer_offsets_reference,
+        Links &links_reference,
+        ScaleComposer &scale_composer_reference,
+        FrequencyTable &frequency_table_reference
     );
 
     ~Song();
