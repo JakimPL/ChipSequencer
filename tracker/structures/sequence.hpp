@@ -6,7 +6,7 @@
 #include <vector>
 
 struct Note {
-    int8_t pitch;
+    uint8_t pitch;
     uint8_t duration;
 };
 

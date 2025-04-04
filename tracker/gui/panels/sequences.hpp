@@ -8,13 +8,12 @@
 #include "../init.hpp"
 #include "../names.hpp"
 #include "panel.hpp"
-#include "utils.hpp"
 
 class GUISequencesPanel : public GUIPanel {
   private:
     struct CurrentSequence {
         int steps = 0;
-        std::vector<int8_t> pattern = {};
+        std::vector<uint8_t> pattern = {};
     } current_sequence;
 
     int sequence_index = 0;
@@ -28,6 +27,7 @@ class GUISequencesPanel : public GUIPanel {
     void draw_sequence();
 
     void jump();
+    void set_note(const int note_index, const int edo);
 
     void from() override;
     void to() const override;

@@ -17,6 +17,8 @@ class Song:
     normalizer: Word
     output_channels: int
     song_length: int
+    reference_frequency: int
+    note_divisor: float
     envelopes: List[Envelope]
     sequences: List[Sequence]
     orders: List[Order]

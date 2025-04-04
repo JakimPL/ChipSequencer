@@ -13,20 +13,42 @@
 #include "data.hpp"
 #include "song.hpp"
 
-Song::Song(uint16_t &bpm_reference, _Float32 &normalizer_reference, uint8_t &num_channels_reference, uint8_t &num_dsps_reference, Envelopes &env, Sequences &seq, Orders &ord, Oscillators &osc, Wavetables &wav, DSPs &dsp, Channels &chn, Offsets &offsets, Links &lnk)
+Song::Song(
+    uint16_t &bpm_reference,
+    _Float32 &normalizer_reference,
+    uint8_t &num_channels_reference,
+    uint8_t &num_dsps_reference,
+    uint64_t &reference_frequency_reference,
+    _Float32 &note_divisor_reference,
+    Envelopes &envelopes_reference,
+    Sequences &sequences_reference,
+    Orders &orders_reference,
+    Oscillators &oscillators_reference,
+    Wavetables &wavetables_reference,
+    DSPs &dsps_reference,
+    Channels &channels_reference,
+    Offsets &buffer_offsets_reference,
+    Links &links_reference,
+    ScaleComposer &scale_composer_reference,
+    FrequencyTable &frequency_table_reference
+)
     : bpm(bpm_reference),
       normalizer(normalizer_reference),
       num_channels(num_channels_reference),
       num_dsps(num_dsps_reference),
-      envelopes(env),
-      sequences(seq),
-      orders(ord),
-      oscillators(osc),
-      wavetables(wav),
-      dsps(dsp),
-      channels(chn),
-      buffer_offsets(offsets),
-      links(lnk) {
+      reference_frequency(reference_frequency_reference),
+      note_divisor(note_divisor_reference),
+      envelopes(envelopes_reference),
+      sequences(sequences_reference),
+      orders(orders_reference),
+      oscillators(oscillators_reference),
+      wavetables(wavetables_reference),
+      dsps(dsps_reference),
+      channels(channels_reference),
+      buffer_offsets(buffer_offsets_reference),
+      links(links_reference),
+      scale_composer(scale_composer_reference),
+      frequency_table(frequency_table_reference) {
     current_offsets = new uint16_t[0];
     buffer_offsets = current_offsets;
     new_song();
@@ -38,13 +60,18 @@ Song::~Song() {
 
 void Song::new_song() {
     clear_data();
-    bpm = 120;
-    normalizer = 0.5f;
+    bpm = DEFAULT_BPM;
+    normalizer = DEFAULT_NORMALIZER;
     header = {
         "Unknown",
         "Untitled",
         TRACKER_VERSION
     };
+    tuning = {
+        DEFAULT_EDO,
+        DEFAULT_A4_FREQUENCY
+    };
+    change_tuning(tuning.edo, tuning.a4_frequency);
     set_links();
 }
 
@@ -76,6 +103,7 @@ void Song::load_from_file(const std::string &filename) {
         clear_data();
         import_all(song_dir, json);
         update_sizes();
+        change_tuning(tuning.edo, tuning.a4_frequency);
 
         std::filesystem::remove_all(temp_base);
     } catch (const std::exception &e) {
@@ -96,6 +124,21 @@ void Song::compile(const std::string &filename, bool compress) const {
         std::filesystem::remove_all(temp_base);
         throw;
     }
+}
+
+void Song::change_tuning(const uint8_t new_edo, const double base_frequency) {
+    scale_composer.compose(new_edo);
+    frequency_table.calculate(base_frequency);
+    double frequency = frequency_table.get_last_frequency();
+    std::cout << "New tuning: " << static_cast<int>(new_edo) << "-edo" << std::endl;
+    std::cout << "Reference frequency: " << static_cast<float>(frequency) << " Hz" << std::endl;
+    reference_frequency = static_cast<uint64_t>(frequency * 65536.0);
+    note_divisor = pow(2.0f, 1.0f / new_edo);
+
+    tuning = {
+        new_edo,
+        base_frequency
+    };
 }
 
 void Song::export_all(const std::string &directory) const {
@@ -198,7 +241,7 @@ Channel *Song::add_channel() {
     channel->output = &output;
     channels.push_back(channel);
     num_channels = channels.size();
-    links[0].push_back(Link());
+    links[static_cast<size_t>(ItemType::CHANNEL)].push_back(Link());
     set_links();
     return channel;
 }
@@ -211,7 +254,7 @@ void *Song::add_dsp() {
     void *dsp = new DSPGainer();
     dsps.push_back(dsp);
     num_dsps = dsps.size();
-    links[1].push_back(Link());
+    links[static_cast<size_t>(ItemType::DSP)].push_back(Link());
     set_links();
     return dsp;
 }
@@ -253,9 +296,10 @@ void Song::remove_oscillator(const size_t index) {
 
 void Song::remove_channel(const size_t index) {
     if (index < channels.size()) {
+        size_t link_type = static_cast<size_t>(ItemType::CHANNEL);
         delete channels[index];
         channels.erase(channels.begin() + index);
-        links[0].erase(links[0].begin() + index);
+        links[link_type].erase(links[link_type].begin() + index);
         num_channels = channels.size();
         set_links();
     }
@@ -263,9 +307,10 @@ void Song::remove_channel(const size_t index) {
 
 void Song::remove_dsp(const size_t index) {
     if (index < dsps.size()) {
+        size_t link_type = static_cast<size_t>(ItemType::DSP);
         delete_dsp(dsps[index]);
         dsps.erase(dsps.begin() + index);
-        links[1].erase(links[1].begin() + index);
+        links[link_type].erase(links[link_type].begin() + index);
         num_dsps = dsps.size();
         set_links();
     }
@@ -316,33 +361,48 @@ std::string Song::generate_data_asm_file() const {
 
 nlohmann::json Song::create_header_json() const {
     nlohmann::json json;
-    json["title"] = header.title;
-    json["author"] = header.author;
-    json["version"] = header.version;
-    json["bpm"] = bpm;
-    json["normalizer"] = normalizer;
+    json["general"] = {
+        {"bpm", bpm},
+        {"normalizer", normalizer},
+        {"output_channels", output_channels},
+        {"song_length", song_length}
+    };
 
-    json["output_channels"] = output_channels;
-    json["song_length"] = song_length;
+    json["header"] = {
+        {"title", header.title},
+        {"author", header.author},
+        {"version", header.version}
+    };
 
-    json["envelopes"] = envelopes.size();
-    json["sequences"] = sequences.size();
-    json["orders"] = orders.size();
-    json["wavetables"] = wavetables.size();
-    json["oscillators"] = oscillators.size();
-    json["dsps"] = dsps.size();
-    json["channels"] = channels.size();
+    json["tuning"] = {
+        {"edo", tuning.edo},
+        {"a4_frequency", tuning.a4_frequency}
+    };
+
+    json["data"] = {
+        {"envelopes", envelopes.size()},
+        {"sequences", sequences.size()},
+        {"orders", orders.size()},
+        {"wavetables", wavetables.size()},
+        {"oscillators", oscillators.size()},
+        {"dsps", dsps.size()},
+        {"channels", channels.size()}
+    };
 
     return json;
 }
 
 nlohmann::json Song::import_header(const std::string &filename) {
     nlohmann::json json = read_json(filename);
-    header.title = json["title"];
-    header.author = json["author"];
-    header.version = json["version"];
-    bpm = json["bpm"];
-    normalizer = json["normalizer"];
+    header.title = json["header"]["title"];
+    header.author = json["header"]["author"];
+    header.version = json["header"]["version"];
+    bpm = json["general"]["bpm"];
+    normalizer = json["general"]["normalizer"];
+    output_channels = json["general"]["output_channels"];
+    song_length = json["general"]["song_length"];
+    tuning.edo = json["tuning"]["edo"];
+    tuning.a4_frequency = json["tuning"]["a4_frequency"];
     return json;
 }
 
@@ -383,13 +443,16 @@ void Song::set_link(Link &link, void *item, const u_int8_t i) const {
 }
 
 void Song::set_links() {
+    size_t link_type = static_cast<size_t>(ItemType::CHANNEL);
     for (size_t i = 0; i < channels.size(); i++) {
-        Link &link = links[0][i];
+        Link &link = links[link_type][i];
         void *item = channels[i];
         set_link(link, item, i);
     }
+
+    link_type = static_cast<size_t>(ItemType::DSP);
     for (size_t i = 0; i < dsps.size(); i++) {
-        Link &link = links[1][i];
+        Link &link = links[link_type][i];
         void *item = dsps[i];
         set_link(link, item, i);
     }
@@ -636,7 +699,7 @@ void Song::export_links(const std::string &filename) const {
 }
 
 void Song::import_envelopes(const std::string &song_dir, const nlohmann::json &json) {
-    const size_t envelope_count = json["envelopes"];
+    const size_t envelope_count = json["data"]["envelopes"];
     for (size_t i = 0; i < envelope_count; i++) {
         const std::string filename = get_element_path(song_dir + "/envels", "envel", i);
         Envelope *envelope = new Envelope();
@@ -648,7 +711,7 @@ void Song::import_envelopes(const std::string &song_dir, const nlohmann::json &j
 }
 
 void Song::import_sequences(const std::string &song_dir, const nlohmann::json &json) {
-    const size_t sequence_count = json["sequences"];
+    const size_t sequence_count = json["data"]["sequences"];
     for (size_t i = 0; i < sequence_count; i++) {
         const std::string filename = get_element_path(song_dir + "/seqs", "seq", i);
         std::ifstream file(filename, std::ios::binary);
@@ -659,7 +722,7 @@ void Song::import_sequences(const std::string &song_dir, const nlohmann::json &j
 }
 
 void Song::import_orders(const std::string &song_dir, const nlohmann::json &json) {
-    const size_t order_count = json["orders"];
+    const size_t order_count = json["data"]["orders"];
     for (size_t i = 0; i < order_count; i++) {
         const std::string filename = get_element_path(song_dir + "/orders", "order", i);
         std::ifstream file(filename, std::ios::binary);
@@ -670,7 +733,7 @@ void Song::import_orders(const std::string &song_dir, const nlohmann::json &json
 }
 
 void Song::import_wavetables(const std::string &song_dir, const nlohmann::json &json) {
-    const size_t wavetable_count = json["wavetables"];
+    const size_t wavetable_count = json["data"]["wavetables"];
     for (size_t i = 0; i < wavetable_count; i++) {
         const std::string filename = get_element_path(song_dir + "/waves", "wave", i);
         std::ifstream file(filename, std::ios::binary);
@@ -681,7 +744,7 @@ void Song::import_wavetables(const std::string &song_dir, const nlohmann::json &
 }
 
 void Song::import_oscillators(const std::string &song_dir, const nlohmann::json &json) {
-    const size_t oscillator_count = json["oscillators"];
+    const size_t oscillator_count = json["data"]["oscillators"];
     for (size_t i = 0; i < oscillator_count; i++) {
         const std::string filename = get_element_path(song_dir + "/oscs", "osc", i);
         std::ifstream file(filename, std::ios::binary);
@@ -692,7 +755,7 @@ void Song::import_oscillators(const std::string &song_dir, const nlohmann::json 
 }
 
 void Song::import_dsps(const std::string &song_dir, const nlohmann::json &json) {
-    const size_t dsp_count = json["dsps"];
+    const size_t dsp_count = json["data"]["dsps"];
     for (size_t i = 0; i < dsp_count; i++) {
         const std::string filename = get_element_path(song_dir + "/dsps", "dsp", i);
         std::ifstream file(filename, std::ios::binary);
@@ -703,7 +766,7 @@ void Song::import_dsps(const std::string &song_dir, const nlohmann::json &json) 
 }
 
 void Song::import_channels(const std::string &song_dir, const nlohmann::json &json) {
-    const size_t channel_count = json["channels"];
+    const size_t channel_count = json["data"]["channels"];
     for (size_t i = 0; i < channel_count; i++) {
         const std::string filename = get_element_path(song_dir + "/chans", "chan", i);
         std::ifstream file(filename, std::ios::binary);
@@ -714,7 +777,7 @@ void Song::import_channels(const std::string &song_dir, const nlohmann::json &js
 }
 
 void Song::import_offsets(const std::string &song_dir, const nlohmann::json &json) {
-    const size_t dsp_count = json["dsps"];
+    const size_t dsp_count = json["data"]["dsps"];
     const std::string offsets_filename = song_dir + "/offsets.bin";
     std::ifstream file(offsets_filename, std::ios::binary);
 
@@ -729,21 +792,23 @@ void Song::import_offsets(const std::string &song_dir, const nlohmann::json &jso
 }
 
 void Song::import_links(const std::string &song_dir, const nlohmann::json &json) {
-    const size_t channel_count = json["channels"];
-    const size_t dsp_count = json["dsps"];
+    const size_t channel_count = json["data"]["channels"];
+    const size_t dsp_count = json["data"]["dsps"];
     const std::string links_filename = song_dir + "/links.bin";
     std::ifstream file(links_filename, std::ios::binary);
 
+    size_t link_type = static_cast<size_t>(ItemType::CHANNEL);
     for (size_t i = 0; i < channel_count; i++) {
         Link link;
         link.deserialize(file);
-        links[0].push_back(link);
+        links[link_type].push_back(link);
     }
 
+    link_type = static_cast<size_t>(ItemType::DSP);
     for (size_t i = 0; i < dsp_count; i++) {
         Link link;
         link.deserialize(file);
-        links[1].push_back(link);
+        links[link_type].push_back(link);
     }
 
     set_links();
@@ -785,8 +850,8 @@ void Song::clear_data() {
     wavetables.clear();
     dsps.clear();
     channels.clear();
-    links.clear();
-    links.resize(2);
+    links[static_cast<size_t>(ItemType::CHANNEL)].clear();
+    links[static_cast<size_t>(ItemType::DSP)].clear();
     num_channels = 0;
     num_dsps = 0;
 }

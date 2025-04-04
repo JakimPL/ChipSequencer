@@ -5,6 +5,10 @@
     %define OUTPUT_CHANNELS 2
     %define SONG_LENGTH 186253
 
+; Tuning
+    %define TUNING_FREQUENCY 1097337155
+    %define TUNING_NOTE_DIVISOR 1.0594630943592953
+
 ; Wavetables
     %define WAVETABLE_0_SIZE 16
     %define WAVETABLE_1_SIZE 8

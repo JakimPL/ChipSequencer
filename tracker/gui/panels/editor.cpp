@@ -1,3 +1,4 @@
+#include "../../general.hpp"
 #include "../constants.hpp"
 #include "editor.hpp"
 
@@ -11,10 +12,12 @@ void GUIEditorPanel::draw() {
 }
 
 void GUIEditorPanel::draw_panels() {
+    const int min_octave = frequency_table.get_min_octave();
+    const int max_octave = frequency_table.get_max_octave();
     ImGui::Begin("Editor");
     ImGui::Text("Current octave:");
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-    ImGui::SliderInt("##CurrentOctave", &current_octave, 0, TUNING_MAX_OCTAVE);
+    ImGui::SliderInt("##CurrentOctave", &current_octave, min_octave, max_octave);
     ImGui::Text("Jump step:");
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
     ImGui::SliderInt("##JumpStep", &jump_step, 0, GUI_MAX_JUMP_STEP);
@@ -23,10 +26,12 @@ void GUIEditorPanel::draw_panels() {
 
 void GUIEditorPanel::check_keyboard_input() {
     if (ImGui::IsKeyPressed(ImGuiKey_KeypadMultiply)) {
-        current_octave = std::min(current_octave + 1, TUNING_MAX_OCTAVE);
+        const int max_octave = frequency_table.get_max_octave();
+        current_octave = std::min(current_octave + 1, max_octave);
     }
     if (ImGui::IsKeyPressed(ImGuiKey_KeypadDivide)) {
-        current_octave = std::max(current_octave - 1, 0);
+        const int min_octave = frequency_table.get_min_octave();
+        current_octave = std::max(current_octave - 1, min_octave);
     }
     if (ImGui::IsKeyPressed(ImGuiKey_PageDown)) {
         jump_step = std::max(jump_step - 1, 0);

@@ -6,6 +6,8 @@
 #include "../constants.hpp"
 #include "../structures.hpp"
 #include "../version.hpp"
+#include "../tuning/frequencies.hpp"
+#include "../tuning/scale.hpp"
 #include "link.hpp"
 
 class Song {
@@ -16,11 +18,19 @@ class Song {
         std::string version = TRACKER_VERSION;
     } header;
 
+    struct Tuning {
+        uint8_t edo = DEFAULT_EDO;
+        double a4_frequency = DEFAULT_A4_FREQUENCY;
+    } tuning;
+
     uint16_t &bpm;
     _Float32 &normalizer;
 
     uint8_t &num_channels;
     uint8_t &num_dsps;
+
+    uint64_t &reference_frequency;
+    _Float32 &note_divisor;
 
     Envelopes &envelopes;
     Sequences &sequences;
@@ -33,8 +43,11 @@ class Song {
     Offsets current_offsets = nullptr;
     Links &links;
 
+    ScaleComposer &scale_composer;
+    FrequencyTable &frequency_table;
+
     uint8_t output_channels = 1;
-    uint32_t song_length = 186253;
+    uint32_t song_length = SONG_LENGTH;
 
     void generate_header_vector(std::stringstream &asm_content, const std::string &name, const std::string &short_name, const size_t size) const;
     std::string generate_header_asm_file() const;
@@ -99,15 +112,19 @@ class Song {
         _Float32 &normalizer_reference,
         uint8_t &num_channels_reference,
         uint8_t &num_dsps_reference,
-        Envelopes &env,
-        Sequences &seq,
-        Orders &ord,
-        Oscillators &osc,
-        Wavetables &wav,
-        DSPs &dsp,
-        Channels &chn,
-        Offsets &offsets,
-        Links &lnk
+        uint64_t &reference_frequency_reference,
+        _Float32 &note_divisor_reference,
+        Envelopes &envelopes_reference,
+        Sequences &sequences_reference,
+        Orders &orders_reference,
+        Oscillators &oscillators_reference,
+        Wavetables &wavetables_reference,
+        DSPs &dsps_reference,
+        Channels &channels_reference,
+        Offsets &buffer_offsets_reference,
+        Links &links_reference,
+        ScaleComposer &scale_composer_reference,
+        FrequencyTable &frequency_table_reference
     );
 
     ~Song();
@@ -116,6 +133,8 @@ class Song {
     void load_from_file(const std::string &filename);
     void save_to_file(const std::string &filename) const;
     void compile(const std::string &filename, bool compress = true) const;
+
+    void change_tuning(const uint8_t new_edo, const double base_frequency);
 
     Envelope *add_envelope();
     Sequence *add_sequence();

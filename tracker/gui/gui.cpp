@@ -1,5 +1,6 @@
 #include <algorithm>
 
+#include "../general.hpp"
 #include "gui.hpp"
 
 GUI::GUI()
@@ -10,12 +11,25 @@ GUI::~GUI() {
     terminate();
 }
 
+void GUI::change_window_title(const std::string &title) {
+    std::string window_title = APPLICATION_TITLE;
+    if (!title.empty()) {
+        window_title += " - " + title;
+    }
+
+    if (window) {
+        SDL_SetWindowTitle(gui.window, window_title.c_str());
+    }
+}
+
 int GUI::get_jump_step() const {
-    return std::clamp(0, jump_step, GUI_MAX_JUMP_STEP);
+    return std::clamp(jump_step, 0, GUI_MAX_JUMP_STEP);
 }
 
 int GUI::get_current_octave() const {
-    return std::clamp(0, current_octave, TUNING_MAX_OCTAVE);
+    const int min_octave = frequency_table.get_min_octave();
+    const int max_octave = frequency_table.get_max_octave();
+    return std::clamp(current_octave, min_octave, max_octave);
 }
 
 bool GUI::initialize() {
@@ -29,7 +43,7 @@ bool GUI::initialize() {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
-    window = SDL_CreateWindow("ChipSequencer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+    window = SDL_CreateWindow(APPLICATION_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     if (!window) {
         printf("Failed to create SDL window: %s\n", SDL_GetError());
         return false;
@@ -157,13 +171,13 @@ void GUI::update_all() {
 void GUI::frame() {
     menu.frame();
     editor.frame();
+    general_panel.frame();
     channels_panel.frame();
     envelopes_panel.frame();
     orders_panel.frame();
     oscillators_panel.frame();
     sequences_panel.frame();
     wavetables_panel.frame();
-    general_panel.frame();
 }
 
 void GUI::play() const {

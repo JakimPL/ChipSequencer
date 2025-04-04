@@ -2,6 +2,7 @@
 #include "../enums.hpp"
 #include "../mapping.hpp"
 #include "sequences.hpp"
+#include "utils.hpp"
 
 GUISequencesPanel::GUISequencesPanel() {
     from();
@@ -53,7 +54,7 @@ std::vector<Note> GUISequencesPanel::pattern_to_sequence() const {
     std::vector<Note> note_vector;
 
     uint8_t duration = 1;
-    int8_t pitch;
+    uint8_t pitch;
     for (int i = current_sequence.steps - 1; i >= 0; --i) {
         if (i >= current_sequence.pattern.size()) {
             if (note_vector.empty()) {
@@ -142,12 +143,18 @@ void GUISequencesPanel::draw_sequence() {
 
     const float height = std::max(5.0f, ImGui::GetContentRegionAvail().y - 5.0f);
     ImGui::BeginChild("PatternScroll", ImVec2(0, height), true);
-    ImGui::Columns(2, "pattern_columns", false);
+    ImGui::Columns(3, "pattern_columns", false);
     ImGui::SetColumnWidth(0, 50.0f);
+    ImGui::SetColumnWidth(1, 75.0f);
+    ImGui::SetColumnWidth(2, 75.0f);
 
     ImGui::Text("Index");
     ImGui::NextColumn();
+
     ImGui::Text("Note");
+    ImGui::NextColumn();
+
+    ImGui::Text("Octave");
     ImGui::NextColumn();
 
     ImGui::Separator();
@@ -171,6 +178,14 @@ void GUISequencesPanel::draw_sequence() {
         }
 
         ImGui::NextColumn();
+        const std::string octave_string = get_note_octave(current_sequence.pattern[i]);
+        if (is_selected) {
+            ImGui::TextColored(ImVec4(1.0f, 0.2f, 1.0f, 1.0f), "%s", octave_string.c_str());
+        } else {
+            ImGui::Text("%s", octave_string.c_str());
+        }
+
+        ImGui::NextColumn();
         ImGui::PopID();
     }
 
@@ -188,11 +203,20 @@ void GUISequencesPanel::check_keyboard_input() {
         return;
     }
 
-    for (const auto &mapping : key_note_mappings) {
-        if (ImGui::IsKeyPressed(mapping.key)) {
-            const int note = mapping.note_index + TUNING_EDO * gui.get_current_octave();
-            current_sequence.pattern[selected_step] = note;
-            jump();
+    const int edo = scale_composer.get_edo();
+    if (edo == DEFAULT_EDO) {
+        for (const auto &m : key_note_12_edo_mapping) {
+            if (ImGui::IsKeyPressed(m.key)) {
+                set_note(m.note_index, edo);
+                break;
+            }
+        }
+    } else {
+        for (const auto &m : key_note_linear_mapping) {
+            if (ImGui::IsKeyPressed(m.key)) {
+                set_note(m.note_index, edo);
+                break;
+            }
         }
     }
 
@@ -229,4 +253,14 @@ void GUISequencesPanel::check_keyboard_input() {
 
 void GUISequencesPanel::jump() {
     selected_step = std::min(selected_step + gui.get_jump_step(), current_sequence.steps - 1);
+}
+
+void GUISequencesPanel::set_note(const int note_index, const int edo) {
+    const int a4_index = frequency_table.get_a4_index();
+    const int note = note_index + a4_index + edo * (gui.get_current_octave() - 5);
+    if (note < 0 || note >= NOTES) {
+        return;
+    }
+    current_sequence.pattern[selected_step] = note;
+    jump();
 }

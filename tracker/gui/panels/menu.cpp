@@ -21,12 +21,16 @@ void GUIMenu::draw() {
             if (ImGui::MenuItem("Save As")) {
                 file_save_as();
             }
-            if (ImGui::MenuItem("Compile")) {
-                file_compile();
-            }
             ImGui::Separator();
             if (ImGui::MenuItem("Open")) {
                 file_open();
+            }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Compile")) {
+                file_compile(true);
+            }
+            if (ImGui::MenuItem("Compile uncompressed")) {
+                file_compile(false);
             }
             ImGui::Separator();
             if (ImGui::MenuItem("Exit")) {
@@ -42,25 +46,17 @@ void GUIMenu::draw() {
         compilation_status = std::nullopt;
     }
 
-    if (ImGui::BeginPopupModal("Success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::Text("File compiled successfully!");
-        float buttonWidth = 60.0f;
-        float windowWidth = ImGui::GetWindowSize().x;
-        ImGui::SetCursorPosX((windowWidth - buttonWidth) * 0.5f);
-        if (ImGui::Button("Close", ImVec2(buttonWidth, 0))) {
-            ImGui::CloseCurrentPopup();
-        }
-        ImGui::EndPopup();
+    if (load_error.has_value()) {
+        ImGui::OpenPopup("Load error");
+        load_error = std::nullopt;
     }
-    if (ImGui::BeginPopupModal("Failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::Text("Compilation failed!");
-        float buttonWidth = 60.0f;
-        float windowWidth = ImGui::GetWindowSize().x;
-        ImGui::SetCursorPosX((windowWidth - buttonWidth) * 0.5f);
-        if (ImGui::Button("Close", ImVec2(buttonWidth, 0))) {
-            ImGui::CloseCurrentPopup();
-        }
-        ImGui::EndPopup();
+
+    if (ImGui::BeginPopupModal("Success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("File compiled successfully!");
+    } else if (ImGui::BeginPopupModal("Failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Compilation failed!");
+    } else if (ImGui::BeginPopupModal("Load error", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Failed to load file!");
     }
 }
 
@@ -68,6 +64,7 @@ void GUIMenu::file_new() {
     gui.stop();
     song.new_song();
     current_path = std::filesystem::path();
+    gui.update();
 }
 
 void GUIMenu::file_save() {
@@ -88,6 +85,7 @@ void GUIMenu::file_save_as() {
 
         current_path = new_path;
         song.save_to_file(current_path);
+        gui.change_window_title(current_path.filename().string());
     } else if (result != NFD_CANCEL) {
         std::cerr << "Error: " << NFD_GetError() << std::endl;
     }
@@ -99,17 +97,25 @@ void GUIMenu::file_open() {
     if (result == NFD_OKAY) {
         std::filesystem::path file_path(target_path);
         free(target_path);
-        current_path = file_path;
 
-        gui.stop();
-        song.load_from_file(current_path);
-        gui.update();
+        try {
+            gui.stop();
+            song.load_from_file(file_path);
+            current_path = file_path;
+
+            gui.change_window_title(current_path.filename().string());
+            gui.update();
+        } catch (nlohmann::json::exception &e) {
+            load_error = true;
+            std::cerr << "Failed to parse JSON file: " << e.what() << std::endl;
+        }
     } else if (result != NFD_CANCEL) {
         std::cerr << "Error: " << NFD_GetError() << std::endl;
     }
+    gui.update();
 }
 
-void GUIMenu::file_compile() {
+void GUIMenu::file_compile(const bool compress) {
     nfdchar_t *target_path = nullptr;
     nfdresult_t result = NFD_SaveDialog("exe", nullptr, &target_path);
     if (result == NFD_OKAY) {
@@ -117,7 +123,7 @@ void GUIMenu::file_compile() {
         new_path = check_and_correct_path_by_extension(new_path, ".exe");
 
         gui.stop();
-        song.compile(new_path);
+        song.compile(new_path, compress);
         compilation_status = std::filesystem::exists(new_path);
         gui.update();
     } else if (result != NFD_CANCEL) {
