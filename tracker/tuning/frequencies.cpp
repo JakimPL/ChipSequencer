@@ -1,6 +1,7 @@
-#include <cmath>
 #include <algorithm>
+#include <cmath>
 
+#include "../utils/math.hpp"
 #include "constants.hpp"
 #include "frequencies.hpp"
 
@@ -44,6 +45,26 @@ int FrequencyTable::get_note_value(const std::string &note_name, const int octav
     return -1;
 }
 
+int FrequencyTable::get_min_octave() const {
+    return min_octave;
+}
+
+int FrequencyTable::get_max_octave() const {
+    return max_octave;
+}
+
+int FrequencyTable::get_a4_index() const {
+    return a4_index;
+}
+
+int FrequencyTable::get_c0_index() const {
+    return c0_index;
+}
+
+double FrequencyTable::get_a4_frequency() const {
+    return a4_frequency;
+}
+
 std::vector<double> FrequencyTable::get_frequencies() const {
     return frequencies;
 }
@@ -84,14 +105,22 @@ void FrequencyTable::assign_note_names() {
     note_names.clear();
     for (size_t i = 0; i < notes; ++i) {
         const int difference = i - a4_index;
-        int index = (difference + a_index) % edo;
-        if (index < 0) {
-            index += edo;
+        const int index = mod(difference + a_index, edo);
+
+        const auto note_name = scale[index];
+        const int octave = 4 + (difference + static_cast<int>(a_index)) / edo;
+        note_names.push_back(note_name);
+        note_octaves.push_back(octave);
+        note_values[{note_name, octave}] = i;
+
+        if (octave == 0 && note_name == "C") {
+            c0_index = i;
         }
 
-        const int octave = 4 + (difference + static_cast<int>(a_index)) / edo;
-        note_names.push_back(scale[index]);
-        note_octaves.push_back(octave);
-        note_values[{scale[index], octave}] = i;
+        if (i == 0) {
+            min_octave = octave;
+        } else if (i == notes - 1) {
+            max_octave = octave;
+        }
     }
 }

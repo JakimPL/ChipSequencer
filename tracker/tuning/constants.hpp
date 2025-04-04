@@ -3,6 +3,8 @@
 
 #define MIN_EDO 7
 #define MAX_EDO 32
+#define MIN_A4_FREQUENCY 400.0
+#define MAX_A4_FREQUENCY 600.0
 
 constexpr double range_mean = 632.4555320336759; // sqrt(20 * 20_000)
 

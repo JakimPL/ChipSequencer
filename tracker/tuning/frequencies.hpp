@@ -15,6 +15,12 @@ class FrequencyTable {
     int get_note_octave(uint8_t note_value) const;
     int get_note_value(const std::string &note_name, const int octave) const;
 
+    int get_min_octave() const;
+    int get_max_octave() const;
+    int get_a4_index() const;
+    int get_c0_index() const;
+    double get_a4_frequency() const;
+
     std::vector<double> get_frequencies() const;
     std::vector<std::string> get_note_names() const;
     std::map<std::pair<std::string, int>, size_t> get_note_values() const;
@@ -22,7 +28,11 @@ class FrequencyTable {
 
   private:
     const ScaleComposer &scale_composer;
-    double a4_index;
+    int a4_index;
+    int c0_index;
+
+    int min_octave;
+    int max_octave;
 
     int notes = NOTES;
     double a4_frequency = DEFAULT_A4_FREQUENCY;

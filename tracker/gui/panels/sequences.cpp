@@ -205,7 +205,12 @@ void GUISequencesPanel::check_keyboard_input() {
 
     for (const auto &mapping : key_note_mappings) {
         if (ImGui::IsKeyPressed(mapping.key)) {
-            const int note = mapping.note_index + TUNING_EDO * gui.get_current_octave();
+            const int c0_index = frequency_table.get_c0_index();
+            const int edo = scale_composer.get_edo();
+            const int note = mapping.note_index + c0_index + edo * gui.get_current_octave();
+            if (note < 0 || note >= NOTES) {
+                continue;
+            }
             current_sequence.pattern[selected_step] = note;
             jump();
         }

@@ -9,6 +9,7 @@ void GUIGeneralPanel::draw() {
     from();
     draw_play_button();
     draw_song_info();
+    draw_tuning_settings();
     check_keyboard_input();
     to();
     ImGui::End();
@@ -17,12 +18,21 @@ void GUIGeneralPanel::draw() {
 void GUIGeneralPanel::from() {
     current_song.bpm = bpm;
     current_song.normalizer = normalizer;
+
+    current_song.edo = scale_composer.get_edo();
+    current_song.a4_frequency = frequency_table.get_a4_frequency();
 }
 
 void GUIGeneralPanel::to() const {
-    bpm = current_song.bpm;
     normalizer = current_song.normalizer;
-    calculate_ticks_per_beat();
+    if (current_song.bpm != bpm) {
+        bpm = current_song.bpm;
+        calculate_ticks_per_beat();
+    }
+
+    if (current_song.edo != scale_composer.get_edo() || current_song.a4_frequency != frequency_table.get_a4_frequency()) {
+        song.change_tuning(current_song.edo, current_song.a4_frequency);
+    }
 }
 
 void GUIGeneralPanel::draw_play_button() {
@@ -95,7 +105,6 @@ void GUIGeneralPanel::draw_stop_square() const {
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
     ImVec2 p_min = p;
     ImVec2 p_max = ImVec2(p.x + sz, p.y + sz);
-    // Draw a filled red square.
     draw_list->AddRectFilled(p_min, p_max, IM_COL32(255, 0, 0, 255));
 
     ImGui::SetCursorScreenPos(p);
@@ -111,4 +120,11 @@ void GUIGeneralPanel::draw_song_info() {
     ImGui::InputText("Name", current_song.name, IM_ARRAYSIZE(current_song.name));
     draw_int_slider("BPM", current_song.bpm, GUI_MIN_BPM, GUI_MAX_BPM);
     draw_float_slider("Normalizer", current_song.normalizer, 0.01f, 2.0f);
+}
+
+void GUIGeneralPanel::draw_tuning_settings() {
+    ImGui::Separator();
+    ImGui::Text("Tuning Settings");
+    draw_int_slider("EDO", current_song.edo, MIN_EDO, MAX_EDO);
+    draw_float_slider("A4 Frequency", current_song.a4_frequency, MIN_A4_FREQUENCY, MAX_A4_FREQUENCY);
 }

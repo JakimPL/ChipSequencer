@@ -1,5 +1,6 @@
 #include <algorithm>
 
+#include "../general.hpp"
 #include "gui.hpp"
 
 GUI::GUI()
@@ -11,11 +12,13 @@ GUI::~GUI() {
 }
 
 int GUI::get_jump_step() const {
-    return std::clamp(0, jump_step, GUI_MAX_JUMP_STEP);
+    return std::clamp(jump_step, 0, GUI_MAX_JUMP_STEP);
 }
 
 int GUI::get_current_octave() const {
-    return std::clamp(0, current_octave, TUNING_MAX_OCTAVE);
+    const int min_octave = frequency_table.get_min_octave();
+    const int max_octave = frequency_table.get_max_octave();
+    return std::clamp(current_octave, min_octave, max_octave);
 }
 
 bool GUI::initialize() {

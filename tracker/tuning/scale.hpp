@@ -18,7 +18,7 @@ class ScaleComposer {
 
   private:
     std::string render(const std::string &name, int offset) const;
-    void get_note_centers_and_limits();
+    void calculate_note_centers_and_limits();
 
     int edo = 0;
     int a_index = -1;

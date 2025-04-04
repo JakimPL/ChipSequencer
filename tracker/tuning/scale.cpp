@@ -6,16 +6,15 @@
 
 ScaleComposer::ScaleComposer()
     : symbols(std::begin(scale_symbols), std::end(scale_symbols)) {
+    calculate_note_centers_and_limits();
 }
 
 void ScaleComposer::compose(const int new_edo) {
     edo = std::clamp(new_edo, MIN_EDO, MAX_EDO);
-    scale.clear();
-
-    get_note_centers_and_limits();
+    scale.resize(edo);
 
     double start = limits.back() - 1.0;
-    for (size_t note = 0; note < centers.size(); ++note) {
+    for (size_t note = 0; note < limits.size(); ++note) {
         const double center_val = centers[note];
         const double end = limits[note];
         const double x = start * edo;
@@ -39,14 +38,13 @@ void ScaleComposer::compose(const int new_edo) {
         }
 
         if (!found) {
-            index_pos = static_cast<int>(indices.size() / 2);
+            break;
         }
 
         for (size_t j = 0; j < indices.size(); ++j) {
             const int pos = indices[j] % edo;
             std::string note_name = render(scale_names[note], static_cast<int>(j) - index_pos);
-
-            scale.push_back(note_name);
+            scale[pos] = note_name;
             if (note_name == "A") {
                 a_index = pos;
             }
@@ -70,8 +68,8 @@ std::vector<std::string> ScaleComposer::get_scale() const {
 
 std::string ScaleComposer::render(const std::string &name, int offset) const {
     // 12-edo correction
-    if (edo == 12 && offset != 0) {
-        offset = 1;
+    if (edo == 12 && name == "C" && offset == 1) {
+        return "Db";
     }
 
     std::string symbol;
@@ -92,13 +90,14 @@ std::string ScaleComposer::render(const std::string &name, int offset) const {
     return name + repeated;
 }
 
-void ScaleComposer::get_note_centers_and_limits() {
+void ScaleComposer::calculate_note_centers_and_limits() {
     centers.clear();
     limits.clear();
     for (size_t i = 0; i + 1 < scale_intervals_count; ++i) {
-        double x = std::log2(scale_intervals[i]);
-        double y = std::log2(scale_intervals[i + 1]);
+        const double x = std::log2(scale_intervals[i]);
+        const double y = std::log2(scale_intervals[i + 1]);
+        const double limit = 0.5 * (x + y);
         centers.push_back(x);
-        limits.push_back(0.5 * (x + y));
+        limits.push_back(limit);
     }
 }
