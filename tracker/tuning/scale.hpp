@@ -1,6 +1,7 @@
 #ifndef TUNING_SCALE_HPP
 #define TUNING_SCALE_HPP
 
+#include <array>
 #include <string>
 #include <vector>
 #include <map>
@@ -14,7 +15,7 @@ class ScaleComposer {
 
     int get_edo() const;
     size_t get_a_index() const;
-    std::vector<std::string> get_scale() const;
+    std::array<std::string, MAX_EDO> get_scale() const;
 
   private:
     std::string render(const std::string &name, int offset) const;
@@ -24,7 +25,7 @@ class ScaleComposer {
     int a_index = -1;
     std::vector<double> centers;
     std::vector<double> limits;
-    std::vector<std::string> scale;
+    std::array<std::string, MAX_EDO> scale;
     const std::map<int, std::string> symbols;
 };
 

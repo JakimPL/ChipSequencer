@@ -11,7 +11,6 @@ ScaleComposer::ScaleComposer()
 
 void ScaleComposer::compose(const int new_edo) {
     edo = std::clamp(new_edo, MIN_EDO, MAX_EDO);
-    scale.resize(edo);
 
     double start = limits.back() - 1.0;
     for (size_t note = 0; note < limits.size(); ++note) {
@@ -62,7 +61,7 @@ size_t ScaleComposer::get_a_index() const {
     return a_index;
 }
 
-std::vector<std::string> ScaleComposer::get_scale() const {
+std::array<std::string, MAX_EDO> ScaleComposer::get_scale() const {
     return scale;
 }
 
