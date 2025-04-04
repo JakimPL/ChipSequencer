@@ -97,19 +97,18 @@ void GUIMenu::file_open() {
     if (result == NFD_OKAY) {
         std::filesystem::path file_path(target_path);
         free(target_path);
-        current_path = file_path;
-
-        gui.stop();
 
         try {
-            song.load_from_file(current_path);
+            gui.stop();
+            song.load_from_file(file_path);
+            current_path = file_path;
+
+            gui.change_window_title(current_path.filename().string());
+            gui.update();
         } catch (nlohmann::json::exception &e) {
             load_error = true;
             std::cerr << "Failed to parse JSON file: " << e.what() << std::endl;
         }
-
-        gui.change_window_title(current_path.filename().string());
-        gui.update();
     } else if (result != NFD_CANCEL) {
         std::cerr << "Error: " << NFD_GetError() << std::endl;
     }

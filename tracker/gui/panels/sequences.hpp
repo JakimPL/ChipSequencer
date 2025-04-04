@@ -27,6 +27,7 @@ class GUISequencesPanel : public GUIPanel {
     void draw_sequence();
 
     void jump();
+    void set_note(const int note_index, const int edo);
 
     void from() override;
     void to() const override;

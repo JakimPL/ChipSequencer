@@ -126,9 +126,8 @@ void GUIGeneralPanel::draw_tuning_settings() {
     draw_int_slider("EDO", current_song.edo, MIN_EDO, MAX_EDO);
     draw_float_slider("A4 Frequency", current_song.a4_frequency, MIN_A4_FREQUENCY, MAX_A4_FREQUENCY);
 
-    ImGui::SetCursorPosX((ImGui::GetWindowWidth() - ImGui::GetItemRectSize().x) * 0.5f);
-    if (ImGui::Button("Apply Tuning")) {
+    draw_button("Apply Tuning", [this]() {
+        gui.stop();
         song.change_tuning(current_song.edo, current_song.a4_frequency);
-        update();
-    }
+        gui.update(); }, 100.0f);
 }

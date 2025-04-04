@@ -8,7 +8,7 @@ struct KeyNoteMapping {
     int note_index;
 };
 
-static KeyNoteMapping key_note_12_edo_mappings[] = {
+static KeyNoteMapping key_note_12_edo_mapping[] = {
     {ImGuiKey_Z, -9}, // C-4
     {ImGuiKey_S, -8}, // C#4
     {ImGuiKey_X, -7}, // D-4
@@ -46,6 +46,44 @@ static KeyNoteMapping key_note_12_edo_mappings[] = {
     {ImGuiKey_O, 17}, // D-6
     {ImGuiKey_0, 18}, // D#6
     {ImGuiKey_P, 19}  // E-6
+};
+
+static KeyNoteMapping key_note_linear_mapping[] = {
+    {ImGuiKey_Z, -10},     // B-3
+    {ImGuiKey_X, -9},      // C-4
+    {ImGuiKey_C, -8},      // C#4
+    {ImGuiKey_V, -7},      // D-4
+    {ImGuiKey_B, -6},      // D#4
+    {ImGuiKey_N, -5},      // E-4
+    {ImGuiKey_M, -4},      // F-4
+    {ImGuiKey_Comma, -3},  // F#4
+    {ImGuiKey_Period, -2}, // G-4
+    {ImGuiKey_Slash, -1},  // G#4
+
+    {ImGuiKey_A, 0},           // A-4
+    {ImGuiKey_S, 1},           // A#4
+    {ImGuiKey_D, 2},           // B-4
+    {ImGuiKey_F, 3},           // C-5
+    {ImGuiKey_G, 4},           // C#5
+    {ImGuiKey_H, 5},           // D-5
+    {ImGuiKey_J, 6},           // D#5
+    {ImGuiKey_K, 7},           // E-5
+    {ImGuiKey_L, 8},           // F-5
+    {ImGuiKey_Semicolon, 9},   // F#5
+    {ImGuiKey_Apostrophe, 10}, // G-5
+
+    {ImGuiKey_Q, 11},           // G#5
+    {ImGuiKey_W, 12},           // A-5
+    {ImGuiKey_E, 13},           // A#5
+    {ImGuiKey_R, 14},           // B-5
+    {ImGuiKey_T, 15},           // C-6
+    {ImGuiKey_Y, 16},           // C#6
+    {ImGuiKey_U, 17},           // D-6
+    {ImGuiKey_I, 18},           // D#6
+    {ImGuiKey_O, 19},           // E-6
+    {ImGuiKey_P, 20},           // F-6
+    {ImGuiKey_LeftBracket, 21}, // F#6
+    {ImGuiKey_RightBracket, 22} // G-6
 };
 
 #endif // GUI_MAPPING_HPP

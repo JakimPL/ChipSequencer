@@ -72,6 +72,18 @@ void draw_popup(const std::string &message) {
     ImGui::EndPopup();
 }
 
+void draw_button(const char *label, const std::function<void()> &callback, const float button_padding) {
+    float text_width = ImGui::CalcTextSize(label).x;
+    float button_width = text_width + button_padding;
+
+    float full_width = ImGui::GetWindowContentRegionMax().x; // full available width in window
+    ImGui::SetCursorPosX((full_width - button_width) * 0.5f);
+
+    if (ImGui::Button(label, ImVec2(button_width, 0))) {
+        callback();
+    }
+}
+
 void prepare_combo(const std::vector<std::string> &names, std::string label, int &index) {
     std::vector<const char *> names_cstr;
     for (const auto &name : names) {

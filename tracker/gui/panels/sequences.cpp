@@ -205,15 +205,17 @@ void GUISequencesPanel::check_keyboard_input() {
 
     const int edo = scale_composer.get_edo();
     if (edo == DEFAULT_EDO) {
-        for (const auto &mapping : key_note_12_edo_mappings) {
-            if (ImGui::IsKeyPressed(mapping.key)) {
-                const int a4_index = frequency_table.get_a4_index();
-                const int note = mapping.note_index + a4_index + edo * (gui.get_current_octave() - 5);
-                if (note < 0 || note >= NOTES) {
-                    continue;
-                }
-                current_sequence.pattern[selected_step] = note;
-                jump();
+        for (const auto &m : key_note_12_edo_mapping) {
+            if (ImGui::IsKeyPressed(m.key)) {
+                set_note(m.note_index, edo);
+                break;
+            }
+        }
+    } else {
+        for (const auto &m : key_note_linear_mapping) {
+            if (ImGui::IsKeyPressed(m.key)) {
+                set_note(m.note_index, edo);
+                break;
             }
         }
     }
@@ -251,4 +253,14 @@ void GUISequencesPanel::check_keyboard_input() {
 
 void GUISequencesPanel::jump() {
     selected_step = std::min(selected_step + gui.get_jump_step(), current_sequence.steps - 1);
+}
+
+void GUISequencesPanel::set_note(const int note_index, const int edo) {
+    const int a4_index = frequency_table.get_a4_index();
+    const int note = note_index + a4_index + edo * (gui.get_current_octave() - 5);
+    if (note < 0 || note >= NOTES) {
+        return;
+    }
+    current_sequence.pattern[selected_step] = note;
+    jump();
 }

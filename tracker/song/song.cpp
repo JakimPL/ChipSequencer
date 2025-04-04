@@ -103,6 +103,7 @@ void Song::load_from_file(const std::string &filename) {
         clear_data();
         import_all(song_dir, json);
         update_sizes();
+        change_tuning(tuning.edo, tuning.a4_frequency);
 
         std::filesystem::remove_all(temp_base);
     } catch (const std::exception &e) {
@@ -402,7 +403,6 @@ nlohmann::json Song::import_header(const std::string &filename) {
     song_length = json["general"]["song_length"];
     tuning.edo = json["tuning"]["edo"];
     tuning.a4_frequency = json["tuning"]["a4_frequency"];
-
     return json;
 }
 
