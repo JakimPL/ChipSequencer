@@ -57,10 +57,6 @@ int FrequencyTable::get_a4_index() const {
     return a4_index;
 }
 
-int FrequencyTable::get_c0_index() const {
-    return c0_index;
-}
-
 double FrequencyTable::get_a4_frequency() const {
     return a4_frequency;
 }
@@ -101,6 +97,7 @@ void FrequencyTable::assign_note_names() {
     const int edo = scale_composer.get_edo();
     const auto scale = scale_composer.get_scale();
     const size_t a_index = scale_composer.get_a_index();
+    note_octaves.clear();
     note_values.clear();
     note_names.clear();
     for (size_t i = 0; i < notes; ++i) {
@@ -112,10 +109,6 @@ void FrequencyTable::assign_note_names() {
         note_names.push_back(note_name);
         note_octaves.push_back(octave);
         note_values[{note_name, octave}] = i;
-
-        if (octave == 0 && note_name == "C") {
-            c0_index = i;
-        }
 
         if (i == 0) {
             min_octave = octave;

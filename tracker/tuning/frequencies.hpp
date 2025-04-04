@@ -18,7 +18,6 @@ class FrequencyTable {
     int get_min_octave() const;
     int get_max_octave() const;
     int get_a4_index() const;
-    int get_c0_index() const;
     double get_a4_frequency() const;
 
     std::vector<double> get_frequencies() const;
@@ -29,7 +28,6 @@ class FrequencyTable {
   private:
     const ScaleComposer &scale_composer;
     int a4_index;
-    int c0_index;
 
     int min_octave;
     int max_octave;
