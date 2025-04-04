@@ -2,6 +2,7 @@
 #include "../enums.hpp"
 #include "../mapping.hpp"
 #include "sequences.hpp"
+#include "utils.hpp"
 
 GUISequencesPanel::GUISequencesPanel() {
     from();
@@ -53,7 +54,7 @@ std::vector<Note> GUISequencesPanel::pattern_to_sequence() const {
     std::vector<Note> note_vector;
 
     uint8_t duration = 1;
-    int8_t pitch;
+    uint8_t pitch;
     for (int i = current_sequence.steps - 1; i >= 0; --i) {
         if (i >= current_sequence.pattern.size()) {
             if (note_vector.empty()) {
@@ -142,12 +143,18 @@ void GUISequencesPanel::draw_sequence() {
 
     const float height = std::max(5.0f, ImGui::GetContentRegionAvail().y - 5.0f);
     ImGui::BeginChild("PatternScroll", ImVec2(0, height), true);
-    ImGui::Columns(2, "pattern_columns", false);
+    ImGui::Columns(3, "pattern_columns", false);
     ImGui::SetColumnWidth(0, 50.0f);
+    ImGui::SetColumnWidth(1, 75.0f);
+    ImGui::SetColumnWidth(2, 75.0f);
 
     ImGui::Text("Index");
     ImGui::NextColumn();
+
     ImGui::Text("Note");
+    ImGui::NextColumn();
+
+    ImGui::Text("Octave");
     ImGui::NextColumn();
 
     ImGui::Separator();
@@ -168,6 +175,14 @@ void GUISequencesPanel::draw_sequence() {
             ImGui::TextColored(ImVec4(1.0f, 0.2f, 1.0f, 1.0f), "%s", note_string.c_str());
         } else {
             ImGui::Text("%s", note_string.c_str());
+        }
+
+        ImGui::NextColumn();
+        const std::string octave_string = get_note_octave(current_sequence.pattern[i]);
+        if (is_selected) {
+            ImGui::TextColored(ImVec4(1.0f, 0.2f, 1.0f, 1.0f), "%s", octave_string.c_str());
+        } else {
+            ImGui::Text("%s", octave_string.c_str());
         }
 
         ImGui::NextColumn();

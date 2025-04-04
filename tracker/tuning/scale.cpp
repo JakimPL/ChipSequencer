@@ -46,11 +46,6 @@ void ScaleComposer::compose(const int new_edo) {
             const int pos = indices[j] % edo;
             std::string note_name = render(scale_names[note], static_cast<int>(j) - index_pos);
 
-            // 12-EDO correction
-            if (edo == 12 && note_name == "C♯") {
-                note_name = "D♭";
-            }
-
             scale.push_back(note_name);
             if (note_name == "A") {
                 a_index = pos;
@@ -73,19 +68,23 @@ std::vector<std::string> ScaleComposer::get_scale() const {
     return scale;
 }
 
-std::string ScaleComposer::render(const std::string &name, const int offset) const {
-    const int key = (offset == 0 ? 0 : (offset > 0 ? 1 : -1));
-    const std::pair<int, const char *> *found = nullptr;
-    for (const auto &p : scale_symbols) {
-        if (p.first == key) {
-            found = &p;
-            break;
-        }
+std::string ScaleComposer::render(const std::string &name, int offset) const {
+    // 12-edo correction
+    if (edo == 12 && offset != 0) {
+        offset = 1;
     }
 
-    const std::string symbol = (found ? found->second : "");
+    std::string symbol;
+    if (offset == 0) {
+        symbol = symbols.at(0);
+    } else if (offset > 0) {
+        symbol = symbols.at(1);
+    } else {
+        symbol = symbols.at(-1);
+    }
+
     std::string repeated;
-    int count = std::abs(offset);
+    const int count = std::abs(offset);
     for (int i = 0; i < count; ++i) {
         repeated += symbol;
     }

@@ -9,6 +9,12 @@ class FrequencyTable {
     FrequencyTable(const ScaleComposer &scale_composer, const double a4_frequency, const int notes = NOTES);
 
     void calculate(const double a4_frequency = DEFAULT_A4_FREQUENCY);
+
+    double get_note_frequency(uint8_t note_value) const;
+    std::string get_note_name(uint8_t note_value) const;
+    int get_note_octave(uint8_t note_value) const;
+    int get_note_value(const std::string &note_name, const int octave) const;
+
     std::vector<double> get_frequencies() const;
     std::vector<std::string> get_note_names() const;
     std::map<std::pair<std::string, int>, size_t> get_note_values() const;

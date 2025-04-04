@@ -8,13 +8,12 @@
 #include "../init.hpp"
 #include "../names.hpp"
 #include "panel.hpp"
-#include "utils.hpp"
 
 class GUISequencesPanel : public GUIPanel {
   private:
     struct CurrentSequence {
         int steps = 0;
-        std::vector<int8_t> pattern = {};
+        std::vector<uint8_t> pattern = {};
     } current_sequence;
 
     int sequence_index = 0;

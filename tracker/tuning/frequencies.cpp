@@ -15,6 +15,35 @@ void FrequencyTable::calculate(const double a4_freq) {
     assign_note_names();
 }
 
+double FrequencyTable::get_note_frequency(uint8_t note_value) const {
+    if (note_value >= notes) {
+        return 0.0;
+    }
+    return frequencies[note_value];
+}
+
+std::string FrequencyTable::get_note_name(uint8_t note_value) const {
+    if (note_value >= notes) {
+        return "???";
+    }
+    return note_names[note_value];
+}
+
+int FrequencyTable::get_note_octave(uint8_t note_value) const {
+    if (note_value >= notes) {
+        return 0;
+    }
+    return note_octaves[note_value];
+}
+
+int FrequencyTable::get_note_value(const std::string &note_name, const int octave) const {
+    auto it = note_values.find({note_name, octave});
+    if (it != note_values.end()) {
+        return it->second;
+    }
+    return -1;
+}
+
 std::vector<double> FrequencyTable::get_frequencies() const {
     return frequencies;
 }
@@ -60,8 +89,7 @@ void FrequencyTable::assign_note_names() {
             index += edo;
         }
 
-        const int octave = 4 + (difference + a_index) / edo;
-
+        const int octave = 4 + (difference + static_cast<int>(a_index)) / edo;
         note_names.push_back(scale[index]);
         note_octaves.push_back(octave);
         note_values[{scale[index], octave}] = i;

@@ -13,7 +13,8 @@ void draw_float_slider(const char *label, float &reference, float min, float max
 void draw_knob(const char *label, float &reference, float min, float max);
 void prepare_combo(const std::vector<std::string> &names, std::string label, int &index);
 void update_items(std::vector<std::string> &names, size_t size, std::string label, int &index);
-std::string get_note_name(int8_t midi_value);
-uint8_t get_midi_value(const std::string &note_name);
+std::string get_note_name(uint8_t note_value);
+std::string get_note_octave(uint8_t note_value);
+uint8_t get_note_value(const std::string &note_name, const int octave);
 
 #endif // GUI_PANELS_UTILS_HPP

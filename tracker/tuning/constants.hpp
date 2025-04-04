@@ -29,9 +29,9 @@ inline static const double scale_intervals[] = {
 };
 
 inline static const std::pair<int, const char *> scale_symbols[] = {
-    {-1, "♭"},
+    {-1, "b"},
     {0, ""},
-    {1, "♯"},
+    {1, "#"},
 };
 
 #endif // TUNING_CONSTANTS_HPP

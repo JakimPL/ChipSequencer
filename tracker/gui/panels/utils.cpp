@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "../../general.hpp"
 #include "../constants.hpp"
 #include "../mapping.hpp"
 #include "utils.hpp"
@@ -84,23 +85,28 @@ void update_items(std::vector<std::string> &names, size_t size, std::string labe
     }
 }
 
-std::string get_note_name(int8_t midi_value) {
-    if (midi_value == NOTE_REST) return "...";
-    if (midi_value == NOTE_OFF) return "===";
-
-    int max_notes = sizeof(note_names) / sizeof(note_names[0]);
-    if (midi_value < max_notes) {
-        return std::string(note_names[midi_value]);
+std::string get_note_name(uint8_t note_value) {
+    if (note_value == NOTE_REST) return "...";
+    if (note_value == NOTE_OFF) return "===";
+    if (note_value < NOTES) {
+        return frequency_table.get_note_name(note_value);
     }
     return "???";
 }
 
-uint8_t get_midi_value(const std::string &note_name) {
-    for (size_t i = 0; i < sizeof(note_names) / sizeof(note_names[0]); ++i) {
-        if (note_name == note_names[i]) {
-            return static_cast<int8_t>(i);
-        }
+std::string get_note_octave(uint8_t note_value) {
+    if (note_value == NOTE_REST) return "...";
+    if (note_value == NOTE_OFF) return "===";
+    if (note_value < NOTES) {
+        return std::to_string(frequency_table.get_note_octave(note_value));
     }
 
-    return NOTE_REST;
+    return 0;
+}
+
+uint8_t get_note_value(const std::string &note_name, const int octave) {
+    if (note_name == "...") return NOTE_REST;
+    if (note_name == "===") return NOTE_OFF;
+    if (note_name == "???") return NOTES;
+    return frequency_table.get_note_value(note_name, octave);
 }

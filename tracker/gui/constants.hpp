@@ -1,8 +1,8 @@
 #ifndef GUI_CONSTANTS_HPP
 #define GUI_CONSTANTS_HPP
 
-#define NOTE_REST -2
-#define NOTE_OFF -1
+#define NOTE_REST 254
+#define NOTE_OFF 255
 #define CONSTANT_PITCH 0xFF
 
 #define GUI_MAX_JUMP_STEP 32

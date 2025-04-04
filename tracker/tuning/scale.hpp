@@ -17,7 +17,7 @@ class ScaleComposer {
     std::vector<std::string> get_scale() const;
 
   private:
-    std::string render(const std::string &name, const int offset) const;
+    std::string render(const std::string &name, int offset) const;
     void get_note_centers_and_limits();
 
     int edo = 0;
