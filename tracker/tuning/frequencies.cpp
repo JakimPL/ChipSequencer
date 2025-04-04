@@ -84,7 +84,7 @@ void FrequencyTable::calculate_note_divisor() {
 
 void FrequencyTable::calculate_frequency_table() {
     const int edo = scale_composer.get_edo();
-    a4_index = notes / 2 - static_cast<int>(std::round(edo * std::log2(range_mean / a4_frequency)));
+    a4_index = notes / 2 - static_cast<int>(std::round(edo * std::log2(range_mean / DEFAULT_A4_FREQUENCY)));
     double freq = a4_frequency * std::pow(note_divisor, static_cast<double>(notes - a4_index - 1));
     frequencies.resize(notes);
     for (int i = notes - 1; i >= 0; --i) {
@@ -105,7 +105,7 @@ void FrequencyTable::assign_note_names() {
         const int index = mod(difference + a_index, edo);
 
         const auto note_name = scale[index];
-        const int octave = 4 + (difference + static_cast<int>(a_index)) / edo;
+        const int octave = 4 + static_cast<int>(std::floor((difference + static_cast<int>(a_index)) / static_cast<double>(edo)));
         note_names.push_back(note_name);
         note_octaves.push_back(octave);
         note_values[{note_name, octave}] = i;

@@ -203,16 +203,18 @@ void GUISequencesPanel::check_keyboard_input() {
         return;
     }
 
-    for (const auto &mapping : key_note_mappings) {
-        if (ImGui::IsKeyPressed(mapping.key)) {
-            const int c0_index = frequency_table.get_c0_index();
-            const int edo = scale_composer.get_edo();
-            const int note = mapping.note_index + c0_index + edo * gui.get_current_octave();
-            if (note < 0 || note >= NOTES) {
-                continue;
+    const int edo = scale_composer.get_edo();
+    if (edo == DEFAULT_EDO) {
+        for (const auto &mapping : key_note_12_edo_mappings) {
+            if (ImGui::IsKeyPressed(mapping.key)) {
+                const int a4_index = frequency_table.get_a4_index();
+                const int note = mapping.note_index + a4_index + edo * (gui.get_current_octave() - 5);
+                if (note < 0 || note >= NOTES) {
+                    continue;
+                }
+                current_sequence.pattern[selected_step] = note;
+                jump();
             }
-            current_sequence.pattern[selected_step] = note;
-            jump();
         }
     }
 
