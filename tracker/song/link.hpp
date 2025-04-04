@@ -1,6 +1,7 @@
 #ifndef SONG_LINK_HPP
 #define SONG_LINK_HPP
 
+#include <array>
 #include <cstdint>
 #include <map>
 #include <vector>
@@ -27,6 +28,6 @@ struct Link {
     void deserialize(std::ifstream &file);
 };
 
-typedef std::vector<std::vector<Link>> Links;
+typedef std::array<std::vector<Link>, 2> Links;
 
 #endif // SONG_LINK_HPP

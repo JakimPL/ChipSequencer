@@ -11,6 +11,7 @@ void draw_number_of_items(const std::string &label, const char *label_id, int &v
 void draw_int_slider(const char *label, int &reference, int min, int max);
 void draw_float_slider(const char *label, float &reference, float min, float max, bool log_scale = false);
 void draw_knob(const char *label, float &reference, float min, float max);
+void draw_popup(const std::string &message);
 void prepare_combo(const std::vector<std::string> &names, std::string label, int &index);
 void update_items(std::vector<std::string> &names, size_t size, std::string label, int &index);
 std::string get_note_name(uint8_t note_value);

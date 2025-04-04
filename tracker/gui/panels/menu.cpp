@@ -46,25 +46,17 @@ void GUIMenu::draw() {
         compilation_status = std::nullopt;
     }
 
-    if (ImGui::BeginPopupModal("Success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::Text("File compiled successfully!");
-        float buttonWidth = 60.0f;
-        float windowWidth = ImGui::GetWindowSize().x;
-        ImGui::SetCursorPosX((windowWidth - buttonWidth) * 0.5f);
-        if (ImGui::Button("Close", ImVec2(buttonWidth, 0))) {
-            ImGui::CloseCurrentPopup();
-        }
-        ImGui::EndPopup();
+    if (load_error.has_value()) {
+        ImGui::OpenPopup("Load error");
+        load_error = std::nullopt;
     }
-    if (ImGui::BeginPopupModal("Failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::Text("Compilation failed!");
-        float buttonWidth = 60.0f;
-        float windowWidth = ImGui::GetWindowSize().x;
-        ImGui::SetCursorPosX((windowWidth - buttonWidth) * 0.5f);
-        if (ImGui::Button("Close", ImVec2(buttonWidth, 0))) {
-            ImGui::CloseCurrentPopup();
-        }
-        ImGui::EndPopup();
+
+    if (ImGui::BeginPopupModal("Success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("File compiled successfully!");
+    } else if (ImGui::BeginPopupModal("Failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Compilation failed!");
+    } else if (ImGui::BeginPopupModal("Load error", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Failed to load file!");
     }
 }
 
@@ -72,6 +64,7 @@ void GUIMenu::file_new() {
     gui.stop();
     song.new_song();
     current_path = std::filesystem::path();
+    gui.update();
 }
 
 void GUIMenu::file_save() {
@@ -92,6 +85,7 @@ void GUIMenu::file_save_as() {
 
         current_path = new_path;
         song.save_to_file(current_path);
+        gui.change_window_title(current_path.filename().string());
     } else if (result != NFD_CANCEL) {
         std::cerr << "Error: " << NFD_GetError() << std::endl;
     }
@@ -106,11 +100,20 @@ void GUIMenu::file_open() {
         current_path = file_path;
 
         gui.stop();
-        song.load_from_file(current_path);
+
+        try {
+            song.load_from_file(current_path);
+        } catch (nlohmann::json::exception &e) {
+            load_error = true;
+            std::cerr << "Failed to parse JSON file: " << e.what() << std::endl;
+        }
+
+        gui.change_window_title(current_path.filename().string());
         gui.update();
     } else if (result != NFD_CANCEL) {
         std::cerr << "Error: " << NFD_GetError() << std::endl;
     }
+    gui.update();
 }
 
 void GUIMenu::file_compile(const bool compress) {

@@ -9,6 +9,7 @@
 class GUIMenu : public GUIPanel {
   private:
     std::optional<bool> compilation_status;
+    std::optional<bool> load_error;
 
     void file_new();
     void file_save();

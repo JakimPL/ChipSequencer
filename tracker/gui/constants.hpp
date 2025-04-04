@@ -1,6 +1,8 @@
 #ifndef GUI_CONSTANTS_HPP
 #define GUI_CONSTANTS_HPP
 
+#define APPLICATION_TITLE "ChipSequencer"
+
 #define NOTE_REST 254
 #define NOTE_OFF 255
 #define CONSTANT_PITCH 0xFF

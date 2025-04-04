@@ -33,6 +33,8 @@ class GUI {
     bool is_playing() const;
     bool is_paused() const;
 
+    void change_window_title(const std::string &title);
+
     void set_audio_engine(AudioEngine *engine);
     void update(GUIElement element = GUIElement::All);
 

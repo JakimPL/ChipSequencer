@@ -36,7 +36,7 @@ class GUIGeneralPanel : public GUIPanel {
 
   public:
     GUIGeneralPanel();
-    void update() override {};
+    void update() override;
 };
 
 #endif // GUI_PANELS_GENERAL_HPP

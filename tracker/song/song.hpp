@@ -18,6 +18,11 @@ class Song {
         std::string version = TRACKER_VERSION;
     } header;
 
+    struct Tuning {
+        uint8_t edo = DEFAULT_EDO;
+        double a4_frequency = DEFAULT_A4_FREQUENCY;
+    } tuning;
+
     uint16_t &bpm;
     _Float32 &normalizer;
 
@@ -42,7 +47,7 @@ class Song {
     FrequencyTable &frequency_table;
 
     uint8_t output_channels = 1;
-    uint32_t song_length = 186253;
+    uint32_t song_length = SONG_LENGTH;
 
     void generate_header_vector(std::stringstream &asm_content, const std::string &name, const std::string &short_name, const size_t size) const;
     std::string generate_header_asm_file() const;
@@ -129,7 +134,7 @@ class Song {
     void save_to_file(const std::string &filename) const;
     void compile(const std::string &filename, bool compress = true) const;
 
-    void change_tuning(const uint8_t new_edo, const uint32_t base_frequency);
+    void change_tuning(const uint8_t new_edo, const double base_frequency);
 
     Envelope *add_envelope();
     Sequence *add_sequence();

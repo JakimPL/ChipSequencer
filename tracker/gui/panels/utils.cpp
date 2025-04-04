@@ -61,6 +61,17 @@ void draw_knob(const char *label, float &reference, float min, float max) {
     reference = std::clamp(reference, min, max);
 }
 
+void draw_popup(const std::string &message) {
+    ImGui::Text("%s", message.c_str());
+    float buttonWidth = 60.0f;
+    float windowWidth = ImGui::GetWindowSize().x;
+    ImGui::SetCursorPosX((windowWidth - buttonWidth) * 0.5f);
+    if (ImGui::Button("Close", ImVec2(buttonWidth, 0))) {
+        ImGui::CloseCurrentPopup();
+    }
+    ImGui::EndPopup();
+}
+
 void prepare_combo(const std::vector<std::string> &names, std::string label, int &index) {
     std::vector<const char *> names_cstr;
     for (const auto &name : names) {

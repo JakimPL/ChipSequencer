@@ -4,6 +4,11 @@
 GUIGeneralPanel::GUIGeneralPanel() {
 }
 
+void GUIGeneralPanel::update() {
+    current_song.edo = scale_composer.get_edo();
+    current_song.a4_frequency = frequency_table.get_a4_frequency();
+}
+
 void GUIGeneralPanel::draw() {
     ImGui::Begin("General");
     from();
@@ -18,9 +23,6 @@ void GUIGeneralPanel::draw() {
 void GUIGeneralPanel::from() {
     current_song.bpm = bpm;
     current_song.normalizer = normalizer;
-
-    current_song.edo = scale_composer.get_edo();
-    current_song.a4_frequency = frequency_table.get_a4_frequency();
 }
 
 void GUIGeneralPanel::to() const {
@@ -28,10 +30,6 @@ void GUIGeneralPanel::to() const {
     if (current_song.bpm != bpm) {
         bpm = current_song.bpm;
         calculate_ticks_per_beat();
-    }
-
-    if (current_song.edo != scale_composer.get_edo() || current_song.a4_frequency != frequency_table.get_a4_frequency()) {
-        song.change_tuning(current_song.edo, current_song.a4_frequency);
     }
 }
 
@@ -127,4 +125,10 @@ void GUIGeneralPanel::draw_tuning_settings() {
     ImGui::Text("Tuning Settings");
     draw_int_slider("EDO", current_song.edo, MIN_EDO, MAX_EDO);
     draw_float_slider("A4 Frequency", current_song.a4_frequency, MIN_A4_FREQUENCY, MAX_A4_FREQUENCY);
+
+    ImGui::SetCursorPosX((ImGui::GetWindowWidth() - ImGui::GetItemRectSize().x) * 0.5f);
+    if (ImGui::Button("Apply Tuning")) {
+        song.change_tuning(current_song.edo, current_song.a4_frequency);
+        update();
+    }
 }
