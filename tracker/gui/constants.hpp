@@ -3,8 +3,6 @@
 
 #define APPLICATION_TITLE "ChipSequencer"
 
-#define NOTE_REST 254
-#define NOTE_OFF 255
 #define CONSTANT_PITCH 0xFF
 
 #define GUI_MAX_JUMP_STEP 32

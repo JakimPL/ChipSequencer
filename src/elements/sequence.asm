@@ -31,7 +31,7 @@ step:
     lea esi, [ecx + SEQUENCE_NOTES + eax * 2]
     mov al, [esi]
 .check_note_off:
-    cmp al, 0xFF
+    cmp al, NOTE_OFF
     jnz .note_on
 .note_off:
     call set_release

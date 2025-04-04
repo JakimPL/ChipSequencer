@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "../../general.hpp"
 #include "../enums.hpp"
 #include "../mapping.hpp"

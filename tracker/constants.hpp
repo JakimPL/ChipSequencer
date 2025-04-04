@@ -29,6 +29,10 @@
 
 #define DEFAULT_CHANNEL_PITCH 0x02000000
 
+// Notes
+#define NOTE_REST 254
+#define NOTE_OFF 255
+
 // Limits
 #define MAX_ENVELOPES 32
 #define MAX_SEQUENCES 64
