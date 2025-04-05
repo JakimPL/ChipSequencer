@@ -3,7 +3,7 @@
 
 #define APPLICATION_TITLE "ChipSequencer"
 
-#define CONSTANT_PITCH 0xFF
+#define GUI_PAGE_SIZE 256
 
 #define GUI_MAX_JUMP_STEP 32
 #define GUI_MAX_ITEMS 64

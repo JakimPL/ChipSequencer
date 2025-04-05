@@ -105,9 +105,6 @@ void GUISequencesPanel::draw_sequence() {
 
     draw_sequence_length();
     draw_pattern(current_sequence.pattern);
-
-    ImGui::Columns(1);
-    ImGui::EndChild();
 }
 
 void GUISequencesPanel::check_keyboard_input() {

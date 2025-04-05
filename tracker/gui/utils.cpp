@@ -84,7 +84,7 @@ void draw_button(const char *label, const std::function<void()> &callback, const
     }
 }
 
-void draw_pattern(Pattern &pattern) {
+size_t draw_pattern(Pattern &pattern, const bool header, size_t index) {
     const float height = std::max(5.0f, ImGui::GetContentRegionAvail().y - 5.0f);
     ImGui::BeginChild("PatternScroll", ImVec2(0, height), true);
     ImGui::Columns(3, "pattern_columns", false);
@@ -92,20 +92,23 @@ void draw_pattern(Pattern &pattern) {
     ImGui::SetColumnWidth(1, 75.0f);
     ImGui::SetColumnWidth(2, 75.0f);
 
-    ImGui::Text("Index");
-    ImGui::NextColumn();
+    if (header) {
+        ImGui::Text("Index");
+        ImGui::NextColumn();
 
-    ImGui::Text("Note");
-    ImGui::NextColumn();
+        ImGui::Text("Note");
+        ImGui::NextColumn();
 
-    ImGui::Text("Octave");
-    ImGui::NextColumn();
+        ImGui::Text("Octave");
+        ImGui::NextColumn();
 
-    ImGui::Separator();
+        ImGui::Separator();
+    }
 
     for (int i = 0; i < pattern.notes.size(); ++i) {
-        ImGui::PushID(i);
-        ImGui::Text("%d", i);
+        const int j = i + index;
+        ImGui::PushID(j);
+        ImGui::Text("%d", j);
         ImGui::NextColumn();
 
         const bool is_selected = (pattern.current_row == i);
@@ -132,6 +135,11 @@ void draw_pattern(Pattern &pattern) {
         ImGui::NextColumn();
         ImGui::PopID();
     }
+
+    ImGui::Columns(1);
+    ImGui::EndChild();
+
+    return index + pattern.notes.size();
 }
 
 void prepare_combo(const std::vector<std::string> &names, std::string label, int &index) {

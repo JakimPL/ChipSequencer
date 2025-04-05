@@ -1,15 +1,21 @@
 #ifndef GUI_PANELS_PATTERNS_HPP
 #define GUI_PANELS_PATTERNS_HPP
 
+#include <map>
+#include <vector>
+
+#include "../constants.hpp"
+#include "../pattern.hpp"
 #include "panel.hpp"
 
 class GUIPatternsPanel : public GUIPanel {
   private:
     struct CurrentPattern {
-        int current_row = -1;
+        int page = 0;
+        std::map<int, std::vector<Pattern>> patterns;
     } current_pattern;
 
-    int page = 0;
+    const int page_size = GUI_PAGE_SIZE;
 
     void draw_channels();
     void draw_channel(size_t channel_index);

@@ -18,28 +18,34 @@ void GUIPatternsPanel::draw() {
     check_keyboard_input();
     to();
 
+    ImGui::Columns(1);
     ImGui::End();
 }
 
 void GUIPatternsPanel::draw_channels() {
-    if (channels.empty()) {
+    if (current_pattern.patterns.empty()) {
         ImGui::Text("No channels available.");
         return;
     }
 
     ImGui::Columns(channels.size(), "pattern_columns");
-    for (size_t i = 0; i < channels.size(); ++i) {
-        draw_channel(i);
+    for (const auto &[id, pattern] : current_pattern.patterns) {
+        draw_channel(id);
     }
 }
 void GUIPatternsPanel::draw_channel(size_t channel_index) {
     ImGui::PushID(channel_index);
     ImGui::Text("Channel %zu", channel_index);
+    size_t index = 0;
+    for (auto &pattern : current_pattern.patterns[channel_index]) {
+        index = draw_pattern(pattern, false, index);
+    }
     ImGui::NextColumn();
     ImGui::PopID();
 }
 
 void GUIPatternsPanel::from() {
+    current_pattern.patterns.clear();
     for (size_t i = 0; i < channels.size(); ++i) {
         const Channel *channel = channels[i];
         const uint8_t order_index = channel->order_index;
@@ -57,6 +63,7 @@ void GUIPatternsPanel::from() {
 
             const Sequence *sequence = sequences[order_sequences[j]];
             Pattern pattern = Pattern(sequence);
+            current_pattern.patterns[order_sequences[j]].push_back(pattern);
         }
     }
 }
