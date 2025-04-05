@@ -3,6 +3,7 @@
 
 #define APPLICATION_TITLE "ChipSequencer"
 
+#define GUI_MINIMAL_CHANNEL_COLUMN_WIDTH 150.0f
 #define GUI_PAGE_SIZE 256
 
 #define GUI_MAX_JUMP_STEP 32

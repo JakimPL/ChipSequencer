@@ -29,11 +29,26 @@ void GUIPatternsPanel::draw_channels() {
         return;
     }
 
-    ImGui::Columns(channels.size(), "pattern_columns");
+    size_t columns = current_pattern.patterns.size();
+    const float available = ImGui::GetContentRegionAvail().x;
+    const float total_min = columns * GUI_MINIMAL_CHANNEL_COLUMN_WIDTH;
+    const float child_width = (available >= total_min) ? available : total_min;
+    const float column_width = (available >= total_min) ? (available / columns) : GUI_MINIMAL_CHANNEL_COLUMN_WIDTH;
+
+    ImGui::SetNextWindowContentSize(ImVec2(std::max(available, total_min), 0));
+    ImGui::BeginChild("##PatternChannels", ImVec2(available, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+    ImGui::Columns(current_pattern.patterns.size(), "PatternColumns", true);
+    for (size_t column = 0; column < columns; column++) {
+        ImGui::SetColumnWidth(column, column_width);
+    }
+
     for (const auto &[id, pattern] : current_pattern.patterns) {
         draw_channel(id);
     }
+
+    ImGui::EndChild();
 }
+
 void GUIPatternsPanel::draw_channel(size_t channel_index) {
     ImGui::PushID(channel_index);
     ImGui::Text("Channel %zu", channel_index);
