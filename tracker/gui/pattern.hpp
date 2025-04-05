@@ -10,6 +10,7 @@ struct Pattern {
     Pattern();
     Pattern(const Sequence *sequence);
 
+    int row_playing = -1;
     int current_row = -1;
     int steps = 0;
     std::vector<uint8_t> notes = {};

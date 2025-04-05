@@ -6,10 +6,19 @@
     global output
     global reset
     global calculate_ticks_per_beat
+    global ticks_per_beat
 
     global sample_rate
     global output
     global dsp_input
+
+    global envelope_timer
+    global sequence_timer
+    global oscillator_timer
+    global pitch
+
+    global current_order
+    global sequence_current_note
 
     extern sound_driver_step
     extern sound_driver_initialize
