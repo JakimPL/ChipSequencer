@@ -17,15 +17,11 @@ class GUISequencesPanel : public GUIPanel {
     } current_sequence;
 
     int sequence_index = 0;
-    const int max_steps = GUI_MAX_STEPS;
     int jump_step = 1;
 
     bool is_index_valid() const;
     void draw_sequence_length();
     void draw_sequence();
-
-    void jump();
-    void set_note(const int note_index, const int edo);
 
     void from() override;
     void to() const override;

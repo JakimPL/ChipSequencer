@@ -19,6 +19,10 @@ struct Pattern {
     void from_sequence(const Sequence *sequence);
     std::vector<Note> to_note_vector() const;
     int calculate_playing_row(size_t channel_index);
+
+    void jump();
+    void set_note(const int note_index, const int edo);
+    void handle_input();
 };
 
 #endif // GUI_PATTERN_HPP

@@ -109,6 +109,11 @@ void Song::change_tuning(const uint8_t new_edo, const double base_frequency) {
     };
 }
 
+uint16_t Song::get_max_rows() {
+    calculate_song_length();
+    return max_rows;
+}
+
 void Song::export_all(const std::string &directory) const {
     export_header_asm_file(directory);
     export_data_asm_file(directory);

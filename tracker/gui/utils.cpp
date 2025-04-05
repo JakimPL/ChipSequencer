@@ -84,7 +84,8 @@ void draw_button(const char *label, const std::function<void()> &callback, const
     }
 }
 
-size_t draw_pattern(Pattern &pattern, const bool header, size_t index, const int playing_row) {
+std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t index, const int playing_row) {
+    bool select = false;
     const float height = std::max(5.0f, ImGui::GetContentRegionAvail().y - 5.0f);
     const ImVec4 highlight_color = ImVec4(1.0f, 0.2f, 1.0f, 1.0f);
 
@@ -99,18 +100,20 @@ size_t draw_pattern(Pattern &pattern, const bool header, size_t index, const int
 
         for (int i = 0; i < pattern.notes.size(); ++i) {
             const int j = i + index;
-            const bool is_selected = (pattern.current_row == i);
+            const bool is_selected = (pattern.current_row == j);
             const std::string index_string = std::to_string(j);
 
             ImGui::TableNextRow();
-            if (j == playing_row) {
+            if (playing_row == j) {
                 ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, IM_COL32(128, 255, 128, 64));
             }
 
             ImGui::TableSetColumnIndex(0);
             if (ImGui::Selectable(("##Selectable" + index_string).c_str(), is_selected, ImGuiSelectableFlags_SpanAllColumns)) {
-                pattern.current_row = i;
+                pattern.current_row = j;
+                select = true;
             }
+
             ImGui::SameLine();
             ImGui::TableSetColumnIndex(0);
             draw_colored_text(index_string, is_selected, highlight_color);
@@ -130,7 +133,7 @@ size_t draw_pattern(Pattern &pattern, const bool header, size_t index, const int
     ImGui::Separator();
     ImGui::EndChild();
 
-    return index + pattern.notes.size();
+    return {index + pattern.notes.size(), select};
 }
 
 void draw_colored_text(const std::string &text, bool condition, const ImVec4 &color) {

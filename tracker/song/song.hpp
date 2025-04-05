@@ -95,6 +95,7 @@ class Song {
     void compile(const std::string &filename, bool compress = true) const;
 
     void change_tuning(const uint8_t new_edo, const double base_frequency);
+    uint16_t get_max_rows();
 
     Envelope *add_envelope();
     Sequence *add_sequence();

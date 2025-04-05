@@ -17,7 +17,8 @@ class GUIPatternsPanel : public GUIPanel {
         std::map<size_t, int> playing_rows;
     } current_pattern;
 
-    const int page_size = GUI_PAGE_SIZE;
+    size_t current_channel = -1;
+    int current_row = -1;
 
     void draw_channels();
     void draw_channel(size_t channel_index);

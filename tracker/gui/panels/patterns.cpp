@@ -2,6 +2,8 @@
 #include "../utils.hpp"
 #include "patterns.hpp"
 
+#include <iostream>
+
 GUIPatternsPanel::GUIPatternsPanel() {
     from();
     update();
@@ -55,7 +57,12 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
     size_t index = 0;
     for (auto &pattern : current_pattern.patterns[channel_index]) {
         const int playing_row = current_pattern.playing_rows[channel_index];
-        index = draw_pattern(pattern, false, index, playing_row);
+        auto [new_index, select] = draw_pattern(pattern, false, index, playing_row);
+        index = new_index;
+        if (select) {
+            current_channel = channel_index;
+            current_row = pattern.current_row;
+        }
     }
     ImGui::NextColumn();
     ImGui::PopID();
@@ -65,8 +72,8 @@ void GUIPatternsPanel::from() {
     current_pattern.patterns.clear();
     current_pattern.playing_rows.clear();
     const bool is_playing = gui.is_playing() && ticks_per_beat > 0;
-    for (size_t i = 0; i < channels.size(); ++i) {
-        const Channel *channel = channels[i];
+    for (size_t channel_index = 0; channel_index < channels.size(); ++channel_index) {
+        const Channel *channel = channels[channel_index];
         const uint8_t order_index = channel->order_index;
         const bool constant_pitch = channel->order_index == -1;
         if (constant_pitch || order_index >= orders.size()) {
@@ -77,8 +84,8 @@ void GUIPatternsPanel::from() {
         std::vector<uint8_t> order_sequences = std::vector<uint8_t>(order->sequences, order->sequences + order->order_length);
 
         uint16_t row = 0;
-        uint8_t playing_sequence = current_sequence[i];
-        current_pattern.playing_rows[i] = -1;
+        uint8_t playing_sequence = current_sequence[channel_index];
+        current_pattern.playing_rows[channel_index] = -1;
         for (size_t j = 0; j < order->order_length; ++j) {
             const uint8_t sequence_index = order_sequences[j];
             if (sequence_index >= sequences.size()) {
@@ -87,11 +94,17 @@ void GUIPatternsPanel::from() {
 
             const Sequence *sequence = sequences[sequence_index];
             Pattern pattern = Pattern(sequence);
-            current_pattern.patterns[i].push_back(pattern);
+            if (channel_index == current_channel) {
+                pattern.current_row = current_row;
+            } else {
+                pattern.current_row = -1;
+            }
+
+            current_pattern.patterns[channel_index].push_back(pattern);
 
             if (is_playing && playing_sequence == j) {
-                const int playing_row = pattern.calculate_playing_row(i);
-                current_pattern.playing_rows[i] = row + playing_row;
+                const int playing_row = pattern.calculate_playing_row(channel_index);
+                current_pattern.playing_rows[channel_index] = row + playing_row;
             }
 
             row += pattern.steps;
