@@ -23,8 +23,9 @@ class Song {
         double a4_frequency = DEFAULT_A4_FREQUENCY;
     } tuning;
 
-    uint8_t output_channels = 1;
-    uint32_t song_length = SONG_LENGTH;
+    uint8_t output_channels = DEFAULT_OUTPUT_CHANNELS;
+    uint64_t song_length = 0;
+    uint16_t max_rows = 0;
 
     void generate_header_vector(std::stringstream &asm_content, const std::string &name, const std::string &short_name, const size_t size) const;
     std::string generate_header_asm_file() const;
@@ -34,6 +35,7 @@ class Song {
 
     std::string get_element_path(const std::string &directory, const std::string prefix, const size_t i, const char separator = '/') const;
 
+    void calculate_song_length();
     void set_link(Link &link, void *item, const u_int8_t i) const;
     void set_links();
 
@@ -89,7 +91,7 @@ class Song {
 
     void new_song();
     void load_from_file(const std::string &filename);
-    void save_to_file(const std::string &filename) const;
+    void save_to_file(const std::string &filename);
     void compile(const std::string &filename, bool compress = true) const;
 
     void change_tuning(const uint8_t new_edo, const double base_frequency);

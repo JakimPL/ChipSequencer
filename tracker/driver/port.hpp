@@ -1,7 +1,6 @@
 #ifndef DRIVER_PORT_HPP
 #define DRIVER_PORT_HPP
 
-#include <array>
 #include <vector>
 #include <atomic>
 #include <mutex>
@@ -15,7 +14,6 @@
 class PortAudioDriver : public Driver {
   public:
     PortAudioDriver(
-        const std::array<t_output, SONG_LENGTH> &target,
         uint16_t sample_rate,
         unsigned long frames_per_buffer = 256
     );
@@ -28,7 +26,6 @@ class PortAudioDriver : public Driver {
     bool close_stream();
     bool start_stream();
     bool stop_stream();
-    void sleep();
 
     void reset_buffer();
     void submit_buffer(const t_output *data, size_t size);
@@ -55,8 +52,6 @@ class PortAudioDriver : public Driver {
     PaStream *stream;
     uint current_index;
     unsigned long frames_per_buffer;
-
-    const std::array<t_output, SONG_LENGTH> &target;
 
     static int audio_callback(
         const void *input_buffer,

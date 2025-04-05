@@ -5,7 +5,6 @@
 #include "../structures.hpp"
 #include "link.hpp"
 
-#define SONG_LENGTH 186253
 typedef _Float32 t_output;
 
 /* Read-only internals */

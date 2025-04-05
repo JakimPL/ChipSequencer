@@ -12,6 +12,7 @@ class GUIPatternsPanel : public GUIPanel {
   private:
     struct CurrentPattern {
         int page = 0;
+        size_t total_rows = 0;
         std::map<size_t, std::vector<Pattern>> patterns;
         std::map<size_t, int> playing_rows;
     } current_pattern;
