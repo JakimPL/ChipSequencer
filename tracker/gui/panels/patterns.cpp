@@ -58,11 +58,11 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
     for (auto &pattern : current_pattern.patterns[channel_index]) {
         const int playing_row = current_pattern.playing_rows[channel_index];
         auto [new_index, select] = draw_pattern(pattern, false, index, playing_row);
-        index = new_index;
         if (select) {
             current_channel = channel_index;
-            current_row = pattern.current_row;
+            current_row = pattern.current_row + index;
         }
+        index = new_index;
     }
     ImGui::NextColumn();
     ImGui::PopID();
@@ -94,14 +94,8 @@ void GUIPatternsPanel::from() {
 
             const Sequence *sequence = sequences[sequence_index];
             Pattern pattern = Pattern(sequence);
-            if (channel_index == current_channel) {
-                pattern.current_row = current_row;
-            } else {
-                pattern.current_row = -1;
-            }
-
+            pattern.current_row = channel_index == current_channel ? current_row - row : -1;
             current_pattern.patterns[channel_index].push_back(pattern);
-
             if (is_playing && playing_sequence == j) {
                 const int playing_row = pattern.calculate_playing_row(channel_index);
                 current_pattern.playing_rows[channel_index] = row + playing_row;
@@ -119,4 +113,31 @@ void GUIPatternsPanel::check_keyboard_input() {
     if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
+
+    Pattern *pattern = find_pattern_by_current_row();
+    if (pattern != nullptr) {
+        pattern->handle_input();
+    }
+}
+
+Pattern *GUIPatternsPanel::find_pattern_by_current_row() {
+    if (current_channel >= current_pattern.patterns.size()) {
+        return nullptr;
+    }
+
+    auto &patterns = current_pattern.patterns.at(current_channel);
+    uint16_t rows = 0;
+    size_t pattern_id = 0;
+    for (pattern_id = 0; pattern_id < patterns.size(); pattern_id++) {
+        rows += patterns[pattern_id].steps;
+        if (rows > current_row) {
+            break;
+        }
+    }
+
+    if (pattern_id >= patterns.size()) {
+        return nullptr;
+    }
+
+    return &patterns.at(pattern_id);
 }

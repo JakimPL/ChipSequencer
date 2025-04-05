@@ -18,10 +18,12 @@ class GUIPatternsPanel : public GUIPanel {
     } current_pattern;
 
     size_t current_channel = -1;
+    size_t current_index = -1;
     int current_row = -1;
 
     void draw_channels();
     void draw_channel(size_t channel_index);
+    Pattern *find_pattern_by_current_row();
 
     void from() override;
     void to() const override;

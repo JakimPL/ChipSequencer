@@ -100,7 +100,7 @@ std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t
 
         for (int i = 0; i < pattern.notes.size(); ++i) {
             const int j = i + index;
-            const bool is_selected = (pattern.current_row == j);
+            const bool is_selected = (pattern.current_row == i);
             const std::string index_string = std::to_string(j);
 
             ImGui::TableNextRow();
@@ -110,7 +110,7 @@ std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t
 
             ImGui::TableSetColumnIndex(0);
             if (ImGui::Selectable(("##Selectable" + index_string).c_str(), is_selected, ImGuiSelectableFlags_SpanAllColumns)) {
-                pattern.current_row = j;
+                pattern.current_row = i;
                 select = true;
             }
 
