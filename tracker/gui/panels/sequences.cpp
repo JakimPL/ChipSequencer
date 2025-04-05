@@ -37,8 +37,7 @@ void GUISequencesPanel::from() {
         return;
     }
 
-    Sequence *sequence = sequences[sequence_index];
-    current_sequence.pattern.from_sequence(sequence);
+    current_sequence.pattern.from_sequence(sequence_index);
 }
 
 void GUISequencesPanel::to() const {

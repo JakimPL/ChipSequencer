@@ -92,8 +92,7 @@ void GUIPatternsPanel::from() {
                 break;
             }
 
-            const Sequence *sequence = sequences[sequence_index];
-            Pattern pattern = Pattern(sequence);
+            Pattern pattern = Pattern(sequence_index);
             pattern.current_row = channel_index == current_channel ? current_row - row : -1;
             current_pattern.patterns[channel_index].push_back(pattern);
             if (is_playing && playing_sequence == j) {
@@ -107,6 +106,15 @@ void GUIPatternsPanel::from() {
 }
 
 void GUIPatternsPanel::to() const {
+    Pattern *pattern = find_pattern_by_current_row().first;
+    if (pattern != nullptr) {
+        size_t sequence_index = pattern->sequence_index;
+        Sequence *sequence = sequences[sequence_index];
+        const std::vector<Note> note_vector = pattern->to_note_vector();
+        Sequence *new_sequence = Pattern::to_sequence(note_vector);
+        sequences[sequence_index] = new_sequence;
+        delete sequence;
+    }
 }
 
 void GUIPatternsPanel::check_keyboard_input() {
@@ -114,30 +122,33 @@ void GUIPatternsPanel::check_keyboard_input() {
         return;
     }
 
-    Pattern *pattern = find_pattern_by_current_row();
+    auto [pattern, index] = find_pattern_by_current_row();
     if (pattern != nullptr) {
         pattern->handle_input();
+        current_row = pattern->current_row + index;
     }
 }
 
-Pattern *GUIPatternsPanel::find_pattern_by_current_row() {
+std::pair<Pattern *, uint16_t> GUIPatternsPanel::find_pattern_by_current_row() const {
     if (current_channel >= current_pattern.patterns.size()) {
-        return nullptr;
+        return {nullptr, 0};
     }
 
-    auto &patterns = current_pattern.patterns.at(current_channel);
+    const auto &patterns = current_pattern.patterns.at(current_channel);
     uint16_t rows = 0;
-    size_t pattern_id = 0;
-    for (pattern_id = 0; pattern_id < patterns.size(); pattern_id++) {
+    size_t pattern_id;
+    for (pattern_id = 0; pattern_id < patterns.size(); ++pattern_id) {
         rows += patterns[pattern_id].steps;
         if (rows > current_row) {
+            rows -= patterns[pattern_id].steps;
             break;
         }
     }
 
     if (pattern_id >= patterns.size()) {
-        return nullptr;
+        return {nullptr, 0};
     }
 
-    return &patterns.at(pattern_id);
+    Pattern *pattern = const_cast<Pattern *>(&patterns.at(pattern_id));
+    return {pattern, rows};
 }

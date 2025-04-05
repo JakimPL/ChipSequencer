@@ -8,15 +8,16 @@
 
 struct Pattern {
     Pattern();
-    Pattern(const Sequence *sequence);
+    Pattern(const uint8_t sequence_index);
 
+    uint8_t sequence_index = -1;
     int current_row = -1;
     int steps = 0;
     std::vector<uint8_t> notes = {};
     std::vector<uint8_t> durations = {};
     std::vector<uint8_t> indices = {};
 
-    void from_sequence(const Sequence *sequence);
+    void from_sequence(const uint8_t sequence_index);
     std::vector<Note> to_note_vector() const;
     int calculate_playing_row(size_t channel_index);
 

@@ -91,10 +91,10 @@ std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t
 
     ImGui::BeginChild("PatternScroll", ImVec2(0, height), true);
     if (ImGui::BeginTable("PatternTable", 3, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersV)) {
+        ImGui::TableSetupColumn("Index", ImGuiTableColumnFlags_WidthFixed, 50.0f);
+        ImGui::TableSetupColumn("Note");
+        ImGui::TableSetupColumn("Octave");
         if (header) {
-            ImGui::TableSetupColumn("Index", ImGuiTableColumnFlags_WidthFixed, 50.0f);
-            ImGui::TableSetupColumn("Note");
-            ImGui::TableSetupColumn("Octave");
             ImGui::TableHeadersRow();
         }
 
