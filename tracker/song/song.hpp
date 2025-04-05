@@ -23,29 +23,6 @@ class Song {
         double a4_frequency = DEFAULT_A4_FREQUENCY;
     } tuning;
 
-    uint16_t &bpm;
-    _Float32 &normalizer;
-
-    uint8_t &num_channels;
-    uint8_t &num_dsps;
-
-    uint64_t &reference_frequency;
-    _Float32 &note_divisor;
-
-    Envelopes &envelopes;
-    Sequences &sequences;
-    Orders &orders;
-    Oscillators &oscillators;
-    Wavetables &wavetables;
-    DSPs &dsps;
-    Channels &channels;
-    Offsets buffer_offsets;
-    Offsets current_offsets = nullptr;
-    Links &links;
-
-    ScaleComposer &scale_composer;
-    FrequencyTable &frequency_table;
-
     uint8_t output_channels = 1;
     uint32_t song_length = SONG_LENGTH;
 
@@ -107,26 +84,7 @@ class Song {
     void delete_dsp(void *dsp);
 
   public:
-    Song(
-        uint16_t &bpm_reference,
-        _Float32 &normalizer_reference,
-        uint8_t &num_channels_reference,
-        uint8_t &num_dsps_reference,
-        uint64_t &reference_frequency_reference,
-        _Float32 &note_divisor_reference,
-        Envelopes &envelopes_reference,
-        Sequences &sequences_reference,
-        Orders &orders_reference,
-        Oscillators &oscillators_reference,
-        Wavetables &wavetables_reference,
-        DSPs &dsps_reference,
-        Channels &channels_reference,
-        Offsets &buffer_offsets_reference,
-        Links &links_reference,
-        ScaleComposer &scale_composer_reference,
-        FrequencyTable &frequency_table_reference
-    );
-
+    Song();
     ~Song();
 
     void new_song();

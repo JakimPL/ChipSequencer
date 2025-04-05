@@ -8,47 +8,13 @@
 #include <vector>
 #include <zlib.h>
 
+#include "../general.hpp"
 #include "../utils/file.hpp"
 #include "../utils/temp.hpp"
 #include "data.hpp"
 #include "song.hpp"
 
-Song::Song(
-    uint16_t &bpm_reference,
-    _Float32 &normalizer_reference,
-    uint8_t &num_channels_reference,
-    uint8_t &num_dsps_reference,
-    uint64_t &reference_frequency_reference,
-    _Float32 &note_divisor_reference,
-    Envelopes &envelopes_reference,
-    Sequences &sequences_reference,
-    Orders &orders_reference,
-    Oscillators &oscillators_reference,
-    Wavetables &wavetables_reference,
-    DSPs &dsps_reference,
-    Channels &channels_reference,
-    Offsets &buffer_offsets_reference,
-    Links &links_reference,
-    ScaleComposer &scale_composer_reference,
-    FrequencyTable &frequency_table_reference
-)
-    : bpm(bpm_reference),
-      normalizer(normalizer_reference),
-      num_channels(num_channels_reference),
-      num_dsps(num_dsps_reference),
-      reference_frequency(reference_frequency_reference),
-      note_divisor(note_divisor_reference),
-      envelopes(envelopes_reference),
-      sequences(sequences_reference),
-      orders(orders_reference),
-      oscillators(oscillators_reference),
-      wavetables(wavetables_reference),
-      dsps(dsps_reference),
-      channels(channels_reference),
-      buffer_offsets(buffer_offsets_reference),
-      links(links_reference),
-      scale_composer(scale_composer_reference),
-      frequency_table(frequency_table_reference) {
+Song::Song() {
     current_offsets = new uint16_t[0];
     buffer_offsets = current_offsets;
     new_song();

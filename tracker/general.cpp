@@ -4,26 +4,7 @@
 ScaleComposer scale_composer = ScaleComposer();
 FrequencyTable frequency_table = FrequencyTable(scale_composer, DEFAULT_A4_FREQUENCY);
 
-Song song = {
-    bpm,
-    normalizer,
-    num_channels,
-    num_dsps,
-    reference_frequency,
-    note_divisor,
-    envelopes,
-    sequences,
-    orders,
-    oscillators,
-    wavetables,
-    dsps,
-    channels,
-    buffer_offsets,
-    links,
-    scale_composer,
-    frequency_table,
-};
-
+Song song;
 GUI gui = GUI();
 std::filesystem::path current_path;
 
