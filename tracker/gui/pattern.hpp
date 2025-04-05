@@ -23,6 +23,8 @@ struct Pattern {
     void jump();
     void set_note(const int note_index, const int edo);
     void handle_input();
+
+    static Sequence *to_sequence(const std::vector<Note> &note_vector);
 };
 
 #endif // GUI_PATTERN_HPP

@@ -75,7 +75,7 @@ void GUIPatternsPanel::from() {
     for (size_t channel_index = 0; channel_index < channels.size(); ++channel_index) {
         const Channel *channel = channels[channel_index];
         const uint8_t order_index = channel->order_index;
-        const bool constant_pitch = channel->order_index == -1;
+        const bool constant_pitch = channel->order_index == CONSTANT_PITCH;
         if (constant_pitch || order_index >= orders.size()) {
             continue;
         }

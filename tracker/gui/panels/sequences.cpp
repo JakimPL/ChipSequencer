@@ -48,15 +48,7 @@ void GUISequencesPanel::to() const {
 
     Sequence *sequence = sequences[sequence_index];
     const std::vector<Note> note_vector = current_sequence.pattern.to_note_vector();
-
-    const size_t length = note_vector.size();
-    const uint8_t data_size = static_cast<uint8_t>(length * sizeof(Note));
-    const size_t structure_size = data_size + 1;
-
-    Sequence *new_sequence = static_cast<Sequence *>(operator new(structure_size));
-    new_sequence->data_size = data_size;
-    std::copy(note_vector.begin(), note_vector.end(), new_sequence->notes);
-
+    Sequence *new_sequence = current_sequence.pattern.to_sequence(note_vector);
     sequences[sequence_index] = new_sequence;
     delete sequence;
 }
