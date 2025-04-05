@@ -43,8 +43,21 @@ void GUIPatternsPanel::from() {
     for (size_t i = 0; i < channels.size(); ++i) {
         const Channel *channel = channels[i];
         const uint8_t order_index = channel->order_index;
+        const bool constant_pitch = channel->order_index == -1;
+        if (constant_pitch || order_index >= orders.size()) {
+            continue;
+        }
+
         const Order *order = orders[order_index];
         std::vector<uint8_t> order_sequences = std::vector<uint8_t>(order->sequences, order->sequences + order->order_length);
+        for (size_t j = 0; j < order->order_length; ++j) {
+            if (order_sequences[j] >= sequences.size()) {
+                break;
+            }
+
+            const Sequence *sequence = sequences[order_sequences[j]];
+            Pattern pattern = Pattern(sequence);
+        }
     }
 }
 

@@ -7,11 +7,14 @@
 #include "../structures/sequence.hpp"
 
 struct Pattern {
+    Pattern();
+    Pattern(const Sequence *sequence);
+
     int current_row = -1;
     int steps = 0;
     std::vector<uint8_t> notes = {};
 
-    void from_sequence(Sequence *sequence);
+    void from_sequence(const Sequence *sequence);
     std::vector<Note> to_note_vector() const;
 };
 

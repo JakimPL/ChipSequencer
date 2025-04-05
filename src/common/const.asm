@@ -27,7 +27,11 @@
 
     %define DEFAULT_CHANNEL_PITCH 0x02000000
 
+; General
+    %define CONSTANT_PITCH 0xFF
+
 ; Notes
+    %define NOTES 250
     %define NOTE_REST 254
     %define NOTE_OFF 255
 
@@ -42,9 +46,6 @@
 
     %define MAX_WAVETABLE_SIZE 512
     %define MAX_DSP_BUFFER_SIZE 512
-
-; General
-    %define NOTES 250
 
 ; Phases
     %define ATTACK 0

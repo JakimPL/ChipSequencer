@@ -3,7 +3,14 @@
 #include "../constants.hpp"
 #include "pattern.hpp"
 
-void Pattern::from_sequence(Sequence *sequence) {
+Pattern::Pattern() {
+}
+
+Pattern::Pattern(const Sequence *sequence) {
+    from_sequence(sequence);
+}
+
+void Pattern::from_sequence(const Sequence *sequence) {
     uint16_t total_length = 0;
 
     notes.clear();
