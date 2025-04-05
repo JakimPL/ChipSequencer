@@ -15,7 +15,8 @@ void draw_float_slider(const char *label, float &reference, float min, float max
 void draw_knob(const char *label, float &reference, float min, float max);
 void draw_popup(const std::string &message);
 void draw_button(const char *label, const std::function<void()> &callback, const float button_padding = 0.0f);
-size_t draw_pattern(Pattern &pattern, const bool header = true, size_t index = 0);
+size_t draw_pattern(Pattern &pattern, const bool header = true, size_t index = 0, const int playing_row = -1);
+void draw_colored_text(const std::string &text, bool condition, const ImVec4 &color);
 void prepare_combo(const std::vector<std::string> &names, std::string label, int &index);
 void update_items(std::vector<std::string> &names, size_t size, std::string label, int &index);
 

@@ -84,62 +84,61 @@ void draw_button(const char *label, const std::function<void()> &callback, const
     }
 }
 
-size_t draw_pattern(Pattern &pattern, const bool header, size_t index) {
+size_t draw_pattern(Pattern &pattern, const bool header, size_t index, const int playing_row) {
     const float height = std::max(5.0f, ImGui::GetContentRegionAvail().y - 5.0f);
+    const ImVec4 highlight_color = ImVec4(1.0f, 0.2f, 1.0f, 1.0f);
+
     ImGui::BeginChild("PatternScroll", ImVec2(0, height), true);
-    ImGui::Columns(3, "pattern_columns", false);
-    ImGui::SetColumnWidth(0, 50.0f);
-    ImGui::SetColumnWidth(1, 75.0f);
-    ImGui::SetColumnWidth(2, 75.0f);
+    if (ImGui::BeginTable("PatternTable", 3, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersV)) {
+        if (header) {
+            ImGui::TableSetupColumn("Index", ImGuiTableColumnFlags_WidthFixed, 50.0f);
+            ImGui::TableSetupColumn("Note");
+            ImGui::TableSetupColumn("Octave");
+            ImGui::TableHeadersRow();
+        }
 
-    if (header) {
-        ImGui::Text("Index");
-        ImGui::NextColumn();
+        for (int i = 0; i < pattern.notes.size(); ++i) {
+            const int j = i + index;
+            const bool is_selected = (pattern.current_row == i);
+            const std::string index_string = std::to_string(j);
 
-        ImGui::Text("Note");
-        ImGui::NextColumn();
+            ImGui::TableNextRow();
+            if (j == playing_row) {
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, IM_COL32(128, 255, 128, 64));
+            }
 
-        ImGui::Text("Octave");
-        ImGui::NextColumn();
+            ImGui::TableSetColumnIndex(0);
+            if (ImGui::Selectable(("##Selectable" + index_string).c_str(), is_selected, ImGuiSelectableFlags_SpanAllColumns)) {
+                pattern.current_row = i;
+            }
+            ImGui::SameLine();
+            ImGui::TableSetColumnIndex(0);
+            draw_colored_text(index_string, is_selected, highlight_color);
 
-        ImGui::Separator();
+            ImGui::TableSetColumnIndex(1);
+            const std::string note_string = get_note_name(pattern.notes[i]);
+            draw_colored_text(note_string, is_selected, highlight_color);
+
+            ImGui::TableSetColumnIndex(2);
+            const std::string octave_string = get_note_octave(pattern.notes[i]);
+            draw_colored_text(octave_string, is_selected, highlight_color);
+        }
+
+        ImGui::EndTable();
     }
 
-    for (int i = 0; i < pattern.notes.size(); ++i) {
-        const int j = i + index;
-        ImGui::PushID(j);
-        ImGui::Text("%d", j);
-        ImGui::NextColumn();
-
-        const bool is_selected = (pattern.current_row == i);
-        if (ImGui::Selectable("##selectable", is_selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)) {
-            pattern.current_row = i;
-        }
-        ImGui::SameLine();
-
-        const std::string note_string = get_note_name(pattern.notes[i]);
-        if (is_selected) {
-            ImGui::TextColored(ImVec4(1.0f, 0.2f, 1.0f, 1.0f), "%s", note_string.c_str());
-        } else {
-            ImGui::Text("%s", note_string.c_str());
-        }
-
-        ImGui::NextColumn();
-        const std::string octave_string = get_note_octave(pattern.notes[i]);
-        if (is_selected) {
-            ImGui::TextColored(ImVec4(1.0f, 0.2f, 1.0f, 1.0f), "%s", octave_string.c_str());
-        } else {
-            ImGui::Text("%s", octave_string.c_str());
-        }
-
-        ImGui::NextColumn();
-        ImGui::PopID();
-    }
-
-    ImGui::Columns(1);
+    ImGui::Separator();
     ImGui::EndChild();
 
     return index + pattern.notes.size();
+}
+
+void draw_colored_text(const std::string &text, bool condition, const ImVec4 &color) {
+    if (condition) {
+        ImGui::TextColored(color, "%s", text.c_str());
+    } else {
+        ImGui::Text("%s", text.c_str());
+    }
 }
 
 void prepare_combo(const std::vector<std::string> &names, std::string label, int &index) {

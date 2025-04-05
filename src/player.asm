@@ -17,7 +17,7 @@
     global oscillator_timer
     global pitch
 
-    global current_order
+    global current_sequence
     global sequence_current_note
 
     extern sound_driver_step

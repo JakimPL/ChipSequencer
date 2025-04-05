@@ -17,7 +17,7 @@ extern "C" std::array<uint32_t, MAX_CHANNELS> sequence_timer;
 extern "C" std::array<uint32_t, MAX_CHANNELS> oscillator_timer;
 extern "C" std::array<uint8_t, MAX_CHANNELS> pitch;
 
-extern "C" std::array<uint8_t, MAX_CHANNELS> current_order;
+extern "C" std::array<uint8_t, MAX_CHANNELS> current_sequence;
 extern "C" std::array<uint8_t, MAX_CHANNELS> sequence_current_note;
 
 extern "C" uint16_t ticks_per_beat;
