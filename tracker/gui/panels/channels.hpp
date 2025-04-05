@@ -4,10 +4,10 @@
 #include <algorithm>
 #include <cmath>
 #include <string>
+
 #include "../init.hpp"
 #include "../names.hpp"
 #include "panel.hpp"
-#include "utils.hpp"
 
 class GUIChannelsPanel : public GUIPanel {
   private:

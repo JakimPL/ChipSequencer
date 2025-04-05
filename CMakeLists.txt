@@ -91,6 +91,7 @@ add_executable(main
     tracker/structures/wavetable.cpp
     tracker/gui/gui.cpp
     tracker/gui/pattern.cpp
+    tracker/gui/utils.cpp
     tracker/gui/panels/channels.cpp
     tracker/gui/panels/editor.cpp
     tracker/gui/panels/envelopes.cpp
@@ -101,7 +102,6 @@ add_executable(main
     tracker/gui/panels/panel.cpp
     tracker/gui/panels/patterns.cpp
     tracker/gui/panels/sequences.cpp
-    tracker/gui/panels/utils.cpp
     tracker/gui/panels/wavetables.cpp
     tracker/tuning/frequencies.cpp
     tracker/tuning/scale.cpp

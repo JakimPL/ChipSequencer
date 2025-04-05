@@ -7,7 +7,6 @@
 #include "../init.hpp"
 #include "../names.hpp"
 #include "panel.hpp"
-#include "utils.hpp"
 
 class GUIOscillatorsPanel : public GUIPanel {
   private:

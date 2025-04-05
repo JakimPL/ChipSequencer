@@ -3,8 +3,8 @@
 #include "../../general.hpp"
 #include "../enums.hpp"
 #include "../mapping.hpp"
+#include "../utils.hpp"
 #include "sequences.hpp"
-#include "utils.hpp"
 
 GUISequencesPanel::GUISequencesPanel() {
     from();
@@ -38,45 +38,7 @@ void GUISequencesPanel::from() {
     }
 
     Sequence *sequence = sequences[sequence_index];
-    uint16_t total_length = 0;
-
-    current_sequence.pattern.clear();
-    for (size_t i = 0; i < sequence->data_size / 2; ++i) {
-        uint16_t duration = sequence->notes[i].duration;
-        total_length += duration;
-        current_sequence.pattern.push_back(sequence->notes[i].pitch);
-        for (uint16_t j = 1; j < duration; ++j) {
-            current_sequence.pattern.push_back(NOTE_REST);
-        }
-    }
-    current_sequence.steps = total_length;
-}
-
-std::vector<Note> GUISequencesPanel::pattern_to_sequence() const {
-    std::vector<Note> note_vector;
-
-    uint8_t duration = 1;
-    uint8_t pitch;
-    for (int i = current_sequence.steps - 1; i >= 0; --i) {
-        if (i >= current_sequence.pattern.size()) {
-            if (note_vector.empty()) {
-                note_vector.push_back({NOTE_REST, 1});
-            }
-            continue;
-        }
-
-        pitch = current_sequence.pattern[i];
-        if (pitch == NOTE_REST && i > 0) {
-            ++duration;
-        } else {
-            Note note = {pitch, duration};
-            note_vector.push_back(note);
-            duration = 1;
-        }
-    }
-
-    std::reverse(note_vector.begin(), note_vector.end());
-    return note_vector;
+    current_sequence.pattern.from_sequence(sequence);
 }
 
 void GUISequencesPanel::to() const {
@@ -85,7 +47,7 @@ void GUISequencesPanel::to() const {
     }
 
     Sequence *sequence = sequences[sequence_index];
-    const std::vector<Note> note_vector = pattern_to_sequence();
+    const std::vector<Note> note_vector = current_sequence.pattern.to_note_vector();
 
     const size_t length = note_vector.size();
     const uint8_t data_size = static_cast<uint8_t>(length * sizeof(Note));
@@ -123,14 +85,14 @@ void GUISequencesPanel::update() {
 }
 
 void GUISequencesPanel::draw_sequence_length() {
-    draw_number_of_items("Steps", "##SequenceLength", current_sequence.steps, 1, max_steps);
+    draw_number_of_items("Steps", "##SequenceLength", current_sequence.pattern.steps, 1, max_steps);
 }
 
 void GUISequencesPanel::draw_sequence() {
-    if (current_sequence.pattern.size() < static_cast<size_t>(current_sequence.steps)) {
-        current_sequence.pattern.resize(current_sequence.steps, 255);
-    } else if (current_sequence.pattern.size() > static_cast<size_t>(current_sequence.steps)) {
-        current_sequence.pattern.resize(current_sequence.steps);
+    if (current_sequence.pattern.notes.size() < static_cast<size_t>(current_sequence.pattern.steps)) {
+        current_sequence.pattern.notes.resize(current_sequence.pattern.steps, UINT8_MAX);
+    } else if (current_sequence.pattern.notes.size() > static_cast<size_t>(current_sequence.pattern.steps)) {
+        current_sequence.pattern.notes.resize(current_sequence.pattern.steps);
     }
 
     ImGui::Text("Pattern:");
@@ -142,54 +104,7 @@ void GUISequencesPanel::draw_sequence() {
     }
 
     draw_sequence_length();
-
-    const float height = std::max(5.0f, ImGui::GetContentRegionAvail().y - 5.0f);
-    ImGui::BeginChild("PatternScroll", ImVec2(0, height), true);
-    ImGui::Columns(3, "pattern_columns", false);
-    ImGui::SetColumnWidth(0, 50.0f);
-    ImGui::SetColumnWidth(1, 75.0f);
-    ImGui::SetColumnWidth(2, 75.0f);
-
-    ImGui::Text("Index");
-    ImGui::NextColumn();
-
-    ImGui::Text("Note");
-    ImGui::NextColumn();
-
-    ImGui::Text("Octave");
-    ImGui::NextColumn();
-
-    ImGui::Separator();
-
-    for (int i = 0; i < current_sequence.pattern.size(); ++i) {
-        ImGui::PushID(i);
-        ImGui::Text("%d", i);
-        ImGui::NextColumn();
-
-        const bool is_selected = (selected_step == i);
-        if (ImGui::Selectable("##selectable", is_selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)) {
-            selected_step = i;
-        }
-        ImGui::SameLine();
-
-        const std::string note_string = get_note_name(current_sequence.pattern[i]);
-        if (is_selected) {
-            ImGui::TextColored(ImVec4(1.0f, 0.2f, 1.0f, 1.0f), "%s", note_string.c_str());
-        } else {
-            ImGui::Text("%s", note_string.c_str());
-        }
-
-        ImGui::NextColumn();
-        const std::string octave_string = get_note_octave(current_sequence.pattern[i]);
-        if (is_selected) {
-            ImGui::TextColored(ImVec4(1.0f, 0.2f, 1.0f, 1.0f), "%s", octave_string.c_str());
-        } else {
-            ImGui::Text("%s", octave_string.c_str());
-        }
-
-        ImGui::NextColumn();
-        ImGui::PopID();
-    }
+    draw_pattern(current_sequence.pattern);
 
     ImGui::Columns(1);
     ImGui::EndChild();
@@ -200,7 +115,7 @@ void GUISequencesPanel::check_keyboard_input() {
         return;
     }
 
-    const bool valid = selected_step >= 0 && selected_step < current_sequence.pattern.size();
+    const bool valid = current_sequence.pattern.current_row >= 0 && current_sequence.pattern.current_row < current_sequence.pattern.notes.size();
     if (!valid) {
         return;
     }
@@ -223,38 +138,38 @@ void GUISequencesPanel::check_keyboard_input() {
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_Delete) || ImGui::IsKeyPressed(ImGuiKey_Space)) {
-        current_sequence.pattern[selected_step] = NOTE_REST;
+        current_sequence.pattern.notes[current_sequence.pattern.current_row] = NOTE_REST;
         jump();
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_Apostrophe) || ImGui::IsKeyPressed(ImGuiKey_Equal)) {
-        current_sequence.pattern[selected_step] = NOTE_OFF;
+        current_sequence.pattern.notes[current_sequence.pattern.current_row] = NOTE_OFF;
         jump();
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_Backspace)) {
-        current_sequence.pattern[selected_step] = NOTE_REST;
+        current_sequence.pattern.notes[current_sequence.pattern.current_row] = NOTE_REST;
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_UpArrow)) {
-        selected_step = std::max(0, selected_step - 1);
+        current_sequence.pattern.current_row = std::max(0, current_sequence.pattern.current_row - 1);
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_DownArrow)) {
-        selected_step = std::min(current_sequence.steps - 1, selected_step + 1);
+        current_sequence.pattern.current_row = std::min(current_sequence.pattern.steps - 1, current_sequence.pattern.current_row + 1);
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_KeypadAdd)) {
-        current_sequence.steps = std::min(current_sequence.steps, max_steps);
+        current_sequence.pattern.steps = std::min(current_sequence.pattern.steps, max_steps);
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_KeypadSubtract)) {
-        current_sequence.steps = std::max(current_sequence.steps, 1);
+        current_sequence.pattern.steps = std::max(current_sequence.pattern.steps, 1);
     }
 }
 
 void GUISequencesPanel::jump() {
-    selected_step = std::min(selected_step + gui.get_jump_step(), current_sequence.steps - 1);
+    current_sequence.pattern.current_row = std::min(current_sequence.pattern.current_row + gui.get_jump_step(), current_sequence.pattern.steps - 1);
 }
 
 void GUISequencesPanel::set_note(const int note_index, const int edo) {
@@ -263,6 +178,6 @@ void GUISequencesPanel::set_note(const int note_index, const int edo) {
     if (note < 0 || note >= NOTES) {
         return;
     }
-    current_sequence.pattern[selected_step] = note;
+    current_sequence.pattern.notes[current_sequence.pattern.current_row] = note;
     jump();
 }

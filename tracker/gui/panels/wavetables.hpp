@@ -5,10 +5,10 @@
 #include <cmath>
 #include <string>
 #include <vector>
+
 #include "../init.hpp"
 #include "../names.hpp"
 #include "panel.hpp"
-#include "utils.hpp"
 
 class GUIWavetablesPanel : public GUIPanel {
   private:

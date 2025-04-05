@@ -3,10 +3,10 @@
 
 #include <algorithm>
 #include <string>
+
 #include "../init.hpp"
 #include "../names.hpp"
 #include "panel.hpp"
-#include "utils.hpp"
 
 class GUIEnvelopesPanel : public GUIPanel {
   private:

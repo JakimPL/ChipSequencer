@@ -5,9 +5,9 @@
 #include <functional>
 #include <string>
 #include <thread>
+
 #include "../init.hpp"
 #include "panel.hpp"
-#include "utils.hpp"
 
 class GUIGeneralPanel : public GUIPanel {
   private:

@@ -1,3 +1,4 @@
+#include "../utils.hpp"
 #include "patterns.hpp"
 
 GUIPatternsPanel::GUIPatternsPanel() {
@@ -10,7 +11,6 @@ void GUIPatternsPanel::update() {
 
 void GUIPatternsPanel::draw() {
     ImGui::Begin("Pattern Editor");
-    ImGui::Columns(channels.size(), "pattern_columns");
     ImGui::Separator();
 
     from();
@@ -18,11 +18,16 @@ void GUIPatternsPanel::draw() {
     check_keyboard_input();
     to();
 
-    ImGui::Columns(1);
     ImGui::End();
 }
 
 void GUIPatternsPanel::draw_channels() {
+    if (channels.empty()) {
+        ImGui::Text("No channels available.");
+        return;
+    }
+
+    ImGui::Columns(channels.size(), "pattern_columns");
     for (size_t i = 0; i < channels.size(); ++i) {
         draw_channel(i);
     }

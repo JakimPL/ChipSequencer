@@ -1,9 +1,9 @@
 #include <algorithm>
 #include <cmath>
 
-#include "../../general.hpp"
-#include "../constants.hpp"
-#include "../mapping.hpp"
+#include "../general.hpp"
+#include "constants.hpp"
+#include "mapping.hpp"
 #include "utils.hpp"
 
 int clamp_index(int index, const int size) {
@@ -81,6 +81,56 @@ void draw_button(const char *label, const std::function<void()> &callback, const
 
     if (ImGui::Button(label, ImVec2(button_width, 0))) {
         callback();
+    }
+}
+
+void draw_pattern(Pattern &pattern) {
+    const float height = std::max(5.0f, ImGui::GetContentRegionAvail().y - 5.0f);
+    ImGui::BeginChild("PatternScroll", ImVec2(0, height), true);
+    ImGui::Columns(3, "pattern_columns", false);
+    ImGui::SetColumnWidth(0, 50.0f);
+    ImGui::SetColumnWidth(1, 75.0f);
+    ImGui::SetColumnWidth(2, 75.0f);
+
+    ImGui::Text("Index");
+    ImGui::NextColumn();
+
+    ImGui::Text("Note");
+    ImGui::NextColumn();
+
+    ImGui::Text("Octave");
+    ImGui::NextColumn();
+
+    ImGui::Separator();
+
+    for (int i = 0; i < pattern.notes.size(); ++i) {
+        ImGui::PushID(i);
+        ImGui::Text("%d", i);
+        ImGui::NextColumn();
+
+        const bool is_selected = (pattern.current_row == i);
+        if (ImGui::Selectable("##selectable", is_selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)) {
+            pattern.current_row = i;
+        }
+        ImGui::SameLine();
+
+        const std::string note_string = get_note_name(pattern.notes[i]);
+        if (is_selected) {
+            ImGui::TextColored(ImVec4(1.0f, 0.2f, 1.0f, 1.0f), "%s", note_string.c_str());
+        } else {
+            ImGui::Text("%s", note_string.c_str());
+        }
+
+        ImGui::NextColumn();
+        const std::string octave_string = get_note_octave(pattern.notes[i]);
+        if (is_selected) {
+            ImGui::TextColored(ImVec4(1.0f, 0.2f, 1.0f, 1.0f), "%s", octave_string.c_str());
+        } else {
+            ImGui::Text("%s", octave_string.c_str());
+        }
+
+        ImGui::NextColumn();
+        ImGui::PopID();
     }
 }
 

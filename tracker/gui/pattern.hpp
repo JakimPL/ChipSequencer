@@ -12,7 +12,7 @@ struct Pattern {
     std::vector<uint8_t> notes = {};
 
     void from_sequence(Sequence *sequence);
-    std::vector<Note> Pattern::to_note_vector() const;
+    std::vector<Note> to_note_vector() const;
 };
 
 #endif // GUI_PATTERN_HPP

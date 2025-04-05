@@ -1,4 +1,5 @@
 #include "../../general.hpp"
+#include "../utils.hpp"
 #include "general.hpp"
 
 GUIGeneralPanel::GUIGeneralPanel() {

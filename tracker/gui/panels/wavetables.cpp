@@ -1,5 +1,6 @@
 #include "../../general.hpp"
 #include "../enums.hpp"
+#include "../utils.hpp"
 #include "wavetables.hpp"
 
 GUIWavetablesPanel::GUIWavetablesPanel() {
