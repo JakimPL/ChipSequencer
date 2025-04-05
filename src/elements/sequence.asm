@@ -30,6 +30,9 @@ step:
     LOAD_OFFSET ecx, sequence_offset
     lea esi, [ecx + SEQUENCE_NOTES + eax * 2]
     mov al, [esi]
+.check_note_rest:
+    cmp al, NOTE_REST
+    jz .progress_sequence
 .check_note_off:
     cmp al, NOTE_OFF
     jnz .note_on
