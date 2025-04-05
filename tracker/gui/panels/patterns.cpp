@@ -25,11 +25,18 @@ void GUIPatternsPanel::draw() {
     ImGui::End();
 }
 
+void GUIPatternsPanel::draw_pages() {
+    const int pages = std::ceil(static_cast<float>(current_pattern.total_rows) / GUI_PAGE_SIZE);
+    draw_int_slider("Page", page, 0, pages - 1);
+}
+
 void GUIPatternsPanel::draw_channels() {
     if (current_pattern.patterns.empty()) {
         ImGui::Text("No channels available.");
         return;
     }
+
+    draw_pages();
 
     size_t columns = current_pattern.patterns.size();
     const float available = ImGui::GetContentRegionAvail().x;
@@ -55,9 +62,11 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
     ImGui::PushID(channel_index);
     ImGui::Text("Channel %zu", channel_index);
     size_t index = 0;
+    const uint16_t start = page * GUI_PAGE_SIZE;
+    const uint16_t end = start + GUI_PAGE_SIZE;
     for (auto &pattern : current_pattern.patterns[channel_index]) {
         const int playing_row = current_pattern.playing_rows[channel_index];
-        auto [new_index, select] = draw_pattern(pattern, false, index, playing_row);
+        auto [new_index, select] = draw_pattern(pattern, false, index, playing_row, start, end);
         if (select) {
             current_channel = channel_index;
             current_row = pattern.current_row + index;
@@ -69,6 +78,7 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
 }
 
 void GUIPatternsPanel::from() {
+    current_pattern.total_rows = 0;
     current_pattern.patterns.clear();
     current_pattern.playing_rows.clear();
     const bool is_playing = gui.is_playing() && ticks_per_beat > 0;
@@ -102,6 +112,8 @@ void GUIPatternsPanel::from() {
 
             row += pattern.steps;
         }
+
+        current_pattern.total_rows = std::max(current_pattern.total_rows, row);
     }
 }
 

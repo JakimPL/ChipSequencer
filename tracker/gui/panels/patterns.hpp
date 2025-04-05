@@ -11,16 +11,17 @@
 class GUIPatternsPanel : public GUIPanel {
   private:
     struct CurrentPattern {
-        int page = 0;
-        size_t total_rows = 0;
+        uint16_t total_rows = 0;
         std::map<size_t, std::vector<Pattern>> patterns;
         std::map<size_t, int> playing_rows;
     } current_pattern;
 
+    int page = 0;
     size_t current_channel = -1;
     size_t current_index = -1;
     int current_row = -1;
 
+    void draw_pages();
     void draw_channels();
     void draw_channel(size_t channel_index);
     std::pair<Pattern *, uint16_t> find_pattern_by_current_row() const;
