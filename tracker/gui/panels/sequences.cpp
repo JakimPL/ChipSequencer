@@ -47,7 +47,7 @@ void GUISequencesPanel::to() const {
 
     Sequence *sequence = sequences[sequence_index];
     const std::vector<Note> note_vector = current_sequence.pattern.to_note_vector();
-    Sequence *new_sequence = current_sequence.pattern.to_sequence(note_vector);
+    Sequence *new_sequence = Pattern::to_sequence(note_vector);
     sequences[sequence_index] = new_sequence;
     delete sequence;
 }

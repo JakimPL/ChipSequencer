@@ -21,9 +21,9 @@ struct Pattern {
     std::vector<Note> to_note_vector() const;
     int calculate_playing_row(size_t channel_index);
 
-    void jump();
-    void set_note(const int note_index, const int edo);
-    void handle_input();
+    void jump(const int max_row = -1);
+    void set_note(const int note_index, const int edo, const int max_row = -1);
+    void handle_input(const int min_row = 0, const int max_row = -1);
 
     static Sequence *to_sequence(const std::vector<Note> &note_vector);
 };

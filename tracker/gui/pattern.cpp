@@ -70,21 +70,23 @@ int Pattern::calculate_playing_row(size_t channel_index) {
     return playing_row;
 }
 
-void Pattern::jump() {
-    current_row = std::min(current_row + gui.get_jump_step(), steps - 1);
+void Pattern::jump(const int max_row) {
+    const int max = max_row == -1 ? steps : std::min(steps, max_row);
+    current_row = std::min(current_row + gui.get_jump_step(), max - 1);
 }
 
-void Pattern::set_note(const int note_index, const int edo) {
+void Pattern::set_note(const int note_index, const int edo, const int max_row) {
     const int a4_index = frequency_table.get_a4_index();
     const int note = note_index + a4_index + edo * (gui.get_current_octave() - 5);
     if (note < 0 || note >= NOTES) {
         return;
     }
+
     notes[current_row] = note;
-    jump();
+    jump(max_row);
 }
 
-void Pattern::handle_input() {
+void Pattern::handle_input(const int min_row, const int max_row) {
     const bool valid = current_row >= 0 && current_row < notes.size();
     if (!valid) {
         return;
@@ -94,14 +96,14 @@ void Pattern::handle_input() {
     if (edo == DEFAULT_EDO) {
         for (const auto &m : key_note_12_edo_mapping) {
             if (ImGui::IsKeyPressed(m.key)) {
-                set_note(m.note_index, edo);
+                set_note(m.note_index, edo, max_row);
                 break;
             }
         }
     } else {
         for (const auto &m : key_note_linear_mapping) {
             if (ImGui::IsKeyPressed(m.key)) {
-                set_note(m.note_index, edo);
+                set_note(m.note_index, edo, max_row);
                 break;
             }
         }
@@ -109,12 +111,12 @@ void Pattern::handle_input() {
 
     if (ImGui::IsKeyPressed(ImGuiKey_Delete) || ImGui::IsKeyPressed(ImGuiKey_Space)) {
         notes[current_row] = NOTE_REST;
-        jump();
+        jump(max_row);
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_Apostrophe) || ImGui::IsKeyPressed(ImGuiKey_Equal)) {
         notes[current_row] = NOTE_OFF;
-        jump();
+        jump(max_row);
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_Backspace)) {
@@ -122,11 +124,13 @@ void Pattern::handle_input() {
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_UpArrow)) {
-        current_row = std::max(0, current_row - 1);
+        const int min = std::max(0, min_row);
+        current_row = std::max(min, current_row - 1);
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_DownArrow)) {
-        current_row = std::min(steps - 1, current_row + 1);
+        const int max = max_row == -1 ? steps : std::min(steps, max_row);
+        current_row = std::min(max - 1, current_row + 1);
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_KeypadAdd)) {

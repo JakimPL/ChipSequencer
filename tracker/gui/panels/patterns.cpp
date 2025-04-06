@@ -136,7 +136,9 @@ void GUIPatternsPanel::check_keyboard_input() {
 
     auto [pattern, index] = find_pattern_by_current_row();
     if (pattern != nullptr) {
-        pattern->handle_input();
+        const uint16_t start = page * gui.get_page_size() - index;
+        const uint16_t end = start + gui.get_page_size() - index;
+        pattern->handle_input(start, end);
         current_row = pattern->current_row + index;
     }
 }
