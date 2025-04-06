@@ -28,6 +28,8 @@ class GUIDSPsPanel : public GUIPanel {
     bool is_index_valid() const;
     void draw_dsp();
     void draw_dsp_type();
+    void draw_effect();
+    void draw_output();
 
     void from() override;
     void to() const override;

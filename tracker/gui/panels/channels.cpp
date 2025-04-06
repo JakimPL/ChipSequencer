@@ -119,9 +119,14 @@ void GUIChannelsPanel::draw_channel() {
     if (current_channel.constant_pitch) {
         draw_float_slider("Pitch", current_channel.pitch, 0.0002f, 65535.0f, true);
     } else {
-        draw_float_slider("Transpose", current_channel.pitch, -48.0f, 48.0f);
+        draw_float_slider("Transpose", current_channel.pitch, GUI_MIN_TRANSPOSE, GUI_MAX_TRANSPOSE);
     }
 
+    draw_output();
+}
+
+void GUIChannelsPanel::draw_output() {
+    push_secondary_style();
     ImGui::Separator();
     ImGui::Text("Output:");
     ImGui::Checkbox("Additive", &current_channel.additive);
@@ -129,6 +134,7 @@ void GUIChannelsPanel::draw_channel() {
     ImGui::BeginDisabled(current_channel.type == 0);
     draw_int_slider("Shift", current_channel.shift, 0, 15);
     ImGui::EndDisabled();
+    pop_secondary_style();
 }
 
 void GUIChannelsPanel::check_keyboard_input() {

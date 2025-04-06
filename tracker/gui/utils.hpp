@@ -18,6 +18,8 @@ void draw_button(const char *label, const std::function<void()> &callback, const
 std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header = true, const size_t index = 0, const int playing_row = -1, const uint16_t start = 0, const uint16_t end = UINT16_MAX);
 void prepare_combo(const std::vector<std::string> &names, std::string label, int &index);
 void update_items(std::vector<std::string> &names, size_t size, std::string label, int &index);
+void push_secondary_style();
+void pop_secondary_style();
 
 std::string get_note_name(uint8_t note_value);
 std::string get_note_octave(uint8_t note_value);

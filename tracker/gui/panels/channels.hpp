@@ -26,6 +26,7 @@ class GUIChannelsPanel : public GUIPanel {
 
     bool is_index_valid() const;
     void draw_channel();
+    void draw_output();
 
     void from() override;
     void to() const override;

@@ -135,8 +135,13 @@ void GUIDSPsPanel::draw_dsp() {
     }
 
     draw_dsp_type();
-    ImGui::Separator();
+    ImGui::NextColumn();
+    draw_effect();
+    ImGui::NewLine();
+    draw_output();
+}
 
+void GUIDSPsPanel::draw_effect() {
     switch (current_dsp.effect_index) {
     case EFFECT_GAINER: {
         draw_knob("Gain", current_dsp.gainer_gain, 0.0f, 1.0f);
@@ -148,7 +153,7 @@ void GUIDSPsPanel::draw_dsp() {
         draw_knob("Wet", current_dsp.delay_wet, 0.0f, 1.0f);
         ImGui::SameLine();
         draw_knob("Feedback", current_dsp.delay_feedback, 0.0f, 1.0f);
-        ImGui::NewLine();
+        ImGui::SameLine();
         draw_knob("Time", current_dsp.delay_time, 1, MAX_DSP_BUFFER_SIZE);
         break;
     }
@@ -157,6 +162,13 @@ void GUIDSPsPanel::draw_dsp() {
         break;
     }
     }
+}
+
+void GUIDSPsPanel::draw_output() {
+    push_secondary_style();
+    ImGui::Separator();
+    ImGui::Text("Output:");
+    pop_secondary_style();
 }
 
 void GUIDSPsPanel::check_keyboard_input() {
