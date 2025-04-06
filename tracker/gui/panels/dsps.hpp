@@ -7,14 +7,27 @@
 class GUIDSPsPanel : public GUIPanel {
   private:
     struct CurrentDSP {
-        // gainer
+        int effect_index = -1;
+        std::string type = "";
 
+        // gainer
+        float gainer_gain = 0.5f;
+
+        // delay
+        float delay_dry = 0.5f;
+        float delay_wet = 0.5f;
+        float delay_feedback = 0.5f;
+        int delay_time = 0.5f;
+
+        // filter
+        float filter_cutoff = 0.5f;
     } current_dsp;
 
     int dsp_index = 0;
 
     bool is_index_valid() const;
     void draw_dsp();
+    void draw_dsp_type();
 
     void from() override;
     void to() const override;

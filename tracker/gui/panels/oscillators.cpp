@@ -37,7 +37,7 @@ void GUIOscillatorsPanel::from() {
     }
 
     void *oscillator = oscillators[oscillator_index];
-    const Oscillator *generic = static_cast<Oscillator *>(oscillator);
+    const Oscillator *generic = static_cast<const Oscillator *>(oscillator);
     current_oscillator.generator_index = generic->generator_index;
     switch (current_oscillator.generator_index) {
     case GENERATOR_SQUARE: {

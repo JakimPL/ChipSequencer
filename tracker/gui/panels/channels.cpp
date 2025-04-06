@@ -34,7 +34,7 @@ void GUIChannelsPanel::from() {
         return;
     }
 
-    Channel *channel = channels[channel_index];
+    const Channel *channel = channels[channel_index];
     current_channel.envelope_index = channel->envelope_index;
     current_channel.constant_pitch = channel->order_index == 0xFF;
     current_channel.order_index = std::max(0, static_cast<int>(channel->order_index));

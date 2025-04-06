@@ -35,7 +35,7 @@ void GUIOrdersPanel::from() {
         return;
     }
 
-    Order *order = orders[order_index];
+    const Order *order = orders[order_index];
     uint16_t total_length = order->order_length;
     current_order.sequences.resize(total_length);
     current_order.length = total_length;
