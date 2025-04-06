@@ -8,47 +8,14 @@
 #include <vector>
 #include <zlib.h>
 
+#include "../general.hpp"
 #include "../utils/file.hpp"
 #include "../utils/temp.hpp"
 #include "data.hpp"
+#include "functions.hpp"
 #include "song.hpp"
 
-Song::Song(
-    uint16_t &bpm_reference,
-    _Float32 &normalizer_reference,
-    uint8_t &num_channels_reference,
-    uint8_t &num_dsps_reference,
-    uint64_t &reference_frequency_reference,
-    _Float32 &note_divisor_reference,
-    Envelopes &envelopes_reference,
-    Sequences &sequences_reference,
-    Orders &orders_reference,
-    Oscillators &oscillators_reference,
-    Wavetables &wavetables_reference,
-    DSPs &dsps_reference,
-    Channels &channels_reference,
-    Offsets &buffer_offsets_reference,
-    Links &links_reference,
-    ScaleComposer &scale_composer_reference,
-    FrequencyTable &frequency_table_reference
-)
-    : bpm(bpm_reference),
-      normalizer(normalizer_reference),
-      num_channels(num_channels_reference),
-      num_dsps(num_dsps_reference),
-      reference_frequency(reference_frequency_reference),
-      note_divisor(note_divisor_reference),
-      envelopes(envelopes_reference),
-      sequences(sequences_reference),
-      orders(orders_reference),
-      oscillators(oscillators_reference),
-      wavetables(wavetables_reference),
-      dsps(dsps_reference),
-      channels(channels_reference),
-      buffer_offsets(buffer_offsets_reference),
-      links(links_reference),
-      scale_composer(scale_composer_reference),
-      frequency_table(frequency_table_reference) {
+Song::Song() {
     current_offsets = new uint16_t[0];
     buffer_offsets = current_offsets;
     new_song();
@@ -75,11 +42,12 @@ void Song::new_song() {
     set_links();
 }
 
-void Song::save_to_file(const std::string &filename) const {
+void Song::save_to_file(const std::string &filename) {
     const auto [temp_base, song_path] = prepare_temp_directory();
     const std::string song_dir = song_path.string();
 
     try {
+        calculate_song_length();
         export_all(song_dir);
         compress_directory(song_dir, filename);
         std::filesystem::remove_all(temp_base);
@@ -139,6 +107,11 @@ void Song::change_tuning(const uint8_t new_edo, const double base_frequency) {
         new_edo,
         base_frequency
     };
+}
+
+uint16_t Song::get_max_rows() {
+    calculate_song_length();
+    return max_rows;
 }
 
 void Song::export_all(const std::string &directory) const {
@@ -365,6 +338,7 @@ nlohmann::json Song::create_header_json() const {
         {"bpm", bpm},
         {"normalizer", normalizer},
         {"output_channels", output_channels},
+        {"rows", max_rows},
         {"song_length", song_length}
     };
 
@@ -404,6 +378,44 @@ nlohmann::json Song::import_header(const std::string &filename) {
     tuning.edo = json["tuning"]["edo"];
     tuning.a4_frequency = json["tuning"]["a4_frequency"];
     return json;
+}
+
+void Song::calculate_song_length() {
+    max_rows = 0;
+    for (size_t channel_index = 0; channel_index < channels.size(); channel_index++) {
+        Channel *channel = channels[channel_index];
+        const bool constant_pitch = channel->order_index == CONSTANT_PITCH;
+        if (constant_pitch || channel->order_index >= orders.size()) {
+            continue;
+        }
+
+        const Order *order = orders[channel->order_index];
+        const uint8_t *order_sequences = order->sequences;
+        const size_t order_length = order->order_length;
+        uint16_t rows = 0;
+        for (size_t i = 0; i < order_length; i++) {
+            const uint8_t sequence_index = order_sequences[i];
+            if (sequence_index >= sequences.size()) {
+                break;
+            }
+
+            const Sequence *sequence = sequences[sequence_index];
+            const size_t sequence_length = sequence->data_size / 2;
+            for (size_t j = 0; j < sequence_length; j++) {
+                const uint8_t duration = sequence->notes[j].duration;
+                rows += duration;
+            }
+        }
+
+        max_rows = std::max(max_rows, rows);
+    }
+
+    calculate_ticks_per_beat();
+    if (ticks_per_beat == 0) {
+        throw std::runtime_error("Ticks per beat is zero. Cannot calculate song length.");
+    }
+
+    song_length = max_rows * ticks_per_beat;
 }
 
 void Song::set_link(Link &link, void *item, const u_int8_t i) const {

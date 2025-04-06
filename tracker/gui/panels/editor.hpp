@@ -10,6 +10,7 @@ class GUIEditorPanel : public GUIPanel {
   private:
     int &current_octave;
     int &jump_step;
+    int &page_size;
 
     void draw_panels();
 
@@ -23,7 +24,8 @@ class GUIEditorPanel : public GUIPanel {
   public:
     GUIEditorPanel(
         int &current_octave,
-        int &jump_step
+        int &jump_step,
+        int &page_size
     );
 
     void update() override {};

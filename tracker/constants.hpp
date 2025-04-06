@@ -14,6 +14,7 @@
 // Defaults
 #define DEFAULT_BPM 120
 #define DEFAULT_NORMALIZER 0.5
+#define DEFAULT_OUTPUT_CHANNELS 1
 
 #define DEFAULT_EDO 12
 #define DEFAULT_A4_FREQUENCY 440.0
@@ -29,6 +30,14 @@
 
 #define DEFAULT_CHANNEL_PITCH 0x02000000
 
+// General
+#define CONSTANT_PITCH 0xFF
+
+// Notes
+#define NOTES 250
+#define NOTE_REST 254
+#define NOTE_OFF 255
+
 // Limits
 #define MAX_ENVELOPES 32
 #define MAX_SEQUENCES 64
@@ -40,9 +49,6 @@
 
 #define MAX_WAVETABLE_SIZE 512
 #define MAX_DSP_BUFFER_SIZE 512
-
-// General
-#define NOTES 250
 
 // Phases
 #define ATTACK 0

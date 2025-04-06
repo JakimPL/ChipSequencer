@@ -32,6 +32,10 @@ int GUI::get_current_octave() const {
     return std::clamp(current_octave, min_octave, max_octave);
 }
 
+int GUI::get_page_size() const {
+    return std::clamp(page_size, GUI_MIN_PAGE_SIZE, GUI_MAX_PAGE_SIZE);
+}
+
 bool GUI::initialize() {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0) {
         printf("Error: %s\n", SDL_GetError());
@@ -153,6 +157,8 @@ void GUI::update(GUIElement element) {
         return sequences_panel.update();
     case GUIElement::Wavetables:
         return wavetables_panel.update();
+    case GUIElement::Patterns:
+        return patterns_panel.update();
     }
 }
 
@@ -166,6 +172,7 @@ void GUI::update_all() {
     oscillators_panel.update();
     sequences_panel.update();
     wavetables_panel.update();
+    patterns_panel.update();
 }
 
 void GUI::frame() {
@@ -178,6 +185,7 @@ void GUI::frame() {
     oscillators_panel.frame();
     sequences_panel.frame();
     wavetables_panel.frame();
+    patterns_panel.frame();
 }
 
 void GUI::play() const {
@@ -210,4 +218,8 @@ bool GUI::is_paused() const {
     }
 
     return false;
+}
+
+void GUI::deselect_all_rows() {
+    gui.patterns_panel.deselect_all_rows();
 }

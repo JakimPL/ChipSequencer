@@ -1,5 +1,6 @@
 #include "../../general.hpp"
 #include "../enums.hpp"
+#include "../utils.hpp"
 #include "orders.hpp"
 
 GUIOrdersPanel::GUIOrdersPanel() {
@@ -108,13 +109,14 @@ void GUIOrdersPanel::draw_order() {
     ImGui::Separator();
 
     for (size_t i = 0; i < current_order.sequences.size(); ++i) {
-        int &item = current_order.sequences[i];
+        const int &item = current_order.sequences[i];
 
         ImGui::PushID(i);
         const bool is_selected = (selected_sequence == i);
         const std::string order_string = std::to_string(item);
         if (ImGui::Selectable("##selectable", is_selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)) {
             selected_sequence = i;
+            digit_buffer.clear();
         }
 
         ImGui::SameLine();

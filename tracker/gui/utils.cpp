@@ -1,9 +1,9 @@
 #include <algorithm>
 #include <cmath>
 
-#include "../../general.hpp"
-#include "../constants.hpp"
-#include "../mapping.hpp"
+#include "../general.hpp"
+#include "constants.hpp"
+#include "mapping.hpp"
 #include "utils.hpp"
 
 int clamp_index(int index, const int size) {
@@ -82,6 +82,59 @@ void draw_button(const char *label, const std::function<void()> &callback, const
     if (ImGui::Button(label, ImVec2(button_width, 0))) {
         callback();
     }
+}
+
+std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t index, const int playing_row, const uint16_t start, const uint16_t end) {
+    bool select = false;
+    const ImVec4 highlight_color = ImVec4(1.0f, 0.2f, 1.0f, 1.0f);
+    const int min = std::max(static_cast<int>(start) - static_cast<int>(index), 0);
+    const int max = std::min(static_cast<int>(end) - static_cast<int>(index), static_cast<int>(pattern.notes.size()));
+    if (max <= 0 || min >= pattern.notes.size()) {
+        return {index + pattern.notes.size(), false};
+    }
+
+    if (ImGui::BeginTable("PatternTable", 3, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg)) {
+        ImGui::TableSetupColumn("Index", ImGuiTableColumnFlags_WidthFixed, 50.0f);
+        ImGui::TableSetupColumn("Note");
+        ImGui::TableSetupColumn("Octave");
+        if (header) {
+            ImGui::TableHeadersRow();
+        }
+
+        for (int i = min; i < max; i++) {
+            const int j = i + index;
+            const bool is_selected = (pattern.current_row == i);
+            ImGui::TableNextRow();
+            if (playing_row == j) {
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, IM_COL32(128, 255, 128, 64));
+            }
+
+            if (is_selected) {
+                ImGui::PushStyleColor(ImGuiCol_Text, highlight_color);
+            }
+
+            ImGui::TableSetColumnIndex(0);
+            const std::string index_string = std::to_string(j);
+            if (ImGui::Selectable(index_string.c_str(), is_selected, ImGuiSelectableFlags_SpanAllColumns)) {
+                pattern.current_row = i;
+                select = true;
+            }
+
+            ImGui::TableSetColumnIndex(1);
+            ImGui::Text("%s", get_note_name(pattern.notes[i]).c_str());
+
+            ImGui::TableSetColumnIndex(2);
+            ImGui::Text("%s", get_note_octave(pattern.notes[i]).c_str());
+
+            if (is_selected) {
+                ImGui::PopStyleColor();
+            }
+        }
+
+        ImGui::EndTable();
+    }
+
+    return {index + pattern.notes.size(), select};
 }
 
 void prepare_combo(const std::vector<std::string> &names, std::string label, int &index) {

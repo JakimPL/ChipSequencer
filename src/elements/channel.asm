@@ -13,7 +13,7 @@ load_offsets:
 .load_sequence:
     LOAD_OFFSET ebx, order_offset
     movzx ecx, byte [current_channel]
-    movzx ecx, byte [current_order + ecx]
+    movzx ecx, byte [current_sequence + ecx]
     add ebx, ecx
     movzx ebx, byte [ORDER_SEQUENCES + ebx]
     LOAD_VECTOR_ITEM sequences, sequence_offset
@@ -43,7 +43,7 @@ reset_channel:
     mov dword [oscillator_timer + 4 * ecx], 0
     mov byte [pitch + ecx], 0
     mov byte [envelope_mode + ecx], 0
-    mov byte [current_order + ecx], 0
+    mov byte [current_sequence + ecx], 0
     mov byte [sequence_current_note + ecx], 0
     ret
 

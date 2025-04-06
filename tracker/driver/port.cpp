@@ -5,16 +5,14 @@
 #include <mutex>
 
 PortAudioDriver::PortAudioDriver(
-    const std::array<t_output, SONG_LENGTH> &target,
     uint16_t sample_rate,
     unsigned long frames_per_buffer
 )
-    : Driver(target),
+    : Driver(),
       sample_rate(sample_rate),
       stream(nullptr),
       current_index(0),
-      frames_per_buffer(frames_per_buffer),
-      target(target) {
+      frames_per_buffer(frames_per_buffer) {
     pingpong_buffer.resize(2 * frames_per_buffer, 0);
     half_consumed[0].store(true);
     half_consumed[1].store(true);
@@ -49,7 +47,6 @@ void PortAudioDriver::play() {
         close_stream();
         return;
     }
-    sleep();
     stop_stream();
     close_stream();
 }
@@ -116,10 +113,6 @@ bool PortAudioDriver::stop_stream() {
         return false;
     }
     return true;
-}
-
-void PortAudioDriver::sleep() {
-    Pa_Sleep(SONG_LENGTH * 1000 / sample_rate);
 }
 
 int PortAudioDriver::audio_callback(

@@ -13,6 +13,7 @@
 #include "panels/menu.hpp"
 #include "panels/oscillators.hpp"
 #include "panels/orders.hpp"
+#include "panels/patterns.hpp"
 #include "panels/sequences.hpp"
 #include "panels/wavetables.hpp"
 
@@ -40,12 +41,15 @@ class GUI {
 
     int get_current_octave() const;
     int get_jump_step() const;
+    int get_page_size() const;
+
+    void deselect_all_rows();
 
   private:
     AudioEngine *audio_engine;
 
     GUIMenu menu;
-    GUIEditorPanel editor = GUIEditorPanel(current_octave, jump_step);
+    GUIEditorPanel editor = GUIEditorPanel(current_octave, jump_step, page_size);
     GUIGeneralPanel general_panel;
     GUIChannelsPanel channels_panel;
     GUIEnvelopesPanel envelopes_panel;
@@ -53,6 +57,7 @@ class GUI {
     GUIOscillatorsPanel oscillators_panel;
     GUISequencesPanel sequences_panel;
     GUIWavetablesPanel wavetables_panel;
+    GUIPatternsPanel patterns_panel;
 
     SDL_Window *window;
     SDL_GLContext gl_context;
@@ -60,8 +65,9 @@ class GUI {
     ImFont *font;
     bool done = false;
 
-    int current_octave = 3;
-    int jump_step = 1;
+    int current_octave = GUI_DEFAULT_CURRENT_OCTAVE;
+    int jump_step = GUI_DEFAULT_JUMP_STEP;
+    int page_size = GUI_DEFAULT_PAGE_SIZE;
 
     void update_all();
 };

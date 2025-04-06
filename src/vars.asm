@@ -5,7 +5,7 @@
     pitch resb MAX_CHANNELS
 
     envelope_mode resb MAX_CHANNELS
-    current_order resb MAX_CHANNELS
+    current_sequence resb MAX_CHANNELS
     sequence_current_note resb MAX_CHANNELS
 
     dsp_input resd MAX_DSPS

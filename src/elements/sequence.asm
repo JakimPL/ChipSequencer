@@ -2,7 +2,7 @@
 step:
 ; If channel does not use orders, skip
     LOAD_OFFSET ecx, channel_offset
-    cmp byte [CHANNEL_ORDER_INDEX + ecx], -1
+    cmp byte [CHANNEL_ORDER_INDEX + ecx], CONSTANT_PITCH
     jz .done
 
 ; Handle timing for sequencer
@@ -30,8 +30,11 @@ step:
     LOAD_OFFSET ecx, sequence_offset
     lea esi, [ecx + SEQUENCE_NOTES + eax * 2]
     mov al, [esi]
+.check_note_rest:
+    cmp al, NOTE_REST
+    jz .progress_sequence
 .check_note_off:
-    cmp al, 0xFF
+    cmp al, NOTE_OFF
     jnz .note_on
 .note_off:
     call set_release

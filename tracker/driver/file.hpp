@@ -6,10 +6,7 @@
 
 class FileDriver : public Driver {
   public:
-    FileDriver(
-        const std::array<t_output, SONG_LENGTH> &target,
-        const std::string &filename
-    );
+    FileDriver(const std::string &filename);
 
     bool initialize() override;
     void terminate() override;

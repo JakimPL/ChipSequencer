@@ -23,31 +23,9 @@ class Song {
         double a4_frequency = DEFAULT_A4_FREQUENCY;
     } tuning;
 
-    uint16_t &bpm;
-    _Float32 &normalizer;
-
-    uint8_t &num_channels;
-    uint8_t &num_dsps;
-
-    uint64_t &reference_frequency;
-    _Float32 &note_divisor;
-
-    Envelopes &envelopes;
-    Sequences &sequences;
-    Orders &orders;
-    Oscillators &oscillators;
-    Wavetables &wavetables;
-    DSPs &dsps;
-    Channels &channels;
-    Offsets buffer_offsets;
-    Offsets current_offsets = nullptr;
-    Links &links;
-
-    ScaleComposer &scale_composer;
-    FrequencyTable &frequency_table;
-
-    uint8_t output_channels = 1;
-    uint32_t song_length = SONG_LENGTH;
+    uint8_t output_channels = DEFAULT_OUTPUT_CHANNELS;
+    uint64_t song_length = 0;
+    uint16_t max_rows = 0;
 
     void generate_header_vector(std::stringstream &asm_content, const std::string &name, const std::string &short_name, const size_t size) const;
     std::string generate_header_asm_file() const;
@@ -57,6 +35,7 @@ class Song {
 
     std::string get_element_path(const std::string &directory, const std::string prefix, const size_t i, const char separator = '/') const;
 
+    void calculate_song_length();
     void set_link(Link &link, void *item, const u_int8_t i) const;
     void set_links();
 
@@ -107,34 +86,16 @@ class Song {
     void delete_dsp(void *dsp);
 
   public:
-    Song(
-        uint16_t &bpm_reference,
-        _Float32 &normalizer_reference,
-        uint8_t &num_channels_reference,
-        uint8_t &num_dsps_reference,
-        uint64_t &reference_frequency_reference,
-        _Float32 &note_divisor_reference,
-        Envelopes &envelopes_reference,
-        Sequences &sequences_reference,
-        Orders &orders_reference,
-        Oscillators &oscillators_reference,
-        Wavetables &wavetables_reference,
-        DSPs &dsps_reference,
-        Channels &channels_reference,
-        Offsets &buffer_offsets_reference,
-        Links &links_reference,
-        ScaleComposer &scale_composer_reference,
-        FrequencyTable &frequency_table_reference
-    );
-
+    Song();
     ~Song();
 
     void new_song();
     void load_from_file(const std::string &filename);
-    void save_to_file(const std::string &filename) const;
+    void save_to_file(const std::string &filename);
     void compile(const std::string &filename, bool compress = true) const;
 
     void change_tuning(const uint8_t new_edo, const double base_frequency);
+    uint16_t get_max_rows();
 
     Envelope *add_envelope();
     Sequence *add_sequence();

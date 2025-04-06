@@ -2,11 +2,7 @@
 #include <fstream>
 #include <iostream>
 
-FileDriver::FileDriver(
-    const std::array<t_output, SONG_LENGTH> &target,
-    const std::string &filename
-)
-    : Driver(target), filename(filename) {
+FileDriver::FileDriver(const std::string &filename) {
 }
 
 bool FileDriver::initialize() {
@@ -24,9 +20,7 @@ void FileDriver::play() {
 void FileDriver::save_output_to_file() {
     std::ofstream file(filename);
     if (file.is_open()) {
-        for (const auto &value : target) {
-            file << value << std::endl;
-        }
+        // TODO: not implemented yet
         file.close();
     } else {
         std::cerr << "Unable to open file" << std::endl;
