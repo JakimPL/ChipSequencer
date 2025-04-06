@@ -24,9 +24,13 @@ void GUIEditorPanel::draw_panels() {
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
     ImGui::SliderInt("##JumpStep", &jump_step, 0, GUI_MAX_JUMP_STEP);
 
+    const int previous_page_size = page_size;
     ImGui::Text("Page size:");
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
     ImGui::SliderInt("##PageSize", &page_size, GUI_MIN_PAGE_SIZE, GUI_MAX_PAGE_SIZE);
+    if (page_size != previous_page_size) {
+        gui.deselect_all_rows();
+    }
 
     ImGui::End();
 }

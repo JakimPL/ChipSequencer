@@ -36,6 +36,7 @@ class GUIPatternsPanel : public GUIPanel {
   public:
     GUIPatternsPanel();
     void update() override;
+    void deselect_all_rows();
 };
 
 #endif // GUI_PANELS_PATTERNS_HPP

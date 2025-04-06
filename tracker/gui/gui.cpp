@@ -219,3 +219,7 @@ bool GUI::is_paused() const {
 
     return false;
 }
+
+void GUI::deselect_all_rows() {
+    gui.patterns_panel.deselect_all_rows();
+}

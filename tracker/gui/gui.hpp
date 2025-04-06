@@ -43,6 +43,8 @@ class GUI {
     int get_jump_step() const;
     int get_page_size() const;
 
+    void deselect_all_rows();
+
   private:
     AudioEngine *audio_engine;
 

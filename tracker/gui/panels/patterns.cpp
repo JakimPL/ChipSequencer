@@ -25,8 +25,12 @@ void GUIPatternsPanel::draw() {
 }
 
 void GUIPatternsPanel::draw_pages() {
+    const int previous_page = page;
     const int pages = std::ceil(static_cast<float>(current_pattern.total_rows) / gui.get_page_size());
     draw_int_slider("Page", page, 0, pages - 1);
+    if (page != previous_page) {
+        deselect_all_rows();
+    }
 }
 
 void GUIPatternsPanel::draw_channels() {
@@ -165,4 +169,12 @@ std::pair<Pattern *, uint16_t> GUIPatternsPanel::find_pattern_by_current_row() c
 
     Pattern *pattern = const_cast<Pattern *>(&patterns.at(pattern_id));
     return {pattern, rows};
+}
+
+void GUIPatternsPanel::deselect_all_rows() {
+    for (auto &pattern : current_pattern.patterns) {
+        for (auto &p : pattern.second) {
+            p.current_row = -1;
+        }
+    }
 }
