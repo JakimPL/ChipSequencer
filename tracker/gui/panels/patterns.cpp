@@ -21,7 +21,6 @@ void GUIPatternsPanel::draw() {
     check_keyboard_input();
     to();
 
-    ImGui::Columns(1);
     ImGui::End();
 }
 
@@ -31,28 +30,28 @@ void GUIPatternsPanel::draw_pages() {
 }
 
 void GUIPatternsPanel::draw_channels() {
-    if (current_pattern.patterns.empty()) {
+    size_t columns = current_pattern.patterns.size();
+    if (columns == 0) {
         ImGui::Text("No channels available.");
         return;
     }
 
     draw_pages();
 
-    size_t columns = current_pattern.patterns.size();
     const float available = ImGui::GetContentRegionAvail().x;
     const float total_min = columns * GUI_MINIMAL_CHANNEL_COLUMN_WIDTH;
     const float child_width = (available >= total_min) ? available : total_min;
     const float column_width = (available >= total_min) ? (available / columns) : GUI_MINIMAL_CHANNEL_COLUMN_WIDTH;
 
     ImGui::SetNextWindowContentSize(ImVec2(std::max(available, total_min), 0));
-    ImGui::BeginChild("##PatternChannels", ImVec2(available, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-    ImGui::Columns(current_pattern.patterns.size(), "PatternColumns", true);
-    for (size_t column = 0; column < columns; column++) {
-        ImGui::SetColumnWidth(column, column_width);
-    }
+    ImGui::BeginChild("##PatternChannels", ImVec2(child_width, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 
-    for (const auto &[id, pattern] : current_pattern.patterns) {
-        draw_channel(id);
+    if (ImGui::BeginTable("ChannelsTable", num_channels, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersOuter)) {
+        for (size_t channel = 0; channel < num_channels; channel++) {
+            ImGui::TableNextColumn();
+            draw_channel(channel);
+        }
+        ImGui::EndTable();
     }
 
     ImGui::EndChild();
@@ -64,6 +63,7 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
     size_t index = 0;
     const uint16_t start = page * GUI_PAGE_SIZE;
     const uint16_t end = start + GUI_PAGE_SIZE;
+
     for (auto &pattern : current_pattern.patterns[channel_index]) {
         const int playing_row = current_pattern.playing_rows[channel_index];
         auto [new_index, select] = draw_pattern(pattern, false, index, playing_row, start, end);
@@ -73,7 +73,7 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
         }
         index = new_index;
     }
-    ImGui::NextColumn();
+
     ImGui::PopID();
 }
 

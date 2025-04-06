@@ -84,18 +84,15 @@ void draw_button(const char *label, const std::function<void()> &callback, const
     }
 }
 
-std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, const size_t index, const int playing_row, const uint16_t start, const uint16_t end) {
+std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t index, const int playing_row, const uint16_t start, const uint16_t end) {
     bool select = false;
-    const float height = std::max(5.0f, ImGui::GetContentRegionAvail().y - 5.0f);
-    const ImVec4 highlight_color = ImVec4(1.0f, 0.2f, 1.0f, 1.0f);
     int min = std::max(static_cast<int>(start) - static_cast<int>(index), 0);
     int max = std::min(static_cast<int>(end) - static_cast<int>(index), static_cast<int>(pattern.notes.size()));
     if (max <= 0 || min >= pattern.notes.size()) {
-        return {index + pattern.notes.size(), select};
+        return {index + pattern.notes.size(), false};
     }
 
-    ImGui::BeginChild("PatternScroll", ImVec2(0, height), true);
-    if (ImGui::BeginTable("PatternTable", 3, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersV)) {
+    if (ImGui::BeginTable("PatternTable", 3, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg)) {
         ImGui::TableSetupColumn("Index", ImGuiTableColumnFlags_WidthFixed, 50.0f);
         ImGui::TableSetupColumn("Note");
         ImGui::TableSetupColumn("Octave");
@@ -103,42 +100,30 @@ std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, const 
             ImGui::TableHeadersRow();
         }
 
-        for (int i = min; i < max; ++i) {
+        for (int i = min; i < max; i++) {
             const int j = i + index;
             const bool is_selected = (pattern.current_row == i);
-            const std::string index_string = std::to_string(j);
-
             ImGui::TableNextRow();
             if (playing_row == j) {
                 ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, IM_COL32(128, 255, 128, 64));
             }
 
             ImGui::TableSetColumnIndex(0);
-            if (ImGui::Selectable(("##Selectable" + index_string).c_str(), is_selected, ImGuiSelectableFlags_SpanAllColumns)) {
+            const std::string index_string = std::to_string(j);
+            if (ImGui::Selectable(index_string.c_str(), is_selected, ImGuiSelectableFlags_SpanAllColumns)) {
                 pattern.current_row = i;
                 select = true;
             }
 
-            ImGui::SameLine();
-            ImGui::TableSetColumnIndex(0);
-            draw_colored_text(index_string, is_selected, highlight_color);
-
             ImGui::TableSetColumnIndex(1);
-            const std::string note_string = get_note_name(pattern.notes[i]);
-            draw_colored_text(note_string, is_selected, highlight_color);
+            draw_colored_text(get_note_name(pattern.notes[i]), is_selected, ImVec4(1.0f, 0.2f, 1.0f, 1.0f));
 
             ImGui::TableSetColumnIndex(2);
-            const std::string octave_string = get_note_octave(pattern.notes[i]);
-            draw_colored_text(octave_string, is_selected, highlight_color);
+            draw_colored_text(get_note_octave(pattern.notes[i]), is_selected, ImVec4(1.0f, 0.2f, 1.0f, 1.0f));
         }
 
         ImGui::EndTable();
-        ImVec2 table_min = ImGui::GetItemRectMin();
-        ImVec2 table_max = ImGui::GetItemRectMax();
-        ImGui::GetWindowDrawList()->AddLine(ImVec2(table_min.x, table_max.y), ImVec2(table_max.x, table_max.y), IM_COL32(192, 192, 192, 64), 1.0f);
     }
-
-    ImGui::EndChild();
 
     return {index + pattern.notes.size(), select};
 }
