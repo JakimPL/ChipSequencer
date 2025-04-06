@@ -41,22 +41,22 @@ void GUIDSPsPanel::from() {
     case EFFECT_GAINER: {
         current_dsp.type = "Gainer";
         const DSPGainer *gainer = static_cast<const DSPGainer *>(dsp);
-        current_dsp.gainer_gain = static_cast<float>(gainer->volume) / UINT8_MAX;
+        current_dsp.gainer_gain = static_cast<float>(gainer->volume) / UINT16_MAX;
         break;
     }
     case EFFECT_DELAY: {
         current_dsp.type = "Delay";
         const DSPDelay *delay = static_cast<const DSPDelay *>(dsp);
-        current_dsp.delay_dry = static_cast<float>(delay->dry) / UINT8_MAX;
-        current_dsp.delay_wet = static_cast<float>(delay->wet) / UINT8_MAX;
-        current_dsp.delay_feedback = static_cast<float>(delay->feedback) / UINT8_MAX;
+        current_dsp.delay_dry = static_cast<float>(delay->dry) / UINT16_MAX;
+        current_dsp.delay_wet = static_cast<float>(delay->wet) / UINT16_MAX;
+        current_dsp.delay_feedback = static_cast<float>(delay->feedback) / UINT16_MAX;
         current_dsp.delay_time = delay->delay_time;
         break;
     }
     case EFFECT_FILTER: {
         current_dsp.type = "Filter";
         const DSPFilter *filter = static_cast<const DSPFilter *>(dsp);
-        current_dsp.filter_cutoff = static_cast<float>(filter->frequency) / UINT8_MAX;
+        current_dsp.filter_cutoff = static_cast<float>(filter->frequency) / UINT16_MAX;
         break;
     }
     }
@@ -65,6 +65,36 @@ void GUIDSPsPanel::from() {
 void GUIDSPsPanel::to() const {
     if (!is_index_valid()) {
         return;
+    }
+
+    switch (current_dsp.effect_index) {
+    case EFFECT_GAINER: {
+        DSPGainer *new_dsp = static_cast<DSPGainer *>(operator new(sizeof(DSPGainer)));
+        new_dsp->effect_index = EFFECT_GAINER;
+        new_dsp->volume = static_cast<uint16_t>(std::round(current_dsp.gainer_gain * UINT16_MAX));
+        delete static_cast<DSPGainer *>(dsps[dsp_index]);
+        dsps[dsp_index] = new_dsp;
+        break;
+    }
+    case EFFECT_DELAY: {
+        DSPDelay *new_dsp = static_cast<DSPDelay *>(operator new(sizeof(DSPDelay)));
+        new_dsp->effect_index = EFFECT_DELAY;
+        new_dsp->dry = static_cast<uint16_t>(std::round(current_dsp.delay_dry * UINT16_MAX));
+        new_dsp->wet = static_cast<uint16_t>(std::round(current_dsp.delay_wet * UINT16_MAX));
+        new_dsp->feedback = static_cast<uint16_t>(std::round(current_dsp.delay_feedback * UINT16_MAX));
+        new_dsp->delay_time = static_cast<uint16_t>(std::round(current_dsp.delay_time));
+        delete static_cast<DSPDelay *>(dsps[dsp_index]);
+        dsps[dsp_index] = new_dsp;
+        break;
+    }
+    case EFFECT_FILTER: {
+        DSPFilter *new_dsp = static_cast<DSPFilter *>(operator new(sizeof(DSPFilter)));
+        new_dsp->effect_index = EFFECT_FILTER;
+        new_dsp->frequency = static_cast<uint16_t>(std::round(current_dsp.filter_cutoff * UINT16_MAX));
+        delete static_cast<DSPFilter *>(dsps[dsp_index]);
+        dsps[dsp_index] = new_dsp;
+        break;
+    }
     }
 }
 
@@ -118,8 +148,8 @@ void GUIDSPsPanel::draw_dsp() {
         draw_knob("Wet", current_dsp.delay_wet, 0.0f, 1.0f);
         ImGui::SameLine();
         draw_knob("Feedback", current_dsp.delay_feedback, 0.0f, 1.0f);
-        ImGui::SameLine();
-        draw_int_slider("Time", current_dsp.delay_time, 1, MAX_DSP_BUFFER_SIZE);
+        ImGui::NewLine();
+        draw_knob("Time", current_dsp.delay_time, 1, MAX_DSP_BUFFER_SIZE);
         break;
     }
     case EFFECT_FILTER: {

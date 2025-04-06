@@ -17,7 +17,7 @@ class GUIDSPsPanel : public GUIPanel {
         float delay_dry = 0.5f;
         float delay_wet = 0.5f;
         float delay_feedback = 0.5f;
-        int delay_time = 0.5f;
+        float delay_time = 256.0f;
 
         // filter
         float filter_cutoff = 0.5f;

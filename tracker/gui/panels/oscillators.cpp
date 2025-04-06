@@ -74,6 +74,7 @@ void GUIOscillatorsPanel::to() const {
         new_oscillator->generator_index = GENERATOR_SQUARE;
         new_oscillator->oscillator_size = SIZE_OSCILLATOR_SQUARE;
         new_oscillator->duty_cycle = static_cast<uint8_t>(std::round(current_oscillator.duty_cycle * UINT8_MAX));
+        delete static_cast<OscillatorSquare *>(oscillators[oscillator_index]);
         oscillators[oscillator_index] = new_oscillator;
         break;
     }
@@ -81,6 +82,7 @@ void GUIOscillatorsPanel::to() const {
         OscillatorSaw *new_oscillator = static_cast<OscillatorSaw *>(operator new(sizeof(OscillatorSaw)));
         new_oscillator->generator_index = GENERATOR_SAW;
         new_oscillator->oscillator_size = SIZE_OSCILLATOR_SAW;
+        delete static_cast<OscillatorSaw *>(oscillators[oscillator_index]);
         oscillators[oscillator_index] = new_oscillator;
         break;
     }
@@ -88,6 +90,7 @@ void GUIOscillatorsPanel::to() const {
         OscillatorSine *new_oscillator = static_cast<OscillatorSine *>(operator new(sizeof(OscillatorSine)));
         new_oscillator->generator_index = GENERATOR_SINE;
         new_oscillator->oscillator_size = SIZE_OSCILLATOR_SINE;
+        delete static_cast<OscillatorSine *>(oscillators[oscillator_index]);
         oscillators[oscillator_index] = new_oscillator;
         break;
     }
@@ -96,6 +99,7 @@ void GUIOscillatorsPanel::to() const {
         new_oscillator->generator_index = GENERATOR_WAVETABLE;
         new_oscillator->oscillator_size = SIZE_OSCILLATOR_WAVETABLE;
         new_oscillator->wavetable_index = current_oscillator.wavetable_index;
+        delete static_cast<OscillatorWavetable *>(oscillators[oscillator_index]);
         oscillators[oscillator_index] = new_oscillator;
         break;
     }
