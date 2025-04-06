@@ -25,7 +25,7 @@ void GUIPatternsPanel::draw() {
 }
 
 void GUIPatternsPanel::draw_pages() {
-    const int pages = std::ceil(static_cast<float>(current_pattern.total_rows) / GUI_PAGE_SIZE);
+    const int pages = std::ceil(static_cast<float>(current_pattern.total_rows) / gui.get_page_size());
     draw_int_slider("Page", page, 0, pages - 1);
 }
 
@@ -61,8 +61,8 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
     ImGui::PushID(channel_index);
     ImGui::Text("Channel %zu", channel_index);
     size_t index = 0;
-    const uint16_t start = page * GUI_PAGE_SIZE;
-    const uint16_t end = start + GUI_PAGE_SIZE;
+    const uint16_t start = page * gui.get_page_size();
+    const uint16_t end = start + gui.get_page_size();
 
     for (auto &pattern : current_pattern.patterns[channel_index]) {
         const int playing_row = current_pattern.playing_rows[channel_index];

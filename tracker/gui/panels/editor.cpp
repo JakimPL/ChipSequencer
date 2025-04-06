@@ -2,8 +2,8 @@
 #include "../constants.hpp"
 #include "editor.hpp"
 
-GUIEditorPanel::GUIEditorPanel(int &octave, int &step)
-    : current_octave(octave), jump_step(step) {
+GUIEditorPanel::GUIEditorPanel(int &octave, int &step, int &page)
+    : current_octave(octave), jump_step(step), page_size(page) {
 }
 
 void GUIEditorPanel::draw() {
@@ -15,12 +15,19 @@ void GUIEditorPanel::draw_panels() {
     const int min_octave = frequency_table.get_min_octave();
     const int max_octave = frequency_table.get_max_octave();
     ImGui::Begin("Editor");
+
     ImGui::Text("Current octave:");
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
     ImGui::SliderInt("##CurrentOctave", &current_octave, min_octave, max_octave);
+
     ImGui::Text("Jump step:");
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
     ImGui::SliderInt("##JumpStep", &jump_step, 0, GUI_MAX_JUMP_STEP);
+
+    ImGui::Text("Page size:");
+    ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+    ImGui::SliderInt("##PageSize", &page_size, GUI_MIN_PAGE_SIZE, GUI_MAX_PAGE_SIZE);
+
     ImGui::End();
 }
 

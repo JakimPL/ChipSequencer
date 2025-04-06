@@ -86,8 +86,8 @@ void draw_button(const char *label, const std::function<void()> &callback, const
 
 std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t index, const int playing_row, const uint16_t start, const uint16_t end) {
     bool select = false;
-    int min = std::max(static_cast<int>(start) - static_cast<int>(index), 0);
-    int max = std::min(static_cast<int>(end) - static_cast<int>(index), static_cast<int>(pattern.notes.size()));
+    const int min = std::max(static_cast<int>(start) - static_cast<int>(index), 0);
+    const int max = std::min(static_cast<int>(end) - static_cast<int>(index), static_cast<int>(pattern.notes.size()));
     if (max <= 0 || min >= pattern.notes.size()) {
         return {index + pattern.notes.size(), false};
     }
