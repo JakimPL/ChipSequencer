@@ -21,6 +21,11 @@ class GUIDSPsPanel : public GUIPanel {
 
         // filter
         float filter_cutoff = 0.5f;
+
+        void *output = nullptr;
+        bool additive = false;
+        int variable_type = -1;
+        int shift = 0;
     } current_dsp;
 
     int dsp_index = 0;
