@@ -6,7 +6,6 @@
 #include <string>
 
 #include "../init.hpp"
-#include "../names.hpp"
 #include "panel.hpp"
 
 class GUIChannelsPanel : public GUIPanel {

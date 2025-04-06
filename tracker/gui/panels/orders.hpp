@@ -8,7 +8,6 @@
 
 #include "../constants.hpp"
 #include "../init.hpp"
-#include "../names.hpp"
 #include "panel.hpp"
 
 class GUIOrdersPanel : public GUIPanel {

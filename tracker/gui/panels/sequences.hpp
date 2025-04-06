@@ -5,9 +5,7 @@
 
 #include "../constants.hpp"
 #include "../init.hpp"
-#include "../names.hpp"
 #include "../pattern.hpp"
-#include "../utils.hpp"
 #include "panel.hpp"
 
 class GUISequencesPanel : public GUIPanel {

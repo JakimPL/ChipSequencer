@@ -4,6 +4,7 @@
 
 #include "../../general.hpp"
 #include "../../utils/file.hpp"
+#include "../utils.hpp"
 #include "menu.hpp"
 
 GUIMenu::GUIMenu() {

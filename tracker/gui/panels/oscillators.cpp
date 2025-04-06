@@ -3,6 +3,7 @@
 
 #include "../../general.hpp"
 #include "../enums.hpp"
+#include "../names.hpp"
 #include "../utils.hpp"
 
 GUIOscillatorsPanel::GUIOscillatorsPanel() {

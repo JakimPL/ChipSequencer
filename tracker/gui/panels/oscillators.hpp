@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "../init.hpp"
-#include "../names.hpp"
 #include "panel.hpp"
 
 class GUIOscillatorsPanel : public GUIPanel {

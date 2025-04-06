@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "../init.hpp"
-#include "../names.hpp"
 #include "panel.hpp"
 
 class GUIWavetablesPanel : public GUIPanel {

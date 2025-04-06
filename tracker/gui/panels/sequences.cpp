@@ -3,6 +3,7 @@
 #include "../../general.hpp"
 #include "../enums.hpp"
 #include "../mapping.hpp"
+#include "../names.hpp"
 #include "../utils.hpp"
 #include "sequences.hpp"
 

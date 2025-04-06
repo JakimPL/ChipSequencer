@@ -5,6 +5,7 @@
 #include <vector>
 
 static std::vector<std::string> channel_names;
+static std::vector<std::string> dsp_names;
 static std::vector<std::string> envelope_names;
 static std::vector<std::string> generator_names;
 static std::vector<std::string> oscillator_names;
