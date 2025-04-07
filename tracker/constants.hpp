@@ -48,7 +48,7 @@
 #define MAX_DSPS 16
 
 #define MAX_WAVETABLE_SIZE 512
-#define MAX_DSP_BUFFER_SIZE 512
+#define MAX_DSP_BUFFER_SIZE 256
 
 // Phases
 #define ATTACK 0

@@ -47,7 +47,7 @@ class Compiler:
         copy_tree("tools", str(self.temp_dir / "tools"))
         shutil.copy("compile.bat", self.temp_dir / "compile.bat")
         shutil.copy("linker.lnk", self.temp_dir / "linker.lnk")
-        shutil.copy(self.song_dir / "header.asm", self.temp_dir / "src" / "song" / "data.asm")
+        shutil.copy(self.song_dir / "header.asm", self.temp_dir / "src" / "song" / "header.asm")
         shutil.copy(self.song_dir / "data.asm", self.temp_dir / "src" / "song" / "data.asm")
 
     def copy_executable(self):

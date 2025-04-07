@@ -48,6 +48,7 @@ void Song::save_to_file(const std::string &filename) {
 
     try {
         calculate_song_length();
+        set_links();
         export_all(song_dir);
         compress_directory(song_dir, filename);
         std::filesystem::remove_all(temp_base);
@@ -300,13 +301,23 @@ void Song::generate_header_vector(std::stringstream &asm_content, const std::str
 
 std::string Song::generate_header_asm_file() const {
     std::stringstream asm_content;
-    asm_content << "    \%define CHANNELS" << channels.size() << "\n";
-    asm_content << "    \%define DSPS" << dsps.size() << "\n";
-    asm_content << "    \%define WAVETABLES" << wavetables.size() << "\n";
+    asm_content << "    \%define CHANNELS " << channels.size() << "\n";
+    asm_content << "    \%define DSPS " << dsps.size() << "\n";
+    asm_content << "    \%define WAVETABLES " << wavetables.size() << "\n";
     asm_content << "\n";
-    asm_content << "    \%define OUTPUT_CHANNELS" << output_channels << "\n";
-    asm_content << "    \%define SONG_LENGTH" << song_length << "\n";
+    asm_content << "    \%define OUTPUT_CHANNELS " << static_cast<int>(output_channels) << "\n";
+    asm_content << "    \%define SONG_LENGTH " << song_length << "\n";
     asm_content << "\n";
+    asm_content << "    \%define TUNING_FREQUENCY " << static_cast<uint32_t>(std::round(frequency_table.get_last_frequency() * 65536.0)) << "\n";
+    asm_content << "    \%define TUNING_NOTE_DIVISOR " << static_cast<_Float32>(frequency_table.get_note_divisor()) << "\n";
+    asm_content << "\n";
+    asm_content << "    \%define DSP_BUFFER_SIZE MAX_DSP_BUFFER_SIZE * DSPS" << "\n";
+    asm_content << "\n";
+    asm_content << "SEGMENT_DATA" << "\n";
+    asm_content << "num_channels:" << "\n";
+    asm_content << "    db CHANNELS" << "\n";
+    asm_content << "num_dsps:" << "\n";
+    asm_content << "    db DSPS" << "\n";
     return asm_content.str();
 }
 
@@ -492,7 +503,11 @@ void Song::compile_sources(const std::string &directory, const std::string &file
     if (!compress) {
         compile_command += " --uncompressed";
     }
-    run_command(compile_command);
+
+    const int exit_code = run_command(compile_command);
+    if (exit_code != 0) {
+        throw std::runtime_error("Failed to compile sources: " + compile_command);
+    }
 }
 
 std::string Song::get_element_path(const std::string &directory, const std::string prefix, const size_t i, const char separator) const {
