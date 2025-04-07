@@ -4,6 +4,7 @@
 #include "../general.hpp"
 #include "constants.hpp"
 #include "mapping.hpp"
+#include "names.hpp"
 #include "utils.hpp"
 
 int clamp_index(int index, const int size) {
@@ -135,6 +136,18 @@ std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t
     }
 
     return {index + pattern.notes.size(), select};
+}
+
+void draw_output(OutputType &output_type) {
+    push_secondary_style();
+    ImGui::Separator();
+    ImGui::Text("Output:");
+    ImGui::Checkbox("Additive", &output_type.additive);
+    prepare_combo(variable_types, "##TypeCombo", output_type.variable_type);
+    ImGui::BeginDisabled(output_type.variable_type == 0);
+    draw_int_slider("Shift", output_type.shift, 0, 15);
+    ImGui::EndDisabled();
+    pop_secondary_style();
 }
 
 void prepare_combo(const std::vector<std::string> &names, std::string label, int &index) {

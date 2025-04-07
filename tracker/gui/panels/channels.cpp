@@ -39,9 +39,7 @@ void GUIChannelsPanel::from() {
     current_channel.constant_pitch = channel->order_index == 0xFF;
     current_channel.order_index = std::max(0, static_cast<int>(channel->order_index));
     current_channel.oscillator_index = channel->oscillator_index;
-    current_channel.additive = !(channel->output_flag & MASK_ADDITIVE);
-    current_channel.variable_type = (channel->output_flag & MASK_VARIABLE_TYPE) >> 4;
-    current_channel.shift = current_channel.variable_type == 0 ? 0 : channel->output_flag & MASK_SHIFT;
+    current_channel.output_type.from_output_flag(channel->output_flag);
     current_channel.output = channel->output;
 
     if (current_channel.constant_pitch) {
@@ -60,8 +58,7 @@ void GUIChannelsPanel::to() const {
     channel->envelope_index = current_channel.envelope_index;
     channel->oscillator_index = current_channel.oscillator_index;
 
-    channel->output_flag = current_channel.additive ? 0 : MASK_ADDITIVE;
-    channel->output_flag |= (current_channel.variable_type << 4) | current_channel.shift;
+    channel->output_flag = current_channel.output_type.calculate_output_flag();
     channel->output = current_channel.output;
 
     channel->order_index = current_channel.constant_pitch ? CONSTANT_PITCH : current_channel.order_index;
@@ -122,19 +119,7 @@ void GUIChannelsPanel::draw_channel() {
         draw_float_slider("Transpose", current_channel.pitch, GUI_MIN_TRANSPOSE, GUI_MAX_TRANSPOSE);
     }
 
-    draw_output();
-}
-
-void GUIChannelsPanel::draw_output() {
-    push_secondary_style();
-    ImGui::Separator();
-    ImGui::Text("Output:");
-    ImGui::Checkbox("Additive", &current_channel.additive);
-    prepare_combo(variable_types, "##TypeCombo", current_channel.variable_type);
-    ImGui::BeginDisabled(current_channel.variable_type == 0);
-    draw_int_slider("Shift", current_channel.shift, 0, 15);
-    ImGui::EndDisabled();
-    pop_secondary_style();
+    draw_output(current_channel.output_type);
 }
 
 void GUIChannelsPanel::check_keyboard_input() {

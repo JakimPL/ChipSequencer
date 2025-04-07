@@ -138,7 +138,7 @@ void GUIDSPsPanel::draw_dsp() {
     ImGui::NextColumn();
     draw_effect();
     ImGui::NewLine();
-    draw_output();
+    draw_output(current_dsp.output_type);
 }
 
 void GUIDSPsPanel::draw_effect() {
@@ -162,18 +162,6 @@ void GUIDSPsPanel::draw_effect() {
         break;
     }
     }
-}
-
-void GUIDSPsPanel::draw_output() {
-    push_secondary_style();
-    ImGui::Separator();
-    ImGui::Text("Output:");
-    ImGui::Checkbox("Additive", &current_dsp.additive);
-    prepare_combo(variable_types, "##TypeCombo", current_dsp.variable_type);
-    ImGui::BeginDisabled(current_dsp.variable_type == 0);
-    draw_int_slider("Shift", current_dsp.shift, 0, 15);
-    ImGui::EndDisabled();
-    pop_secondary_style();
 }
 
 void GUIDSPsPanel::check_keyboard_input() {

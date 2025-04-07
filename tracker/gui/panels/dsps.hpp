@@ -23,9 +23,7 @@ class GUIDSPsPanel : public GUIPanel {
         float filter_cutoff = 0.5f;
 
         void *output = nullptr;
-        bool additive = false;
-        int variable_type = -1;
-        int shift = 0;
+        OutputType output_type;
     } current_dsp;
 
     int dsp_index = 0;
@@ -34,7 +32,6 @@ class GUIDSPsPanel : public GUIPanel {
     void draw_dsp();
     void draw_dsp_type();
     void draw_effect();
-    void draw_output();
 
     void from() override;
     void to() const override;

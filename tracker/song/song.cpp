@@ -101,7 +101,7 @@ void Song::change_tuning(const uint8_t new_edo, const double base_frequency) {
     double frequency = frequency_table.get_last_frequency();
     std::cout << "New tuning: " << static_cast<int>(new_edo) << "-edo" << std::endl;
     std::cout << "Reference frequency: " << static_cast<float>(frequency) << " Hz" << std::endl;
-    reference_frequency = static_cast<uint64_t>(frequency * 65536.0);
+    reference_frequency = static_cast<uint64_t>(std::round(frequency * 65536.0));
     note_divisor = pow(2.0f, 1.0f / new_edo);
 
     tuning = {
