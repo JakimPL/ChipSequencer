@@ -142,8 +142,10 @@ void draw_output(OutputType &output_type) {
     push_secondary_style();
     ImGui::Separator();
     ImGui::Text("Output:");
+    prepare_combo(target_types, "##OutputTargetCombo", output_type.target);
+
     ImGui::Checkbox("Additive", &output_type.additive);
-    prepare_combo(variable_types, "##TypeCombo", output_type.variable_type);
+    prepare_combo(variable_types, "##OutputTypeCombo", output_type.variable_type);
     ImGui::BeginDisabled(output_type.variable_type == 0);
     draw_int_slider("Shift", output_type.shift, 0, 15);
     ImGui::EndDisabled();

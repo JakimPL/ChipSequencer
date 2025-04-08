@@ -17,8 +17,6 @@ class GUIChannelsPanel : public GUIPanel {
         int order_index = -1;
         int oscillator_index = -1;
         float pitch = 1.0f;
-
-        void *output = nullptr;
         OutputType output_type;
     } current_channel;
 

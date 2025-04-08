@@ -9,6 +9,7 @@ class GUIDSPsPanel : public GUIPanel {
     struct CurrentDSP {
         int effect_index = -1;
         std::string type = "";
+        OutputType output_type;
 
         // gainer
         float gainer_gain = 0.5f;
@@ -21,9 +22,6 @@ class GUIDSPsPanel : public GUIPanel {
 
         // filter
         float filter_cutoff = 0.5f;
-
-        void *output = nullptr;
-        OutputType output_type;
     } current_dsp;
 
     int dsp_index = 0;
