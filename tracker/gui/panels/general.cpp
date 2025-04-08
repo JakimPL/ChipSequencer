@@ -25,6 +25,7 @@ void GUIGeneralPanel::draw() {
 void GUIGeneralPanel::from() {
     current_song.bpm = bpm;
     current_song.normalizer = normalizer;
+    current_song.output_channels = song.get_output_channels();
 }
 
 void GUIGeneralPanel::to() const {
@@ -33,6 +34,8 @@ void GUIGeneralPanel::to() const {
         bpm = current_song.bpm;
         calculate_ticks_per_beat();
     }
+
+    song.set_output_channels(current_song.output_channels);
 }
 
 void GUIGeneralPanel::draw_play_button() {
@@ -120,6 +123,7 @@ void GUIGeneralPanel::draw_song_info() {
     ImGui::InputText("Name", current_song.name, IM_ARRAYSIZE(current_song.name));
     draw_int_slider("BPM", current_song.bpm, GUI_MIN_BPM, GUI_MAX_BPM);
     draw_float_slider("Normalizer", current_song.normalizer, 0.01f, 2.0f);
+    draw_int_slider("Output channels", current_song.output_channels, 1, MAX_OUTPUT_CHANNELS);
 }
 
 void GUIGeneralPanel::draw_tuning_settings() {

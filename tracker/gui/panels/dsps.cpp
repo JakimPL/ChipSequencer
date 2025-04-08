@@ -60,6 +60,9 @@ void GUIDSPsPanel::from() {
         break;
     }
     }
+
+    const Link &link = links[static_cast<size_t>(ItemType::DSP)][dsp_index];
+    current_dsp.output_type.from_link(link);
 }
 
 void GUIDSPsPanel::to() const {
@@ -67,13 +70,15 @@ void GUIDSPsPanel::to() const {
         return;
     }
 
+    void *dsp = nullptr;
+
     switch (current_dsp.effect_index) {
     case EFFECT_GAINER: {
         DSPGainer *new_dsp = static_cast<DSPGainer *>(operator new(sizeof(DSPGainer)));
         new_dsp->effect_index = EFFECT_GAINER;
         new_dsp->volume = static_cast<uint16_t>(std::round(current_dsp.gainer_gain * UINT16_MAX));
         delete static_cast<DSPGainer *>(dsps[dsp_index]);
-        dsps[dsp_index] = new_dsp;
+        dsps[dsp_index] = dsp = new_dsp;
         break;
     }
     case EFFECT_DELAY: {
@@ -84,7 +89,7 @@ void GUIDSPsPanel::to() const {
         new_dsp->feedback = static_cast<uint16_t>(std::round(current_dsp.delay_feedback * UINT16_MAX));
         new_dsp->delay_time = static_cast<uint16_t>(std::round(current_dsp.delay_time));
         delete static_cast<DSPDelay *>(dsps[dsp_index]);
-        dsps[dsp_index] = new_dsp;
+        dsps[dsp_index] = dsp = new_dsp;
         break;
     }
     case EFFECT_FILTER: {
@@ -92,10 +97,14 @@ void GUIDSPsPanel::to() const {
         new_dsp->effect_index = EFFECT_FILTER;
         new_dsp->frequency = static_cast<uint16_t>(std::round(current_dsp.filter_cutoff * UINT16_MAX));
         delete static_cast<DSPFilter *>(dsps[dsp_index]);
-        dsps[dsp_index] = new_dsp;
+        dsps[dsp_index] = dsp = new_dsp;
         break;
     }
     }
+
+    Link &link = links[static_cast<size_t>(ItemType::DSP)][dsp_index];
+    current_dsp.output_type.set_link(link, ItemType::DSP, dsp_index);
+    song.set_link(link, static_cast<void *>(dsp), dsp_index);
 }
 
 void GUIDSPsPanel::add() {

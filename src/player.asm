@@ -74,7 +74,7 @@ dividend:
     dd SAMPLE_RATE << 16
 
     SEGMENT_BSS
-    output resd MAX_CHANNELS
+    output resd MAX_OUTPUT_CHANNELS
     dsp_buffer resd MAX_DSP_BUFFER_SIZE
 
     %ifndef ELF

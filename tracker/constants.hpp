@@ -39,6 +39,8 @@
 #define NOTE_OFF 255
 
 // Limits
+#define MAX_OUTPUT_CHANNELS 4
+
 #define MAX_ENVELOPES 32
 #define MAX_SEQUENCES 64
 #define MAX_ORDERS 64

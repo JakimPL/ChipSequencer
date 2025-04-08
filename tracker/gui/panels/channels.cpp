@@ -41,6 +41,9 @@ void GUIChannelsPanel::from() {
     current_channel.oscillator_index = channel->oscillator_index;
     current_channel.output_type.from_output_flag(channel->output_flag);
 
+    const Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][channel_index];
+    current_channel.output_type.from_link(link);
+
     if (current_channel.constant_pitch) {
         current_channel.pitch = static_cast<float>(channel->pitch) / 0x10000;
     } else {
@@ -59,6 +62,10 @@ void GUIChannelsPanel::to() const {
 
     channel->output_flag = current_channel.output_type.calculate_output_flag();
     channel->order_index = current_channel.constant_pitch ? CONSTANT_PITCH : current_channel.order_index;
+
+    Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][channel_index];
+    current_channel.output_type.set_link(link, ItemType::CHANNEL, channel_index);
+    song.set_link(link, static_cast<void *>(channel), channel_index);
 
     if (current_channel.constant_pitch) {
         channel->pitch = static_cast<uint32_t>(std::round(current_channel.pitch * 0x10000));

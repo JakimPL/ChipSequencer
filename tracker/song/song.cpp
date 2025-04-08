@@ -115,6 +115,19 @@ uint16_t Song::get_max_rows() {
     return max_rows;
 }
 
+uint64_t Song::get_song_length() {
+    calculate_song_length();
+    return song_length;
+}
+
+uint8_t Song::get_output_channels() const {
+    return output_channels;
+}
+
+void Song::set_output_channels(const uint8_t channels) {
+    output_channels = std::clamp(static_cast<int>(channels), 1, MAX_OUTPUT_CHANNELS);
+}
+
 void Song::export_all(const std::string &directory) const {
     export_header_asm_file(directory);
     export_data_asm_file(directory);

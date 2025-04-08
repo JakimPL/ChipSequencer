@@ -143,7 +143,21 @@ void draw_output(OutputType &output_type) {
     ImGui::Separator();
     ImGui::Text("Output:");
     prepare_combo(target_types, "##OutputTargetCombo", output_type.target);
+    switch (output_type.target) {
+    case OUTPUT_TARGET_OUTPUT:
+        draw_int_slider("Channel", output_type.output_channel, 0, song.get_output_channels() - 1);
+        break;
+    case OUTPUT_TARGET_DSP:
+        if (dsps.empty()) {
+            ImGui::Text("No DSPs available.");
+            break;
+        } else {
+            draw_int_slider("DSP", output_type.dsp_channel, 0, dsps.size() - 1);
+        }
+        break;
+    }
 
+    ImGui::Separator();
     ImGui::Checkbox("Additive", &output_type.additive);
     prepare_combo(variable_types, "##OutputTypeCombo", output_type.variable_type);
     ImGui::BeginDisabled(output_type.variable_type == 0);

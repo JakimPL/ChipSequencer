@@ -1,7 +1,7 @@
     SEGMENT_CODE
 load_dsp:
 .load_dsp:
-    movzx bx, byte [current_dsp]
+    movzx ebx, byte [current_dsp]
     LOAD_VECTOR_ITEM dsps, dsp_offset
 .load_effect:
     movzx ebx, byte [DSP_EFFECT_INDEX + ecx]
