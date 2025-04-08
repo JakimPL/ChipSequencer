@@ -71,33 +71,29 @@ void GUIDSPsPanel::to() const {
     }
 
     void *dsp = nullptr;
-
     switch (current_dsp.effect_index) {
     case EFFECT_GAINER: {
-        DSPGainer *new_dsp = static_cast<DSPGainer *>(operator new(sizeof(DSPGainer)));
-        new_dsp->effect_index = EFFECT_GAINER;
-        new_dsp->volume = static_cast<uint16_t>(std::round(current_dsp.gainer_gain * UINT16_MAX));
-        delete static_cast<DSPGainer *>(dsps[dsp_index]);
-        dsps[dsp_index] = dsp = new_dsp;
+        static_cast<DSPGainer *>(dsp)->~DSPGainer();
+        DSPGainer *dsp = new (dsp) DSPGainer();
+        dsp->effect_index = EFFECT_GAINER;
+        dsp->volume = static_cast<uint16_t>(std::round(current_dsp.gainer_gain * UINT16_MAX));
         break;
     }
     case EFFECT_DELAY: {
-        DSPDelay *new_dsp = static_cast<DSPDelay *>(operator new(sizeof(DSPDelay)));
-        new_dsp->effect_index = EFFECT_DELAY;
-        new_dsp->dry = static_cast<uint16_t>(std::round(current_dsp.delay_dry * UINT16_MAX));
-        new_dsp->wet = static_cast<uint16_t>(std::round(current_dsp.delay_wet * UINT16_MAX));
-        new_dsp->feedback = static_cast<uint16_t>(std::round(current_dsp.delay_feedback * UINT16_MAX));
-        new_dsp->delay_time = static_cast<uint16_t>(std::round(current_dsp.delay_time));
-        delete static_cast<DSPDelay *>(dsps[dsp_index]);
-        dsps[dsp_index] = dsp = new_dsp;
+        static_cast<DSPDelay *>(dsp)->~DSPDelay();
+        DSPDelay *dsp = new (dsp) DSPDelay();
+        dsp->effect_index = EFFECT_DELAY;
+        dsp->dry = static_cast<uint16_t>(std::round(current_dsp.delay_dry * UINT16_MAX));
+        dsp->wet = static_cast<uint16_t>(std::round(current_dsp.delay_wet * UINT16_MAX));
+        dsp->feedback = static_cast<uint16_t>(std::round(current_dsp.delay_feedback * UINT16_MAX));
+        dsp->delay_time = static_cast<uint16_t>(std::round(current_dsp.delay_time));
         break;
     }
     case EFFECT_FILTER: {
-        DSPFilter *new_dsp = static_cast<DSPFilter *>(operator new(sizeof(DSPFilter)));
-        new_dsp->effect_index = EFFECT_FILTER;
-        new_dsp->frequency = static_cast<uint16_t>(std::round(current_dsp.filter_cutoff * UINT16_MAX));
-        delete static_cast<DSPFilter *>(dsps[dsp_index]);
-        dsps[dsp_index] = dsp = new_dsp;
+        static_cast<DSPFilter *>(dsp)->~DSPFilter();
+        DSPFilter *dsp = new (dsp) DSPFilter();
+        dsp->effect_index = EFFECT_FILTER;
+        dsp->frequency = static_cast<uint16_t>(std::round(current_dsp.filter_cutoff * UINT16_MAX));
         break;
     }
     }
