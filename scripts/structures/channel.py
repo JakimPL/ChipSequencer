@@ -20,12 +20,12 @@ class Channel:
         order_index: Union[int, Byte],
         oscillator_index: Union[int, Byte],
         pitch: Union[int, Dword],
-        output: Output,
         output_flag: Union[int, Byte],
+        output: Output,
     ):
         self.envelope_index = Byte(envelope_index)
         self.order_index = Byte(order_index)
         self.oscillator_index = Byte(oscillator_index)
         self.pitch = Dword(pitch)
-        self.output = output
         self.output_flag = Byte(output_flag)
+        self.output = output

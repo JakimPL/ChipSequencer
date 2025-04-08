@@ -9,8 +9,8 @@ struct Channel {
     uint8_t order_index;
     uint8_t oscillator_index;
     uint32_t pitch;
-    void *output;
     uint8_t output_flag;
+    void *output;
 };
 
 typedef std::vector<Channel *> Channels;

@@ -536,8 +536,8 @@ void Song::serialize_channel(std::ofstream &file, Channel *channel) const {
     write_data(file, &channel->order_index, sizeof(channel->order_index));
     write_data(file, &channel->oscillator_index, sizeof(channel->oscillator_index));
     write_data(file, &channel->pitch, sizeof(channel->pitch));
-    write_data(file, &null, sizeof(null));
     write_data(file, &channel->output_flag, sizeof(channel->output_flag));
+    write_data(file, &null, sizeof(null));
 }
 
 void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
@@ -584,8 +584,8 @@ Channel *Song::deserialize_channel(std::ifstream &file) const {
     read_data(file, &channel->order_index, sizeof(channel->order_index));
     read_data(file, &channel->oscillator_index, sizeof(channel->oscillator_index));
     read_data(file, &channel->pitch, sizeof(channel->pitch));
-    file.seekg(sizeof(uint16_t), std::ios::cur);
     read_data(file, &channel->output_flag, sizeof(channel->output_flag));
+    file.seekg(sizeof(uint16_t), std::ios::cur);
     channel->output = &output;
     return channel;
 }
@@ -599,8 +599,8 @@ void *Song::deserialize_dsp(std::ifstream &file) const {
         DSPDelay *delay = new DSPDelay();
         delay->dsp_size = SIZE_DSP_DELAY;
         delay->output = &output;
-        file.seekg(sizeof(uint16_t), std::ios::cur);
         read_data(file, &delay->output_flag, sizeof(delay->output_flag));
+        file.seekg(sizeof(uint16_t), std::ios::cur);
         read_data(file, &delay->dry, sizeof(delay->dry));
         read_data(file, &delay->wet, sizeof(delay->wet));
         read_data(file, &delay->feedback, sizeof(delay->feedback));
@@ -610,16 +610,16 @@ void *Song::deserialize_dsp(std::ifstream &file) const {
         DSPGainer *gainer = new DSPGainer();
         gainer->dsp_size = SIZE_DSP_GAINER;
         gainer->output = &output;
-        file.seekg(sizeof(uint16_t), std::ios::cur);
         read_data(file, &gainer->output_flag, sizeof(gainer->output_flag));
+        file.seekg(sizeof(uint16_t), std::ios::cur);
         read_data(file, &gainer->volume, sizeof(gainer->volume));
         return reinterpret_cast<void *>(gainer);
     } else if (effect_type == EFFECT_FILTER) {
         DSPFilter *filter = new DSPFilter();
         filter->dsp_size = SIZE_DSP_FILTER;
         filter->output = &output;
-        file.seekg(sizeof(uint16_t), std::ios::cur);
         read_data(file, &filter->output_flag, sizeof(filter->output_flag));
+        file.seekg(sizeof(uint16_t), std::ios::cur);
         read_data(file, &filter->frequency, sizeof(filter->frequency));
         return reinterpret_cast<void *>(filter);
     } else {
