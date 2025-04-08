@@ -75,7 +75,11 @@ dividend:
 
     SEGMENT_BSS
     output resd MAX_OUTPUT_CHANNELS
-    dsp_buffer resd MAX_DSP_BUFFER_SIZE
+    %ifdef ELF
+    dsp_buffer resd MAX_DSPS * MAX_DSP_BUFFER_SIZE
+    %else
+    dsp_buffer resd DSPS * MAX_DSP_BUFFER_SIZE
+    %endif
 
     %ifndef ELF
     group dgroup bss data

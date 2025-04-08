@@ -17,8 +17,9 @@ struct DSP {
 struct DSPDelay {
     uint8_t dsp_size = SIZE_DSP_DELAY;
     uint8_t effect_index = EFFECT_DELAY;
-    void *output;
     uint8_t output_flag;
+    uint8_t _unused;
+    void *output;
     uint16_t dry;
     uint16_t wet;
     uint16_t feedback;
@@ -28,17 +29,21 @@ struct DSPDelay {
 struct DSPGainer {
     uint8_t dsp_size = SIZE_DSP_GAINER;
     uint8_t effect_index = EFFECT_GAINER;
-    void *output;
     uint8_t output_flag;
+    uint8_t _unused;
+    void *output;
     uint16_t volume;
+    uint8_t pad[6];
 };
 
 struct DSPFilter {
     uint8_t dsp_size = SIZE_DSP_FILTER;
     uint8_t effect_index = EFFECT_FILTER;
-    void *output;
     uint8_t output_flag;
+    uint8_t _unused;
+    void *output;
     uint16_t frequency;
+    uint8_t pad[6];
 };
 
 typedef std::vector<void *> DSPs;

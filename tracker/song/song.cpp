@@ -137,6 +137,7 @@ void Song::export_all(const std::string &directory) const {
     export_arrays(directory, "seq", sequences);
     export_arrays(directory, "order", orders);
     export_arrays(directory, "wave", wavetables);
+    export_offsets(directory + "/offsets.bin");
     export_links(directory + "/links.bin");
 }
 
@@ -492,7 +493,7 @@ void Song::set_links() {
 
 void Song::set_buffer_offsets() {
     for (size_t i = 0; i < MAX_DSPS; i++) {
-        buffer_offsets[i] = i * MAX_DSP_BUFFER_SIZE;
+        buffer_offsets[i] = i * 17;
     }
 }
 
@@ -548,8 +549,8 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
         uint8_t size = 12;
         write_data(file, &size, sizeof(size));
         write_data(file, &delay->effect_index, sizeof(delay->effect_index));
-        write_data(file, &null, sizeof(null));
         write_data(file, &delay->output_flag, sizeof(delay->output_flag));
+        write_data(file, &null, sizeof(null));
         write_data(file, &delay->dry, sizeof(delay->dry));
         write_data(file, &delay->wet, sizeof(delay->wet));
         write_data(file, &delay->feedback, sizeof(delay->feedback));
@@ -560,8 +561,8 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
         uint8_t size = 6;
         write_data(file, &size, sizeof(size));
         write_data(file, &gainer->effect_index, sizeof(gainer->effect_index));
-        write_data(file, &null, sizeof(null));
         write_data(file, &gainer->output_flag, sizeof(gainer->output_flag));
+        write_data(file, &null, sizeof(null));
         write_data(file, &gainer->volume, sizeof(gainer->volume));
     } else if (dsp_type == EFFECT_FILTER) {
         DSPFilter *filter = reinterpret_cast<DSPFilter *>(dsp);
@@ -569,8 +570,8 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
         uint8_t size = 6;
         write_data(file, &size, sizeof(size));
         write_data(file, &filter->effect_index, sizeof(filter->effect_index));
-        write_data(file, &null, sizeof(null));
         write_data(file, &filter->output_flag, sizeof(filter->output_flag));
+        write_data(file, &null, sizeof(null));
         write_data(file, &filter->frequency, sizeof(filter->frequency));
     } else {
         throw std::runtime_error("Unknown DSP type: " + std::to_string(dsp_type));
@@ -718,6 +719,15 @@ void Song::export_arrays(const std::string &directory, const std::string &prefix
         element->serialize(file);
         file.close();
     }
+}
+
+void Song::export_offsets(const std::string &filename) const {
+    std::ofstream file(filename, std::ios::binary);
+    for (size_t i = 0; i < dsps.size(); i++) {
+        const uint16_t offset = buffer_offsets[i];
+        write_data(file, &offset, sizeof(offset));
+    }
+    file.close();
 }
 
 void Song::export_links(const std::string &filename) const {

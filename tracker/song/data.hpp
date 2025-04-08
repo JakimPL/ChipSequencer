@@ -39,10 +39,8 @@ extern Oscillators oscillators;
 extern Wavetables wavetables;
 extern DSPs dsps;
 extern Channels channels;
+extern Offsets buffer_offsets;
 
-extern "C" Offsets buffer_offsets;
 extern Links links;
-
-extern Offsets current_offsets;
 
 #endif // SONG_DATA_HPP

@@ -124,37 +124,37 @@
 #ifdef ELF
 // DSP
 #define DSP_EFFECT_INDEX 1
-#define DSP_OUTPUT 2
-#define DSP_OUTPUT_FLAG 6
+#define DSP_OUTPUT_FLAG 2
+#define DSP_OUTPUT 4
 
 // Gainer
 #define EFFECT_GAINER 0
-#define DSP_GAINER_VOLUME 7
-#define SIZE_DSP_GAINER 11
+#define DSP_GAINER_VOLUME 8
+#define SIZE_DSP_GAINER 16
 
 // Delay
 #define EFFECT_DELAY 1
-#define DSP_DELAY_DRY 7
-#define DSP_DELAY_WET 9
-#define DSP_DELAY_FEEDBACK 11
-#define DSP_DELAY_TIME 13
-#define SIZE_DSP_DELAY 15
+#define DSP_DELAY_DRY 8
+#define DSP_DELAY_WET 10
+#define DSP_DELAY_FEEDBACK 12
+#define DSP_DELAY_TIME 14
+#define SIZE_DSP_DELAY 16
 
 // Filter
 #define EFFECT_FILTER 2
-#define DSP_FILTER_FREQUENCY 7
-#define SIZE_DSP_FILTER 11
+#define DSP_FILTER_FREQUENCY 8
+#define SIZE_DSP_FILTER 16
 
 #else
 // DSP
 #define DSP_EFFECT_INDEX 1
-#define DSP_OUTPUT 2
-#define DSP_OUTPUT_FLAG 4
+#define DSP_OUTPUT_FLAG 2
+#define DSP_OUTPUT 3
 
 // Gainer
 #define EFFECT_GAINER 0
 #define DSP_GAINER_VOLUME 5
-#define SIZE_DSP_GAINER 7
+#define SIZE_DSP_GAINER 16
 
 // Delay
 #define EFFECT_DELAY 1

@@ -60,6 +60,7 @@ class Song {
     void export_channels(const std::string &directory) const;
     void export_dsps(const std::string &directory) const;
     void export_links(const std::string &filename) const;
+    void export_offsets(const std::string &filename) const;
 
     void import_channels(const std::string &song_dir, const nlohmann::json &json);
     void import_dsps(const std::string &song_dir, const nlohmann::json &json);
