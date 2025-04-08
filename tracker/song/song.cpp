@@ -16,13 +16,11 @@
 #include "song.hpp"
 
 Song::Song() {
-    current_offsets = new uint16_t[0];
-    buffer_offsets = current_offsets;
+    set_buffer_offsets();
     new_song();
 }
 
 Song::~Song() {
-    delete[] current_offsets;
 }
 
 void Song::new_song() {
@@ -139,7 +137,6 @@ void Song::export_all(const std::string &directory) const {
     export_arrays(directory, "seq", sequences);
     export_arrays(directory, "order", orders);
     export_arrays(directory, "wave", wavetables);
-    export_offsets(directory + "/offsets.bin");
     export_links(directory + "/links.bin");
 }
 
@@ -152,7 +149,6 @@ void Song::import_all(const std::string &directory, const nlohmann::json &json) 
     import_oscillators(directory, json);
     import_dsps(directory, json);
     import_links(directory, json);
-    import_offsets(directory, json);
 }
 
 Envelope *Song::add_envelope() {
@@ -494,6 +490,12 @@ void Song::set_links() {
     }
 }
 
+void Song::set_buffer_offsets() {
+    for (size_t i = 0; i < MAX_DSPS; i++) {
+        buffer_offsets[i] = i * MAX_DSP_BUFFER_SIZE;
+    }
+}
+
 int Song::run_command(const std::string &command) const {
     return system(command.c_str());
 }
@@ -718,15 +720,6 @@ void Song::export_arrays(const std::string &directory, const std::string &prefix
     }
 }
 
-void Song::export_offsets(const std::string &filename) const {
-    std::ofstream file(filename, std::ios::binary);
-    for (size_t i = 0; i < dsps.size(); i++) {
-        const uint16_t offset = buffer_offsets[i];
-        write_data(file, &offset, sizeof(offset));
-    }
-    file.close();
-}
-
 void Song::export_links(const std::string &filename) const {
     std::ofstream file(filename, std::ios::binary);
     for (const auto &link : links[0]) {
@@ -814,21 +807,6 @@ void Song::import_channels(const std::string &song_dir, const nlohmann::json &js
         channels.push_back(channel);
         file.close();
     }
-}
-
-void Song::import_offsets(const std::string &song_dir, const nlohmann::json &json) {
-    const size_t dsp_count = json["data"]["dsps"];
-    const std::string offsets_filename = song_dir + "/offsets.bin";
-    std::ifstream file(offsets_filename, std::ios::binary);
-
-    delete[] current_offsets;
-    current_offsets = new uint16_t[dsp_count];
-    buffer_offsets = current_offsets;
-    for (size_t i = 0; i < dsp_count; i++) {
-        read_data(file, &buffer_offsets[i], sizeof(uint16_t));
-    }
-
-    file.close();
 }
 
 void Song::import_links(const std::string &song_dir, const nlohmann::json &json) {

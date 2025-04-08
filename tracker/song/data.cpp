@@ -17,5 +17,4 @@ Wavetables wavetables;
 DSPs dsps;
 Channels channels;
 Offsets buffer_offsets;
-Offsets current_offsets = nullptr;
 Links links;
