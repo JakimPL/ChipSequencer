@@ -86,7 +86,7 @@ void Song::compile(const std::string &filename, bool compress) const {
     try {
         export_all(song_dir);
         compile_sources(temp_base.string(), filename, compress);
-        // std::filesystem::remove_all(temp_base);
+        std::filesystem::remove_all(temp_base);
     } catch (const std::exception &e) {
         std::filesystem::remove_all(temp_base);
         throw;
