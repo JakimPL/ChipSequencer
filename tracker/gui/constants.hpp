@@ -11,11 +11,18 @@
 #define GUI_MIN_PAGE_SIZE 1
 #define GUI_MAX_PAGE_SIZE 256
 
+#define GUI_MIN_TRANSPOSE -48.0f
+#define GUI_MAX_TRANSPOSE 48.0f
+
 #define GUI_MAX_JUMP_STEP 32
 #define GUI_MAX_ITEMS 64
 #define GUI_MAX_STEPS 64
 
 #define GUI_MIN_BPM 32
 #define GUI_MAX_BPM 4096
+
+#define GUI_SECONDARY_COLOR ImVec4(0.2f, 0.4f, 0.2f, 1.0f)
+#define GUI_SECONDARY_COLOR_LIGHT ImVec4(0.3f, 0.6f, 0.3f, 1.0f)
+#define GUI_SECONDARY_COLOR_DARK ImVec4(0.1f, 0.2f, 0.1f, 1.0f)
 
 #endif // GUI_CONSTANTS_HPP

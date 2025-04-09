@@ -95,7 +95,7 @@ void GUIPatternsPanel::from() {
         }
 
         const Order *order = orders[order_index];
-        std::vector<uint8_t> order_sequences = std::vector<uint8_t>(order->sequences, order->sequences + order->order_length);
+        std::vector<uint8_t> order_sequences = std::vector<uint8_t>(order->sequences.begin(), order->sequences.begin() + order->order_length);
 
         uint16_t row = 0;
         uint8_t playing_sequence = current_sequence[channel_index];
@@ -127,9 +127,7 @@ void GUIPatternsPanel::to() const {
         size_t sequence_index = pattern->sequence_index;
         Sequence *sequence = sequences[sequence_index];
         const std::vector<Note> note_vector = pattern->to_note_vector();
-        Sequence *new_sequence = Pattern::to_sequence(note_vector);
-        sequences[sequence_index] = new_sequence;
-        delete sequence;
+        sequence->from_note_vector(note_vector);
     }
 }
 

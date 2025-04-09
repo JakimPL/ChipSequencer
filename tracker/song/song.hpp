@@ -36,8 +36,6 @@ class Song {
     std::string get_element_path(const std::string &directory, const std::string prefix, const size_t i, const char separator = '/') const;
 
     void calculate_song_length();
-    void set_link(Link &link, void *item, const u_int8_t i) const;
-    void set_links();
 
     void serialize_channel(std::ofstream &file, Channel *channel) const;
     void serialize_dsp(std::ofstream &file, void *dsp) const;
@@ -61,12 +59,11 @@ class Song {
 
     void export_channels(const std::string &directory) const;
     void export_dsps(const std::string &directory) const;
-    void export_offsets(const std::string &filename) const;
     void export_links(const std::string &filename) const;
+    void export_offsets(const std::string &filename) const;
 
     void import_channels(const std::string &song_dir, const nlohmann::json &json);
     void import_dsps(const std::string &song_dir, const nlohmann::json &json);
-    void import_offsets(const std::string &song_dir, const nlohmann::json &json);
     void import_links(const std::string &song_dir, const nlohmann::json &json);
 
     void import_envelopes(const std::string &song_dir, const nlohmann::json &json);
@@ -95,7 +92,11 @@ class Song {
     void compile(const std::string &filename, bool compress = true) const;
 
     void change_tuning(const uint8_t new_edo, const double base_frequency);
+
     uint16_t get_max_rows();
+    uint64_t get_song_length();
+    uint8_t get_output_channels() const;
+    void set_output_channels(const uint8_t channels);
 
     Envelope *add_envelope();
     Sequence *add_sequence();
@@ -104,6 +105,10 @@ class Song {
     void *add_oscillator();
     Channel *add_channel();
     void *add_dsp();
+
+    void set_link(Link &link, void *item, const u_int8_t i) const;
+    void set_links();
+    void set_buffer_offsets();
 
     void remove_envelope(const size_t index);
     void remove_sequence(const size_t index);

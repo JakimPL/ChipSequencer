@@ -16,8 +16,7 @@ Order *Order::deserialize(std::ifstream &file) {
     uint8_t length;
     read_data(file, &length, sizeof(length));
 
-    size_t totalSize = sizeof(Order) + length * sizeof(uint8_t);
-    void *memory = malloc(totalSize);
+    void *memory = malloc(sizeof(Order));
     Order *order = static_cast<Order *>(memory);
     order->order_length = length;
 

@@ -1,9 +1,15 @@
     SEGMENT_CODE
 filter:
 .load_buffer:
+    %ifdef ELF
+    movzx esi, byte [current_dsp]
+    shl esi, 8
+    add esi, dsp_buffer
+    %else
     movzx ecx, byte [current_dsp]
     mov esi, [buffer_offsets + 2 * ecx]
     add esi, dsp_buffer
+    %endif
 
     MOV_FROM_SI ebx
 .load_frequency:

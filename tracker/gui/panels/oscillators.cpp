@@ -3,6 +3,7 @@
 
 #include "../../general.hpp"
 #include "../enums.hpp"
+#include "../names.hpp"
 #include "../utils.hpp"
 
 GUIOscillatorsPanel::GUIOscillatorsPanel() {
@@ -36,7 +37,7 @@ void GUIOscillatorsPanel::from() {
     }
 
     void *oscillator = oscillators[oscillator_index];
-    const Oscillator *generic = static_cast<Oscillator *>(oscillator);
+    const Oscillator *generic = static_cast<const Oscillator *>(oscillator);
     current_oscillator.generator_index = generic->generator_index;
     switch (current_oscillator.generator_index) {
     case GENERATOR_SQUARE: {
@@ -67,35 +68,36 @@ void GUIOscillatorsPanel::to() const {
         return;
     }
 
+    void *buffer = oscillators[oscillator_index];
     switch (current_oscillator.generator_index) {
     case GENERATOR_SQUARE: {
-        OscillatorSquare *new_oscillator = static_cast<OscillatorSquare *>(operator new(sizeof(OscillatorSquare)));
-        new_oscillator->generator_index = GENERATOR_SQUARE;
-        new_oscillator->oscillator_size = SIZE_OSCILLATOR_SQUARE;
-        new_oscillator->duty_cycle = static_cast<uint8_t>(std::round(current_oscillator.duty_cycle * UINT8_MAX));
-        oscillators[oscillator_index] = new_oscillator;
+        static_cast<OscillatorSquare *>(buffer)->~OscillatorSquare();
+        OscillatorSquare *osc = new (buffer) OscillatorSquare();
+        osc->generator_index = GENERATOR_SQUARE;
+        osc->oscillator_size = SIZE_OSCILLATOR_SQUARE;
+        osc->duty_cycle = static_cast<uint8_t>(std::round(current_oscillator.duty_cycle * UINT8_MAX));
         break;
     }
     case GENERATOR_SAW: {
-        OscillatorSaw *new_oscillator = static_cast<OscillatorSaw *>(operator new(sizeof(OscillatorSaw)));
-        new_oscillator->generator_index = GENERATOR_SAW;
-        new_oscillator->oscillator_size = SIZE_OSCILLATOR_SAW;
-        oscillators[oscillator_index] = new_oscillator;
+        static_cast<OscillatorSaw *>(buffer)->~OscillatorSaw();
+        OscillatorSaw *osc = new (buffer) OscillatorSaw();
+        osc->generator_index = GENERATOR_SAW;
+        osc->oscillator_size = SIZE_OSCILLATOR_SAW;
         break;
     }
     case GENERATOR_SINE: {
-        OscillatorSine *new_oscillator = static_cast<OscillatorSine *>(operator new(sizeof(OscillatorSine)));
-        new_oscillator->generator_index = GENERATOR_SINE;
-        new_oscillator->oscillator_size = SIZE_OSCILLATOR_SINE;
-        oscillators[oscillator_index] = new_oscillator;
+        static_cast<OscillatorSine *>(buffer)->~OscillatorSine();
+        OscillatorSine *osc = new (buffer) OscillatorSine();
+        osc->generator_index = GENERATOR_SINE;
+        osc->oscillator_size = SIZE_OSCILLATOR_SINE;
         break;
     }
     case GENERATOR_WAVETABLE: {
-        OscillatorWavetable *new_oscillator = static_cast<OscillatorWavetable *>(operator new(sizeof(OscillatorWavetable)));
-        new_oscillator->generator_index = GENERATOR_WAVETABLE;
-        new_oscillator->oscillator_size = SIZE_OSCILLATOR_WAVETABLE;
-        new_oscillator->wavetable_index = current_oscillator.wavetable_index;
-        oscillators[oscillator_index] = new_oscillator;
+        static_cast<OscillatorWavetable *>(buffer)->~OscillatorWavetable();
+        OscillatorWavetable *osc = new (buffer) OscillatorWavetable();
+        osc->generator_index = GENERATOR_WAVETABLE;
+        osc->oscillator_size = SIZE_OSCILLATOR_WAVETABLE;
+        osc->wavetable_index = current_oscillator.wavetable_index;
         break;
     }
     }

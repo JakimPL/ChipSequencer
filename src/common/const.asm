@@ -28,6 +28,8 @@
 
     %define DEFAULT_CHANNEL_PITCH 0x02000000
 
+    %define DEFAULT_OSCILLATOR_DUTY_CYCLE 0x80
+
 ; General
     %define CONSTANT_PITCH 0xFF
 
@@ -37,6 +39,8 @@
     %define NOTE_OFF 255
 
 ; Limits
+    %define MAX_OUTPUT_CHANNELS 4
+
     %define MAX_ENVELOPES 32
     %define MAX_SEQUENCES 64
     %define MAX_ORDERS 64
@@ -46,7 +50,7 @@
     %define MAX_DSPS 16
 
     %define MAX_WAVETABLE_SIZE 512
-    %define MAX_DSP_BUFFER_SIZE 512
+    %define MAX_DSP_BUFFER_SIZE 256
 
 ; Phases
     %define ATTACK 0
@@ -77,16 +81,16 @@
     %define CHANNEL_ORDER_INDEX 1
     %define CHANNEL_OSCILLATOR_INDEX 2
     %define CHANNEL_PITCH 3
-    %define CHANNEL_OUTPUT 7
-    %define CHANNEL_OUTPUT_FLAG 11
+    %define CHANNEL_OUTPUT_FLAG 7
+    %define CHANNEL_OUTPUT 8
     %define SIZE_CHANNEL 12
     %else
     %define CHANNEL_ENVELOPE_INDEX 0
     %define CHANNEL_ORDER_INDEX 1
     %define CHANNEL_OSCILLATOR_INDEX 2
     %define CHANNEL_PITCH 3
-    %define CHANNEL_OUTPUT 7
-    %define CHANNEL_OUTPUT_FLAG 9
+    %define CHANNEL_OUTPUT_FLAG 7
+    %define CHANNEL_OUTPUT 8
     %define SIZE_CHANNEL 10
     %endif
 
@@ -120,37 +124,37 @@
     %ifdef ELF
 ; DSP
     %define DSP_EFFECT_INDEX 1
-    %define DSP_OUTPUT 2
-    %define DSP_OUTPUT_FLAG 6
+    %define DSP_OUTPUT_FLAG 2
+    %define DSP_OUTPUT 4
 
 ; Gainer
     %define EFFECT_GAINER 0
-    %define DSP_GAINER_VOLUME 7
-    %define SIZE_DSP_GAINER 11
+    %define DSP_GAINER_VOLUME 8
+    %define SIZE_DSP_GAINER 16
 
 ; Delay
     %define EFFECT_DELAY 1
-    %define DSP_DELAY_DRY 7
-    %define DSP_DELAY_WET 9
-    %define DSP_DELAY_FEEDBACK 11
-    %define DSP_DELAY_TIME 13
-    %define SIZE_DSP_DELAY 15
+    %define DSP_DELAY_DRY 8
+    %define DSP_DELAY_WET 10
+    %define DSP_DELAY_FEEDBACK 12
+    %define DSP_DELAY_TIME 14
+    %define SIZE_DSP_DELAY 16
 
 ; Filter
     %define EFFECT_FILTER 2
-    %define DSP_FILTER_FREQUENCY 7
-    %define SIZE_DSP_FILTER 11
+    %define DSP_FILTER_FREQUENCY 8
+    %define SIZE_DSP_FILTER 16
 
     %else
 ; DSP
     %define DSP_EFFECT_INDEX 1
-    %define DSP_OUTPUT 2
-    %define DSP_OUTPUT_FLAG 4
+    %define DSP_OUTPUT_FLAG 2
+    %define DSP_OUTPUT 3
 
 ; Gainer
     %define EFFECT_GAINER 0
     %define DSP_GAINER_VOLUME 5
-    %define SIZE_DSP_GAINER 7
+    %define SIZE_DSP_GAINER 16
 
 ; Delay
     %define EFFECT_DELAY 1

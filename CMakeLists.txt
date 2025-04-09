@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32 -Wno-pointer-arith")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -g -Wno-pointer-arith")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -fsanitize=address -g -Wno-pointer-arith")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
@@ -81,18 +81,13 @@ add_executable(main
     tracker/main.cpp
     tracker/general.cpp
     tracker/audio/engine.cpp
-    tracker/song/data.cpp
-    tracker/song/link.cpp
-    tracker/song/song.cpp
     tracker/driver/file.cpp
     tracker/driver/port.cpp
-    tracker/structures/order.cpp
-    tracker/structures/sequence.cpp
-    tracker/structures/wavetable.cpp
     tracker/gui/gui.cpp
     tracker/gui/pattern.cpp
     tracker/gui/utils.cpp
     tracker/gui/panels/channels.cpp
+    tracker/gui/panels/dsps.cpp
     tracker/gui/panels/editor.cpp
     tracker/gui/panels/envelopes.cpp
     tracker/gui/panels/general.cpp
@@ -103,6 +98,13 @@ add_executable(main
     tracker/gui/panels/patterns.cpp
     tracker/gui/panels/sequences.cpp
     tracker/gui/panels/wavetables.cpp
+    tracker/song/data.cpp
+    tracker/song/link.cpp
+    tracker/song/song.cpp
+    tracker/song/output.cpp
+    tracker/structures/order.cpp
+    tracker/structures/sequence.cpp
+    tracker/structures/wavetable.cpp
     tracker/tuning/frequencies.cpp
     tracker/tuning/scale.cpp
     tracker/utils/math.cpp

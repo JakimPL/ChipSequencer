@@ -16,13 +16,11 @@
 #include "song.hpp"
 
 Song::Song() {
-    current_offsets = new uint16_t[0];
-    buffer_offsets = current_offsets;
+    set_buffer_offsets();
     new_song();
 }
 
 Song::~Song() {
-    delete[] current_offsets;
 }
 
 void Song::new_song() {
@@ -48,6 +46,7 @@ void Song::save_to_file(const std::string &filename) {
 
     try {
         calculate_song_length();
+        set_links();
         export_all(song_dir);
         compress_directory(song_dir, filename);
         std::filesystem::remove_all(temp_base);
@@ -100,7 +99,7 @@ void Song::change_tuning(const uint8_t new_edo, const double base_frequency) {
     double frequency = frequency_table.get_last_frequency();
     std::cout << "New tuning: " << static_cast<int>(new_edo) << "-edo" << std::endl;
     std::cout << "Reference frequency: " << static_cast<float>(frequency) << " Hz" << std::endl;
-    reference_frequency = static_cast<uint64_t>(frequency * 65536.0);
+    reference_frequency = static_cast<uint64_t>(std::round(frequency * 65536.0));
     note_divisor = pow(2.0f, 1.0f / new_edo);
 
     tuning = {
@@ -112,6 +111,19 @@ void Song::change_tuning(const uint8_t new_edo, const double base_frequency) {
 uint16_t Song::get_max_rows() {
     calculate_song_length();
     return max_rows;
+}
+
+uint64_t Song::get_song_length() {
+    calculate_song_length();
+    return song_length;
+}
+
+uint8_t Song::get_output_channels() const {
+    return output_channels;
+}
+
+void Song::set_output_channels(const uint8_t channels) {
+    output_channels = std::clamp(static_cast<int>(channels), 1, MAX_OUTPUT_CHANNELS);
 }
 
 void Song::export_all(const std::string &directory) const {
@@ -138,7 +150,6 @@ void Song::import_all(const std::string &directory, const nlohmann::json &json) 
     import_oscillators(directory, json);
     import_dsps(directory, json);
     import_links(directory, json);
-    import_offsets(directory, json);
 }
 
 Envelope *Song::add_envelope() {
@@ -195,7 +206,8 @@ void *Song::add_oscillator() {
         return nullptr;
     }
 
-    void *oscillator = new OscillatorSquare();
+    OscillatorSquare *oscillator = new OscillatorSquare();
+    oscillator->duty_cycle = DEFAULT_OSCILLATOR_DUTY_CYCLE;
     oscillators.push_back(oscillator);
     return oscillator;
 }
@@ -300,13 +312,23 @@ void Song::generate_header_vector(std::stringstream &asm_content, const std::str
 
 std::string Song::generate_header_asm_file() const {
     std::stringstream asm_content;
-    asm_content << "    \%define CHANNELS" << channels.size() << "\n";
-    asm_content << "    \%define DSPS" << dsps.size() << "\n";
-    asm_content << "    \%define WAVETABLES" << wavetables.size() << "\n";
+    asm_content << "    \%define CHANNELS " << channels.size() << "\n";
+    asm_content << "    \%define DSPS " << dsps.size() << "\n";
+    asm_content << "    \%define WAVETABLES " << wavetables.size() << "\n";
     asm_content << "\n";
-    asm_content << "    \%define OUTPUT_CHANNELS" << output_channels << "\n";
-    asm_content << "    \%define SONG_LENGTH" << song_length << "\n";
+    asm_content << "    \%define OUTPUT_CHANNELS " << static_cast<int>(output_channels) << "\n";
+    asm_content << "    \%define SONG_LENGTH " << song_length << "\n";
     asm_content << "\n";
+    asm_content << "    \%define TUNING_FREQUENCY " << static_cast<uint32_t>(std::round(frequency_table.get_last_frequency() * 65536.0)) << "\n";
+    asm_content << "    \%define TUNING_NOTE_DIVISOR " << static_cast<_Float32>(frequency_table.get_note_divisor()) << "\n";
+    asm_content << "\n";
+    asm_content << "    \%define DSP_BUFFER_SIZE MAX_DSP_BUFFER_SIZE * DSPS" << "\n";
+    asm_content << "\n";
+    asm_content << "SEGMENT_DATA" << "\n";
+    asm_content << "num_channels:" << "\n";
+    asm_content << "    db CHANNELS" << "\n";
+    asm_content << "num_dsps:" << "\n";
+    asm_content << "    db DSPS" << "\n";
     return asm_content.str();
 }
 
@@ -390,7 +412,7 @@ void Song::calculate_song_length() {
         }
 
         const Order *order = orders[channel->order_index];
-        const uint8_t *order_sequences = order->sequences;
+        const OrderSequences &order_sequences = order->sequences;
         const size_t order_length = order->order_length;
         uint16_t rows = 0;
         for (size_t i = 0; i < order_length; i++) {
@@ -470,6 +492,12 @@ void Song::set_links() {
     }
 }
 
+void Song::set_buffer_offsets() {
+    for (size_t i = 0; i < MAX_DSPS; i++) {
+        buffer_offsets[i] = i * MAX_DSP_BUFFER_SIZE;
+    }
+}
+
 int Song::run_command(const std::string &command) const {
     return system(command.c_str());
 }
@@ -492,7 +520,11 @@ void Song::compile_sources(const std::string &directory, const std::string &file
     if (!compress) {
         compile_command += " --uncompressed";
     }
-    run_command(compile_command);
+
+    const int exit_code = run_command(compile_command);
+    if (exit_code != 0) {
+        throw std::runtime_error("Failed to compile sources: " + compile_command);
+    }
 }
 
 std::string Song::get_element_path(const std::string &directory, const std::string prefix, const size_t i, const char separator) const {
@@ -505,8 +537,8 @@ void Song::serialize_channel(std::ofstream &file, Channel *channel) const {
     write_data(file, &channel->order_index, sizeof(channel->order_index));
     write_data(file, &channel->oscillator_index, sizeof(channel->oscillator_index));
     write_data(file, &channel->pitch, sizeof(channel->pitch));
-    write_data(file, &null, sizeof(null));
     write_data(file, &channel->output_flag, sizeof(channel->output_flag));
+    write_data(file, &null, sizeof(null));
 }
 
 void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
@@ -518,8 +550,8 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
         uint8_t size = 12;
         write_data(file, &size, sizeof(size));
         write_data(file, &delay->effect_index, sizeof(delay->effect_index));
-        write_data(file, &null, sizeof(null));
         write_data(file, &delay->output_flag, sizeof(delay->output_flag));
+        write_data(file, &null, sizeof(null));
         write_data(file, &delay->dry, sizeof(delay->dry));
         write_data(file, &delay->wet, sizeof(delay->wet));
         write_data(file, &delay->feedback, sizeof(delay->feedback));
@@ -530,8 +562,8 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
         uint8_t size = 6;
         write_data(file, &size, sizeof(size));
         write_data(file, &gainer->effect_index, sizeof(gainer->effect_index));
-        write_data(file, &null, sizeof(null));
         write_data(file, &gainer->output_flag, sizeof(gainer->output_flag));
+        write_data(file, &null, sizeof(null));
         write_data(file, &gainer->volume, sizeof(gainer->volume));
     } else if (dsp_type == EFFECT_FILTER) {
         DSPFilter *filter = reinterpret_cast<DSPFilter *>(dsp);
@@ -539,8 +571,8 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
         uint8_t size = 6;
         write_data(file, &size, sizeof(size));
         write_data(file, &filter->effect_index, sizeof(filter->effect_index));
-        write_data(file, &null, sizeof(null));
         write_data(file, &filter->output_flag, sizeof(filter->output_flag));
+        write_data(file, &null, sizeof(null));
         write_data(file, &filter->frequency, sizeof(filter->frequency));
     } else {
         throw std::runtime_error("Unknown DSP type: " + std::to_string(dsp_type));
@@ -553,8 +585,8 @@ Channel *Song::deserialize_channel(std::ifstream &file) const {
     read_data(file, &channel->order_index, sizeof(channel->order_index));
     read_data(file, &channel->oscillator_index, sizeof(channel->oscillator_index));
     read_data(file, &channel->pitch, sizeof(channel->pitch));
-    file.seekg(sizeof(uint16_t), std::ios::cur);
     read_data(file, &channel->output_flag, sizeof(channel->output_flag));
+    file.seekg(sizeof(uint16_t), std::ios::cur);
     channel->output = &output;
     return channel;
 }
@@ -568,8 +600,8 @@ void *Song::deserialize_dsp(std::ifstream &file) const {
         DSPDelay *delay = new DSPDelay();
         delay->dsp_size = SIZE_DSP_DELAY;
         delay->output = &output;
-        file.seekg(sizeof(uint16_t), std::ios::cur);
         read_data(file, &delay->output_flag, sizeof(delay->output_flag));
+        file.seekg(sizeof(uint16_t), std::ios::cur);
         read_data(file, &delay->dry, sizeof(delay->dry));
         read_data(file, &delay->wet, sizeof(delay->wet));
         read_data(file, &delay->feedback, sizeof(delay->feedback));
@@ -579,16 +611,16 @@ void *Song::deserialize_dsp(std::ifstream &file) const {
         DSPGainer *gainer = new DSPGainer();
         gainer->dsp_size = SIZE_DSP_GAINER;
         gainer->output = &output;
-        file.seekg(sizeof(uint16_t), std::ios::cur);
         read_data(file, &gainer->output_flag, sizeof(gainer->output_flag));
+        file.seekg(sizeof(uint16_t), std::ios::cur);
         read_data(file, &gainer->volume, sizeof(gainer->volume));
         return reinterpret_cast<void *>(gainer);
     } else if (effect_type == EFFECT_FILTER) {
         DSPFilter *filter = new DSPFilter();
         filter->dsp_size = SIZE_DSP_FILTER;
         filter->output = &output;
-        file.seekg(sizeof(uint16_t), std::ios::cur);
         read_data(file, &filter->output_flag, sizeof(filter->output_flag));
+        file.seekg(sizeof(uint16_t), std::ios::cur);
         read_data(file, &filter->frequency, sizeof(filter->frequency));
         return reinterpret_cast<void *>(filter);
     } else {
@@ -788,21 +820,6 @@ void Song::import_channels(const std::string &song_dir, const nlohmann::json &js
     }
 }
 
-void Song::import_offsets(const std::string &song_dir, const nlohmann::json &json) {
-    const size_t dsp_count = json["data"]["dsps"];
-    const std::string offsets_filename = song_dir + "/offsets.bin";
-    std::ifstream file(offsets_filename, std::ios::binary);
-
-    delete[] current_offsets;
-    current_offsets = new uint16_t[dsp_count];
-    buffer_offsets = current_offsets;
-    for (size_t i = 0; i < dsp_count; i++) {
-        read_data(file, &buffer_offsets[i], sizeof(uint16_t));
-    }
-
-    file.close();
-}
-
 void Song::import_links(const std::string &song_dir, const nlohmann::json &json) {
     const size_t channel_count = json["data"]["channels"];
     const size_t dsp_count = json["data"]["dsps"];
@@ -833,28 +850,6 @@ void Song::update_sizes() {
 }
 
 void Song::clear_data() {
-    for (auto *envelope : envelopes) {
-        delete envelope;
-    }
-    for (auto *sequence : sequences) {
-        delete sequence;
-    }
-    for (auto *order : orders) {
-        delete order;
-    }
-    for (auto *wavetable : wavetables) {
-        delete wavetable;
-    }
-    for (auto *oscillator : oscillators) {
-        delete_oscillator(oscillator);
-    }
-    for (auto *dsp : dsps) {
-        delete_dsp(dsp);
-    }
-    for (auto *channel : channels) {
-        delete channel;
-    }
-
     envelopes.clear();
     sequences.clear();
     orders.clear();

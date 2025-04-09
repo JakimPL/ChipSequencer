@@ -1,5 +1,6 @@
 #include "../../general.hpp"
 #include "../enums.hpp"
+#include "../names.hpp"
 #include "../utils.hpp"
 #include "wavetables.hpp"
 
@@ -46,7 +47,7 @@ void GUIWavetablesPanel::from() {
     }
 
     for (size_t i = 0; i < current_wavetable.wave.size(); ++i) {
-        current_wavetable.wave[i] = (2.0f * wavetable->wavetable[i]) / UINT8_MAX - 1.0f;
+        current_wavetable.wave[i] = (2.0f * wavetable->data[i]) / UINT8_MAX - 1.0f;
     }
 }
 
@@ -57,23 +58,17 @@ void GUIWavetablesPanel::to() const {
 
     Wavetable *wavetable = wavetables[wavetable_index];
     const size_t size = current_wavetable.size;
-    const size_t structure_size = size + 1;
-
-    Wavetable *new_wavetable = static_cast<Wavetable *>(operator new(structure_size));
-    new_wavetable->wavetable_size = size;
+    wavetable->wavetable_size = size;
     for (size_t i = 0; i < size; ++i) {
         const uint8_t value = std::round((current_wavetable.wave[i] + 1.0f) * UINT8_MAX / 2.0f);
-        new_wavetable->wavetable[i] = value;
+        wavetable->data[i] = value;
     }
 
-    if (new_wavetable->wavetable_size > wavetable->wavetable_size) {
-        for (size_t i = wavetable->wavetable_size; i < new_wavetable->wavetable_size; ++i) {
-            new_wavetable->wavetable[i] = 0x80;
+    if (wavetable->wavetable_size > wavetable->wavetable_size) {
+        for (size_t i = wavetable->wavetable_size; i < wavetable->wavetable_size; ++i) {
+            wavetable->data[i] = 0x80;
         }
     }
-
-    wavetables[wavetable_index] = new_wavetable;
-    delete wavetable;
 }
 
 void GUIWavetablesPanel::add() {

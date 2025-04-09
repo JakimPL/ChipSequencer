@@ -15,6 +15,7 @@ class GUIGeneralPanel : public GUIPanel {
         char name[64] = "";
         int bpm = DEFAULT_BPM;
         float normalizer = DEFAULT_NORMALIZER;
+        int output_channels = DEFAULT_OUTPUT_CHANNELS;
 
         int edo = DEFAULT_EDO;
         float a4_frequency = DEFAULT_A4_FREQUENCY;

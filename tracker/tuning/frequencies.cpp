@@ -77,6 +77,10 @@ double FrequencyTable::get_last_frequency() const {
     return frequencies.back();
 }
 
+double FrequencyTable::get_note_divisor() const {
+    return note_divisor;
+}
+
 void FrequencyTable::calculate_note_divisor() {
     const int edo = scale_composer.get_edo();
     note_divisor = std::pow(2.0, 1.0 / static_cast<double>(edo));

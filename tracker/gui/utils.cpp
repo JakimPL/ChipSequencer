@@ -4,6 +4,7 @@
 #include "../general.hpp"
 #include "constants.hpp"
 #include "mapping.hpp"
+#include "names.hpp"
 #include "utils.hpp"
 
 int clamp_index(int index, const int size) {
@@ -137,6 +138,34 @@ std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t
     return {index + pattern.notes.size(), select};
 }
 
+void draw_output(OutputType &output_type) {
+    push_secondary_style();
+    ImGui::Separator();
+    ImGui::Text("Output:");
+    prepare_combo(target_types, "##OutputTargetCombo", output_type.target);
+    switch (output_type.target) {
+    case OUTPUT_TARGET_OUTPUT:
+        draw_int_slider("Channel", output_type.output_channel, 0, song.get_output_channels() - 1);
+        break;
+    case OUTPUT_TARGET_DSP:
+        if (dsps.empty()) {
+            ImGui::Text("No DSPs available.");
+            break;
+        } else {
+            draw_int_slider("DSP", output_type.dsp_channel, 0, dsps.size() - 1);
+        }
+        break;
+    }
+
+    ImGui::Separator();
+    ImGui::Checkbox("Additive", &output_type.additive);
+    prepare_combo(variable_types, "##OutputTypeCombo", output_type.variable_type);
+    ImGui::BeginDisabled(output_type.variable_type == 0);
+    draw_int_slider("Shift", output_type.shift, 0, 15);
+    ImGui::EndDisabled();
+    pop_secondary_style();
+}
+
 void prepare_combo(const std::vector<std::string> &names, std::string label, int &index) {
     std::vector<const char *> names_cstr;
     for (const auto &name : names) {
@@ -159,6 +188,26 @@ void update_items(std::vector<std::string> &names, size_t size, std::string labe
     if (index < 0 && !names.empty()) {
         index = 0;
     }
+}
+
+void push_secondary_style() {
+    ImGui::PushStyleColor(ImGuiCol_CheckMark, GUI_SECONDARY_COLOR_LIGHT);
+    ImGui::PushStyleColor(ImGuiCol_SliderGrab, GUI_SECONDARY_COLOR_LIGHT);
+    ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, GUI_SECONDARY_COLOR_LIGHT);
+    ImGui::PushStyleColor(ImGuiCol_Button, GUI_SECONDARY_COLOR_DARK);
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, GUI_SECONDARY_COLOR);
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, GUI_SECONDARY_COLOR);
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, GUI_SECONDARY_COLOR_DARK);
+    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, GUI_SECONDARY_COLOR);
+    ImGui::PushStyleColor(ImGuiCol_FrameBgActive, GUI_SECONDARY_COLOR);
+    ImGui::PushStyleColor(ImGuiCol_PopupBg, GUI_SECONDARY_COLOR_DARK);
+    ImGui::PushStyleColor(ImGuiCol_Header, GUI_SECONDARY_COLOR_DARK);
+    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, GUI_SECONDARY_COLOR);
+    ImGui::PushStyleColor(ImGuiCol_HeaderActive, GUI_SECONDARY_COLOR);
+}
+
+void pop_secondary_style() {
+    ImGui::PopStyleColor(13);
 }
 
 std::string get_note_name(uint8_t note_value) {

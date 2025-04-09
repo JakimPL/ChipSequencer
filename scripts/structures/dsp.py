@@ -8,13 +8,13 @@ from structures.types import Byte, Word
 
 @dataclass
 class DSP:
-    output: Output
     output_flag: Byte
+    output: Output
     effect_index: Effects
 
-    def __init__(self, output: Output, output_flag: Union[int, Byte], effect_index: Effects):
-        self.output = output
+    def __init__(self, output_flag: Union[int, Byte], output: Output, effect_index: Effects):
         self.output_flag = Byte(output_flag)
+        self.output = output
         self.effect_index = effect_index
 
     @property
@@ -30,14 +30,14 @@ class DSPDelay(DSP):
 
     def __init__(
         self,
-        output: Output,
         output_flag: Union[int, Byte],
+        output: Output,
         dry: Union[int, Word],
         wet: Union[int, Word],
         feedback: Union[int, Word],
         delay_time: Union[int, Word],
     ):
-        super().__init__(output, output_flag, Effects.EFFECT_DELAY)
+        super().__init__(output_flag, output, Effects.EFFECT_DELAY)
         self.dry = Word(dry)
         self.wet = Word(wet)
         self.feedback = Word(feedback)
@@ -54,8 +54,8 @@ class DSPDelay(DSP):
 class DSPGainer(DSP):
     volume: Word
 
-    def __init__(self, output: Output, output_flag: Union[int, Byte], volume: Union[int, Word]):
-        super().__init__(output, output_flag, Effects.EFFECT_GAINER)
+    def __init__(self, output_flag: Union[int, Byte], output: Output, volume: Union[int, Word]):
+        super().__init__(output_flag, output, Effects.EFFECT_GAINER)
         self.volume = Word(volume)
 
     def __len__(self) -> int:
@@ -69,8 +69,8 @@ class DSPGainer(DSP):
 class DSPFilter(DSP):
     frequency: Word
 
-    def __init__(self, output: Output, output_flag: Union[int, Byte], frequency: Union[int, Word]):
-        super().__init__(output, output_flag, Effects.EFFECT_FILTER)
+    def __init__(self, output_flag: Union[int, Byte], output: Output, frequency: Union[int, Word]):
+        super().__init__(output_flag, output, Effects.EFFECT_FILTER)
         self.frequency = Word(frequency)
 
     def __len__(self) -> int:

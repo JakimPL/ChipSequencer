@@ -1,5 +1,6 @@
 #include "../../general.hpp"
 #include "../enums.hpp"
+#include "../names.hpp"
 #include "../utils.hpp"
 #include "orders.hpp"
 
@@ -34,11 +35,11 @@ void GUIOrdersPanel::from() {
         return;
     }
 
-    Order *order = orders[order_index];
+    const Order *order = orders[order_index];
     uint16_t total_length = order->order_length;
     current_order.sequences.resize(total_length);
     current_order.length = total_length;
-    std::copy(order->sequences, order->sequences + total_length, current_order.sequences.begin());
+    std::copy(order->sequences.begin(), order->sequences.begin() + total_length, current_order.sequences.begin());
 }
 
 void GUIOrdersPanel::to() const {
@@ -48,20 +49,14 @@ void GUIOrdersPanel::to() const {
 
     Order *order = orders[order_index];
     const size_t length = current_order.length;
-    const size_t structure_size = length + 1;
-
-    Order *new_order = static_cast<Order *>(operator new(structure_size));
-    new_order->order_length = length;
+    order->order_length = length;
     for (size_t i = 0; i < length; ++i) {
         if (i < current_order.sequences.size()) {
-            new_order->sequences[i] = current_order.sequences[i];
+            order->sequences[i] = current_order.sequences[i];
         } else {
-            new_order->sequences[i] = 0;
+            order->sequences[i] = 0;
         }
     }
-
-    orders[order_index] = new_order;
-    delete order;
 }
 
 void GUIOrdersPanel::add() {

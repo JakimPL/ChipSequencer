@@ -5,8 +5,8 @@
 #include <cmath>
 #include <string>
 
+#include "../../song/output.hpp"
 #include "../init.hpp"
-#include "../names.hpp"
 #include "panel.hpp"
 
 class GUIChannelsPanel : public GUIPanel {
@@ -17,16 +17,15 @@ class GUIChannelsPanel : public GUIPanel {
         int order_index = -1;
         int oscillator_index = -1;
         float pitch = 1.0f;
-        void *output = nullptr;
-        bool additive = false;
-        int type = -1;
-        int shift = 0;
+        OutputType output_type;
     } current_channel;
 
     int channel_index = 0;
 
     bool is_index_valid() const;
     void draw_channel();
+    void update_channel_name(const int index, const int order_index) const;
+    void update_channel_names();
 
     void from() override;
     void to() const override;

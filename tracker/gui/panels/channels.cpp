@@ -1,4 +1,5 @@
 #include "../../general.hpp"
+#include "../names.hpp"
 #include "../utils.hpp"
 #include "channels.hpp"
 
@@ -33,21 +34,21 @@ void GUIChannelsPanel::from() {
         return;
     }
 
-    Channel *channel = channels[channel_index];
+    const Channel *channel = channels[channel_index];
     current_channel.envelope_index = channel->envelope_index;
-    current_channel.constant_pitch = channel->order_index == 0xFF;
+    current_channel.constant_pitch = channel->order_index == CONSTANT_PITCH;
     current_channel.order_index = std::max(0, static_cast<int>(channel->order_index));
     current_channel.oscillator_index = channel->oscillator_index;
-    current_channel.additive = !(channel->output_flag & MASK_ADDITIVE);
-    current_channel.type = (channel->output_flag & MASK_VARIABLE_TYPE) >> 4;
-    current_channel.shift = current_channel.type == 0 ? 0 : channel->output_flag & MASK_SHIFT;
-    current_channel.output = channel->output;
+    current_channel.output_type.from_output_flag(channel->output_flag);
 
     if (current_channel.constant_pitch) {
         current_channel.pitch = static_cast<float>(channel->pitch) / 0x10000;
     } else {
         current_channel.pitch = 12 * log2(static_cast<float>(channel->pitch) / DEFAULT_CHANNEL_PITCH);
     }
+
+    const Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][channel_index];
+    current_channel.output_type.from_link(link);
 }
 
 void GUIChannelsPanel::to() const {
@@ -59,16 +60,18 @@ void GUIChannelsPanel::to() const {
     channel->envelope_index = current_channel.envelope_index;
     channel->oscillator_index = current_channel.oscillator_index;
 
-    channel->output_flag = current_channel.additive ? 0 : MASK_ADDITIVE;
-    channel->output_flag |= (current_channel.type << 4) | current_channel.shift;
-    channel->output = current_channel.output;
-
+    channel->output_flag = current_channel.output_type.calculate_output_flag();
     channel->order_index = current_channel.constant_pitch ? CONSTANT_PITCH : current_channel.order_index;
+
     if (current_channel.constant_pitch) {
         channel->pitch = static_cast<uint32_t>(std::round(current_channel.pitch * 0x10000));
     } else {
-        channel->pitch = static_cast<uint32_t>(std::round(0x02000000 * pow(2, current_channel.pitch / 12)));
+        channel->pitch = static_cast<uint32_t>(std::round(DEFAULT_CHANNEL_PITCH * pow(2, current_channel.pitch / 12)));
     }
+
+    Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][channel_index];
+    current_channel.output_type.set_link(link, ItemType::CHANNEL, channel_index);
+    song.set_link(link, static_cast<void *>(channel), channel_index);
 }
 
 void GUIChannelsPanel::add() {
@@ -90,10 +93,34 @@ void GUIChannelsPanel::remove() {
 }
 
 void GUIChannelsPanel::update() {
-    update_items(channel_names, channels.size(), "Channel ", channel_index);
+    update_channel_names();
     update_items(envelope_names, envelopes.size(), "Envelope ", current_channel.envelope_index);
     update_items(order_names, orders.size(), "Order ", current_channel.order_index);
     update_items(oscillator_names, oscillators.size(), "Oscillator ", current_channel.oscillator_index);
+}
+
+void GUIChannelsPanel::update_channel_names() {
+    channel_names.resize(channels.size());
+    for (size_t i = 0; i < channels.size(); ++i) {
+        const Channel *channel = channels[i];
+        update_channel_name(i, channel->order_index);
+    }
+    if (channel_index >= static_cast<int>(channel_names.size())) {
+        channel_index = static_cast<int>(channel_names.size()) - 1;
+    }
+    if (channel_index < 0 && !channel_names.empty()) {
+        channel_index = 0;
+    }
+}
+
+void GUIChannelsPanel::update_channel_name(const int index, const int order_index) const {
+    if (index < 0 || index >= static_cast<int>(channel_names.size())) {
+        return;
+    }
+
+    const bool constant_pitch = order_index == CONSTANT_PITCH;
+    const char *label = constant_pitch ? "Modulator " : "Channel ";
+    channel_names[index] = label + std::to_string(index);
 }
 
 void GUIChannelsPanel::draw_channel() {
@@ -106,8 +133,9 @@ void GUIChannelsPanel::draw_channel() {
     prepare_combo(envelope_names, "##EnvelopeCombo", current_channel.envelope_index);
     ImGui::Text("Oscillator:");
     prepare_combo(oscillator_names, "##OscillatorCombo", current_channel.oscillator_index);
-    if (ImGui::Checkbox("Constant Pitch", &current_channel.constant_pitch) && !orders.empty()) {
+    if (ImGui::Checkbox("Constant Pitch", &current_channel.constant_pitch)) {
         current_channel.order_index = 0;
+        update_channel_name(channel_index, current_channel.constant_pitch ? CONSTANT_PITCH : current_channel.order_index);
     }
 
     ImGui::SameLine();
@@ -118,16 +146,10 @@ void GUIChannelsPanel::draw_channel() {
     if (current_channel.constant_pitch) {
         draw_float_slider("Pitch", current_channel.pitch, 0.0002f, 65535.0f, true);
     } else {
-        draw_float_slider("Transpose", current_channel.pitch, -48.0f, 48.0f);
+        draw_float_slider("Transpose", current_channel.pitch, GUI_MIN_TRANSPOSE, GUI_MAX_TRANSPOSE);
     }
 
-    ImGui::Separator();
-    ImGui::Text("Output:");
-    ImGui::Checkbox("Additive", &current_channel.additive);
-    prepare_combo(variable_types, "##TypeCombo", current_channel.type);
-    ImGui::BeginDisabled(current_channel.type == 0);
-    draw_int_slider("Shift", current_channel.shift, 0, 15);
-    ImGui::EndDisabled();
+    draw_output(current_channel.output_type);
 }
 
 void GUIChannelsPanel::check_keyboard_input() {

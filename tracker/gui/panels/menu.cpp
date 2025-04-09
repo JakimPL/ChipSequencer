@@ -4,6 +4,7 @@
 
 #include "../../general.hpp"
 #include "../../utils/file.hpp"
+#include "../utils.hpp"
 #include "menu.hpp"
 
 GUIMenu::GUIMenu() {
@@ -116,6 +117,7 @@ void GUIMenu::file_open() {
 }
 
 void GUIMenu::file_compile(const bool compress) {
+    file_save();
     nfdchar_t *target_path = nullptr;
     nfdresult_t result = NFD_SaveDialog("exe", nullptr, &target_path);
     if (result == NFD_OKAY) {
@@ -123,8 +125,13 @@ void GUIMenu::file_compile(const bool compress) {
         new_path = check_and_correct_path_by_extension(new_path, ".exe");
 
         gui.stop();
-        song.compile(new_path, compress);
-        compilation_status = std::filesystem::exists(new_path);
+        try {
+            song.compile(new_path, compress);
+            compilation_status = std::filesystem::exists(new_path);
+        } catch (std::runtime_error &e) {
+            std::cerr << "Compilation error: " << e.what() << std::endl;
+            compilation_status = false;
+        }
         gui.update();
     } else if (result != NFD_CANCEL) {
         std::cerr << "Error: " << NFD_GetError() << std::endl;

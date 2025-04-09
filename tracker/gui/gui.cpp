@@ -147,6 +147,8 @@ void GUI::update(GUIElement element) {
         return general_panel.update();
     case GUIElement::Channels:
         return channels_panel.update();
+    case GUIElement::DSPs:
+        return dsps_panel.update();
     case GUIElement::Envelopes:
         return envelopes_panel.update();
     case GUIElement::Orders:
@@ -167,6 +169,7 @@ void GUI::update_all() {
     editor.update();
     general_panel.update();
     channels_panel.update();
+    dsps_panel.update();
     envelopes_panel.update();
     orders_panel.update();
     oscillators_panel.update();
@@ -180,6 +183,7 @@ void GUI::frame() {
     editor.frame();
     general_panel.frame();
     channels_panel.frame();
+    dsps_panel.frame();
     envelopes_panel.frame();
     orders_panel.frame();
     oscillators_panel.frame();

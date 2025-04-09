@@ -7,6 +7,7 @@
 #include "enums.hpp"
 #include "init.hpp"
 #include "panels/channels.hpp"
+#include "panels/dsps.hpp"
 #include "panels/editor.hpp"
 #include "panels/envelopes.hpp"
 #include "panels/general.hpp"
@@ -52,6 +53,7 @@ class GUI {
     GUIEditorPanel editor = GUIEditorPanel(current_octave, jump_step, page_size);
     GUIGeneralPanel general_panel;
     GUIChannelsPanel channels_panel;
+    GUIDSPsPanel dsps_panel;
     GUIEnvelopesPanel envelopes_panel;
     GUIOrdersPanel orders_panel;
     GUIOscillatorsPanel oscillators_panel;

@@ -11,6 +11,9 @@ from compiler.link import Link, LinkTarget, LinkType
 
 from utils import load_binary, save_binary
 
+DSP_OUTPUT = 3
+CHANNEL_OUTPUT = 8
+
 
 class Compiler:
     def __init__(self, temp_dir: Union[str, os.PathLike], target_path: Union[str, os.PathLike], compress: bool = True):
@@ -47,7 +50,7 @@ class Compiler:
         copy_tree("tools", str(self.temp_dir / "tools"))
         shutil.copy("compile.bat", self.temp_dir / "compile.bat")
         shutil.copy("linker.lnk", self.temp_dir / "linker.lnk")
-        shutil.copy(self.song_dir / "header.asm", self.temp_dir / "src" / "song" / "data.asm")
+        shutil.copy(self.song_dir / "header.asm", self.temp_dir / "src" / "song" / "header.asm")
         shutil.copy(self.song_dir / "data.asm", self.temp_dir / "src" / "song" / "data.asm")
 
     def copy_executable(self):
@@ -104,10 +107,10 @@ class Compiler:
             i = link.id
             if link.type == LinkType.CHANNEL:
                 filename = self.song_dir / "chans" / f"chan_{i}.bin"
-                target_slice = slice(7, 9)
+                target_slice = slice(CHANNEL_OUTPUT, CHANNEL_OUTPUT + 2)
             elif link.type == LinkType.DSP:
                 filename = self.song_dir / "dsps" / f"dsp_{i}.bin"
-                target_slice = slice(2, 4)
+                target_slice = slice(DSP_OUTPUT, DSP_OUTPUT + 2)
             else:
                 raise ValueError(f"Invalid type: {link.type}")
 

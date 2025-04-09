@@ -23,7 +23,9 @@ class FrequencyTable {
     std::vector<double> get_frequencies() const;
     std::vector<std::string> get_note_names() const;
     std::map<std::pair<std::string, int>, size_t> get_note_values() const;
+
     double get_last_frequency() const;
+    double get_note_divisor() const;
 
   private:
     const ScaleComposer &scale_composer;
