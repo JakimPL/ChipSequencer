@@ -12,8 +12,11 @@ GUIWavetablesPanel::GUIWavetablesPanel() {
 void GUIWavetablesPanel::draw() {
     ImGui::Begin("Wavetable Editor");
 
+    push_tertiary_style();
     draw_add_or_remove();
     prepare_combo(wavetable_names, "##WavetableCombo", wavetable_index);
+    pop_tertiary_style();
+
     ImGui::Separator();
 
     if (wavetables.empty()) {

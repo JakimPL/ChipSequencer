@@ -15,8 +15,11 @@ void GUIOscillatorsPanel::draw() {
     ImGui::Begin("Oscillator Editor");
     ImGui::Columns(1, "oscillator_columns");
 
+    push_tertiary_style();
     draw_add_or_remove();
     prepare_combo(oscillator_names, "##OscillatorCombo", oscillator_index);
+    pop_tertiary_style();
+
     ImGui::Separator();
 
     from();

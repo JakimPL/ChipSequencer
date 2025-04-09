@@ -13,8 +13,10 @@ void GUIDSPsPanel::draw() {
     ImGui::Columns(1, "dsp_columns");
 
     ImGui::BeginDisabled(gui.is_playing());
+    push_tertiary_style();
     draw_add_or_remove();
     prepare_combo(dsp_names, "##DSPCombo", dsp_index);
+    pop_tertiary_style();
     ImGui::Separator();
 
     from();

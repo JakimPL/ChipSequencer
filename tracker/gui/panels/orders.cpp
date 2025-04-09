@@ -13,8 +13,11 @@ void GUIOrdersPanel::draw() {
     ImGui::Begin("Order Editor");
     ImGui::Columns(1, "order_columns");
 
+    push_tertiary_style();
     draw_add_or_remove();
     prepare_combo(order_names, "##OrderCombo", order_index);
+    pop_tertiary_style();
+
     ImGui::Separator();
 
     from();

@@ -12,8 +12,11 @@ void GUIChannelsPanel::draw() {
     ImGui::Begin("Channel Editor");
     ImGui::Columns(1, "channel_columns");
 
+    push_tertiary_style();
     draw_add_or_remove();
     prepare_combo(channel_names, "##ChannelCombo", channel_index);
+    pop_tertiary_style();
+
     ImGui::Separator();
 
     from();

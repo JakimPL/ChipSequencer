@@ -23,6 +23,12 @@
 
 #define GUI_SECONDARY_COLOR ImVec4(0.2f, 0.4f, 0.2f, 1.0f)
 #define GUI_SECONDARY_COLOR_LIGHT ImVec4(0.3f, 0.6f, 0.3f, 1.0f)
+#define GUI_SECONDARY_COLOR_BRIGHT ImVec4(0.4f, 0.7f, 0.4f, 1.0f)
 #define GUI_SECONDARY_COLOR_DARK ImVec4(0.1f, 0.2f, 0.1f, 1.0f)
+
+#define GUI_TERTIARY_COLOR ImVec4(0.4f, 0.3f, 0.4f, 1.0f)
+#define GUI_TERTIARY_COLOR_LIGHT ImVec4(0.3f, 0.2f, 0.3f, 1.0f)
+#define GUI_TERTIARY_COLOR_BRIGHT ImVec4(0.4f, 0.3f, 0.4f, 1.0f)
+#define GUI_TERTIARY_COLOR_DARK ImVec4(0.2f, 0.1f, 0.2f, 1.0f)
 
 #endif // GUI_CONSTANTS_HPP

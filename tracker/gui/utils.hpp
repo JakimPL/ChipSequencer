@@ -21,6 +21,8 @@ void prepare_combo(const std::vector<std::string> &names, std::string label, int
 void update_items(std::vector<std::string> &names, size_t size, std::string label, int &index);
 void push_secondary_style();
 void pop_secondary_style();
+void push_tertiary_style();
+void pop_tertiary_style();
 
 std::string get_note_name(uint8_t note_value);
 std::string get_note_octave(uint8_t note_value);
