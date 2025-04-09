@@ -35,7 +35,9 @@ void GUIGeneralPanel::to() const {
         calculate_ticks_per_beat();
     }
 
-    song.set_output_channels(current_song.output_channels);
+    if (current_song.output_channels != song.get_output_channels()) {
+        song.set_output_channels(current_song.output_channels);
+    }
 }
 
 void GUIGeneralPanel::draw_play_button() {

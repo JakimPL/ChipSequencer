@@ -28,6 +28,8 @@
 
     %define DEFAULT_CHANNEL_PITCH 0x02000000
 
+    %define DEFAULT_OSCILLATOR_DUTY_CYCLE 0x80
+
 ; General
     %define CONSTANT_PITCH 0xFF
 

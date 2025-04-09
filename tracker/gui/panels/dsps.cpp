@@ -56,7 +56,7 @@ void GUIDSPsPanel::from() {
     case EFFECT_FILTER: {
         current_dsp.type = "Filter";
         const DSPFilter *filter = static_cast<const DSPFilter *>(dsp);
-        current_dsp.filter_cutoff = static_cast<float>(filter->frequency) / UINT16_MAX;
+        current_dsp.filter_cutoff = 2 * static_cast<float>(filter->frequency) / UINT16_MAX;
         break;
     }
     }
@@ -66,22 +66,22 @@ void GUIDSPsPanel::from() {
 }
 
 void GUIDSPsPanel::to() const {
-    if (!is_index_valid()) {
+    if (!is_index_valid() || gui.is_playing()) {
         return;
     }
 
-    void *dsp = nullptr;
+    void *buffer = dsps[dsp_index];
     switch (current_dsp.effect_index) {
     case EFFECT_GAINER: {
-        static_cast<DSPGainer *>(dsp)->~DSPGainer();
-        DSPGainer *dsp = new (dsp) DSPGainer();
+        static_cast<DSP *>(buffer)->~DSP();
+        DSPGainer *dsp = new (buffer) DSPGainer();
         dsp->effect_index = EFFECT_GAINER;
         dsp->volume = static_cast<uint16_t>(std::round(current_dsp.gainer_gain * UINT16_MAX));
         break;
     }
     case EFFECT_DELAY: {
-        static_cast<DSPDelay *>(dsp)->~DSPDelay();
-        DSPDelay *dsp = new (dsp) DSPDelay();
+        static_cast<DSP *>(buffer)->~DSP();
+        DSPDelay *dsp = new (buffer) DSPDelay();
         dsp->effect_index = EFFECT_DELAY;
         dsp->dry = static_cast<uint16_t>(std::round(current_dsp.delay_dry * UINT16_MAX));
         dsp->wet = static_cast<uint16_t>(std::round(current_dsp.delay_wet * UINT16_MAX));
@@ -90,17 +90,17 @@ void GUIDSPsPanel::to() const {
         break;
     }
     case EFFECT_FILTER: {
-        static_cast<DSPFilter *>(dsp)->~DSPFilter();
-        DSPFilter *dsp = new (dsp) DSPFilter();
+        static_cast<DSP *>(buffer)->~DSP();
+        DSPFilter *dsp = new (buffer) DSPFilter();
         dsp->effect_index = EFFECT_FILTER;
-        dsp->frequency = static_cast<uint16_t>(std::round(current_dsp.filter_cutoff * UINT16_MAX));
+        dsp->frequency = static_cast<uint16_t>(std::floor(current_dsp.filter_cutoff * UINT16_MAX / 2));
         break;
     }
     }
 
     Link &link = links[static_cast<size_t>(ItemType::DSP)][dsp_index];
     current_dsp.output_type.set_link(link, ItemType::DSP, dsp_index);
-    song.set_link(link, static_cast<void *>(dsp), dsp_index);
+    song.set_link(link, buffer, dsp_index);
 }
 
 void GUIDSPsPanel::add() {
@@ -139,11 +139,13 @@ void GUIDSPsPanel::draw_dsp() {
         return;
     }
 
+    ImGui::BeginDisabled(gui.is_playing());
     draw_dsp_type();
     ImGui::NextColumn();
     draw_effect();
     ImGui::NewLine();
     draw_output(current_dsp.output_type);
+    ImGui::EndDisabled();
 }
 
 void GUIDSPsPanel::draw_effect() {

@@ -206,7 +206,8 @@ void *Song::add_oscillator() {
         return nullptr;
     }
 
-    void *oscillator = new OscillatorSquare();
+    OscillatorSquare *oscillator = new OscillatorSquare();
+    oscillator->duty_cycle = DEFAULT_OSCILLATOR_DUTY_CYCLE;
     oscillators.push_back(oscillator);
     return oscillator;
 }
@@ -493,7 +494,7 @@ void Song::set_links() {
 
 void Song::set_buffer_offsets() {
     for (size_t i = 0; i < MAX_DSPS; i++) {
-        buffer_offsets[i] = i * 17;
+        buffer_offsets[i] = i * MAX_DSP_BUFFER_SIZE;
     }
 }
 

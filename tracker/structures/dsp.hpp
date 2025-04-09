@@ -10,8 +10,10 @@
 struct DSP {
     uint8_t dsp_size;
     uint8_t effect_index;
-    void *output;
     uint8_t output_flag;
+    uint8_t _unused;
+    void *output;
+    uint8_t pad[8];
 };
 
 struct DSPDelay {
