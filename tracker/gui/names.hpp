@@ -14,6 +14,7 @@ static std::vector<std::string> sequence_names;
 static std::vector<std::string> wavetable_names;
 
 const std::vector<std::string> effect_names = {"Gainer", "Delay", "Filter"};
+const std::vector<std::string> parameter_types = {"Envelope", "Sequence", "Oscillator", "Wavetable", "DSP", "Channel"};
 const std::vector<std::string> target_types = {"Output", "DSP", "Parameter"};
 const std::vector<std::string> variable_types = {"Float", "Int8", "Int16", "Int32"};
 

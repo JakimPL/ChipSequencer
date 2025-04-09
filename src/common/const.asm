@@ -64,6 +64,9 @@
     %define ENVELOPE_SUSTAIN_LEVEL 2
     %define ENVELOPE_BIAS 4
     %define ENVELOPE_ATTACK 6
+    %define ENVELOPE_DECAY 8
+    %define ENVELOPE_HOLD 10
+    %define ENVELOPE_RELEASE 12
     %define SIZE_ENVELOPE 14
 
 ; Sequence

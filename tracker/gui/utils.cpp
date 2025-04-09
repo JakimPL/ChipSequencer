@@ -154,6 +154,8 @@ void draw_output(OutputType &output_type) {
         } else {
             draw_int_slider("DSP", output_type.dsp_channel, 0, dsps.size() - 1);
         }
+    default:
+        prepare_combo(parameter_types, "##OutputParameterCombo", output_type.parameter_type);
         break;
     }
 

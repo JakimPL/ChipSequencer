@@ -23,8 +23,9 @@ void OutputType::from_link(const Link &link) {
     case OUTPUT_TARGET_DSP:
         dsp_channel = link.index;
         break;
-    case OUTPUT_TARGET_PARAMETER:
-        // TODO: not implemented
+    default:
+        parameter_type = target - OUTPUT_TARGET_PARAMETER;
+        target = OUTPUT_TARGET_PARAMETER;
         break;
     }
 }
@@ -44,7 +45,9 @@ void OutputType::set_link(Link &link, const ItemType type, const uint8_t id) con
         link.offset = 4 * dsp_channel;
         break;
     case OUTPUT_TARGET_PARAMETER:
-        // TODO: not implemented
+        link.target = static_cast<Target>(parameter_type + OUTPUT_TARGET_PARAMETER);
+        link.index = 0;
+        link.offset = 0;
         break;
     }
 }

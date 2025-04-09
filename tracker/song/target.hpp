@@ -15,4 +15,11 @@ enum class Target : uint8_t {
     CHANNEL
 };
 
+enum class TargetVariableType : uint8_t {
+    Float,
+    Int8,
+    Int16,
+    Int32
+};
+
 #endif // SONG_TARGET_HPP
