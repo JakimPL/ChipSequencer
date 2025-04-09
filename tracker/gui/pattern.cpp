@@ -141,14 +141,3 @@ void Pattern::handle_input(const int min_row, const int max_row) {
         steps = std::max(steps, 1);
     }
 }
-
-Sequence *Pattern::to_sequence(const std::vector<Note> &note_vector) {
-    const size_t length = note_vector.size();
-    const uint8_t data_size = static_cast<uint8_t>(length * sizeof(Note));
-    const size_t structure_size = data_size + 1;
-
-    Sequence *new_sequence = static_cast<Sequence *>(operator new(structure_size));
-    new_sequence->data_size = data_size;
-    std::copy(note_vector.begin(), note_vector.end(), new_sequence->notes);
-    return new_sequence;
-}

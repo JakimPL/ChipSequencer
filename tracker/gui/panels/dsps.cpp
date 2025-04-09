@@ -123,7 +123,6 @@ void GUIDSPsPanel::remove() {
 
 void GUIDSPsPanel::update() {
     update_items(dsp_names, dsps.size(), "DSP ", dsp_index);
-    effect_names = {"Gainer", "Delay", "Filter"};
 }
 
 void GUIDSPsPanel::draw_dsp_type() {

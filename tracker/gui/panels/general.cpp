@@ -30,13 +30,13 @@ void GUIGeneralPanel::from() {
 
 void GUIGeneralPanel::to() const {
     normalizer = current_song.normalizer;
+    if (current_song.output_channels != song.get_output_channels()) {
+        song.set_output_channels(current_song.output_channels);
+    }
+
     if (current_song.bpm != bpm) {
         bpm = current_song.bpm;
         calculate_ticks_per_beat();
-    }
-
-    if (current_song.output_channels != song.get_output_channels()) {
-        song.set_output_channels(current_song.output_channels);
     }
 }
 

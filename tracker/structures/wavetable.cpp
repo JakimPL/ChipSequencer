@@ -4,7 +4,7 @@
 void Wavetable::serialize(std::ofstream &file) const {
     write_data(file, &wavetable_size, 1);
     for (size_t i = 0; i < wavetable_size; i++) {
-        write_data(file, &wavetable[i], sizeof(uint8_t));
+        write_data(file, &data[i], sizeof(uint8_t));
     }
 }
 
@@ -16,13 +16,12 @@ Wavetable *Wavetable::deserialize(std::ifstream &file) {
     uint8_t wavetable_size;
     read_data(file, &wavetable_size, sizeof(wavetable_size));
 
-    size_t totalSize = sizeof(Wavetable) + wavetable_size * sizeof(uint8_t);
-    void *memory = malloc(totalSize);
+    void *memory = malloc(sizeof(Wavetable));
     Wavetable *wavetable = static_cast<Wavetable *>(memory);
     wavetable->wavetable_size = wavetable_size;
 
     for (size_t i = 0; i < wavetable_size; i++) {
-        read_data(file, &wavetable->wavetable[i], sizeof(uint8_t));
+        read_data(file, &wavetable->data[i], sizeof(uint8_t));
     }
 
     return wavetable;

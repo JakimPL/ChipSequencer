@@ -412,7 +412,7 @@ void Song::calculate_song_length() {
         }
 
         const Order *order = orders[channel->order_index];
-        const uint8_t *order_sequences = order->sequences;
+        const OrderSequences &order_sequences = order->sequences;
         const size_t order_length = order->order_length;
         uint16_t rows = 0;
         for (size_t i = 0; i < order_length; i++) {

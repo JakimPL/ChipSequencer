@@ -24,8 +24,6 @@ struct Pattern {
     void jump(const int max_row = -1);
     void set_note(const int note_index, const int edo, const int max_row = -1);
     void handle_input(const int min_row = 0, const int max_row = -1);
-
-    static Sequence *to_sequence(const std::vector<Note> &note_vector);
 };
 
 #endif // GUI_PATTERN_HPP
