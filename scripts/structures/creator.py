@@ -262,8 +262,8 @@ class Creator:
             self.label(f".dsp_{i}")
             self.value(Byte(len(dsp)), "dsp_size")
             self.reference(Byte, str(dsp.effect_index), "effect_index")
-            self.output(dsp.output)
             self.value(dsp.output_flag, "output_flag", fmt="b")
+            self.output(dsp.output)
             match dsp.effect_index:
                 case Effects.EFFECT_GAINER:
                     self.value(dsp.volume, "volume", fmt="x")
@@ -285,10 +285,8 @@ class Creator:
             self.value(channel.order_index, "order_index")
             self.value(channel.oscillator_index, "oscillator_index")
             self.value(channel.pitch, "pitch", fmt="x")
-            self.output(channel.output)
             self.value(channel.output_flag, "output_flag", fmt="b")
-
-        self.comment()
+            self.output(channel.output)
 
     def buffer_offsets(self):
         self.label("buffer_offsets")

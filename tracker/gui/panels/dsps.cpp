@@ -12,6 +12,7 @@ void GUIDSPsPanel::draw() {
     ImGui::Begin("DSP Editor");
     ImGui::Columns(1, "dsp_columns");
 
+    ImGui::BeginDisabled(gui.is_playing());
     draw_add_or_remove();
     prepare_combo(dsp_names, "##DSPCombo", dsp_index);
     ImGui::Separator();
@@ -21,6 +22,7 @@ void GUIDSPsPanel::draw() {
     check_keyboard_input();
     to();
 
+    ImGui::EndDisabled();
     ImGui::Columns(1);
     ImGui::End();
 }
@@ -138,13 +140,11 @@ void GUIDSPsPanel::draw_dsp() {
         return;
     }
 
-    ImGui::BeginDisabled(gui.is_playing());
     draw_dsp_type();
     ImGui::NextColumn();
     draw_effect();
     ImGui::NewLine();
     draw_output(current_dsp.output_type);
-    ImGui::EndDisabled();
 }
 
 void GUIDSPsPanel::draw_effect() {
