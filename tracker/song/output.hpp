@@ -3,6 +3,7 @@
 
 #include <cstdint>
 
+#include "../maps/routing.hpp"
 #include "link.hpp"
 
 enum OutputTarget {
@@ -19,7 +20,11 @@ struct OutputType {
 
     int output_channel;
     int dsp_channel;
+
     int parameter_type;
+    int routing_item;
+    int index;
+    int offset;
 
     uint8_t calculate_output_flag() const;
     void from_output_flag(const uint8_t output_flag);

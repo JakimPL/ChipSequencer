@@ -2,6 +2,7 @@
 #include <cmath>
 
 #include "../general.hpp"
+#include "../maps/routing.hpp"
 #include "constants.hpp"
 #include "mapping.hpp"
 #include "names.hpp"
@@ -156,7 +157,19 @@ void draw_output(OutputType &output_type) {
         }
     default:
         prepare_combo(parameter_types, "##OutputParameterCombo", output_type.parameter_type);
-        break;
+        const Target target = static_cast<Target>(output_type.parameter_type + OUTPUT_TARGET_PARAMETER);
+        const auto &routing = routing_variables.at(target);
+        switch (target) {
+        case Target::ENVELOPE:
+            int &variable_index = output_type.routing_item;
+            bool value_changed = prepare_combo(envelope_names, "##OutputParameterEnvelopeCombo", output_type.index);
+            value_changed |= prepare_combo(routing.labels, "##OutputParameterEnvelopeParameterCombo", variable_index);
+            if (value_changed) {
+                output_type.offset = routing.offsets[variable_index];
+                output_type.variable_type = static_cast<int>(routing.types[variable_index]);
+            }
+            break;
+        }
     }
 
     ImGui::Separator();
@@ -168,7 +181,7 @@ void draw_output(OutputType &output_type) {
     pop_secondary_style();
 }
 
-void prepare_combo(const std::vector<std::string> &names, std::string label, int &index) {
+bool prepare_combo(const std::vector<std::string> &names, std::string label, int &index) {
     std::vector<const char *> names_cstr;
     for (const auto &name : names) {
         names_cstr.push_back(name.c_str());
@@ -176,7 +189,7 @@ void prepare_combo(const std::vector<std::string> &names, std::string label, int
 
     float combo_width = ImGui::GetContentRegionAvail().x;
     ImGui::SetNextItemWidth(combo_width);
-    ImGui::Combo(label.c_str(), &index, names_cstr.data(), names_cstr.size());
+    return ImGui::Combo(label.c_str(), &index, names_cstr.data(), names_cstr.size());
 }
 
 void update_items(std::vector<std::string> &names, size_t size, std::string label, int &index) {

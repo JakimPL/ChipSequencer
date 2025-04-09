@@ -3,45 +3,118 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include "../constants.hpp"
 #include "../song/target.hpp"
 
-const std::map<Target, std::map<std::string, std::pair<uint8_t, TargetVariableType>>> routing_variables = {
+struct RoutingItems {
+    std::vector<std::string> labels;
+    std::vector<uint16_t> offsets;
+    std::vector<TargetVariableType> types;
+};
+
+const std::map<Target, RoutingItems> routing_variables = {
     {
         Target::ENVELOPE,
-        {
-            {"Base volume", {ENVELOPE_BASE_VOLUME, TargetVariableType::Int16}},
-            {"Sustain level", ENVELOPE_SUSTAIN_LEVEL, TargetVariableType::Int16},
-            {"Attack", ENVELOPE_ATTACK, TargetVariableType::Int16},
-            {"Decay", ENVELOPE_DECAY, TargetVariableType::Int16},
-            {"Hold", ENVELOPE_HOLD, TargetVariableType::Int16},
-            {"Release", ENVELOPE_RELEASE, TargetVariableType::Int16},
-        },
+        RoutingItems({
+            {
+                "Base volume",
+                "Sustain level",
+                "Attack",
+                "Decay",
+                "Hold",
+                "Release",
+            },
+            {
+                ENVELOPE_BASE_VOLUME,
+                ENVELOPE_SUSTAIN_LEVEL,
+                ENVELOPE_ATTACK,
+                ENVELOPE_DECAY,
+                ENVELOPE_HOLD,
+                ENVELOPE_RELEASE,
+            },
+            {
+                TargetVariableType::Int16,
+                TargetVariableType::Int16,
+                TargetVariableType::Int16,
+                TargetVariableType::Int16,
+                TargetVariableType::Int16,
+                TargetVariableType::Int16,
+            },
+        }),
+    },
+    {
+        Target::SEQUENCE,
+        RoutingItems(),
+    },
+    {
+        Target::ORDER,
+        RoutingItems(),
     },
     {
         Target::OSCILLATOR,
-        {
-            {"Duty cycle", OSCILLATOR_SQUARE_DUTY_CYCLE, TargetVariableType::Int8},
-            {"Wavetable index", OSCILLATOR_WAVETABLE_WAVETABLE_INDEX, TargetVariableType::Int8},
-        },
+        RoutingItems({
+            {
+                "Duty cycle",
+                "Wavetable index",
+            },
+            {
+                OSCILLATOR_SQUARE_DUTY_CYCLE,
+                OSCILLATOR_WAVETABLE_WAVETABLE_INDEX,
+            },
+            {
+                TargetVariableType::Int8,
+                TargetVariableType::Int8,
+            },
+        }),
+    },
+    {
+        Target::WAVETABLE,
+        RoutingItems(),
     },
     {
         Target::DSP,
-        {
-            {"Gain", DSP_GAINER_VOLUME, TargetVariableType::Int16},
-            {"Dry", DSP_DELAY_DRY, TargetVariableType::Int16},
-            {"Wet", DSP_DELAY_WET, TargetVariableType::Int16},
-            {"Feedback", DSP_DELAY_FEEDBACK, TargetVariableType::Int16},
-            {"Delay time", DSP_DELAY_TIME, TargetVariableType::Int16},
-            {"Cutoff frequency", DSP_FILTER_FREQUENCY, TargetVariableType::Int16},
-        },
+        RoutingItems({
+            {
+                "Gain",
+                "Dry",
+                "Wet",
+                "Feedback",
+                "Delay time",
+                "Cutoff frequency",
+            },
+            {
+                DSP_GAINER_VOLUME,
+                DSP_DELAY_DRY,
+                DSP_DELAY_WET,
+                DSP_DELAY_FEEDBACK,
+                DSP_DELAY_TIME,
+                DSP_FILTER_FREQUENCY,
+            },
+            {
+                TargetVariableType::Int16,
+                TargetVariableType::Int16,
+                TargetVariableType::Int16,
+                TargetVariableType::Int16,
+                TargetVariableType::Int16,
+                TargetVariableType::Int16,
+            },
+        }),
     },
     {
         Target::CHANNEL,
-        {
-            {"Pitch", CHANNEL_PITCH, TargetVariableType::Int16},
-        },
+        RoutingItems({
+            {
+                "Pitch",
+            },
+            {
+                CHANNEL_PITCH,
+            },
+            {
+                TargetVariableType::Int16,
+            },
+        }),
     },
 };
 

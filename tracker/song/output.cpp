@@ -26,6 +26,8 @@ void OutputType::from_link(const Link &link) {
     default:
         parameter_type = target - OUTPUT_TARGET_PARAMETER;
         target = OUTPUT_TARGET_PARAMETER;
+        index = link.index;
+        offset = link.offset;
         break;
     }
 }
@@ -46,8 +48,8 @@ void OutputType::set_link(Link &link, const ItemType type, const uint8_t id) con
         break;
     case OUTPUT_TARGET_PARAMETER:
         link.target = static_cast<Target>(parameter_type + OUTPUT_TARGET_PARAMETER);
-        link.index = 0;
-        link.offset = 0;
+        link.index = index;
+        link.offset = offset;
         break;
     }
 }

@@ -4,14 +4,14 @@
 #include <string>
 #include <vector>
 
-static std::vector<std::string> channel_names;
-static std::vector<std::string> dsp_names;
-static std::vector<std::string> envelope_names;
-static std::vector<std::string> generator_names;
-static std::vector<std::string> oscillator_names;
-static std::vector<std::string> order_names;
-static std::vector<std::string> sequence_names;
-static std::vector<std::string> wavetable_names;
+extern std::vector<std::string> channel_names;
+extern std::vector<std::string> dsp_names;
+extern std::vector<std::string> envelope_names;
+extern std::vector<std::string> generator_names;
+extern std::vector<std::string> oscillator_names;
+extern std::vector<std::string> order_names;
+extern std::vector<std::string> sequence_names;
+extern std::vector<std::string> wavetable_names;
 
 const std::vector<std::string> effect_names = {"Gainer", "Delay", "Filter"};
 const std::vector<std::string> parameter_types = {"Envelope", "Sequence", "Oscillator", "Wavetable", "DSP", "Channel"};
