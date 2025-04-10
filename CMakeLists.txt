@@ -110,6 +110,7 @@ add_executable(main
     tracker/tuning/frequencies.cpp
     tracker/tuning/scale.cpp
     tracker/utils/math.cpp
+    tracker/utils/string.cpp
     tracker/utils/temp.cpp
 )
 

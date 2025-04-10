@@ -12,13 +12,17 @@ struct RoutingItems {
     RoutingItems(
         std::vector<std::string> labels = {},
         std::vector<uint16_t> offsets = {},
-        std::vector<TargetVariableType> = {}
+        std::vector<TargetVariableType> types = {},
+        std::vector<int> constraints = {}
     );
 
     std::vector<std::string> labels;
     std::vector<uint16_t> offsets;
     std::vector<TargetVariableType> types;
+    std::vector<int> constraints;
     std::map<uint16_t, size_t> offset_to_index;
+
+    std::pair<std::vector<size_t>, std::vector<std::string>> filter_items(const int index) const;
 };
 
 const std::map<Target, RoutingItems> routing_variables = {
@@ -49,6 +53,14 @@ const std::map<Target, RoutingItems> routing_variables = {
                 TargetVariableType::Int16,
                 TargetVariableType::Int16,
             },
+            {
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+            },
         }),
     },
     {
@@ -64,15 +76,15 @@ const std::map<Target, RoutingItems> routing_variables = {
         RoutingItems({
             {
                 "Duty cycle",
-                "Wavetable index",
             },
             {
                 OSCILLATOR_SQUARE_DUTY_CYCLE,
-                OSCILLATOR_WAVETABLE_WAVETABLE_INDEX,
             },
             {
                 TargetVariableType::Int8,
-                TargetVariableType::Int8,
+            },
+            {
+                GENERATOR_SQUARE,
             },
         }),
     },
@@ -107,6 +119,14 @@ const std::map<Target, RoutingItems> routing_variables = {
                 TargetVariableType::Int16,
                 TargetVariableType::Int16,
             },
+            {
+                EFFECT_GAINER,
+                EFFECT_DELAY,
+                EFFECT_DELAY,
+                EFFECT_DELAY,
+                EFFECT_DELAY,
+                EFFECT_FILTER,
+            },
         }),
     },
     {
@@ -120,6 +140,9 @@ const std::map<Target, RoutingItems> routing_variables = {
             },
             {
                 TargetVariableType::Int32,
+            },
+            {
+                -1,
             },
         }),
     },

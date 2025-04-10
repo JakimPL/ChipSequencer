@@ -29,12 +29,12 @@ void OutputType::from_link(const Link &link) {
         const auto &routing = routing_variables.at(link.target);
         index = link.index;
         try {
-            routing_item = routing.offset_to_index.at(link.offset);
+            routing_index = routing.offset_to_index.at(link.offset);
             offset = link.offset;
         } catch (const std::out_of_range &exception) {
             if (!routing.offset_to_index.empty()) {
                 const auto &it = routing.offset_to_index.begin();
-                routing_item = it->first;
+                routing_index = it->first;
                 offset = it->second;
             }
         }

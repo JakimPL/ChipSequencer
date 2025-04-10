@@ -23,6 +23,8 @@ struct OutputType {
 
     int parameter_type;
     int routing_item;
+    int routing_index;
+
     int index;
     int offset;
 

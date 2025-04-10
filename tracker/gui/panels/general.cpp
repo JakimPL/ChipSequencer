@@ -57,7 +57,7 @@ void GUIGeneralPanel::play() {
         std::ostringstream stream;
         switch (result) {
         case ValidationResult::InvalidSongLength:
-            stream << "Invalid song length.";
+            stream << "Song is empty!";
             break;
         case ValidationResult::OscillatorMissingWavetable:
             stream << "Oscillator " << index << " is missing a wavetable.";
@@ -72,7 +72,7 @@ void GUIGeneralPanel::play() {
             stream << "Channel " << index << " is missing an envelope.";
             break;
         case ValidationResult::ChannelMissingOrder:
-            stream << "Channel " << index << " missing order.";
+            stream << "Channel " << index << " is missing order.";
             break;
         }
 

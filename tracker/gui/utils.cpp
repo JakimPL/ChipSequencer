@@ -3,6 +3,7 @@
 
 #include "../general.hpp"
 #include "../maps/routing.hpp"
+#include "../utils/string.hpp"
 #include "constants.hpp"
 #include "mapping.hpp"
 #include "names.hpp"
@@ -184,7 +185,7 @@ bool draw_output(OutputType &output_type) {
             break;
         }
         case Target::OSCILLATOR: {
-            ImGui::Text("Not implemented yet.");
+            draw_output_parameter_oscillator(output_type);
             break;
         }
         case Target::WAVETABLE: {
@@ -192,7 +193,7 @@ bool draw_output(OutputType &output_type) {
             break;
         }
         case Target::DSP: {
-            ImGui::Text("Not implemented yet.");
+            draw_output_parameter_dsp(output_type);
             break;
         }
         case Target::CHANNEL: {
@@ -214,18 +215,71 @@ bool draw_output(OutputType &output_type) {
 }
 
 void draw_output_parameter(OutputType &output_type, const std::vector<std::string> &names, const std::string label) {
-    const Target target = static_cast<Target>(output_type.parameter_type + OUTPUT_TARGET_PARAMETER);
-    const auto &routing = routing_variables.at(target);
-    int &variable_index = output_type.routing_item;
-
-    if (prepare_combo(names, "##OutputParameter" + label + "Combo", output_type.index, true)) {
-        variable_index = 0;
+    if (names.empty()) {
+        const std::string text = "No " + to_lower(label) + "s available.";
+        ImGui::Text("%s", text.c_str());
+        return;
     }
 
-    prepare_combo(routing.labels, "##OutputParameter" + label + "ParameterCombo", variable_index);
-    if (variable_index < routing.labels.size()) {
-        output_type.offset = routing.offsets[variable_index];
-        output_type.variable_type = static_cast<int>(routing.types[variable_index]);
+    const Target target = static_cast<Target>(output_type.parameter_type + OUTPUT_TARGET_PARAMETER);
+    const RoutingItems &routing = routing_variables.at(target);
+    int &item = output_type.routing_item;
+
+    if (prepare_combo(names, "##OutputParameter" + label + "Combo", output_type.index, true)) {
+        item = 0;
+    }
+
+    prepare_combo(routing.labels, "##OutputParameter" + label + "ParameterCombo", item);
+    if (item < routing.labels.size()) {
+        output_type.routing_index = item;
+        output_type.offset = routing.offsets[item];
+        output_type.variable_type = static_cast<int>(routing.types[item]);
+    }
+}
+
+void draw_output_parameter_oscillator(OutputType &output_type) {
+    if (oscillators.empty()) {
+        ImGui::Text("No oscillator available.");
+        return;
+    }
+
+    const RoutingItems &routing = routing_variables.at(Target::OSCILLATOR);
+    const Oscillator *oscillator = static_cast<Oscillator *>(oscillators[output_type.index]);
+    const auto [indices, labels] = routing.filter_items(oscillator->generator_index);
+    int &item = output_type.routing_item;
+
+    if (prepare_combo(oscillator_names, "##OutputParameterOscillatorCombo", output_type.index, true)) {
+        item = 0;
+    }
+
+    prepare_combo(labels, "##OutputParameterOscillatorParameterCombo", item);
+    if (item < labels.size()) {
+        output_type.routing_index = indices[item];
+        output_type.offset = routing.offsets[output_type.routing_index];
+        output_type.variable_type = static_cast<int>(routing.types[output_type.routing_index]);
+    }
+}
+
+void draw_output_parameter_dsp(OutputType &output_type) {
+    if (dsps.empty()) {
+        ImGui::Text("No DPS available.");
+        return;
+    }
+
+    const RoutingItems &routing = routing_variables.at(Target::DSP);
+    const DSP *dsp = static_cast<DSP *>(dsps[output_type.index]);
+    const auto [indices, labels] = routing.filter_items(dsp->effect_index);
+    int &item = output_type.routing_item;
+
+    if (prepare_combo(dsp_names, "##OutputParameterDSPCombo", output_type.index, true)) {
+        item = 0;
+    }
+
+    prepare_combo(labels, "##OutputParameterDSPParameterCombo", item);
+    if (item < labels.size()) {
+        output_type.routing_index = indices[item];
+        output_type.offset = routing.offsets[output_type.routing_index];
+        output_type.variable_type = static_cast<int>(routing.types[output_type.routing_index]);
     }
 }
 
