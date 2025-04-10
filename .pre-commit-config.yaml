@@ -11,13 +11,13 @@ repos:
         entry: make config
         language: system
         always_run: true
-        files: "src/common/config.asm"
+        files: "core/common/config.asm"
       - id: make-song
         name: make song
         entry: make song
         language: system
         always_run: true
-        files: "src/song/header.asm src/song/data.asm"
+        files: "core/song/header.asm core/song/data.asm"
       - id: make-consts
         name: make consts
         entry: make consts

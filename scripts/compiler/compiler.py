@@ -8,7 +8,6 @@ from pathlib import Path
 from typing import Dict, List, Tuple, Union
 
 from compiler.link import Link, LinkTarget, LinkType
-
 from utils import load_binary, save_binary
 
 DSP_OUTPUT = 3
@@ -46,12 +45,12 @@ class Compiler:
         self.copy_executable()
 
     def copy_source(self) -> None:
-        copy_tree("src", str(self.temp_dir / "src"))
+        copy_tree("core", str(self.temp_dir / "core"))
         copy_tree("tools", str(self.temp_dir / "tools"))
         shutil.copy("compile.bat", self.temp_dir / "compile.bat")
         shutil.copy("linker.lnk", self.temp_dir / "linker.lnk")
-        shutil.copy(self.song_dir / "header.asm", self.temp_dir / "src" / "song" / "header.asm")
-        shutil.copy(self.song_dir / "data.asm", self.temp_dir / "src" / "song" / "data.asm")
+        shutil.copy(self.song_dir / "header.asm", self.temp_dir / "core" / "song" / "header.asm")
+        shutil.copy(self.song_dir / "data.asm", self.temp_dir / "core" / "song" / "data.asm")
 
     def copy_executable(self):
         source = "PLAYER.EXE" if self.compress else "MAIN.EXE"

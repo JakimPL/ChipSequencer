@@ -1,4 +1,4 @@
-    %include "src/common.asm"
+    %include "core/common.asm"
 
     extern calculate
     extern mix
@@ -10,8 +10,8 @@
     global sound_driver_step
 
     %if DIRECT_MODE
-    %include "src/driver/direct.asm"
+    %include "core/driver/direct.asm"
     %else
     extern buffer
-    %include "src/driver/sb16.asm"
+    %include "core/driver/sb16.asm"
     %endif

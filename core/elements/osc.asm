@@ -81,10 +81,10 @@ apply_volume:
     ret
 
 ; Oscillators
-    %include "src/osc/square.asm"
-    %include "src/osc/saw.asm"
-    %include "src/osc/sine.asm"
-    %include "src/osc/wave.asm"
+    %include "core/osc/square.asm"
+    %include "core/osc/saw.asm"
+    %include "core/osc/sine.asm"
+    %include "core/osc/wave.asm"
 
     SEGMENT_DATA
     %ifndef ELF

@@ -31,7 +31,7 @@ endif()
 
 
 set(ASM_SOURCE_DIR "${CMAKE_SOURCE_DIR}")
-set(ASM_SOURCE_FILE "${CMAKE_SOURCE_DIR}/src/player.asm")
+set(ASM_SOURCE_FILE "${CMAKE_SOURCE_DIR}/core/player.asm")
 set(ASM_OBJECT_FILE "${CMAKE_BINARY_DIR}/player.o")
 
 add_custom_target(asm_objects ALL
