@@ -6,14 +6,14 @@ from structures.oscillator import Oscillator
 from structures.sequence import Sequence
 from structures.wavetable import Wavetable
 
-CONSTANTS_ASM_FILE = "src/common/const.asm"
+CONSTANTS_ASM_FILE = "core/common/const.asm"
 CONSTANTS_CPP_FILE = "tracker/constants.hpp"
 TARGET_HPP_FILE = "tracker/song/target.hpp"
 OFFSETS_HPP_FILE = "tracker/maps/offsets.hpp"
 CONFIG_YAML_FILE = "config.yaml"
-CONFIG_ASM_FILE = "src/common/config.asm"
-ASM_SONG_DATA_FILE = "src/song/data.asm"
-ASM_SONG_HEADER_FILE = "src/song/header.asm"
+CONFIG_ASM_FILE = "core/common/config.asm"
+ASM_SONG_DATA_FILE = "core/song/data.asm"
+ASM_SONG_HEADER_FILE = "core/song/header.asm"
 
 PADDING = 30
 

@@ -1,4 +1,4 @@
-    %include "src/common.asm"
+    %include "core/common.asm"
 
     global initialize
     global calculate
@@ -63,9 +63,9 @@ initialize:
     popa
     ret
 
-    %include "src/utils.asm"
-    %include "src/elements.asm"
-    %include "src/vars.asm"
+    %include "core/utils.asm"
+    %include "core/elements.asm"
+    %include "core/vars.asm"
 
     SEGMENT_DATA
 calculate:

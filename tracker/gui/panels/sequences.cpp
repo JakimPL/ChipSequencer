@@ -16,8 +16,11 @@ void GUISequencesPanel::draw() {
     ImGui::Begin("Sequence Editor");
     ImGui::Columns(1, "sequence_columns");
 
+    push_tertiary_style();
     draw_add_or_remove();
     prepare_combo(sequence_names, "##SequenceCombo", sequence_index);
+    pop_tertiary_style();
+
     ImGui::Separator();
 
     from();

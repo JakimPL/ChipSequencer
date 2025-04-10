@@ -1,4 +1,5 @@
 #include "../../general.hpp"
+#include "../names.hpp"
 #include "../utils.hpp"
 #include "patterns.hpp"
 
@@ -51,10 +52,11 @@ void GUIPatternsPanel::draw_channels() {
     ImGui::BeginChild("##PatternChannels", ImVec2(child_width, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 
     if (ImGui::BeginTable("ChannelsTable", num_channels, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersOuter)) {
-        for (size_t channel = 0; channel < num_channels; channel++) {
+        for (const auto &[index, pattern] : current_pattern.patterns) {
             ImGui::TableNextColumn();
-            draw_channel(channel);
+            draw_channel(index);
         }
+
         ImGui::EndTable();
     }
 
@@ -63,8 +65,9 @@ void GUIPatternsPanel::draw_channels() {
 
 void GUIPatternsPanel::draw_channel(size_t channel_index) {
     ImGui::PushID(channel_index);
-    ImGui::Text("Channel %zu", channel_index);
+    ImGui::Text("%s", channel_names[channel_index].c_str());
     size_t index = 0;
+
     const uint16_t start = page * gui.get_page_size();
     const uint16_t end = start + gui.get_page_size();
 

@@ -9,6 +9,7 @@
 #include "../tuning/frequencies.hpp"
 #include "../tuning/scale.hpp"
 #include "link.hpp"
+#include "validation.hpp"
 
 class Song {
   private:
@@ -107,7 +108,10 @@ class Song {
     void *add_dsp();
 
     void set_link(Link &link, void *item, const u_int8_t i) const;
-    void set_links();
+    void set_links() const;
+    void realign_links(const size_t index, const Target target, const ItemType type) const;
+    void realign_links(const size_t index, const Target target) const;
+
     void set_buffer_offsets();
 
     void remove_envelope(const size_t index);
@@ -117,6 +121,8 @@ class Song {
     void remove_oscillator(const size_t index);
     void remove_channel(const size_t index);
     void remove_dsp(const size_t index);
+
+    std::pair<ValidationResult, int> validate();
 };
 
 #endif // SONG_SONG_HPP

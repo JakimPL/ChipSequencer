@@ -2,6 +2,8 @@
 #include <cmath>
 
 #include "../general.hpp"
+#include "../maps/routing.hpp"
+#include "../utils/string.hpp"
 #include "constants.hpp"
 #include "mapping.hpp"
 #include "names.hpp"
@@ -64,8 +66,8 @@ void draw_knob(const char *label, float &reference, float min, float max) {
 
 void draw_popup(const std::string &message) {
     ImGui::Text("%s", message.c_str());
-    float buttonWidth = 60.0f;
-    float windowWidth = ImGui::GetWindowSize().x;
+    const float buttonWidth = 60.0f;
+    const float windowWidth = ImGui::GetWindowSize().x;
     ImGui::SetCursorPosX((windowWidth - buttonWidth) * 0.5f);
     if (ImGui::Button("Close", ImVec2(buttonWidth, 0))) {
         ImGui::CloseCurrentPopup();
@@ -73,21 +75,16 @@ void draw_popup(const std::string &message) {
     ImGui::EndPopup();
 }
 
-void draw_button(const char *label, const std::function<void()> &callback, const float button_padding) {
-    float text_width = ImGui::CalcTextSize(label).x;
-    float button_width = text_width + button_padding;
-
-    float full_width = ImGui::GetWindowContentRegionMax().x; // full available width in window
+bool draw_button(const char *label, const float button_padding) {
+    const float text_width = ImGui::CalcTextSize(label).x;
+    const float button_width = text_width + button_padding;
+    const float full_width = ImGui::GetWindowContentRegionMax().x;
     ImGui::SetCursorPosX((full_width - button_width) * 0.5f);
-
-    if (ImGui::Button(label, ImVec2(button_width, 0))) {
-        callback();
-    }
+    return ImGui::Button(label, ImVec2(button_width, 0));
 }
 
 std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t index, const int playing_row, const uint16_t start, const uint16_t end) {
     bool select = false;
-    const ImVec4 highlight_color = ImVec4(1.0f, 0.2f, 1.0f, 1.0f);
     const int min = std::max(static_cast<int>(start) - static_cast<int>(index), 0);
     const int max = std::min(static_cast<int>(end) - static_cast<int>(index), static_cast<int>(pattern.notes.size()));
     if (max <= 0 || min >= pattern.notes.size()) {
@@ -111,7 +108,7 @@ std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t
             }
 
             if (is_selected) {
-                ImGui::PushStyleColor(ImGuiCol_Text, highlight_color);
+                ImGui::PushStyleColor(ImGuiCol_Text, GUI_HIGHLIGHT_COLOR);
             }
 
             ImGui::TableSetColumnIndex(0);
@@ -135,16 +132,23 @@ std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t
         ImGui::EndTable();
     }
 
+    // realignment
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 4.0f);
+
     return {index + pattern.notes.size(), select};
 }
 
-void draw_output(OutputType &output_type) {
+bool draw_output(OutputType &output_type) {
     push_secondary_style();
     ImGui::Separator();
     ImGui::Text("Output:");
-    prepare_combo(target_types, "##OutputTargetCombo", output_type.target);
+    const bool result = prepare_combo(target_types, "##OutputTargetCombo", output_type.target);
     switch (output_type.target) {
     case OUTPUT_TARGET_OUTPUT:
+        if (result) {
+            output_type.additive = true;
+        }
+
         draw_int_slider("Channel", output_type.output_channel, 0, song.get_output_channels() - 1);
         break;
     case OUTPUT_TARGET_DSP:
@@ -152,9 +156,51 @@ void draw_output(OutputType &output_type) {
             ImGui::Text("No DSPs available.");
             break;
         } else {
+            if (result) {
+                output_type.additive = true;
+            }
+
             draw_int_slider("DSP", output_type.dsp_channel, 0, dsps.size() - 1);
+            break;
         }
-        break;
+    default:
+        if (result) {
+            output_type.additive = false;
+        }
+
+        ImGui::Separator();
+        prepare_combo(parameter_types, "##OutputParameterCombo", output_type.parameter_type);
+        const Target target = static_cast<Target>(output_type.parameter_type + OUTPUT_TARGET_PARAMETER);
+        switch (target) {
+        case Target::ENVELOPE: {
+            draw_output_parameter(output_type, envelope_names, "Envelope");
+            break;
+        }
+        case Target::SEQUENCE: {
+            ImGui::Text("Not implemented yet.");
+            break;
+        }
+        case Target::ORDER: {
+            ImGui::Text("Not implemented yet.");
+            break;
+        }
+        case Target::OSCILLATOR: {
+            draw_output_parameter_oscillator(output_type);
+            break;
+        }
+        case Target::WAVETABLE: {
+            ImGui::Text("Not implemented yet.");
+            break;
+        }
+        case Target::DSP: {
+            draw_output_parameter_dsp(output_type);
+            break;
+        }
+        case Target::CHANNEL: {
+            draw_output_parameter(output_type, channel_names, "Channel");
+            break;
+        }
+        }
     }
 
     ImGui::Separator();
@@ -164,9 +210,90 @@ void draw_output(OutputType &output_type) {
     draw_int_slider("Shift", output_type.shift, 0, 15);
     ImGui::EndDisabled();
     pop_secondary_style();
+
+    return result;
 }
 
-void prepare_combo(const std::vector<std::string> &names, std::string label, int &index) {
+void draw_output_parameter(OutputType &output_type, const std::vector<std::string> &names, const std::string label) {
+    if (names.empty()) {
+        const std::string text = "No " + to_lower(label) + "s available.";
+        ImGui::Text("%s", text.c_str());
+        return;
+    }
+
+    const Target target = static_cast<Target>(output_type.parameter_type + OUTPUT_TARGET_PARAMETER);
+    const RoutingItems &routing = routing_variables.at(target);
+    int &item = output_type.routing_item;
+
+    if (prepare_combo(names, "##OutputParameter" + label + "Combo", output_type.index, true)) {
+        item = 0;
+    }
+
+    prepare_combo(routing.labels, "##OutputParameter" + label + "ParameterCombo", item);
+    if (item < routing.labels.size()) {
+        output_type.routing_index = item;
+        output_type.offset = routing.offsets[item];
+        output_type.variable_type = static_cast<int>(routing.types[item]);
+    }
+}
+
+void draw_output_parameter_oscillator(OutputType &output_type) {
+    if (oscillators.empty()) {
+        ImGui::Text("No oscillator available.");
+        return;
+    }
+
+    const RoutingItems &routing = routing_variables.at(Target::OSCILLATOR);
+    const Oscillator *oscillator = static_cast<Oscillator *>(oscillators[output_type.index]);
+    const auto [indices, labels] = routing.filter_items(oscillator->generator_index);
+    int &item = output_type.routing_item;
+
+    if (labels.empty()) {
+        ImGui::Text("No parameters available.");
+        return;
+    }
+
+    if (prepare_combo(oscillator_names, "##OutputParameterOscillatorCombo", output_type.index, true)) {
+        item = 0;
+    }
+
+    prepare_combo(labels, "##OutputParameterOscillatorParameterCombo", item);
+    if (item < labels.size()) {
+        output_type.routing_index = indices[item];
+        output_type.offset = routing.offsets[output_type.routing_index];
+        output_type.variable_type = static_cast<int>(routing.types[output_type.routing_index]);
+    }
+}
+
+void draw_output_parameter_dsp(OutputType &output_type) {
+    if (dsps.empty()) {
+        ImGui::Text("No DPS available.");
+        return;
+    }
+
+    const RoutingItems &routing = routing_variables.at(Target::DSP);
+    const DSP *dsp = static_cast<DSP *>(dsps[output_type.index]);
+    const auto [indices, labels] = routing.filter_items(dsp->effect_index);
+    int &item = output_type.routing_item;
+
+    if (labels.empty()) {
+        ImGui::Text("No parameters available.");
+        return;
+    }
+
+    if (prepare_combo(dsp_names, "##OutputParameterDSPCombo", output_type.index, true)) {
+        item = 0;
+    }
+
+    prepare_combo(labels, "##OutputParameterDSPParameterCombo", item);
+    if (item < labels.size()) {
+        output_type.routing_index = indices[item];
+        output_type.offset = routing.offsets[output_type.routing_index];
+        output_type.variable_type = static_cast<int>(routing.types[output_type.routing_index]);
+    }
+}
+
+bool prepare_combo(const std::vector<std::string> &names, std::string label, int &index, const bool error_if_empty) {
     std::vector<const char *> names_cstr;
     for (const auto &name : names) {
         names_cstr.push_back(name.c_str());
@@ -174,7 +301,20 @@ void prepare_combo(const std::vector<std::string> &names, std::string label, int
 
     float combo_width = ImGui::GetContentRegionAvail().x;
     ImGui::SetNextItemWidth(combo_width);
-    ImGui::Combo(label.c_str(), &index, names_cstr.data(), names_cstr.size());
+
+    if (error_if_empty && names.empty()) {
+        ImGui::PushStyleColor(ImGuiCol_Border, GUI_ERROR_COLOR);
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.0f);
+    }
+
+    const bool result = ImGui::Combo(label.c_str(), &index, names_cstr.data(), names_cstr.size());
+
+    if (error_if_empty && names.empty()) {
+        ImGui::PopStyleVar();
+        ImGui::PopStyleColor();
+    }
+
+    return result;
 }
 
 void update_items(std::vector<std::string> &names, size_t size, std::string label, int &index) {
@@ -194,8 +334,8 @@ void push_secondary_style() {
     ImGui::PushStyleColor(ImGuiCol_CheckMark, GUI_SECONDARY_COLOR_LIGHT);
     ImGui::PushStyleColor(ImGuiCol_SliderGrab, GUI_SECONDARY_COLOR_LIGHT);
     ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, GUI_SECONDARY_COLOR_LIGHT);
-    ImGui::PushStyleColor(ImGuiCol_Button, GUI_SECONDARY_COLOR_DARK);
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, GUI_SECONDARY_COLOR);
+    ImGui::PushStyleColor(ImGuiCol_Button, GUI_SECONDARY_COLOR_LIGHT);
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, GUI_SECONDARY_COLOR_BRIGHT);
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, GUI_SECONDARY_COLOR);
     ImGui::PushStyleColor(ImGuiCol_FrameBg, GUI_SECONDARY_COLOR_DARK);
     ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, GUI_SECONDARY_COLOR);
@@ -207,6 +347,26 @@ void push_secondary_style() {
 }
 
 void pop_secondary_style() {
+    ImGui::PopStyleColor(13);
+}
+
+void push_tertiary_style() {
+    ImGui::PushStyleColor(ImGuiCol_CheckMark, GUI_TERTIARY_COLOR_LIGHT);
+    ImGui::PushStyleColor(ImGuiCol_SliderGrab, GUI_TERTIARY_COLOR_LIGHT);
+    ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, GUI_TERTIARY_COLOR_LIGHT);
+    ImGui::PushStyleColor(ImGuiCol_Button, GUI_TERTIARY_COLOR_LIGHT);
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, GUI_TERTIARY_COLOR_BRIGHT);
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, GUI_TERTIARY_COLOR);
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, GUI_TERTIARY_COLOR_DARK);
+    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, GUI_TERTIARY_COLOR);
+    ImGui::PushStyleColor(ImGuiCol_FrameBgActive, GUI_TERTIARY_COLOR);
+    ImGui::PushStyleColor(ImGuiCol_PopupBg, GUI_TERTIARY_COLOR_DARK);
+    ImGui::PushStyleColor(ImGuiCol_Header, GUI_TERTIARY_COLOR_DARK);
+    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, GUI_TERTIARY_COLOR);
+    ImGui::PushStyleColor(ImGuiCol_HeaderActive, GUI_TERTIARY_COLOR);
+}
+
+void pop_tertiary_style() {
     ImGui::PopStyleColor(13);
 }
 
@@ -225,7 +385,6 @@ std::string get_note_octave(uint8_t note_value) {
     if (note_value < NOTES) {
         return std::to_string(frequency_table.get_note_octave(note_value));
     }
-
     return 0;
 }
 

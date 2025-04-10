@@ -31,7 +31,7 @@ endif()
 
 
 set(ASM_SOURCE_DIR "${CMAKE_SOURCE_DIR}")
-set(ASM_SOURCE_FILE "${CMAKE_SOURCE_DIR}/src/player.asm")
+set(ASM_SOURCE_FILE "${CMAKE_SOURCE_DIR}/core/player.asm")
 set(ASM_OBJECT_FILE "${CMAKE_BINARY_DIR}/player.o")
 
 add_custom_target(asm_objects ALL
@@ -84,6 +84,7 @@ add_executable(main
     tracker/driver/file.cpp
     tracker/driver/port.cpp
     tracker/gui/gui.cpp
+    tracker/gui/names.cpp
     tracker/gui/pattern.cpp
     tracker/gui/utils.cpp
     tracker/gui/panels/channels.cpp
@@ -98,6 +99,7 @@ add_executable(main
     tracker/gui/panels/patterns.cpp
     tracker/gui/panels/sequences.cpp
     tracker/gui/panels/wavetables.cpp
+    tracker/maps/routing.cpp
     tracker/song/data.cpp
     tracker/song/link.cpp
     tracker/song/song.cpp
@@ -108,6 +110,7 @@ add_executable(main
     tracker/tuning/frequencies.cpp
     tracker/tuning/scale.cpp
     tracker/utils/math.cpp
+    tracker/utils/string.cpp
     tracker/utils/temp.cpp
 )
 

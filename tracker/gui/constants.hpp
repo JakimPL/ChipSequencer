@@ -2,6 +2,8 @@
 #define GUI_CONSTANTS_HPP
 
 #define APPLICATION_TITLE "ChipSequencer"
+#define GUI_WINDOW_WIDTH 1280
+#define GUI_WINDOW_HEIGHT 720
 
 #define GUI_DEFAULT_CURRENT_OCTAVE 3
 #define GUI_DEFAULT_JUMP_STEP 1
@@ -21,8 +23,17 @@
 #define GUI_MIN_BPM 32
 #define GUI_MAX_BPM 4096
 
+#define GUI_ERROR_COLOR ImVec4(1.0f, 0.2f, 0.2f, 1.0f)
+#define GUI_HIGHLIGHT_COLOR ImVec4(1.0f, 0.2f, 1.0f, 1.0f)
+
 #define GUI_SECONDARY_COLOR ImVec4(0.2f, 0.4f, 0.2f, 1.0f)
 #define GUI_SECONDARY_COLOR_LIGHT ImVec4(0.3f, 0.6f, 0.3f, 1.0f)
+#define GUI_SECONDARY_COLOR_BRIGHT ImVec4(0.4f, 0.7f, 0.4f, 1.0f)
 #define GUI_SECONDARY_COLOR_DARK ImVec4(0.1f, 0.2f, 0.1f, 1.0f)
+
+#define GUI_TERTIARY_COLOR ImVec4(0.4f, 0.3f, 0.4f, 1.0f)
+#define GUI_TERTIARY_COLOR_LIGHT ImVec4(0.3f, 0.2f, 0.3f, 1.0f)
+#define GUI_TERTIARY_COLOR_BRIGHT ImVec4(0.4f, 0.3f, 0.4f, 1.0f)
+#define GUI_TERTIARY_COLOR_DARK ImVec4(0.2f, 0.1f, 0.2f, 1.0f)
 
 #endif // GUI_CONSTANTS_HPP

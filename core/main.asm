@@ -1,4 +1,4 @@
-    %include "src/common.asm"
+    %include "core/common.asm"
 
     global _start
     extern initialize

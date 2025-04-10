@@ -12,10 +12,12 @@ GUIEnvelopesPanel::GUIEnvelopesPanel() {
 void GUIEnvelopesPanel::draw() {
     ImGui::Begin("Envelope Editor");
 
+    push_tertiary_style();
     draw_add_or_remove();
     prepare_combo(envelope_names, "##EnvelopeCombo", envelope_index);
-    ImGui::Separator();
+    pop_tertiary_style();
 
+    ImGui::Separator();
     if (envelopes.empty()) {
         ImGui::Text("No envelopes available.");
         ImGui::End();

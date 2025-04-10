@@ -106,9 +106,9 @@ void GUIMenu::file_open() {
 
             gui.change_window_title(current_path.filename().string());
             gui.update();
-        } catch (nlohmann::json::exception &e) {
+        } catch (nlohmann::json::exception &exception) {
             load_error = true;
-            std::cerr << "Failed to parse JSON file: " << e.what() << std::endl;
+            std::cerr << "Failed to parse JSON file: " << exception.what() << std::endl;
         }
     } else if (result != NFD_CANCEL) {
         std::cerr << "Error: " << NFD_GetError() << std::endl;
@@ -128,8 +128,8 @@ void GUIMenu::file_compile(const bool compress) {
         try {
             song.compile(new_path, compress);
             compilation_status = std::filesystem::exists(new_path);
-        } catch (std::runtime_error &e) {
-            std::cerr << "Compilation error: " << e.what() << std::endl;
+        } catch (std::runtime_error &exception) {
+            std::cerr << "Compilation error: " << exception.what() << std::endl;
             compilation_status = false;
         }
         gui.update();

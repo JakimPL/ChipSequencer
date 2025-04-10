@@ -23,8 +23,21 @@ void OutputType::from_link(const Link &link) {
     case OUTPUT_TARGET_DSP:
         dsp_channel = link.index;
         break;
-    case OUTPUT_TARGET_PARAMETER:
-        // TODO: not implemented
+    default:
+        parameter_type = target - OUTPUT_TARGET_PARAMETER;
+        target = OUTPUT_TARGET_PARAMETER;
+        const auto &routing = routing_variables.at(link.target);
+        index = link.index;
+        try {
+            routing_index = routing.offset_to_index.at(link.offset);
+            offset = link.offset;
+        } catch (const std::out_of_range &exception) {
+            if (!routing.offset_to_index.empty()) {
+                const auto &it = routing.offset_to_index.begin();
+                routing_index = it->first;
+                offset = it->second;
+            }
+        }
         break;
     }
 }
@@ -44,7 +57,9 @@ void OutputType::set_link(Link &link, const ItemType type, const uint8_t id) con
         link.offset = 4 * dsp_channel;
         break;
     case OUTPUT_TARGET_PARAMETER:
-        // TODO: not implemented
+        link.target = static_cast<Target>(parameter_type + OUTPUT_TARGET_PARAMETER);
+        link.index = index;
+        link.offset = offset;
         break;
     }
 }

@@ -13,8 +13,11 @@ void GUIOrdersPanel::draw() {
     ImGui::Begin("Order Editor");
     ImGui::Columns(1, "order_columns");
 
+    push_tertiary_style();
     draw_add_or_remove();
     prepare_combo(order_names, "##OrderCombo", order_index);
+    pop_tertiary_style();
+
     ImGui::Separator();
 
     from();
@@ -107,18 +110,27 @@ void GUIOrdersPanel::draw_order() {
         const int &item = current_order.sequences[i];
 
         ImGui::PushID(i);
+        const bool incorrect = (item < 0 || item >= static_cast<int>(sequences.size()));
         const bool is_selected = (selected_sequence == i);
         const std::string order_string = std::to_string(item);
+        if (is_selected) {
+            ImGui::PushStyleColor(ImGuiCol_Text, GUI_HIGHLIGHT_COLOR);
+        }
+
         if (ImGui::Selectable("##selectable", is_selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)) {
             selected_sequence = i;
             digit_buffer.clear();
         }
 
         ImGui::SameLine();
-        if (is_selected) {
-            ImGui::TextColored(ImVec4(1.0f, 0.2f, 1.0f, 1.0f), "%s", order_string.c_str());
+        if (incorrect) {
+            ImGui::TextColored(GUI_ERROR_COLOR, "%s", order_string.c_str());
         } else {
             ImGui::Text("%s", order_string.c_str());
+        }
+
+        if (is_selected) {
+            ImGui::PopStyleColor();
         }
 
         ImGui::PopID();

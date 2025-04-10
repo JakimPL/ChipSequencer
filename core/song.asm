@@ -16,5 +16,5 @@
     extern dsp_input
     extern output
 
-    %include "src/common.asm"
-    %include "src/song/data.asm"
+    %include "core/common.asm"
+    %include "core/song/data.asm"

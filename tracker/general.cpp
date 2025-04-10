@@ -5,7 +5,7 @@ ScaleComposer scale_composer = ScaleComposer();
 FrequencyTable frequency_table = FrequencyTable(scale_composer, DEFAULT_A4_FREQUENCY);
 
 Song song;
-GUI gui = GUI();
+GUI gui;
 std::filesystem::path current_path;
 
 void terminate() {

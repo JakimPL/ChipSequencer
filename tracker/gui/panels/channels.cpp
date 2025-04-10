@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "../../general.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
@@ -12,8 +14,12 @@ void GUIChannelsPanel::draw() {
     ImGui::Begin("Channel Editor");
     ImGui::Columns(1, "channel_columns");
 
+    ImGui::BeginDisabled(gui.is_playing());
+    push_tertiary_style();
     draw_add_or_remove();
     prepare_combo(channel_names, "##ChannelCombo", channel_index);
+    pop_tertiary_style();
+
     ImGui::Separator();
 
     from();
@@ -21,6 +27,7 @@ void GUIChannelsPanel::draw() {
     check_keyboard_input();
     to();
 
+    ImGui::EndDisabled();
     ImGui::Columns(1);
     ImGui::End();
 }
@@ -71,7 +78,11 @@ void GUIChannelsPanel::to() const {
 
     Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][channel_index];
     current_channel.output_type.set_link(link, ItemType::CHANNEL, channel_index);
-    song.set_link(link, static_cast<void *>(channel), channel_index);
+    try {
+        song.set_link(link, static_cast<void *>(channel), channel_index);
+    } catch (const std::out_of_range &exception) {
+        std::cerr << "Error: " << exception.what() << std::endl;
+    }
 }
 
 void GUIChannelsPanel::add() {
@@ -94,16 +105,13 @@ void GUIChannelsPanel::remove() {
 
 void GUIChannelsPanel::update() {
     update_channel_names();
-    update_items(envelope_names, envelopes.size(), "Envelope ", current_channel.envelope_index);
-    update_items(order_names, orders.size(), "Order ", current_channel.order_index);
-    update_items(oscillator_names, oscillators.size(), "Oscillator ", current_channel.oscillator_index);
+    gui.update(GUIElement::Patterns);
 }
 
 void GUIChannelsPanel::update_channel_names() {
     channel_names.resize(channels.size());
     for (size_t i = 0; i < channels.size(); ++i) {
-        const Channel *channel = channels[i];
-        update_channel_name(i, channel->order_index);
+        update_channel_name(i);
     }
     if (channel_index >= static_cast<int>(channel_names.size())) {
         channel_index = static_cast<int>(channel_names.size()) - 1;
@@ -113,13 +121,25 @@ void GUIChannelsPanel::update_channel_names() {
     }
 }
 
-void GUIChannelsPanel::update_channel_name(const int index, const int order_index) const {
+void GUIChannelsPanel::update_channel_name(const int index, const int target_id) {
     if (index < 0 || index >= static_cast<int>(channel_names.size())) {
         return;
     }
 
-    const bool constant_pitch = order_index == CONSTANT_PITCH;
-    const char *label = constant_pitch ? "Modulator " : "Channel ";
+    Target target;
+    if (target_id == -1) {
+        OutputType output_type;
+        const Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][index];
+        output_type.from_link(link);
+        target = static_cast<Target>(output_type.target);
+    } else {
+        target = static_cast<Target>(target_id);
+    }
+
+    const bool modulator = target != Target::OUTPUT_CHANNEL &&
+                           target != Target::DSP_CHANNEL;
+
+    const std::string label = modulator ? "Modulator " : "Channel ";
     channel_names[index] = label + std::to_string(index);
 }
 
@@ -130,17 +150,16 @@ void GUIChannelsPanel::draw_channel() {
     }
 
     ImGui::Text("Envelope:");
-    prepare_combo(envelope_names, "##EnvelopeCombo", current_channel.envelope_index);
+    prepare_combo(envelope_names, "##EnvelopeCombo", current_channel.envelope_index, true);
     ImGui::Text("Oscillator:");
-    prepare_combo(oscillator_names, "##OscillatorCombo", current_channel.oscillator_index);
+    prepare_combo(oscillator_names, "##OscillatorCombo", current_channel.oscillator_index, true);
     if (ImGui::Checkbox("Constant Pitch", &current_channel.constant_pitch)) {
         current_channel.order_index = 0;
-        update_channel_name(channel_index, current_channel.constant_pitch ? CONSTANT_PITCH : current_channel.order_index);
     }
 
     ImGui::SameLine();
     ImGui::BeginDisabled(current_channel.constant_pitch);
-    prepare_combo(order_names, "##OrderCombo", current_channel.order_index);
+    prepare_combo(order_names, "##OrderCombo", current_channel.order_index, !current_channel.constant_pitch);
     ImGui::EndDisabled();
 
     if (current_channel.constant_pitch) {
@@ -149,7 +168,9 @@ void GUIChannelsPanel::draw_channel() {
         draw_float_slider("Transpose", current_channel.pitch, GUI_MIN_TRANSPOSE, GUI_MAX_TRANSPOSE);
     }
 
-    draw_output(current_channel.output_type);
+    if (draw_output(current_channel.output_type)) {
+        update_channel_name(channel_index, current_channel.output_type.target);
+    }
 }
 
 void GUIChannelsPanel::check_keyboard_input() {
