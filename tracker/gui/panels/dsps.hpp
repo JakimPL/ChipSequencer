@@ -30,6 +30,8 @@ class GUIDSPsPanel : public GUIPanel {
     void draw_dsp();
     void draw_dsp_type();
     void draw_effect();
+    void update_dsp_names();
+    void update_dsp_name(const int index, const int effect_index = -1) const;
 
     void from() override;
     void to() const override;

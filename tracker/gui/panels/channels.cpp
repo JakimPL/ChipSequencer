@@ -105,7 +105,6 @@ void GUIChannelsPanel::update() {
 void GUIChannelsPanel::update_channel_names() {
     channel_names.resize(channels.size());
     for (size_t i = 0; i < channels.size(); ++i) {
-        const Channel *channel = channels[i];
         update_channel_name(i);
     }
     if (channel_index >= static_cast<int>(channel_names.size())) {
@@ -128,7 +127,8 @@ void GUIChannelsPanel::update_channel_name(const int index) const {
     const Target target = static_cast<Target>(output_type.target);
     const bool modulator = target != Target::OUTPUT_CHANNEL &&
                            target != Target::DSP_CHANNEL;
-    const char *label = modulator ? "Modulator " : "Channel ";
+
+    const std::string label = modulator ? "Modulator " : "Channel ";
     channel_names[index] = label + std::to_string(index);
 }
 
@@ -157,7 +157,9 @@ void GUIChannelsPanel::draw_channel() {
         draw_float_slider("Transpose", current_channel.pitch, GUI_MIN_TRANSPOSE, GUI_MAX_TRANSPOSE);
     }
 
-    draw_output(current_channel.output_type);
+    if (draw_output(current_channel.output_type)) {
+        update_channel_name(channel_index);
+    }
 }
 
 void GUIChannelsPanel::check_keyboard_input() {

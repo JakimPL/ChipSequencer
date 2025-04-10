@@ -136,11 +136,11 @@ std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t
     return {index + pattern.notes.size(), select};
 }
 
-void draw_output(OutputType &output_type) {
+bool draw_output(OutputType &output_type) {
     push_secondary_style();
     ImGui::Separator();
     ImGui::Text("Output:");
-    prepare_combo(target_types, "##OutputTargetCombo", output_type.target);
+    const bool result = prepare_combo(target_types, "##OutputTargetCombo", output_type.target);
     switch (output_type.target) {
     case OUTPUT_TARGET_OUTPUT:
         draw_int_slider("Channel", output_type.output_channel, 0, song.get_output_channels() - 1);
@@ -176,6 +176,8 @@ void draw_output(OutputType &output_type) {
     draw_int_slider("Shift", output_type.shift, 0, 15);
     ImGui::EndDisabled();
     pop_secondary_style();
+
+    return result;
 }
 
 bool prepare_combo(const std::vector<std::string> &names, std::string label, int &index, const bool error_if_empty) {

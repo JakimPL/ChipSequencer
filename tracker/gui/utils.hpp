@@ -14,7 +14,7 @@ void draw_float_slider(const char *label, float &reference, float min, float max
 void draw_knob(const char *label, float &reference, float min, float max);
 void draw_popup(const std::string &message);
 bool draw_button(const char *label, const float button_padding = 0.0f);
-void draw_output(OutputType &output_type);
+bool draw_output(OutputType &output_type);
 std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header = true, const size_t index = 0, const int playing_row = -1, const uint16_t start = 0, const uint16_t end = UINT16_MAX);
 bool prepare_combo(const std::vector<std::string> &names, std::string label, int &index, const bool error_if_empty = false);
 void update_items(std::vector<std::string> &names, size_t size, std::string label, int &index);

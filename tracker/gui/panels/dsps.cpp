@@ -126,13 +126,58 @@ void GUIDSPsPanel::remove() {
 }
 
 void GUIDSPsPanel::update() {
-    update_items(dsp_names, dsps.size(), "DSP ", dsp_index);
+    update_dsp_names();
+}
+
+void GUIDSPsPanel::update_dsp_names() {
+    dsp_names.resize(dsps.size());
+    for (size_t i = 0; i < dsps.size(); ++i) {
+        update_dsp_name(i);
+    }
+    if (dsp_index >= static_cast<int>(dsp_names.size())) {
+        dsp_index = static_cast<int>(dsp_names.size()) - 1;
+    }
+    if (dsp_index < 0 && !dsp_names.empty()) {
+        dsp_index = 0;
+    }
+}
+
+void GUIDSPsPanel::update_dsp_name(const int index, const int effect_index) const {
+    if (index < 0 || index >= static_cast<int>(dsp_names.size())) {
+        return;
+    }
+
+    std::string label;
+    const DSP *dsp = static_cast<const DSP *>(dsps[index]);
+    const int effect = effect_index == -1 ? dsp->effect_index : effect_index;
+    switch (effect) {
+    case EFFECT_GAINER: {
+        label = "Gainer ";
+        break;
+    }
+    case EFFECT_DELAY: {
+        label = "Delay ";
+        break;
+    }
+    case EFFECT_FILTER: {
+        label = "Filter ";
+        break;
+    default:
+        label = "DSP ";
+    }
+    }
+
+    dsp_names[index] = label + std::to_string(index);
 }
 
 void GUIDSPsPanel::draw_dsp_type() {
     ImGui::Text("Type");
     ImGui::NextColumn();
-    prepare_combo(effect_names, "##GeneratorCombo", current_dsp.effect_index);
+
+    if (prepare_combo(effect_names, "##GeneratorCombo", current_dsp.effect_index)) {
+        update_dsp_name(dsp_index, current_dsp.effect_index);
+    }
+
     ImGui::NextColumn();
 }
 
@@ -146,6 +191,7 @@ void GUIDSPsPanel::draw_dsp() {
     ImGui::NextColumn();
     draw_effect();
     ImGui::NewLine();
+
     draw_output(current_dsp.output_type);
 }
 
