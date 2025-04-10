@@ -71,9 +71,9 @@ store_output:
     je .add_float
     jpe .add_32_bit
     test cl, 0b00010000
-    jne .add_16_bit
-    test cl, 0b00100000
     jne .add_8_bit
+    test cl, 0b00100000
+    jne .add_16_bit
 .add_float:
     mov [value], eax
     fld dword [value]

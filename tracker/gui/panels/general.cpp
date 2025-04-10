@@ -19,6 +19,16 @@ void GUIGeneralPanel::draw() {
     draw_tuning_settings();
     check_keyboard_input();
     to();
+
+    if (error) {
+        ImGui::OpenPopup("Error");
+        error = false;
+    }
+
+    if (ImGui::BeginPopupModal("Error", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup(error_message);
+    }
+
     ImGui::End();
 }
 
@@ -37,6 +47,40 @@ void GUIGeneralPanel::to() const {
     if (current_song.bpm != bpm) {
         bpm = current_song.bpm;
         calculate_ticks_per_beat();
+    }
+}
+
+void GUIGeneralPanel::play() {
+    const auto [result, index] = song.validate();
+    if (result != ValidationResult::OK) {
+        error = true;
+        std::ostringstream stream;
+        switch (result) {
+        case ValidationResult::InvalidSongLength:
+            stream << "Invalid song length.";
+            break;
+        case ValidationResult::OscillatorMissingWavetable:
+            stream << "Oscillator " << index << " is missing a wavetable.";
+            break;
+        case ValidationResult::OrderMissingSequence:
+            stream << "Order " << index << " is missing a sequence.";
+            break;
+        case ValidationResult::ChannelMissingOscillator:
+            stream << "Channel " << index << " is missing an oscillator.";
+            break;
+        case ValidationResult::ChannelMissingEnvelope:
+            stream << "Channel " << index << " is missing an envelope.";
+            break;
+        case ValidationResult::ChannelMissingOrder:
+            stream << "Channel " << index << " missing order.";
+            break;
+        }
+
+        error_message = stream.str();
+    } else {
+        error = false;
+        error_message = "";
+        gui.play();
     }
 }
 
@@ -61,7 +105,7 @@ void GUIGeneralPanel::draw_play_button() {
     }
 }
 
-void GUIGeneralPanel::draw_play_triangle() const {
+void GUIGeneralPanel::draw_play_triangle() {
     ImVec2 p = ImGui::GetCursorScreenPos();
     float sz = 20.0f;
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
@@ -77,11 +121,11 @@ void GUIGeneralPanel::draw_play_triangle() const {
     ImGui::SetCursorScreenPos(p);
     ImGui::InvisibleButton("Play", ImVec2(sz, sz));
     if (ImGui::IsItemClicked()) {
-        gui.play();
+        play();
     }
 }
 
-void GUIGeneralPanel::draw_pause_rectangles() const {
+void GUIGeneralPanel::draw_pause_rectangles() {
     ImVec2 p = ImGui::GetCursorScreenPos();
     float sz = 20.0f;
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
@@ -100,7 +144,7 @@ void GUIGeneralPanel::draw_pause_rectangles() const {
     ImGui::SetCursorScreenPos(p);
     ImGui::InvisibleButton("Pause", ImVec2(sz, sz));
     if (ImGui::IsItemClicked()) {
-        gui.play();
+        play();
     }
 }
 

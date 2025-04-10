@@ -9,6 +9,7 @@
 #include "../tuning/frequencies.hpp"
 #include "../tuning/scale.hpp"
 #include "link.hpp"
+#include "validation.hpp"
 
 class Song {
   private:
@@ -117,6 +118,8 @@ class Song {
     void remove_oscillator(const size_t index);
     void remove_channel(const size_t index);
     void remove_dsp(const size_t index);
+
+    std::pair<ValidationResult, int> validate();
 };
 
 #endif // SONG_SONG_HPP

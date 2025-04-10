@@ -106,7 +106,7 @@ void GUIChannelsPanel::update_channel_names() {
     channel_names.resize(channels.size());
     for (size_t i = 0; i < channels.size(); ++i) {
         const Channel *channel = channels[i];
-        update_channel_name(i, channel->order_index);
+        update_channel_name(i);
     }
     if (channel_index >= static_cast<int>(channel_names.size())) {
         channel_index = static_cast<int>(channel_names.size()) - 1;
@@ -116,13 +116,19 @@ void GUIChannelsPanel::update_channel_names() {
     }
 }
 
-void GUIChannelsPanel::update_channel_name(const int index, const int order_index) const {
+void GUIChannelsPanel::update_channel_name(const int index) const {
     if (index < 0 || index >= static_cast<int>(channel_names.size())) {
         return;
     }
 
-    const bool constant_pitch = order_index == CONSTANT_PITCH;
-    const char *label = constant_pitch ? "Modulator " : "Channel ";
+    OutputType output_type;
+    const Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][index];
+    output_type.from_link(link);
+
+    const Target target = static_cast<Target>(output_type.target);
+    const bool modulator = target != Target::OUTPUT_CHANNEL &&
+                           target != Target::DSP_CHANNEL;
+    const char *label = modulator ? "Modulator " : "Channel ";
     channel_names[index] = label + std::to_string(index);
 }
 
@@ -138,7 +144,6 @@ void GUIChannelsPanel::draw_channel() {
     prepare_combo(oscillator_names, "##OscillatorCombo", current_channel.oscillator_index);
     if (ImGui::Checkbox("Constant Pitch", &current_channel.constant_pitch)) {
         current_channel.order_index = 0;
-        update_channel_name(channel_index, current_channel.constant_pitch ? CONSTANT_PITCH : current_channel.order_index);
     }
 
     ImGui::SameLine();

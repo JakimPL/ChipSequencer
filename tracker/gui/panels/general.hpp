@@ -21,12 +21,16 @@ class GUIGeneralPanel : public GUIPanel {
         float a4_frequency = DEFAULT_A4_FREQUENCY;
     } current_song;
 
+    bool error = false;
+    std::string error_message;
+
     void draw_play_button();
-    void draw_pause_rectangles() const;
-    void draw_play_triangle() const;
+    void draw_pause_rectangles();
+    void draw_play_triangle();
     void draw_stop_square() const;
     void draw_song_info();
     void draw_tuning_settings();
+    void play();
 
     void from() override;
     void to() const override;

@@ -290,6 +290,49 @@ void Song::remove_channel(const size_t index) {
     }
 }
 
+std::pair<ValidationResult, int> Song::validate() {
+    calculate_song_length();
+    if (song_length == 0 || max_rows == 0) {
+        return {ValidationResult::InvalidSongLength, -1};
+    }
+
+    for (size_t index = 0; index < channels.size(); index++) {
+        const Channel *channel = channels[index];
+        if (channel->order_index >= orders.size()) {
+            return {ValidationResult::ChannelMissingOrder, index};
+        }
+        if (channel->oscillator_index >= oscillators.size()) {
+            return {ValidationResult::ChannelMissingOscillator, index};
+        }
+        if (channel->envelope_index >= envelopes.size()) {
+            return {ValidationResult::ChannelMissingEnvelope, index};
+        }
+    }
+
+    for (size_t index = 0; index < orders.size(); index++) {
+        const Order *order = orders[index];
+        for (size_t i = 0; i < order->order_length; i++) {
+            const uint8_t sequence_index = order->sequences[i];
+            if (sequence_index >= sequences.size()) {
+                return {ValidationResult::OrderMissingSequence, index};
+            }
+        }
+    }
+
+    for (size_t index = 0; index < oscillators.size(); index++) {
+        const void *oscillator = oscillators[index];
+        const Oscillator *generic = static_cast<const Oscillator *>(oscillator);
+        if (generic->generator_index == GENERATOR_WAVETABLE) {
+            const OscillatorWavetable *wavetable = static_cast<const OscillatorWavetable *>(oscillator);
+            if (wavetable->wavetable_index >= wavetables.size()) {
+                return {ValidationResult::OscillatorMissingWavetable, index};
+            }
+        }
+    }
+
+    return {ValidationResult::OK, -1};
+}
+
 void Song::remove_dsp(const size_t index) {
     if (index < dsps.size()) {
         size_t link_type = static_cast<size_t>(ItemType::DSP);
