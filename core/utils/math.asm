@@ -19,14 +19,15 @@ generate_sine_table:
     mov dword [angle], __float32__(0.0)
     mov ecx, TABLE_SIZE
     mov edi, sine_table
-    fld dword [angle_constant]
 .generate:
     dec ecx
     fld dword [angle]
     fsin
     fmul dword [half_range]
     fadd dword [half_range]
-    fistp word [edi]
+    fistp dword [value]
+    mov ax, word [value]
+    mov [edi], ax
     add edi, 2
     fld dword [angle]
     fadd dword [angle_constant]
