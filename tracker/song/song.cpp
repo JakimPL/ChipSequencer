@@ -50,7 +50,7 @@ void Song::save_to_file(const std::string &filename) {
         export_all(song_dir);
         compress_directory(song_dir, filename);
         std::filesystem::remove_all(temp_base);
-    } catch (const std::exception &e) {
+    } catch (const std::exception &exception) {
         std::filesystem::remove_all(temp_base);
         throw;
     }
@@ -73,7 +73,7 @@ void Song::load_from_file(const std::string &filename) {
         change_tuning(tuning.edo, tuning.a4_frequency);
 
         std::filesystem::remove_all(temp_base);
-    } catch (const std::exception &e) {
+    } catch (const std::exception &exception) {
         std::filesystem::remove_all(temp_base);
         throw;
     }
@@ -87,7 +87,7 @@ void Song::compile(const std::string &filename, bool compress) const {
         export_all(song_dir);
         compile_sources(temp_base.string(), filename, compress);
         std::filesystem::remove_all(temp_base);
-    } catch (const std::exception &e) {
+    } catch (const std::exception &exception) {
         std::filesystem::remove_all(temp_base);
         throw;
     }
@@ -533,27 +533,56 @@ void Song::set_link(Link &link, void *item, const u_int8_t i) const {
         link.base = &dsp_input;
         break;
     case Target::ENVELOPE:
-        link.base = envelopes[link.index];
+        if (link.index >= envelopes.size()) {
+            link.base = &output;
+        } else {
+            link.base = envelopes[link.index];
+        }
         break;
     case Target::SEQUENCE:
-        link.base = sequences[link.index];
+        if (link.index >= sequences.size()) {
+            link.base = &output;
+        } else {
+            link.base = sequences[link.index];
+        }
         break;
     case Target::ORDER:
-        link.base = orders[link.index];
+        if (link.index >= orders.size()) {
+            link.base = &output;
+        } else {
+            link.base = orders[link.index];
+        }
         break;
     case Target::OSCILLATOR:
-        link.base = oscillators[link.index];
+        if (link.index >= oscillators.size()) {
+            link.base = &output;
+        } else {
+            link.base = oscillators[link.index];
+        }
         break;
     case Target::WAVETABLE:
-        link.base = wavetables[link.index];
+        if (link.index >= wavetables.size()) {
+            link.base = &output;
+        } else {
+            link.base = wavetables[link.index];
+        }
         break;
     case Target::DSP:
-        link.base = dsps[link.index];
+        if (link.index >= dsps.size()) {
+            link.base = &output;
+        } else {
+            link.base = dsps[link.index];
+        }
         break;
     case Target::CHANNEL:
-        link.base = channels[link.index];
+        if (link.index >= channels.size()) {
+            link.base = &output;
+        } else {
+            link.base = channels[link.index];
+        }
         break;
     }
+
     link.id = i;
     link.item = item;
     link.pointer = link.base + link.offset;
@@ -565,14 +594,22 @@ void Song::set_links() const {
     for (size_t i = 0; i < channels.size(); i++) {
         Link &link = links[link_type][i];
         void *item = channels[i];
-        set_link(link, item, i);
+        try {
+            set_link(link, item, i);
+        } catch (const std::out_of_range &exception) {
+            std::cerr << "Error setting link for a channel " << i << ": " << exception.what() << std::endl;
+        }
     }
 
     link_type = static_cast<size_t>(ItemType::DSP);
     for (size_t i = 0; i < dsps.size(); i++) {
         Link &link = links[link_type][i];
         void *item = dsps[i];
-        set_link(link, item, i);
+        try {
+            set_link(link, item, i);
+        } catch (const std::out_of_range &exception) {
+            std::cerr << "Error setting link for a DSP " << i << ": " << exception.what() << std::endl;
+        }
     }
 }
 

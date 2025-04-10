@@ -131,6 +131,9 @@ std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t
         ImGui::EndTable();
     }
 
+    // realignment
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 4.0f);
+
     return {index + pattern.notes.size(), select};
 }
 
@@ -157,11 +160,15 @@ bool draw_output(OutputType &output_type) {
         switch (target) {
         case Target::ENVELOPE:
             int &variable_index = output_type.routing_item;
-            bool value_changed = prepare_combo(envelope_names, "##OutputParameterEnvelopeCombo", output_type.index);
-            value_changed |= prepare_combo(routing.labels, "##OutputParameterEnvelopeParameterCombo", variable_index);
-            if (value_changed) {
-                output_type.offset = routing.offsets[variable_index];
-                output_type.variable_type = static_cast<int>(routing.types[variable_index]);
+            if (prepare_combo(envelope_names, "##OutputParameterEnvelopeCombo", output_type.index, true)) {
+                variable_index = 0;
+            }
+
+            if (prepare_combo(routing.labels, "##OutputParameterEnvelopeParameterCombo", variable_index)) {
+                if (variable_index < routing.labels.size()) {
+                    output_type.offset = routing.offsets[variable_index];
+                    output_type.variable_type = static_cast<int>(routing.types[variable_index]);
+                }
             }
             break;
         }
