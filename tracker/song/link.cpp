@@ -26,7 +26,7 @@ void Link::serialize(std::ofstream &file) const {
     write_data(file, &index, sizeof(index));
     if (group >= 2) {
         const uint8_t _offset = x32_to_x16[group].at(offset);
-        write_data(file, &_offset, sizeof(offset));
+        write_data(file, &_offset, sizeof(_offset));
     } else {
         write_data(file, &offset, sizeof(offset));
     }

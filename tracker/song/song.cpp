@@ -784,6 +784,9 @@ void *Song::deserialize_oscillator(std::ifstream &file) const {
         OscillatorWavetable *oscillator = new OscillatorWavetable();
         read_data(file, &oscillator->wavetable_index, sizeof(oscillator->wavetable_index));
         return reinterpret_cast<void *>(oscillator);
+    } else if (oscillator_type == GENERATOR_NOISE) {
+        OscillatorNoise *oscillator = new OscillatorNoise();
+        return reinterpret_cast<void *>(oscillator);
     } else {
         throw std::runtime_error("Unknown oscillator type: " + std::to_string(oscillator_type));
     }
@@ -1015,6 +1018,8 @@ void Song::delete_oscillator(void *oscillator) {
         delete static_cast<OscillatorSine *>(oscillator);
     } else if (dsp_type == GENERATOR_WAVETABLE) {
         delete static_cast<OscillatorWavetable *>(oscillator);
+    } else if (dsp_type == GENERATOR_NOISE) {
+        delete static_cast<OscillatorNoise *>(oscillator);
     }
 }
 

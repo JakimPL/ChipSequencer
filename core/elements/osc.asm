@@ -85,6 +85,7 @@ apply_volume:
     %include "core/osc/saw.asm"
     %include "core/osc/sine.asm"
     %include "core/osc/wave.asm"
+    %include "core/osc/noise.asm"
 
     SEGMENT_DATA
     %ifndef ELF
@@ -102,11 +103,13 @@ oscillators_table:
     dd saw
     dd sine
     dd wavetable
+    dd noise
     %else
     dw square
     dw saw
     dw sine
     dw wavetable
+    dw noise
     %endif
 
     SEGMENT_BSS
