@@ -119,7 +119,7 @@ const std::map<Target, RoutingItems> routing_variables = {
                 CHANNEL_PITCH,
             },
             {
-                TargetVariableType::Int16,
+                TargetVariableType::Int32,
             },
         }),
     },

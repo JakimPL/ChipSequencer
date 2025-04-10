@@ -154,23 +154,38 @@ bool draw_output(OutputType &output_type) {
             draw_int_slider("DSP", output_type.dsp_channel, 0, dsps.size() - 1);
         }
     default:
+        ImGui::Separator();
         prepare_combo(parameter_types, "##OutputParameterCombo", output_type.parameter_type);
         const Target target = static_cast<Target>(output_type.parameter_type + OUTPUT_TARGET_PARAMETER);
-        const auto &routing = routing_variables.at(target);
         switch (target) {
-        case Target::ENVELOPE:
-            int &variable_index = output_type.routing_item;
-            if (prepare_combo(envelope_names, "##OutputParameterEnvelopeCombo", output_type.index, true)) {
-                variable_index = 0;
-            }
-
-            if (prepare_combo(routing.labels, "##OutputParameterEnvelopeParameterCombo", variable_index)) {
-                if (variable_index < routing.labels.size()) {
-                    output_type.offset = routing.offsets[variable_index];
-                    output_type.variable_type = static_cast<int>(routing.types[variable_index]);
-                }
-            }
+        case Target::ENVELOPE: {
+            draw_output_parameter(output_type, envelope_names, "Envelope");
             break;
+        }
+        case Target::SEQUENCE: {
+            ImGui::Text("Not implemented yet.");
+            break;
+        }
+        case Target::ORDER: {
+            ImGui::Text("Not implemented yet.");
+            break;
+        }
+        case Target::OSCILLATOR: {
+            ImGui::Text("Not implemented yet.");
+            break;
+        }
+        case Target::WAVETABLE: {
+            ImGui::Text("Not implemented yet.");
+            break;
+        }
+        case Target::DSP: {
+            ImGui::Text("Not implemented yet.");
+            break;
+        }
+        case Target::CHANNEL: {
+            draw_output_parameter(output_type, channel_names, "Channel");
+            break;
+        }
         }
     }
 
@@ -183,6 +198,22 @@ bool draw_output(OutputType &output_type) {
     pop_secondary_style();
 
     return result;
+}
+
+void draw_output_parameter(OutputType &output_type, const std::vector<std::string> &names, const std::string label) {
+    const Target target = static_cast<Target>(output_type.parameter_type + OUTPUT_TARGET_PARAMETER);
+    const auto &routing = routing_variables.at(target);
+    int &variable_index = output_type.routing_item;
+    if (prepare_combo(names, "##OutputParameter" + label + "Combo", output_type.index, true)) {
+        variable_index = 0;
+    }
+
+    if (prepare_combo(routing.labels, "##OutputParameter" + label + "ParameterCombo", variable_index)) {
+        if (variable_index < routing.labels.size()) {
+            output_type.offset = routing.offsets[variable_index];
+            output_type.variable_type = static_cast<int>(routing.types[variable_index]);
+        }
+    }
 }
 
 bool prepare_combo(const std::vector<std::string> &names, std::string label, int &index, const bool error_if_empty) {

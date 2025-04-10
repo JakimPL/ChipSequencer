@@ -28,8 +28,16 @@ void OutputType::from_link(const Link &link) {
         target = OUTPUT_TARGET_PARAMETER;
         const auto &routing = routing_variables.at(link.target);
         index = link.index;
-        offset = link.offset;
-        routing_item = routing.offset_to_index.at(link.offset);
+        try {
+            routing_item = routing.offset_to_index.at(link.offset);
+            offset = link.offset;
+        } catch (const std::out_of_range &exception) {
+            if (!routing.offset_to_index.empty()) {
+                const auto &it = routing.offset_to_index.begin();
+                routing_item = it->first;
+                offset = it->second;
+            }
+        }
         break;
     }
 }
