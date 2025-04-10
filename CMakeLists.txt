@@ -99,6 +99,7 @@ add_executable(main
     tracker/gui/panels/patterns.cpp
     tracker/gui/panels/sequences.cpp
     tracker/gui/panels/wavetables.cpp
+    tracker/maps/routing.cpp
     tracker/song/data.cpp
     tracker/song/link.cpp
     tracker/song/song.cpp

@@ -23,8 +23,7 @@ Sequence *Sequence::deserialize(std::ifstream &file) {
     uint8_t data_size;
     read_data(file, &data_size, sizeof(data_size));
 
-    void *memory = malloc(sizeof(Sequence));
-    Sequence *sequence = static_cast<Sequence *>(memory);
+    Sequence *sequence = new Sequence;
     sequence->data_size = data_size;
 
     for (size_t i = 0; i < data_size / 2; i++) {
