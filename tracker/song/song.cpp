@@ -248,6 +248,11 @@ void Song::remove_envelope(const size_t index) {
     if (index < envelopes.size()) {
         delete envelopes[index];
         envelopes.erase(envelopes.begin() + index);
+        for (auto &channel : channels) {
+            if (channel->envelope_index >= index) {
+                channel->envelope_index = std::max(0, channel->envelope_index - 1);
+            }
+        }
     }
 }
 
@@ -255,6 +260,13 @@ void Song::remove_sequence(const size_t index) {
     if (index < sequences.size()) {
         delete sequences[index];
         sequences.erase(sequences.begin() + index);
+        for (auto &order : orders) {
+            for (size_t i = 0; i < order->order_length; i++) {
+                if (order->sequences[i] >= index) {
+                    order->sequences[i] = std::max(0, order->sequences[i] - 1);
+                }
+            }
+        }
     }
 }
 
@@ -262,6 +274,11 @@ void Song::remove_order(const size_t index) {
     if (index < orders.size()) {
         delete orders[index];
         orders.erase(orders.begin() + index);
+        for (auto &channel : channels) {
+            if (channel->order_index >= index) {
+                channel->order_index = std::max(0, channel->order_index - 1);
+            }
+        }
     }
 }
 
@@ -269,6 +286,15 @@ void Song::remove_wavetable(const size_t index) {
     if (index < wavetables.size()) {
         delete wavetables[index];
         wavetables.erase(wavetables.begin() + index);
+        for (auto &oscillator : oscillators) {
+            Oscillator *generic = static_cast<Oscillator *>(oscillator);
+            if (generic->generator_index == GENERATOR_WAVETABLE) {
+                OscillatorWavetable *wavetable = static_cast<OscillatorWavetable *>(oscillator);
+                if (wavetable->wavetable_index >= index) {
+                    wavetable->wavetable_index = std::max(0, wavetable->wavetable_index - 1);
+                }
+            }
+        }
     }
 }
 
@@ -276,6 +302,11 @@ void Song::remove_oscillator(const size_t index) {
     if (index < oscillators.size()) {
         delete_oscillator(oscillators[index]);
         oscillators.erase(oscillators.begin() + index);
+        for (auto &channel : channels) {
+            if (channel->oscillator_index >= index) {
+                channel->oscillator_index = std::max(0, channel->oscillator_index - 1);
+            }
+        }
     }
 }
 
@@ -286,6 +317,17 @@ void Song::remove_channel(const size_t index) {
         channels.erase(channels.begin() + index);
         links[link_type].erase(links[link_type].begin() + index);
         num_channels = channels.size();
+        set_links();
+    }
+}
+
+void Song::remove_dsp(const size_t index) {
+    if (index < dsps.size()) {
+        size_t link_type = static_cast<size_t>(ItemType::DSP);
+        delete_dsp(dsps[index]);
+        dsps.erase(dsps.begin() + index);
+        links[link_type].erase(links[link_type].begin() + index);
+        num_dsps = dsps.size();
         set_links();
     }
 }
@@ -331,17 +373,6 @@ std::pair<ValidationResult, int> Song::validate() {
     }
 
     return {ValidationResult::OK, -1};
-}
-
-void Song::remove_dsp(const size_t index) {
-    if (index < dsps.size()) {
-        size_t link_type = static_cast<size_t>(ItemType::DSP);
-        delete_dsp(dsps[index]);
-        dsps.erase(dsps.begin() + index);
-        links[link_type].erase(links[link_type].begin() + index);
-        num_dsps = dsps.size();
-        set_links();
-    }
 }
 
 void Song::generate_header_vector(std::stringstream &asm_content, const std::string &name, const std::string &short_name, const size_t size) const {
