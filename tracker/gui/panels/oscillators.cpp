@@ -125,14 +125,56 @@ void GUIOscillatorsPanel::remove() {
 }
 
 void GUIOscillatorsPanel::update() {
-    update_oscillators();
+    update_oscillator_names();
     update_wavetables();
     gui.update(GUIElement::Channels);
 }
 
-void GUIOscillatorsPanel::update_oscillators() {
-    update_items(oscillator_names, oscillators.size(), "Oscillator ", oscillator_index);
-    generator_names = {"Square", "Saw", "Sine", "Wavetable"};
+void GUIOscillatorsPanel::update_oscillator_names() {
+    oscillator_names.resize(oscillators.size());
+    for (size_t i = 0; i < oscillators.size(); ++i) {
+        update_oscillator_name(i);
+    }
+    if (oscillator_index >= static_cast<int>(oscillator_names.size())) {
+        oscillator_index = static_cast<int>(oscillator_names.size()) - 1;
+    }
+    if (oscillator_index < 0 && !oscillator_names.empty()) {
+        oscillator_index = 0;
+    }
+}
+
+void GUIOscillatorsPanel::update_oscillator_name(const int index, const int generator_index) {
+    if (index < 0 || index >= static_cast<int>(oscillator_names.size())) {
+        return;
+    }
+
+    std::string label;
+    const Oscillator *oscillator = static_cast<const Oscillator *>(oscillators[index]);
+    const int generator = generator_index == -1 ? oscillator->generator_index : generator_index;
+    switch (generator) {
+    case GENERATOR_SQUARE: {
+        label = "Square ";
+        break;
+    }
+    case GENERATOR_SAW: {
+        label = "Saw ";
+        break;
+    }
+    case GENERATOR_SINE: {
+        label = "Sine ";
+        break;
+    }
+    case GENERATOR_WAVETABLE: {
+        label = "Wavetable ";
+        break;
+    }
+    default: {
+        label = "Oscillator ";
+        break;
+    }
+    }
+
+    oscillator_names[index] = label + std::to_string(index);
 }
 
 void GUIOscillatorsPanel::update_wavetables() {
@@ -142,7 +184,11 @@ void GUIOscillatorsPanel::update_wavetables() {
 void GUIOscillatorsPanel::draw_oscillator_type() {
     ImGui::Text("Type");
     ImGui::NextColumn();
-    prepare_combo(generator_names, "##GeneratorCombo", current_oscillator.generator_index);
+
+    if (prepare_combo(generator_names, "##GeneratorCombo", current_oscillator.generator_index)) {
+        update_oscillator_name(oscillator_index, current_oscillator.generator_index);
+    }
+
     ImGui::NextColumn();
 }
 

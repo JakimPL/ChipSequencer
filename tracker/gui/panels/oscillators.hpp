@@ -17,13 +17,13 @@ class GUIOscillatorsPanel : public GUIPanel {
     } current_oscillator;
 
     int oscillator_index = 0;
-    std::vector<std::string> generator_names;
 
     bool is_index_valid() const;
-    void update_oscillators();
-    void update_wavetables();
     void draw_oscillator_type();
     void draw_oscillator();
+    void update_wavetables();
+    void update_oscillator_name(const int index, const int generator_index = -1);
+    void update_oscillator_names();
 
     void from() override;
     void to() const override;

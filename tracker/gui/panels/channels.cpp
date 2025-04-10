@@ -97,9 +97,6 @@ void GUIChannelsPanel::remove() {
 
 void GUIChannelsPanel::update() {
     update_channel_names();
-    update_items(envelope_names, envelopes.size(), "Envelope ", current_channel.envelope_index);
-    update_items(order_names, orders.size(), "Order ", current_channel.order_index);
-    update_items(oscillator_names, oscillators.size(), "Oscillator ", current_channel.oscillator_index);
 }
 
 void GUIChannelsPanel::update_channel_names() {
