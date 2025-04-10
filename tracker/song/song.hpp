@@ -108,7 +108,10 @@ class Song {
     void *add_dsp();
 
     void set_link(Link &link, void *item, const u_int8_t i) const;
-    void set_links();
+    void set_links() const;
+    void realign_links(const size_t index, const Target target, const ItemType type) const;
+    void realign_links(const size_t index, const Target target) const;
+
     void set_buffer_offsets();
 
     void remove_envelope(const size_t index);

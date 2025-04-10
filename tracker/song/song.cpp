@@ -248,6 +248,7 @@ void Song::remove_envelope(const size_t index) {
     if (index < envelopes.size()) {
         delete envelopes[index];
         envelopes.erase(envelopes.begin() + index);
+        realign_links(index, Target::ENVELOPE);
         for (auto &channel : channels) {
             if (channel->envelope_index >= index) {
                 channel->envelope_index = std::max(0, channel->envelope_index - 1);
@@ -260,6 +261,7 @@ void Song::remove_sequence(const size_t index) {
     if (index < sequences.size()) {
         delete sequences[index];
         sequences.erase(sequences.begin() + index);
+        realign_links(index, Target::SEQUENCE);
         for (auto &order : orders) {
             for (size_t i = 0; i < order->order_length; i++) {
                 if (order->sequences[i] >= index) {
@@ -274,6 +276,7 @@ void Song::remove_order(const size_t index) {
     if (index < orders.size()) {
         delete orders[index];
         orders.erase(orders.begin() + index);
+        realign_links(index, Target::ORDER);
         for (auto &channel : channels) {
             if (channel->order_index >= index) {
                 channel->order_index = std::max(0, channel->order_index - 1);
@@ -286,6 +289,7 @@ void Song::remove_wavetable(const size_t index) {
     if (index < wavetables.size()) {
         delete wavetables[index];
         wavetables.erase(wavetables.begin() + index);
+        realign_links(index, Target::WAVETABLE);
         for (auto &oscillator : oscillators) {
             Oscillator *generic = static_cast<Oscillator *>(oscillator);
             if (generic->generator_index == GENERATOR_WAVETABLE) {
@@ -302,6 +306,7 @@ void Song::remove_oscillator(const size_t index) {
     if (index < oscillators.size()) {
         delete_oscillator(oscillators[index]);
         oscillators.erase(oscillators.begin() + index);
+        realign_links(index, Target::OSCILLATOR);
         for (auto &channel : channels) {
             if (channel->oscillator_index >= index) {
                 channel->oscillator_index = std::max(0, channel->oscillator_index - 1);
@@ -317,6 +322,8 @@ void Song::remove_channel(const size_t index) {
         channels.erase(channels.begin() + index);
         links[link_type].erase(links[link_type].begin() + index);
         num_channels = channels.size();
+
+        realign_links(index, Target::CHANNEL);
         set_links();
     }
 }
@@ -328,16 +335,15 @@ void Song::remove_dsp(const size_t index) {
         dsps.erase(dsps.begin() + index);
         links[link_type].erase(links[link_type].begin() + index);
         num_dsps = dsps.size();
+
+        realign_links(index, Target::DSP_CHANNEL);
+        realign_links(index, Target::DSP);
         set_links();
     }
 }
 
 std::pair<ValidationResult, int> Song::validate() {
     calculate_song_length();
-    if (song_length == 0 || max_rows == 0) {
-        return {ValidationResult::InvalidSongLength, -1};
-    }
-
     for (size_t index = 0; index < channels.size(); index++) {
         const Channel *channel = channels[index];
         if (channel->order_index >= orders.size()) {
@@ -370,6 +376,10 @@ std::pair<ValidationResult, int> Song::validate() {
                 return {ValidationResult::OscillatorMissingWavetable, index};
             }
         }
+    }
+
+    if (song_length == 0 || max_rows == 0) {
+        return {ValidationResult::InvalidSongLength, -1};
     }
 
     return {ValidationResult::OK, -1};
@@ -550,7 +560,7 @@ void Song::set_link(Link &link, void *item, const u_int8_t i) const {
     link.assign_output();
 }
 
-void Song::set_links() {
+void Song::set_links() const {
     size_t link_type = static_cast<size_t>(ItemType::CHANNEL);
     for (size_t i = 0; i < channels.size(); i++) {
         Link &link = links[link_type][i];
@@ -564,6 +574,20 @@ void Song::set_links() {
         void *item = dsps[i];
         set_link(link, item, i);
     }
+}
+
+void Song::realign_links(const size_t index, const Target target, const ItemType type) const {
+    size_t link_type = static_cast<size_t>(type);
+    for (Link &link : links[link_type]) {
+        if (link.target == target && link.index >= index) {
+            link.index = std::max(0, link.index - 1);
+        }
+    }
+}
+
+void Song::realign_links(const size_t index, const Target target) const {
+    realign_links(index, target, ItemType::CHANNEL);
+    realign_links(index, target, ItemType::DSP);
 }
 
 void Song::set_buffer_offsets() {
