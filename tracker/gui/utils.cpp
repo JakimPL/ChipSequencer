@@ -74,21 +74,18 @@ void draw_popup(const std::string &message) {
     ImGui::EndPopup();
 }
 
-void draw_button(const char *label, const std::function<void()> &callback, const float button_padding) {
+bool draw_button(const char *label, const float button_padding) {
     float text_width = ImGui::CalcTextSize(label).x;
     float button_width = text_width + button_padding;
 
     float full_width = ImGui::GetWindowContentRegionMax().x; // full available width in window
     ImGui::SetCursorPosX((full_width - button_width) * 0.5f);
 
-    if (ImGui::Button(label, ImVec2(button_width, 0))) {
-        callback();
-    }
+    return ImGui::Button(label, ImVec2(button_width, 0));
 }
 
 std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t index, const int playing_row, const uint16_t start, const uint16_t end) {
     bool select = false;
-    const ImVec4 highlight_color = ImVec4(1.0f, 0.2f, 1.0f, 1.0f);
     const int min = std::max(static_cast<int>(start) - static_cast<int>(index), 0);
     const int max = std::min(static_cast<int>(end) - static_cast<int>(index), static_cast<int>(pattern.notes.size()));
     if (max <= 0 || min >= pattern.notes.size()) {
@@ -112,7 +109,7 @@ std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t
             }
 
             if (is_selected) {
-                ImGui::PushStyleColor(ImGuiCol_Text, highlight_color);
+                ImGui::PushStyleColor(ImGuiCol_Text, GUI_HIGHLIGHT_COLOR);
             }
 
             ImGui::TableSetColumnIndex(0);
@@ -181,7 +178,7 @@ void draw_output(OutputType &output_type) {
     pop_secondary_style();
 }
 
-bool prepare_combo(const std::vector<std::string> &names, std::string label, int &index) {
+bool prepare_combo(const std::vector<std::string> &names, std::string label, int &index, const bool error_if_empty) {
     std::vector<const char *> names_cstr;
     for (const auto &name : names) {
         names_cstr.push_back(name.c_str());
@@ -189,7 +186,20 @@ bool prepare_combo(const std::vector<std::string> &names, std::string label, int
 
     float combo_width = ImGui::GetContentRegionAvail().x;
     ImGui::SetNextItemWidth(combo_width);
-    return ImGui::Combo(label.c_str(), &index, names_cstr.data(), names_cstr.size());
+
+    if (error_if_empty && names.empty()) {
+        ImGui::PushStyleColor(ImGuiCol_Border, GUI_ERROR_COLOR);
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.0f);
+    }
+
+    const bool result = ImGui::Combo(label.c_str(), &index, names_cstr.data(), names_cstr.size());
+
+    if (error_if_empty && names.empty()) {
+        ImGui::PopStyleVar();
+        ImGui::PopStyleColor();
+    }
+
+    return result;
 }
 
 void update_items(std::vector<std::string> &names, size_t size, std::string label, int &index) {

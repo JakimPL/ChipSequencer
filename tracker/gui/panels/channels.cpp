@@ -139,16 +139,16 @@ void GUIChannelsPanel::draw_channel() {
     }
 
     ImGui::Text("Envelope:");
-    prepare_combo(envelope_names, "##EnvelopeCombo", current_channel.envelope_index);
+    prepare_combo(envelope_names, "##EnvelopeCombo", current_channel.envelope_index, true);
     ImGui::Text("Oscillator:");
-    prepare_combo(oscillator_names, "##OscillatorCombo", current_channel.oscillator_index);
+    prepare_combo(oscillator_names, "##OscillatorCombo", current_channel.oscillator_index, true);
     if (ImGui::Checkbox("Constant Pitch", &current_channel.constant_pitch)) {
         current_channel.order_index = 0;
     }
 
     ImGui::SameLine();
     ImGui::BeginDisabled(current_channel.constant_pitch);
-    prepare_combo(order_names, "##OrderCombo", current_channel.order_index);
+    prepare_combo(order_names, "##OrderCombo", current_channel.order_index, !current_channel.constant_pitch);
     ImGui::EndDisabled();
 
     if (current_channel.constant_pitch) {

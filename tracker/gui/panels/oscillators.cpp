@@ -168,7 +168,7 @@ void GUIOscillatorsPanel::draw_oscillator() {
     case GENERATOR_WAVETABLE:
         ImGui::Text("Wavetable");
         ImGui::NextColumn();
-        prepare_combo(wavetable_names, "##WavetableCombo", current_oscillator.wavetable_index);
+        prepare_combo(wavetable_names, "##WavetableCombo", current_oscillator.wavetable_index, true);
         break;
     }
 
