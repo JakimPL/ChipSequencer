@@ -183,7 +183,7 @@ void GUIDSPsPanel::draw_dsp_type() {
 
 void GUIDSPsPanel::draw_dsp() {
     if (dsps.empty()) {
-        ImGui::Text("No dsps available.");
+        ImGui::Text("No DSPs available.");
         return;
     }
 

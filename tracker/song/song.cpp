@@ -236,7 +236,9 @@ void *Song::add_dsp() {
         return nullptr;
     }
 
-    void *dsp = new DSPGainer();
+    DSPGainer *dsp = new DSPGainer();
+    dsp->volume = DEFAULT_GAINER_VOLUME;
+
     dsps.push_back(dsp);
     num_dsps = dsps.size();
     links[static_cast<size_t>(ItemType::DSP)].push_back(Link());

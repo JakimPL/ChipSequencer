@@ -30,6 +30,8 @@
 
     %define DEFAULT_OSCILLATOR_DUTY_CYCLE 0x80
 
+    %define DEFAULT_GAINER_VOLUME 0x8000
+
 ; General
     %define CONSTANT_PITCH 0xFF
 

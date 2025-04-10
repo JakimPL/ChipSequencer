@@ -13,9 +13,9 @@ enum OutputTarget {
 };
 
 struct OutputType {
-    bool additive;
+    bool additive = true;
+    int shift = 0;
     int variable_type;
-    int shift;
     int target;
 
     int output_channel;
