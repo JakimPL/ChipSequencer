@@ -12,6 +12,7 @@ void GUIChannelsPanel::draw() {
     ImGui::Begin("Channel Editor");
     ImGui::Columns(1, "channel_columns");
 
+    ImGui::BeginDisabled(gui.is_playing());
     push_tertiary_style();
     draw_add_or_remove();
     prepare_combo(channel_names, "##ChannelCombo", channel_index);
@@ -24,6 +25,7 @@ void GUIChannelsPanel::draw() {
     check_keyboard_input();
     to();
 
+    ImGui::EndDisabled();
     ImGui::Columns(1);
     ImGui::End();
 }
@@ -97,6 +99,7 @@ void GUIChannelsPanel::remove() {
 
 void GUIChannelsPanel::update() {
     update_channel_names();
+    gui.update(GUIElement::Patterns);
 }
 
 void GUIChannelsPanel::update_channel_names() {
@@ -112,16 +115,21 @@ void GUIChannelsPanel::update_channel_names() {
     }
 }
 
-void GUIChannelsPanel::update_channel_name(const int index) const {
+void GUIChannelsPanel::update_channel_name(const int index, const int target_id) {
     if (index < 0 || index >= static_cast<int>(channel_names.size())) {
         return;
     }
 
-    OutputType output_type;
-    const Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][index];
-    output_type.from_link(link);
+    Target target;
+    if (target_id == -1) {
+        OutputType output_type;
+        const Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][index];
+        output_type.from_link(link);
+        target = static_cast<Target>(output_type.target);
+    } else {
+        target = static_cast<Target>(target_id);
+    }
 
-    const Target target = static_cast<Target>(output_type.target);
     const bool modulator = target != Target::OUTPUT_CHANNEL &&
                            target != Target::DSP_CHANNEL;
 
@@ -155,7 +163,7 @@ void GUIChannelsPanel::draw_channel() {
     }
 
     if (draw_output(current_channel.output_type)) {
-        update_channel_name(channel_index);
+        update_channel_name(channel_index, current_channel.output_type.target);
     }
 }
 

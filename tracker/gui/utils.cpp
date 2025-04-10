@@ -65,8 +65,8 @@ void draw_knob(const char *label, float &reference, float min, float max) {
 
 void draw_popup(const std::string &message) {
     ImGui::Text("%s", message.c_str());
-    float buttonWidth = 60.0f;
-    float windowWidth = ImGui::GetWindowSize().x;
+    const float buttonWidth = 60.0f;
+    const float windowWidth = ImGui::GetWindowSize().x;
     ImGui::SetCursorPosX((windowWidth - buttonWidth) * 0.5f);
     if (ImGui::Button("Close", ImVec2(buttonWidth, 0))) {
         ImGui::CloseCurrentPopup();
@@ -75,12 +75,10 @@ void draw_popup(const std::string &message) {
 }
 
 bool draw_button(const char *label, const float button_padding) {
-    float text_width = ImGui::CalcTextSize(label).x;
-    float button_width = text_width + button_padding;
-
-    float full_width = ImGui::GetWindowContentRegionMax().x; // full available width in window
+    const float text_width = ImGui::CalcTextSize(label).x;
+    const float button_width = text_width + button_padding;
+    const float full_width = ImGui::GetWindowContentRegionMax().x;
     ImGui::SetCursorPosX((full_width - button_width) * 0.5f);
-
     return ImGui::Button(label, ImVec2(button_width, 0));
 }
 
@@ -272,7 +270,6 @@ std::string get_note_octave(uint8_t note_value) {
     if (note_value < NOTES) {
         return std::to_string(frequency_table.get_note_octave(note_value));
     }
-
     return 0;
 }
 

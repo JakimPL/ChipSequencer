@@ -26,8 +26,10 @@ void OutputType::from_link(const Link &link) {
     default:
         parameter_type = target - OUTPUT_TARGET_PARAMETER;
         target = OUTPUT_TARGET_PARAMETER;
+        const auto &routing = routing_variables.at(link.target);
         index = link.index;
         offset = link.offset;
+        routing_item = routing.offset_to_index.at(link.offset);
         break;
     }
 }

@@ -9,9 +9,16 @@
 #include "../song/target.hpp"
 
 struct RoutingItems {
+    RoutingItems(
+        std::vector<std::string> labels = {},
+        std::vector<uint16_t> offsets = {},
+        std::vector<TargetVariableType> = {}
+    );
+
     std::vector<std::string> labels;
     std::vector<uint16_t> offsets;
     std::vector<TargetVariableType> types;
+    std::map<uint16_t, size_t> offset_to_index;
 };
 
 const std::map<Target, RoutingItems> routing_variables = {
