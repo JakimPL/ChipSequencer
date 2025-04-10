@@ -248,6 +248,11 @@ void draw_output_parameter_oscillator(OutputType &output_type) {
     const auto [indices, labels] = routing.filter_items(oscillator->generator_index);
     int &item = output_type.routing_item;
 
+    if (labels.empty()) {
+        ImGui::Text("No parameters available.");
+        return;
+    }
+
     if (prepare_combo(oscillator_names, "##OutputParameterOscillatorCombo", output_type.index, true)) {
         item = 0;
     }
@@ -270,6 +275,11 @@ void draw_output_parameter_dsp(OutputType &output_type) {
     const DSP *dsp = static_cast<DSP *>(dsps[output_type.index]);
     const auto [indices, labels] = routing.filter_items(dsp->effect_index);
     int &item = output_type.routing_item;
+
+    if (labels.empty()) {
+        ImGui::Text("No parameters available.");
+        return;
+    }
 
     if (prepare_combo(dsp_names, "##OutputParameterDSPCombo", output_type.index, true)) {
         item = 0;
