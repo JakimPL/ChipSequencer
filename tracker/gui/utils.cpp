@@ -144,6 +144,10 @@ bool draw_output(OutputType &output_type) {
     const bool result = prepare_combo(target_types, "##OutputTargetCombo", output_type.target);
     switch (output_type.target) {
     case OUTPUT_TARGET_OUTPUT:
+        if (result) {
+            output_type.additive = true;
+        }
+
         draw_int_slider("Channel", output_type.output_channel, 0, song.get_output_channels() - 1);
         break;
     case OUTPUT_TARGET_DSP:
@@ -151,9 +155,18 @@ bool draw_output(OutputType &output_type) {
             ImGui::Text("No DSPs available.");
             break;
         } else {
+            if (result) {
+                output_type.additive = true;
+            }
+
             draw_int_slider("DSP", output_type.dsp_channel, 0, dsps.size() - 1);
+            break;
         }
     default:
+        if (result) {
+            output_type.additive = false;
+        }
+
         ImGui::Separator();
         prepare_combo(parameter_types, "##OutputParameterCombo", output_type.parameter_type);
         const Target target = static_cast<Target>(output_type.parameter_type + OUTPUT_TARGET_PARAMETER);
@@ -204,15 +217,15 @@ void draw_output_parameter(OutputType &output_type, const std::vector<std::strin
     const Target target = static_cast<Target>(output_type.parameter_type + OUTPUT_TARGET_PARAMETER);
     const auto &routing = routing_variables.at(target);
     int &variable_index = output_type.routing_item;
+
     if (prepare_combo(names, "##OutputParameter" + label + "Combo", output_type.index, true)) {
         variable_index = 0;
     }
 
-    if (prepare_combo(routing.labels, "##OutputParameter" + label + "ParameterCombo", variable_index)) {
-        if (variable_index < routing.labels.size()) {
-            output_type.offset = routing.offsets[variable_index];
-            output_type.variable_type = static_cast<int>(routing.types[variable_index]);
-        }
+    prepare_combo(routing.labels, "##OutputParameter" + label + "ParameterCombo", variable_index);
+    if (variable_index < routing.labels.size()) {
+        output_type.offset = routing.offsets[variable_index];
+        output_type.variable_type = static_cast<int>(routing.types[variable_index]);
     }
 }
 
