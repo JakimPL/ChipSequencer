@@ -99,8 +99,8 @@ void Song::render(const std::string &filename) {
 
     std::vector<float> samples;
     samples.reserve(song_length);
+    initialize();
     for (size_t i = 0; i < song_length; i++) {
-        initialize();
         mix();
         samples.push_back(output);
     }

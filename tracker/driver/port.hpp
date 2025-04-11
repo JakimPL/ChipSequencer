@@ -8,7 +8,7 @@
 #include <portaudio.h>
 #include "driver.hpp"
 
-#define DEFAULT_FRAMES_PER_BUFFER 256
+#define DEFAULT_FRAMES_PER_BUFFER 1024
 
 class PortAudioDriver : public Driver {
   public:

@@ -7,7 +7,7 @@ adsr:
 .prepare_interpolation_points:
     movzx ecx, byte [current_channel]
     lea esi, [envelope_timer + 4 * ecx]
-    lea edi, [dividend]
+    mov edi, dividend
 .phase:
     LOAD_FUNCTION phases, eax
 .add_bias:
@@ -34,7 +34,7 @@ adsr:
     add dword [envelope_timer + 4 * ebx], eax
     mov eax, [envelope_timer + 4 * ebx]
 
-    lea esi, [dividend]
+    mov esi, dividend
     call reduce
     mov [envelope_timer + 4 * ebx], eax
 
