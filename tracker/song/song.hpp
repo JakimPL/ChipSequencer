@@ -91,6 +91,7 @@ class Song {
     void load_from_file(const std::string &filename);
     void save_to_file(const std::string &filename);
     void compile(const std::string &filename, bool compress = true) const;
+    void render(const std::string &filename);
 
     std::string get_title() const;
     std::string get_author() const;

@@ -14,6 +14,18 @@ interpolate:
     add ax, bx
     ret
 
+reduce:
+; If index > dividend, let index := index - dividend
+    cmp eax, [esi]
+    jb .done
+    sub eax, [esi]
+    sbb ecx, 0
+    stc
+    ret
+.done:
+    clc
+    ret
+
 generate_sine_table:
     fninit
     mov dword [angle], __float32__(0.0)

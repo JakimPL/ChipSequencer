@@ -94,6 +94,52 @@ void Song::compile(const std::string &filename, bool compress) const {
     }
 }
 
+void Song::render(const std::string &filename) {
+    calculate_song_length();
+
+    std::vector<float> samples;
+    samples.reserve(song_length);
+    for (size_t i = 0; i < song_length; i++) {
+        initialize();
+        mix();
+        samples.push_back(output);
+    }
+
+    uint16_t audio_format = 3;
+    uint16_t num_channels = 1;
+    uint32_t sample_rate_value = sample_rate;
+    uint16_t bits_per_sample = 32;
+    uint16_t block_align = num_channels * sizeof(float);
+    uint32_t byte_rate = sample_rate_value * block_align;
+    uint32_t subchunk2_size = samples.size() * block_align;
+    uint32_t chunk_size = 36 + subchunk2_size;
+
+    std::ofstream outfile(filename, std::ios::binary);
+    if (!outfile) {
+        throw std::runtime_error("Failed to open file: " + filename);
+    }
+
+    outfile.write("RIFF", 4);
+    outfile.write(reinterpret_cast<const char *>(&chunk_size), 4);
+    outfile.write("WAVE", 4);
+
+    outfile.write("fmt ", 4);
+    uint32_t subchunk1_size = 16;
+    outfile.write(reinterpret_cast<const char *>(&subchunk1_size), 4);
+    outfile.write(reinterpret_cast<const char *>(&audio_format), 2);
+    outfile.write(reinterpret_cast<const char *>(&num_channels), 2);
+    outfile.write(reinterpret_cast<const char *>(&sample_rate_value), 4);
+    outfile.write(reinterpret_cast<const char *>(&byte_rate), 4);
+    outfile.write(reinterpret_cast<const char *>(&block_align), 2);
+    outfile.write(reinterpret_cast<const char *>(&bits_per_sample), 2);
+
+    outfile.write("data", 4);
+    outfile.write(reinterpret_cast<const char *>(&subchunk2_size), 4);
+
+    outfile.write(reinterpret_cast<const char *>(samples.data()), samples.size() * sizeof(float));
+    outfile.close();
+}
+
 std::string Song::get_title() const {
     return header.title;
 }

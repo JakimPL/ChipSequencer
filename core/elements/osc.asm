@@ -35,18 +35,6 @@ increment_timer:
     mov [oscillator_timer + 4 * ecx], eax
     ret
 
-reduce:
-; If index > dividend, let index := index - dividend
-    cmp eax, [esi]
-    jb .done
-    sub eax, [esi]
-    sbb ecx, 0
-    stc
-    ret
-.done:
-    clc
-    ret
-
 initialize_frequencies:
     mov ecx, NOTES
     lea edi, [frequencies + 4 * ecx]

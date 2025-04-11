@@ -27,6 +27,10 @@ void GUIMenu::draw() {
                 file_open();
             }
             ImGui::Separator();
+            if (ImGui::MenuItem("Render")) {
+                file_render();
+            }
+            ImGui::Separator();
             if (ImGui::MenuItem("Compile")) {
                 file_compile(true);
             }
@@ -43,8 +47,13 @@ void GUIMenu::draw() {
     }
 
     if (compilation_status.has_value()) {
-        ImGui::OpenPopup(compilation_status.value() ? "Success" : "Failure");
+        ImGui::OpenPopup(compilation_status.value() ? "Compilation success" : "Compilation failure");
         compilation_status = std::nullopt;
+    }
+
+    if (render_status.has_value()) {
+        ImGui::OpenPopup(render_status.value() ? "Render success" : "Render failure");
+        render_status = std::nullopt;
     }
 
     if (load_error.has_value()) {
@@ -52,10 +61,14 @@ void GUIMenu::draw() {
         load_error = std::nullopt;
     }
 
-    if (ImGui::BeginPopupModal("Success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+    if (ImGui::BeginPopupModal("Compilation success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         draw_popup("File compiled successfully!");
-    } else if (ImGui::BeginPopupModal("Failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+    } else if (ImGui::BeginPopupModal("Compilation failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         draw_popup("Compilation failed!");
+    } else if (ImGui::BeginPopupModal("Render success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Song rendered successfully!");
+    } else if (ImGui::BeginPopupModal("Render failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Song render failed!");
     } else if (ImGui::BeginPopupModal("Load error", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         draw_popup("Failed to load file!");
     }
@@ -99,8 +112,8 @@ void GUIMenu::file_open() {
         std::filesystem::path file_path(target_path);
         free(target_path);
 
+        gui.stop();
         try {
-            gui.stop();
             song.load_from_file(file_path);
             current_path = file_path;
 
@@ -116,6 +129,27 @@ void GUIMenu::file_open() {
     gui.update();
 }
 
+void GUIMenu::file_render() {
+    nfdchar_t *target_path = nullptr;
+    nfdresult_t result = NFD_SaveDialog("wav", nullptr, &target_path);
+    if (result == NFD_OKAY) {
+        std::filesystem::path wav_path(target_path);
+        free(target_path);
+        wav_path = check_and_correct_path_by_extension(wav_path, ".wav");
+
+        gui.stop();
+        try {
+            song.render(wav_path);
+            render_status = std::filesystem::exists(wav_path);
+        } catch (const std::exception &exception) {
+            render_status = false;
+            std::cerr << "Render error: " << exception.what() << std::endl;
+        }
+    } else if (result != NFD_CANCEL) {
+        std::cerr << "Error: " << NFD_GetError() << std::endl;
+    }
+}
+
 void GUIMenu::file_compile(const bool compress) {
     file_save();
     nfdchar_t *target_path = nullptr;
@@ -129,8 +163,8 @@ void GUIMenu::file_compile(const bool compress) {
             song.compile(new_path, compress);
             compilation_status = std::filesystem::exists(new_path);
         } catch (std::runtime_error &exception) {
-            std::cerr << "Compilation error: " << exception.what() << std::endl;
             compilation_status = false;
+            std::cerr << "Compilation error: " << exception.what() << std::endl;
         }
         gui.update();
     } else if (result != NFD_CANCEL) {

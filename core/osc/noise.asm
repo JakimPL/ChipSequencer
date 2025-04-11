@@ -8,6 +8,8 @@ noise:
     xor ax, 0xB400
 .no_xor:
     mov [noise_seed], ax
+.apply_volume:
+    call apply_volume
     ret
 
     SEGMENT_DATA
