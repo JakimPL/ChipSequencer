@@ -1,6 +1,7 @@
 #include "data.hpp"
 
 uint16_t bpm = DEFAULT_BPM;
+_Float32 unit = DEFAULT_UNIT;
 uint16_t sample_rate = DEFAULT_SAMPLE_RATE;
 _Float32 normalizer = DEFAULT_NORMALIZER;
 

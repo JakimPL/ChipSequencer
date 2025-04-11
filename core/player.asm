@@ -24,6 +24,7 @@
     extern sound_driver_terminate
 
     extern bpm
+    extern unit
     extern sample_rate
     extern normalizer
 
@@ -71,10 +72,9 @@ initialize:
     SEGMENT_DATA
 calculate:
     db 1
-dividend:
-    dd SAMPLE_RATE << 16
 
     SEGMENT_BSS
+    dividend resd 1
     output resd MAX_OUTPUT_CHANNELS
     %ifdef ELF
     dsp_buffer resd MAX_DSPS * MAX_DSP_BUFFER_SIZE
@@ -85,3 +85,4 @@ dividend:
     %ifndef ELF
     group dgroup bss data
     %endif
+

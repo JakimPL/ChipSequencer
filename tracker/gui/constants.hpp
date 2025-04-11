@@ -26,6 +26,8 @@
 #define GUI_MAX_SAMPLE_RATE 64000
 #define GUI_MIN_BPM 32
 #define GUI_MAX_BPM 4096
+#define GUI_MIN_UNIT 1
+#define GUI_MAX_UNIT 64
 
 #define GUI_ERROR_COLOR ImVec4(1.0f, 0.2f, 0.2f, 1.0f)
 #define GUI_HIGHLIGHT_COLOR ImVec4(1.0f, 0.2f, 1.0f, 1.0f)

@@ -26,6 +26,7 @@ Song::~Song() {
 void Song::new_song() {
     clear_data();
     bpm = DEFAULT_BPM;
+    sample_rate = DEFAULT_SAMPLE_RATE;
     normalizer = DEFAULT_NORMALIZER;
     header = {
         DEFAULT_AUTHOR,

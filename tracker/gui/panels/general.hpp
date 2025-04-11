@@ -17,6 +17,7 @@ class GUIGeneralPanel : public GUIPanel {
         char author[GUI_MAX_STRING_LENGTH] = "";
 
         int bpm = DEFAULT_BPM;
+        int division = DEFAULT_DIVISION;
         float sample_rate = DEFAULT_SAMPLE_RATE;
         float normalizer = DEFAULT_NORMALIZER;
         int output_channels = DEFAULT_OUTPUT_CHANNELS;

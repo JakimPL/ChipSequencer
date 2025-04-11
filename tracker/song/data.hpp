@@ -23,6 +23,8 @@ extern "C" uint16_t ticks_per_beat;
 
 /* Modifiable song data */
 extern uint16_t bpm;
+extern _Float32 unit;
+
 extern uint16_t sample_rate;
 extern _Float32 normalizer;
 
