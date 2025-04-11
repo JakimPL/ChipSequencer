@@ -522,6 +522,7 @@ nlohmann::json Song::create_header_json() const {
     nlohmann::json json;
     json["general"] = {
         {"bpm", bpm},
+        {"unit", unit},
         {"sample_rate", sample_rate},
         {"normalizer", normalizer},
         {"output_channels", output_channels},
@@ -562,6 +563,7 @@ nlohmann::json Song::import_header(const std::string &filename) {
 
     const auto &json_general = json["general"];
     bpm = json_general["bpm"];
+    unit = json_general.value("unit", DEFAULT_UNIT);
     sample_rate = json_general.value("sample_rate", DEFAULT_SAMPLE_RATE);
     normalizer = json_general.value("normalizer", DEFAULT_NORMALIZER);
     output_channels = json_general.value("output_channels", DEFAULT_OUTPUT_CHANNELS);
