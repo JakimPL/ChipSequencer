@@ -147,7 +147,7 @@ class Creator:
 
         self.define("OUTPUT_CHANNELS", self.song.output_channels)
         self.define("SONG_LENGTH", self.song.song_length)
-        self.define("SONG_LENGTH", self.song.sample_rate)
+        self.define("SAMPLE_RATE", self.song.sample_rate)
         self.comment()
 
     def define_tuning(self):
@@ -179,24 +179,24 @@ class Creator:
         self.comment()
 
     def counts(self):
-        self.add("    %ifdef ELF")
         self.add("    extern num_channels")
         self.add("    extern num_dsps")
-        self.add("    %else")
-        self.add("    SEGMENT_DATA")
-        self.label("num_channels")
-        self.reference(Byte, "CHANNELS")
-        self.label("num_dsps")
-        self.reference(Byte, "DSPS")
-        self.add("    %endif")
+        self.add("    extern unit")
         self.comment()
 
     def song_header(self):
         self.add("    SEGMENT_DATA")
         self.label("bpm")
         self.value(self.song.bpm)
+        self.label("unit")
+        self.value(self.song.unit)
         self.label("normalizer")
         self.value(self.song.normalizer)
+        self.comment()
+        self.label("num_channels")
+        self.reference(Byte, "CHANNELS")
+        self.label("num_dsps")
+        self.reference(Byte, "DSPS")
         self.comment()
 
     def envelopes(self):

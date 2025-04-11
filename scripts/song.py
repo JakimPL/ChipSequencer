@@ -21,6 +21,7 @@ def save_asm(asm: str, file: Path):
 
 def main():
     bpm = Word(300)
+    unit = Float(60.0)
     normalizer = Float(0.25)
     output_channels = 2
     song_length = 186253
@@ -279,6 +280,7 @@ def main():
 
     song = Song(
         bpm=bpm,
+        unit=unit,
         sample_rate=sample_rate,
         normalizer=normalizer,
         output_channels=output_channels,

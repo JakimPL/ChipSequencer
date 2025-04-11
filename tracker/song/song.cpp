@@ -482,11 +482,11 @@ std::string Song::generate_header_asm_file() const {
     asm_content << "\n";
     asm_content << "    \%define DSP_BUFFER_SIZE MAX_DSP_BUFFER_SIZE * DSPS" << "\n";
     asm_content << "\n";
-    asm_content << "SEGMENT_DATA" << "\n";
-    asm_content << "num_channels:" << "\n";
-    asm_content << "    db CHANNELS" << "\n";
-    asm_content << "num_dsps:" << "\n";
-    asm_content << "    db DSPS" << "\n";
+    asm_content << "\n";
+    asm_content << "    extern num_channels" << "\n";
+    asm_content << "    extern num_dsps" << "\n";
+    asm_content << "    extern unit" << "\n";
+    asm_content << "\n";
     return asm_content.str();
 }
 
@@ -495,8 +495,14 @@ std::string Song::generate_data_asm_file() const {
     asm_content << "SEGMENT_DATA\n";
     asm_content << "bpm:\n";
     asm_content << "dw " << bpm << "\n";
+    asm_content << "unit:\n";
+    asm_content << "dd " << unit << "\n";
     asm_content << "normalizer:\n";
     asm_content << "dd " << normalizer << "\n\n";
+    asm_content << "num_channels:\n";
+    asm_content << "db " << static_cast<int>(num_channels) << "\n";
+    asm_content << "num_dsps:\n";
+    asm_content << "db " << static_cast<int>(num_dsps) << "\n\n";
 
     generate_header_vector(asm_content, "envelope", "envel", envelopes.size());
     generate_header_vector(asm_content, "sequence", "seq", sequences.size());
