@@ -25,7 +25,7 @@ extern "C" uint16_t ticks_per_beat;
 extern uint16_t bpm;
 extern _Float32 unit;
 
-extern uint16_t sample_rate;
+extern int32_t sample_rate;
 extern _Float32 normalizer;
 
 extern uint8_t num_channels;

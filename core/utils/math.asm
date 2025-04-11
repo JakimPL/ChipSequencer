@@ -99,7 +99,7 @@ two:
     dw 2
     %ifndef ELF
 sample_rate:
-    dw SAMPLE_RATE
+    dd SAMPLE_RATE
     %endif
 y:
     dd 0

@@ -2,7 +2,7 @@
 
 uint16_t bpm = DEFAULT_BPM;
 _Float32 unit = DEFAULT_UNIT;
-uint16_t sample_rate = DEFAULT_SAMPLE_RATE;
+int32_t sample_rate = DEFAULT_SAMPLE_RATE;
 _Float32 normalizer = DEFAULT_NORMALIZER;
 
 uint8_t num_channels = 0;

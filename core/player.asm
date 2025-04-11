@@ -48,6 +48,7 @@
 initialize:
     pusha
     call initialize_frequencies
+    call initialize_sample_rate
     call calculate_ticks_per_beat
 
     call initialize_dsp_buffers

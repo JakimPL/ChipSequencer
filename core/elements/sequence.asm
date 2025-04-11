@@ -57,17 +57,18 @@ step:
     dec dword [sequence_timer + 4 * ecx]
     ret
 
-calculate_ticks_per_beat:
+initialize_sample_rate:
     mov eax, [sample_rate]
     shl eax, 16
     mov [dividend], eax
+    ret
 
-    fild word [sample_rate]
+calculate_ticks_per_beat:
+    fild dword [sample_rate]
     fmul dword [unit]
     fild word [bpm]
     fdivp st1, st0
     fistp word [ticks_per_beat]
-    ret
     ret
 
     SEGMENT_BSS

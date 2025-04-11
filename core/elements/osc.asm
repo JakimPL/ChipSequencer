@@ -38,7 +38,7 @@ increment_timer:
 reduce:
 ; If index > dividend, let index := index - dividend
     cmp eax, [esi]
-    jl .done
+    jb .done
     sub eax, [esi]
     sbb ecx, 0
     stc
