@@ -797,6 +797,7 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
         write_data(file, &filter->output_flag, sizeof(filter->output_flag));
         write_data(file, &null, sizeof(null));
         write_data(file, &filter->frequency, sizeof(filter->frequency));
+        write_data(file, &filter->mode, sizeof(filter->mode));
     } else {
         throw std::runtime_error("Unknown DSP type: " + std::to_string(dsp_type));
     }
@@ -845,6 +846,7 @@ void *Song::deserialize_dsp(std::ifstream &file) const {
         read_data(file, &filter->output_flag, sizeof(filter->output_flag));
         file.seekg(sizeof(uint16_t), std::ios::cur);
         read_data(file, &filter->frequency, sizeof(filter->frequency));
+        read_data(file, &filter->mode, sizeof(filter->mode));
         return reinterpret_cast<void *>(filter);
     } else {
         throw std::runtime_error("Unknown DSP type: " + std::to_string(effect_type));

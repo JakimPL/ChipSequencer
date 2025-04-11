@@ -16,4 +16,10 @@ enum class GUIElement {
     Wavetables
 };
 
+enum class GUIScale {
+    Linear,
+    Logarithmic,
+    Quadratic,
+};
+
 #endif // GUI_ENUMS_HPP

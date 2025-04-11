@@ -45,7 +45,8 @@ struct DSPFilter {
     uint8_t _unused;
     void *output;
     uint16_t frequency;
-    uint8_t pad[6];
+    uint8_t mode;
+    uint8_t pad[5];
 };
 
 typedef std::vector<void *> DSPs;

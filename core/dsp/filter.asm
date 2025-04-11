@@ -14,15 +14,21 @@ filter:
     MOV_FROM_SI ebx
 .load_frequency:
     LOAD_OFFSET ecx, dsp_offset
+    mov dl, [DSP_FILTER_MODE + ecx]
     mov cx, [DSP_FILTER_FREQUENCY + ecx]
+    shr cx, 1
     mov [cutoff_frequency], cx
 
 .calculate_coefficients:
+; x = cutoff_frequency ^ 2 / (65536 * sample_rate)
     fild word [cutoff_frequency]
-    fild word [sample_rate]
+    fmul st0, st0
+    fild dword [sample_rate]
+    fdiv
+    fld dword [f_65536]
     fdiv
 
-; -2 * pi * cutoff_frequency / sample_rate
+; -2 * pi * x
     fld dword [pi]
     fild word [two]
     fmulp st1, st0
@@ -60,6 +66,12 @@ filter:
     fstp dword [value]
     mov eax, [value]
     MOV_TO_SI eax
+
+.apply_mode:
+    cmp dl, 0
+    je .done
+
+.done:
     ret
 
     SEGMENT_BSS

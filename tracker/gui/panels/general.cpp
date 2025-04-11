@@ -187,7 +187,7 @@ void GUIGeneralPanel::draw_song_info() {
 
     ImGui::Separator();
     ImGui::Text("Output");
-    draw_float_slider("Sample rate", current_song.sample_rate, GUI_MIN_SAMPLE_RATE, GUI_MAX_SAMPLE_RATE, false, "%.0f");
+    draw_float_slider("Sample rate", current_song.sample_rate, GUI_MIN_SAMPLE_RATE, GUI_MAX_SAMPLE_RATE, GUIScale::Linear, "%.0f");
     draw_float_slider("Normalizer", current_song.normalizer, 0.01f, 2.0f);
     draw_int_slider("Output channels", current_song.output_channels, 1, MAX_OUTPUT_CHANNELS);
 }

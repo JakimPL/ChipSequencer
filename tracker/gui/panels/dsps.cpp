@@ -60,7 +60,8 @@ void GUIDSPsPanel::from() {
     case EFFECT_FILTER: {
         current_dsp.type = "Filter";
         const DSPFilter *filter = static_cast<const DSPFilter *>(dsp);
-        current_dsp.filter_cutoff = 2 * static_cast<float>(filter->frequency) / UINT16_MAX;
+        current_dsp.filter_cutoff = static_cast<float>(filter->frequency) / UINT16_MAX;
+        current_dsp.filter_mode = filter->mode;
         break;
     }
     }
@@ -97,7 +98,8 @@ void GUIDSPsPanel::to() const {
         static_cast<DSP *>(buffer)->~DSP();
         DSPFilter *dsp = new (buffer) DSPFilter();
         dsp->effect_index = EFFECT_FILTER;
-        dsp->frequency = static_cast<uint16_t>(std::floor(current_dsp.filter_cutoff * UINT16_MAX / 2));
+        dsp->frequency = static_cast<uint16_t>(std::round(current_dsp.filter_cutoff * UINT16_MAX));
+        dsp->mode = current_dsp.filter_mode;
         break;
     }
     }
@@ -194,6 +196,8 @@ void GUIDSPsPanel::draw_effect() {
         break;
     }
     case EFFECT_FILTER: {
+        ImGui::Checkbox("High-pass", &current_dsp.filter_mode);
+        ImGui::NewLine();
         draw_knob("Frequency", current_dsp.filter_cutoff, 0.0f, 1.0f);
         break;
     }

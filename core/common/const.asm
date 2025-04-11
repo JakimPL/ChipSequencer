@@ -13,7 +13,7 @@
     %define DEFAULT_BPM 120
     %define DEFAULT_UNIT 60
     %define DEFAULT_DIVISION 4
-    %define DEFAULT_SAMPLE_RATE 29106
+    %define DEFAULT_SAMPLE_RATE 44100
     %define DEFAULT_NORMALIZER 0.5
     %define DEFAULT_OUTPUT_CHANNELS 1
 
@@ -163,6 +163,7 @@
 ; Filter
     %define EFFECT_FILTER 2
     %define DSP_FILTER_FREQUENCY 8
+    %define DSP_FILTER_MODE 10
     %define SIZE_DSP_FILTER 16
 
     %else
@@ -187,5 +188,6 @@
 ; Filter
     %define EFFECT_FILTER 2
     %define DSP_FILTER_FREQUENCY 5
-    %define SIZE_DSP_FILTER 7
+    %define DSP_FILTER_MODE 7
+    %define SIZE_DSP_FILTER 8
     %endif

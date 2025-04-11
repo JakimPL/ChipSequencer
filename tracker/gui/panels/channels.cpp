@@ -163,7 +163,7 @@ void GUIChannelsPanel::draw_channel() {
     ImGui::EndDisabled();
 
     if (current_channel.constant_pitch) {
-        draw_float_slider("Pitch", current_channel.pitch, 0.0002f, 65535.0f, true);
+        draw_float_slider("Pitch", current_channel.pitch, 0.0002f, 65535.0f, GUIScale::Logarithmic);
     } else {
         draw_float_slider("Transpose", current_channel.pitch, GUI_MIN_TRANSPOSE, GUI_MAX_TRANSPOSE);
     }

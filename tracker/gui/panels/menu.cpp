@@ -122,6 +122,10 @@ void GUIMenu::file_open() {
         } catch (nlohmann::json::exception &exception) {
             load_error = true;
             std::cerr << "Failed to parse JSON file: " << exception.what() << std::endl;
+        } catch (const std::runtime_error &exception) {
+            song.new_song();
+            load_error = true;
+            std::cerr << "Failed to read data file: " << exception.what() << std::endl;
         }
     } else if (result != NFD_CANCEL) {
         std::cerr << "Error: " << NFD_GetError() << std::endl;

@@ -33,21 +33,31 @@ void draw_int_slider(const char *label, int &reference, int min, int max) {
     reference = std::clamp(reference, min, max);
 }
 
-void draw_float_slider(const char *label, float &reference, float min, float max, bool log_scale, const char *format) {
+void draw_float_slider(const char *label, float &reference, float min, float max, const GUIScale scale, const char *format) {
     const std::string slider_id = std::string("##") + label + "Slider";
     const std::string input_id = std::string("##") + label + "Input";
     ImGui::PushID(label);
 
     float display_value = reference;
+    const bool log_scale = scale == GUIScale::Logarithmic;
     if (log_scale) {
         display_value = std::log(reference / min) / std::log(max / min);
     }
 
     if (ImGui::SliderFloat(slider_id.c_str(), &display_value, log_scale ? 0.0f : min, log_scale ? 1.0f : max, label)) {
-        if (log_scale) {
-            reference = min * std::pow(max / min, display_value);
-        } else {
+        switch (scale) {
+        case GUIScale::Linear: {
             reference = display_value;
+            break;
+        }
+        case GUIScale::Logarithmic: {
+            reference = min * std::pow(max / min, display_value);
+            break;
+        }
+        case GUIScale::Quadratic: {
+            reference = min + (max - min) * display_value * display_value;
+            break;
+        }
         }
     }
 
