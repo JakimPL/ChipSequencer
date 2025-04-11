@@ -29,6 +29,7 @@ increment_timer:
     mul ebx
     shrd eax, edx, 57
 .increment_timer:
+    shr eax, 2
     add eax, dword [oscillator_timer + 4 * ecx]
     mov esi, dividend
     call reduce
