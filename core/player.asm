@@ -56,6 +56,7 @@ initialize:
     call reset_dsps
 
     call generate_sine_table
+    call initialize_seeds
 
     %if PRECALCULATE
 .precalculate:

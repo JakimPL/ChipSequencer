@@ -9,7 +9,7 @@ uint8_t num_channels = 0;
 uint8_t num_dsps = 0;
 
 uint64_t reference_frequency = 0x2FE15A183;
-_Float32 note_divisor = DEFAULT_NOTE_DIVISOR;
+_Float64 note_divisor = DEFAULT_NOTE_DIVISOR;
 
 Envelopes envelopes;
 Sequences sequences;

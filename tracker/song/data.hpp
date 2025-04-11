@@ -32,7 +32,7 @@ extern uint8_t num_channels;
 extern uint8_t num_dsps;
 
 extern uint64_t reference_frequency;
-extern _Float32 note_divisor;
+extern _Float64 note_divisor;
 
 extern Envelopes envelopes;
 extern Sequences sequences;

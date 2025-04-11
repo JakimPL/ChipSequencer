@@ -50,7 +50,7 @@ initialize_frequencies:
     fmulp st1, st0
     fistp dword [edi]
 
-    fdiv dword [note_divisor]
+    fdiv qword [note_divisor]
 
     loop .loop
     ret
@@ -81,7 +81,7 @@ apply_volume:
 reference_frequency:
     dq TUNING_FREQUENCY
 note_divisor:
-    dd __float32__(TUNING_NOTE_DIVISOR)
+    dq __float64__(TUNING_NOTE_DIVISOR)
     %endif
 f_65536:
     dd 65536.0
