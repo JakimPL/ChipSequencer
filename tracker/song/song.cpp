@@ -93,6 +93,22 @@ void Song::compile(const std::string &filename, bool compress) const {
     }
 }
 
+void Song::set_title(const std::string &title) {
+    if (title.length() >= MAX_STRING_LENGTH) {
+        throw std::runtime_error("Song title is too long");
+    }
+
+    header.title = title;
+}
+
+void Song::set_author(const std::string &author) {
+    if (author.length() >= MAX_STRING_LENGTH) {
+        throw std::runtime_error("Song author is too long");
+    }
+
+    header.author = author;
+}
+
 void Song::change_tuning(const uint8_t new_edo, const double base_frequency) {
     scale_composer.compose(new_edo);
     frequency_table.calculate(base_frequency);

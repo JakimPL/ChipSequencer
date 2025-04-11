@@ -39,6 +39,9 @@ void GUIGeneralPanel::from() {
 }
 
 void GUIGeneralPanel::to() const {
+    song.set_title(current_song.title);
+    song.set_author(current_song.author);
+
     normalizer = current_song.normalizer;
     if (current_song.output_channels != song.get_output_channels()) {
         song.set_output_channels(current_song.output_channels);
@@ -167,6 +170,8 @@ void GUIGeneralPanel::draw_song_info() {
     ImGui::Separator();
     ImGui::Text("Song Details");
     ImGui::InputText("Name", current_song.name, IM_ARRAYSIZE(current_song.name));
+    ImGui::InputText("Artist", current_song.artist, IM_ARRAYSIZE(current_song.artist));
+    ImGui::Separator();
     draw_int_slider("BPM", current_song.bpm, GUI_MIN_BPM, GUI_MAX_BPM);
     draw_float_slider("Normalizer", current_song.normalizer, 0.01f, 2.0f);
     draw_int_slider("Output channels", current_song.output_channels, 1, MAX_OUTPUT_CHANNELS);

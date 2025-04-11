@@ -6,13 +6,16 @@
 #include <string>
 #include <thread>
 
+#include "../constants.hpp"
 #include "../init.hpp"
 #include "panel.hpp"
 
 class GUIGeneralPanel : public GUIPanel {
   private:
     struct CurrentSong {
-        char name[64] = "";
+        char title[GUI_MAX_STRING_LENGTH] = "";
+        char author[GUI_MAX_STRING_LENGTH] = "";
+
         int bpm = DEFAULT_BPM;
         float normalizer = DEFAULT_NORMALIZER;
         int output_channels = DEFAULT_OUTPUT_CHANNELS;

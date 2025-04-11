@@ -159,33 +159,9 @@ void GUIOscillatorsPanel::update_oscillator_name(const int index, const int gene
         return;
     }
 
-    std::string label;
     const Oscillator *oscillator = static_cast<const Oscillator *>(oscillators[index]);
     const int generator = generator_index == -1 ? oscillator->generator_index : generator_index;
-    switch (generator) {
-    case GENERATOR_SQUARE: {
-        label = "Square ";
-        break;
-    }
-    case GENERATOR_SAW: {
-        label = "Saw ";
-        break;
-    }
-    case GENERATOR_SINE: {
-        label = "Sine ";
-        break;
-    }
-    case GENERATOR_WAVETABLE: {
-        label = "Wavetable ";
-        break;
-    }
-    default: {
-        label = "Oscillator ";
-        break;
-    }
-    }
-
-    oscillator_names[index] = label + std::to_string(index);
+    oscillator_names[index] = generator_names[generator] + " " + std::to_string(index);
 }
 
 void GUIOscillatorsPanel::update_wavetables() {

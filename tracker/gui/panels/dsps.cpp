@@ -147,27 +147,9 @@ void GUIDSPsPanel::update_dsp_name(const int index, const int effect_index) cons
         return;
     }
 
-    std::string label;
     const DSP *dsp = static_cast<const DSP *>(dsps[index]);
     const int effect = effect_index == -1 ? dsp->effect_index : effect_index;
-    switch (effect) {
-    case EFFECT_GAINER: {
-        label = "Gainer ";
-        break;
-    }
-    case EFFECT_DELAY: {
-        label = "Delay ";
-        break;
-    }
-    case EFFECT_FILTER: {
-        label = "Filter ";
-        break;
-    default:
-        label = "DSP ";
-    }
-    }
-
-    dsp_names[index] = label + std::to_string(index);
+    dsp_names[index] = effect_names[effect] + " " + std::to_string(index);
 }
 
 void GUIDSPsPanel::draw_dsp_type() {

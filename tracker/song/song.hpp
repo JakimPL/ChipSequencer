@@ -92,6 +92,9 @@ class Song {
     void save_to_file(const std::string &filename);
     void compile(const std::string &filename, bool compress = true) const;
 
+    void set_title(const std::string &title);
+    void set_author(const std::string &author);
+
     void change_tuning(const uint8_t new_edo, const double base_frequency);
 
     uint16_t get_max_rows();
