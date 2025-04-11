@@ -59,8 +59,8 @@ step:
 
 initialize_sample_rate:
     mov eax, [sample_rate]
-    shl eax, 16
-    mov [dividend], eax
+    shl eax, 14
+    mov [dividend], eax      ; dividend is shifted by 2 to allow higher ranges of sampling rates
     ret
 
 calculate_ticks_per_beat:

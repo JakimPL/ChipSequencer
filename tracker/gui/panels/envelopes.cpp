@@ -44,11 +44,11 @@ bool GUIEnvelopesPanel::is_index_valid() const {
 }
 
 float GUIEnvelopesPanel::cast_to_float(int value, float scale) {
-    return scale * static_cast<float>(value) / (0.5 * UINT16_MAX);
+    return scale * static_cast<float>(value) / UINT16_MAX;
 }
 
 uint16_t GUIEnvelopesPanel::cast_to_int(float value, float scale) {
-    return static_cast<uint16_t>(value / scale * (0.5 * UINT16_MAX));
+    return static_cast<uint16_t>(value / scale * UINT16_MAX);
 }
 
 void GUIEnvelopesPanel::from() {
@@ -57,8 +57,8 @@ void GUIEnvelopesPanel::from() {
     }
 
     const Envelope *envelope = envelopes[envelope_index];
-    current_envelope.base_volume = cast_to_float(envelope->base_volume);
-    current_envelope.sustain_level = cast_to_float(envelope->sustain_level);
+    current_envelope.base_volume = cast_to_float(envelope->base_volume, 2.0f);
+    current_envelope.sustain_level = cast_to_float(envelope->sustain_level, 2.0f);
     current_envelope.attack = cast_to_float(envelope->attack, timer_constant);
     current_envelope.decay = cast_to_float(envelope->decay, timer_constant);
     current_envelope.hold = cast_to_float(envelope->hold, timer_constant);
@@ -71,8 +71,8 @@ void GUIEnvelopesPanel::to() const {
     }
 
     Envelope *envelope = envelopes[envelope_index];
-    envelope->base_volume = cast_to_int(current_envelope.base_volume);
-    envelope->sustain_level = cast_to_int(current_envelope.sustain_level);
+    envelope->base_volume = cast_to_int(current_envelope.base_volume, 2.0f);
+    envelope->sustain_level = cast_to_int(current_envelope.sustain_level, 2.0f);
     envelope->attack = cast_to_int(current_envelope.attack, timer_constant);
     envelope->decay = cast_to_int(current_envelope.decay, timer_constant);
     envelope->hold = cast_to_int(current_envelope.hold, timer_constant);
@@ -110,10 +110,10 @@ void GUIEnvelopesPanel::draw_levels() {
 
 void GUIEnvelopesPanel::draw_timers() {
     ImGui::Text("Timers");
-    draw_float_slider("Attack", current_envelope.attack, 0.0f, max_timer_value);
-    draw_float_slider("Decay", current_envelope.decay, 0.0f, max_timer_value);
-    draw_float_slider("Hold", current_envelope.hold, 0.0f, max_timer_value);
-    draw_float_slider("Release", current_envelope.release, 0.0f, max_timer_value);
+    draw_float_slider("Attack", current_envelope.attack, 0.0f, GUI_ENVELOPE_MAX_TIMER);
+    draw_float_slider("Decay", current_envelope.decay, 0.0f, GUI_ENVELOPE_MAX_TIMER);
+    draw_float_slider("Hold", current_envelope.hold, 0.0f, GUI_ENVELOPE_MAX_TIMER);
+    draw_float_slider("Release", current_envelope.release, 0.0f, GUI_ENVELOPE_MAX_TIMER);
 }
 
 void GUIEnvelopesPanel::draw_envelope_graph() {

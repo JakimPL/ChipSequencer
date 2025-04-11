@@ -95,7 +95,9 @@ set_release:
 
     SEGMENT_DATA
 magic_constant:
-    dd 0x3D09000
+; C = (UINT16_MAX << 14) / MAX_ENVELOPE_TIMER_LENGTH
+; where 14 stems from the fact that dividend = sample_rate << 14
+    dd 0x6666000
 
 phases:
     %ifdef ELF

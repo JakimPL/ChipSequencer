@@ -48,7 +48,7 @@ void GUIGeneralPanel::to() const {
     song.set_title(current_song.title);
     song.set_author(current_song.author);
 
-    sample_rate = current_song.sample_rate;
+    sample_rate = 4 * std::round(static_cast<float>(current_song.sample_rate) / 4);
     unit = 240.0f / current_song.division;
     normalizer = current_song.normalizer;
     if (current_song.output_channels != song.get_output_channels()) {
