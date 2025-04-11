@@ -26,10 +26,11 @@ Song::~Song() {
 void Song::new_song() {
     clear_data();
     bpm = DEFAULT_BPM;
+    sample_rate = DEFAULT_SAMPLE_RATE;
     normalizer = DEFAULT_NORMALIZER;
     header = {
-        "Unknown",
-        "Untitled",
+        DEFAULT_AUTHOR,
+        DEFAULT_TITLE,
         TRACKER_VERSION
     };
     tuning = {
@@ -91,6 +92,76 @@ void Song::compile(const std::string &filename, bool compress) const {
         std::filesystem::remove_all(temp_base);
         throw;
     }
+}
+
+void Song::render(const std::string &filename) {
+    calculate_song_length();
+
+    std::vector<float> samples;
+    samples.reserve(song_length);
+    initialize();
+    for (size_t i = 0; i < song_length; i++) {
+        mix();
+        samples.push_back(output);
+    }
+
+    uint16_t audio_format = 3;
+    uint16_t num_channels = 1;
+    uint32_t sample_rate_value = sample_rate;
+    uint16_t bits_per_sample = 32;
+    uint16_t block_align = num_channels * sizeof(float);
+    uint32_t byte_rate = sample_rate_value * block_align;
+    uint32_t subchunk2_size = samples.size() * block_align;
+    uint32_t chunk_size = 36 + subchunk2_size;
+
+    std::ofstream outfile(filename, std::ios::binary);
+    if (!outfile) {
+        throw std::runtime_error("Failed to open file: " + filename);
+    }
+
+    outfile.write("RIFF", 4);
+    outfile.write(reinterpret_cast<const char *>(&chunk_size), 4);
+    outfile.write("WAVE", 4);
+
+    outfile.write("fmt ", 4);
+    uint32_t subchunk1_size = 16;
+    outfile.write(reinterpret_cast<const char *>(&subchunk1_size), 4);
+    outfile.write(reinterpret_cast<const char *>(&audio_format), 2);
+    outfile.write(reinterpret_cast<const char *>(&num_channels), 2);
+    outfile.write(reinterpret_cast<const char *>(&sample_rate_value), 4);
+    outfile.write(reinterpret_cast<const char *>(&byte_rate), 4);
+    outfile.write(reinterpret_cast<const char *>(&block_align), 2);
+    outfile.write(reinterpret_cast<const char *>(&bits_per_sample), 2);
+
+    outfile.write("data", 4);
+    outfile.write(reinterpret_cast<const char *>(&subchunk2_size), 4);
+
+    outfile.write(reinterpret_cast<const char *>(samples.data()), samples.size() * sizeof(float));
+    outfile.close();
+}
+
+std::string Song::get_title() const {
+    return header.title;
+}
+
+std::string Song::get_author() const {
+    return header.author;
+}
+
+void Song::set_title(const std::string &title) {
+    if (title.length() >= MAX_STRING_LENGTH) {
+        throw std::runtime_error("Song title is too long");
+    }
+
+    header.title = title;
+}
+
+void Song::set_author(const std::string &author) {
+    if (author.length() >= MAX_STRING_LENGTH) {
+        throw std::runtime_error("Song author is too long");
+    }
+
+    header.author = author;
 }
 
 void Song::change_tuning(const uint8_t new_edo, const double base_frequency) {
@@ -404,17 +475,18 @@ std::string Song::generate_header_asm_file() const {
     asm_content << "\n";
     asm_content << "    \%define OUTPUT_CHANNELS " << static_cast<int>(output_channels) << "\n";
     asm_content << "    \%define SONG_LENGTH " << song_length << "\n";
+    asm_content << "    \%define SAMPLE_RATE " << sample_rate << "\n";
     asm_content << "\n";
     asm_content << "    \%define TUNING_FREQUENCY " << static_cast<uint32_t>(std::round(frequency_table.get_last_frequency() * 65536.0)) << "\n";
-    asm_content << "    \%define TUNING_NOTE_DIVISOR " << static_cast<_Float32>(frequency_table.get_note_divisor()) << "\n";
+    asm_content << "    \%define TUNING_NOTE_DIVISOR " << static_cast<_Float64>(frequency_table.get_note_divisor()) << "\n";
     asm_content << "\n";
     asm_content << "    \%define DSP_BUFFER_SIZE MAX_DSP_BUFFER_SIZE * DSPS" << "\n";
     asm_content << "\n";
-    asm_content << "SEGMENT_DATA" << "\n";
-    asm_content << "num_channels:" << "\n";
-    asm_content << "    db CHANNELS" << "\n";
-    asm_content << "num_dsps:" << "\n";
-    asm_content << "    db DSPS" << "\n";
+    asm_content << "\n";
+    asm_content << "    extern num_channels" << "\n";
+    asm_content << "    extern num_dsps" << "\n";
+    asm_content << "    extern unit" << "\n";
+    asm_content << "\n";
     return asm_content.str();
 }
 
@@ -423,8 +495,14 @@ std::string Song::generate_data_asm_file() const {
     asm_content << "SEGMENT_DATA\n";
     asm_content << "bpm:\n";
     asm_content << "dw " << bpm << "\n";
+    asm_content << "unit:\n";
+    asm_content << "dd " << unit << "\n";
     asm_content << "normalizer:\n";
     asm_content << "dd " << normalizer << "\n\n";
+    asm_content << "num_channels:\n";
+    asm_content << "db " << static_cast<int>(num_channels) << "\n";
+    asm_content << "num_dsps:\n";
+    asm_content << "db " << static_cast<int>(num_dsps) << "\n\n";
 
     generate_header_vector(asm_content, "envelope", "envel", envelopes.size());
     generate_header_vector(asm_content, "sequence", "seq", sequences.size());
@@ -444,6 +522,8 @@ nlohmann::json Song::create_header_json() const {
     nlohmann::json json;
     json["general"] = {
         {"bpm", bpm},
+        {"unit", unit},
+        {"sample_rate", sample_rate},
         {"normalizer", normalizer},
         {"output_channels", output_channels},
         {"rows", max_rows},
@@ -476,15 +556,23 @@ nlohmann::json Song::create_header_json() const {
 
 nlohmann::json Song::import_header(const std::string &filename) {
     nlohmann::json json = read_json(filename);
-    header.title = json["header"]["title"];
-    header.author = json["header"]["author"];
-    header.version = json["header"]["version"];
-    bpm = json["general"]["bpm"];
-    normalizer = json["general"]["normalizer"];
-    output_channels = json["general"]["output_channels"];
-    song_length = json["general"]["song_length"];
-    tuning.edo = json["tuning"]["edo"];
-    tuning.a4_frequency = json["tuning"]["a4_frequency"];
+    const auto &json_header = json["header"];
+    header.title = json_header.value("title", DEFAULT_TITLE);
+    header.author = json_header.value("author", DEFAULT_AUTHOR);
+    header.version = json_header["version"];
+
+    const auto &json_general = json["general"];
+    bpm = json_general["bpm"];
+    unit = json_general.value("unit", DEFAULT_UNIT);
+    sample_rate = json_general.value("sample_rate", DEFAULT_SAMPLE_RATE);
+    normalizer = json_general.value("normalizer", DEFAULT_NORMALIZER);
+    output_channels = json_general.value("output_channels", DEFAULT_OUTPUT_CHANNELS);
+    song_length = json_general.value("song_length", 0);
+    max_rows = json_general.value("rows", 0);
+
+    const auto &json_tuning = json["tuning"];
+    tuning.edo = json_tuning.value("edo", DEFAULT_EDO);
+    tuning.a4_frequency = json_tuning.value("a4_frequency", DEFAULT_A4_FREQUENCY);
     return json;
 }
 
@@ -711,6 +799,7 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
         write_data(file, &filter->output_flag, sizeof(filter->output_flag));
         write_data(file, &null, sizeof(null));
         write_data(file, &filter->frequency, sizeof(filter->frequency));
+        write_data(file, &filter->mode, sizeof(filter->mode));
     } else {
         throw std::runtime_error("Unknown DSP type: " + std::to_string(dsp_type));
     }
@@ -759,6 +848,7 @@ void *Song::deserialize_dsp(std::ifstream &file) const {
         read_data(file, &filter->output_flag, sizeof(filter->output_flag));
         file.seekg(sizeof(uint16_t), std::ios::cur);
         read_data(file, &filter->frequency, sizeof(filter->frequency));
+        read_data(file, &filter->mode, sizeof(filter->mode));
         return reinterpret_cast<void *>(filter);
     } else {
         throw std::runtime_error("Unknown DSP type: " + std::to_string(effect_type));
@@ -783,6 +873,9 @@ void *Song::deserialize_oscillator(std::ifstream &file) const {
     } else if (oscillator_type == GENERATOR_WAVETABLE) {
         OscillatorWavetable *oscillator = new OscillatorWavetable();
         read_data(file, &oscillator->wavetable_index, sizeof(oscillator->wavetable_index));
+        return reinterpret_cast<void *>(oscillator);
+    } else if (oscillator_type == GENERATOR_NOISE) {
+        OscillatorNoise *oscillator = new OscillatorNoise();
         return reinterpret_cast<void *>(oscillator);
     } else {
         throw std::runtime_error("Unknown oscillator type: " + std::to_string(oscillator_type));
@@ -1015,6 +1108,8 @@ void Song::delete_oscillator(void *oscillator) {
         delete static_cast<OscillatorSine *>(oscillator);
     } else if (dsp_type == GENERATOR_WAVETABLE) {
         delete static_cast<OscillatorWavetable *>(oscillator);
+    } else if (dsp_type == GENERATOR_NOISE) {
+        delete static_cast<OscillatorNoise *>(oscillator);
     }
 }
 

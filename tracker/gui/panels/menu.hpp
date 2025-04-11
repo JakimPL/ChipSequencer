@@ -9,12 +9,14 @@
 class GUIMenu : public GUIPanel {
   private:
     std::optional<bool> compilation_status;
+    std::optional<bool> render_status;
     std::optional<bool> load_error;
 
     void file_new();
     void file_save();
     void file_save_as();
     void file_open();
+    void file_render();
     void file_compile(const bool compress = true);
     void file_exit();
 

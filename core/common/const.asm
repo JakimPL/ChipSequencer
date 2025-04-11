@@ -11,8 +11,14 @@
 
 ; Defaults
     %define DEFAULT_BPM 120
+    %define DEFAULT_UNIT 60
+    %define DEFAULT_DIVISION 4
+    %define DEFAULT_SAMPLE_RATE 44100
     %define DEFAULT_NORMALIZER 0.5
     %define DEFAULT_OUTPUT_CHANNELS 1
+
+    %define DEFAULT_TITLE "Untitled"
+    %define DEFAULT_AUTHOR "Unknown"
 
     %define DEFAULT_EDO 12
     %define DEFAULT_A4_FREQUENCY 440.0
@@ -21,10 +27,10 @@
     %define DEFAULT_ENVELOPE_BASE_VOLUME 0x7FFF
     %define DEFAULT_ENVELOPE_SUSTAIN_LEVEL 0x7FFF
     %define DEFAULT_ENVELOPE_BIAS 0x0000
-    %define DEFAULT_ENVELOPE_ATTACK 125
-    %define DEFAULT_ENVELOPE_DECAY 125
-    %define DEFAULT_ENVELOPE_HOLD 250
-    %define DEFAULT_ENVELOPE_RELEASE 250
+    %define DEFAULT_ENVELOPE_ATTACK 0x333
+    %define DEFAULT_ENVELOPE_DECAY 0x333
+    %define DEFAULT_ENVELOPE_HOLD 0x666
+    %define DEFAULT_ENVELOPE_RELEASE 0x666
 
     %define DEFAULT_CHANNEL_PITCH 0x02000000
 
@@ -42,6 +48,7 @@
 
 ; Limits
     %define MAX_OUTPUT_CHANNELS 4
+    %define MAX_STRING_LENGTH 64
 
     %define MAX_ENVELOPES 32
     %define MAX_SEQUENCES 64
@@ -53,6 +60,8 @@
 
     %define MAX_WAVETABLE_SIZE 512
     %define MAX_DSP_BUFFER_SIZE 256
+
+    %define MAX_ENVELOPE_TIMER_LENGTH 10
 
 ; Phases
     %define ATTACK 0
@@ -126,6 +135,12 @@
     %define OSCILLATOR_WAVETABLE_WAVETABLE_INDEX 2
     %define SIZE_OSCILLATOR_WAVETABLE 2
 
+; Noise
+    %define GENERATOR_NOISE 4
+    %define SIZE_OSCILLATOR_NOISE 1
+    %define NOISE_SEED 0xACE1
+    %define NOISE_GALOIS_GENERATOR 0xB400
+
     %ifdef ELF
 ; DSP
     %define DSP_EFFECT_INDEX 1
@@ -148,6 +163,7 @@
 ; Filter
     %define EFFECT_FILTER 2
     %define DSP_FILTER_FREQUENCY 8
+    %define DSP_FILTER_MODE 10
     %define SIZE_DSP_FILTER 16
 
     %else
@@ -172,5 +188,6 @@
 ; Filter
     %define EFFECT_FILTER 2
     %define DSP_FILTER_FREQUENCY 5
-    %define SIZE_DSP_FILTER 7
+    %define DSP_FILTER_MODE 7
+    %define SIZE_DSP_FILTER 8
     %endif

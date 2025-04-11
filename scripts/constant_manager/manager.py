@@ -4,8 +4,7 @@ from collections import defaultdict
 from typing import DefaultDict, Dict, List, Tuple, Union
 
 from pyconf import CONSTANTS_ASM_FILE, CONSTANTS_CPP_FILE, OFFSETS_HPP_FILE, TARGET_HPP_FILE
-
-from utils import load_text, save_json, save_text
+from utils import load_text, save_text
 
 
 class ConstantManager:
@@ -78,6 +77,9 @@ class ConstantManager:
 
             _, key, value = line.split(" ")
             group = key.split("_")[0].lower()
+            if '"' in value:
+                continue
+
             value = ConstantManager.parse(value)
             if elf is not True:
                 x16[group][key] = value

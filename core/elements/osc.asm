@@ -29,22 +29,11 @@ increment_timer:
     mul ebx
     shrd eax, edx, 57
 .increment_timer:
+    shr eax, 2
     add eax, dword [oscillator_timer + 4 * ecx]
     mov esi, dividend
     call reduce
     mov [oscillator_timer + 4 * ecx], eax
-    ret
-
-reduce:
-; If index > dividend, let index := index - dividend
-    cmp eax, [esi]
-    jl .done
-    sub eax, [esi]
-    sbb ecx, 0
-    stc
-    ret
-.done:
-    clc
     ret
 
 initialize_frequencies:
@@ -61,7 +50,7 @@ initialize_frequencies:
     fmulp st1, st0
     fistp dword [edi]
 
-    fdiv dword [note_divisor]
+    fdiv qword [note_divisor]
 
     loop .loop
     ret
@@ -85,13 +74,14 @@ apply_volume:
     %include "core/osc/saw.asm"
     %include "core/osc/sine.asm"
     %include "core/osc/wave.asm"
+    %include "core/osc/noise.asm"
 
     SEGMENT_DATA
     %ifndef ELF
 reference_frequency:
     dq TUNING_FREQUENCY
 note_divisor:
-    dd __float32__(TUNING_NOTE_DIVISOR)
+    dq __float64__(TUNING_NOTE_DIVISOR)
     %endif
 f_65536:
     dd 65536.0
@@ -102,11 +92,13 @@ oscillators_table:
     dd saw
     dd sine
     dd wavetable
+    dd noise
     %else
     dw square
     dw saw
     dw sine
     dw wavetable
+    dw noise
     %endif
 
     SEGMENT_BSS

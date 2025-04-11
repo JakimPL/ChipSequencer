@@ -21,7 +21,8 @@ class GUIDSPsPanel : public GUIPanel {
         float delay_time = 256.0f;
 
         // filter
-        float filter_cutoff = 0.5f;
+        float filter_cutoff = 8000.0f;
+        bool filter_mode = false;
     } current_dsp;
 
     int dsp_index = 0;

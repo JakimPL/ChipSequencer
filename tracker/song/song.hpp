@@ -14,8 +14,8 @@
 class Song {
   private:
     struct Header {
-        std::string author = "Unknown";
-        std::string title = "Untitled";
+        std::string author = DEFAULT_AUTHOR;
+        std::string title = DEFAULT_TITLE;
         std::string version = TRACKER_VERSION;
     } header;
 
@@ -91,6 +91,12 @@ class Song {
     void load_from_file(const std::string &filename);
     void save_to_file(const std::string &filename);
     void compile(const std::string &filename, bool compress = true) const;
+    void render(const std::string &filename);
+
+    std::string get_title() const;
+    std::string get_author() const;
+    void set_title(const std::string &title);
+    void set_author(const std::string &author);
 
     void change_tuning(const uint8_t new_edo, const double base_frequency);
 

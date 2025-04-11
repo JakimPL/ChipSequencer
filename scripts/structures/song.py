@@ -7,14 +7,16 @@ from structures.envelope import Envelope
 from structures.order import Order
 from structures.oscillator import Oscillator
 from structures.sequence import Sequence
-from structures.types import Byte, Word
+from structures.types import Float, Word
 from structures.wavetable import Wavetable
 
 
 @dataclass
 class Song:
     bpm: Word
-    normalizer: Word
+    unit: Float
+    sample_rate: int
+    normalizer: Float
     output_channels: int
     song_length: int
     reference_frequency: int

@@ -8,7 +8,6 @@
     global calculate_ticks_per_beat
     global ticks_per_beat
 
-    global sample_rate
     global output
     global dsp_input
 
@@ -25,7 +24,10 @@
     extern sound_driver_terminate
 
     extern bpm
+    extern unit
+    extern sample_rate
     extern normalizer
+
     extern envelopes
     extern sequences
     extern orders
@@ -46,6 +48,7 @@
 initialize:
     pusha
     call initialize_frequencies
+    call initialize_sample_rate
     call calculate_ticks_per_beat
 
     call initialize_dsp_buffers
@@ -53,6 +56,7 @@ initialize:
     call reset_dsps
 
     call generate_sine_table
+    call initialize_seeds
 
     %if PRECALCULATE
 .precalculate:
@@ -70,10 +74,9 @@ initialize:
     SEGMENT_DATA
 calculate:
     db 1
-dividend:
-    dd SAMPLE_RATE << 16
 
     SEGMENT_BSS
+    dividend resd 1
     output resd MAX_OUTPUT_CHANNELS
     %ifdef ELF
     dsp_buffer resd MAX_DSPS * MAX_DSP_BUFFER_SIZE
@@ -84,3 +87,4 @@ dividend:
     %ifndef ELF
     group dgroup bss data
     %endif
+

@@ -57,14 +57,18 @@ step:
     dec dword [sequence_timer + 4 * ecx]
     ret
 
+initialize_sample_rate:
+    mov eax, [sample_rate]
+    shl eax, 14
+    mov [dividend], eax      ; dividend is shifted by 2 to allow higher ranges of sampling rates
+    ret
+
 calculate_ticks_per_beat:
-    mov eax, [dividend]
-    shr eax, 16
-    mov bx, 60
-    imul bx
-    movzx ebx, word [bpm]
-    div bx
-    mov [ticks_per_beat], ax
+    fild dword [sample_rate]
+    fmul dword [unit]
+    fild word [bpm]
+    fdivp st1, st0
+    fistp word [ticks_per_beat]
     ret
 
     SEGMENT_BSS

@@ -11,6 +11,7 @@ class Generators(Enumeration):
     GENERATOR_SAW = 1
     GENERATOR_SINE = 2
     GENERATOR_WAVETABLE = 3
+    GENERATOR_NOISE = 4
 
 
 class Effects(Enumeration):

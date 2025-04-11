@@ -49,3 +49,11 @@ class OscillatorWavetable(Oscillator):
 
     def __len__(self) -> int:
         return 2
+
+
+class OscillatorNoise(Oscillator):
+    def __init__(self):
+        super().__init__(Generators.GENERATOR_NOISE)
+
+    def __len__(self) -> int:
+        return 1

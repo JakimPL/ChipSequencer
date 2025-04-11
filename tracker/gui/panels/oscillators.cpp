@@ -63,6 +63,10 @@ void GUIOscillatorsPanel::from() {
         current_oscillator.wavetable_index = wavetable->wavetable_index;
         break;
     }
+    case GENERATOR_NOISE: {
+        current_oscillator.type = "Noise";
+        break;
+    }
     }
 }
 
@@ -101,6 +105,13 @@ void GUIOscillatorsPanel::to() const {
         osc->generator_index = GENERATOR_WAVETABLE;
         osc->oscillator_size = SIZE_OSCILLATOR_WAVETABLE;
         osc->wavetable_index = current_oscillator.wavetable_index;
+        break;
+    }
+    case GENERATOR_NOISE: {
+        static_cast<OscillatorNoise *>(buffer)->~OscillatorNoise();
+        OscillatorNoise *osc = new (buffer) OscillatorNoise();
+        osc->generator_index = GENERATOR_NOISE;
+        osc->oscillator_size = SIZE_OSCILLATOR_NOISE;
         break;
     }
     }
@@ -148,33 +159,9 @@ void GUIOscillatorsPanel::update_oscillator_name(const int index, const int gene
         return;
     }
 
-    std::string label;
     const Oscillator *oscillator = static_cast<const Oscillator *>(oscillators[index]);
     const int generator = generator_index == -1 ? oscillator->generator_index : generator_index;
-    switch (generator) {
-    case GENERATOR_SQUARE: {
-        label = "Square ";
-        break;
-    }
-    case GENERATOR_SAW: {
-        label = "Saw ";
-        break;
-    }
-    case GENERATOR_SINE: {
-        label = "Sine ";
-        break;
-    }
-    case GENERATOR_WAVETABLE: {
-        label = "Wavetable ";
-        break;
-    }
-    default: {
-        label = "Oscillator ";
-        break;
-    }
-    }
-
-    oscillator_names[index] = label + std::to_string(index);
+    oscillator_names[index] = generator_names[generator] + " " + std::to_string(index);
 }
 
 void GUIOscillatorsPanel::update_wavetables() {

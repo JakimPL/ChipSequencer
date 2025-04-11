@@ -38,6 +38,12 @@ struct OscillatorWavetable {
     uint8_t pad[1];
 };
 
+struct OscillatorNoise {
+    uint8_t oscillator_size = SIZE_OSCILLATOR_NOISE;
+    uint8_t generator_index = GENERATOR_NOISE;
+    uint8_t pad[2];
+};
+
 typedef std::vector<void *> Oscillators;
 
 #endif // STRUCTURES_OSCILLATOR_HPP

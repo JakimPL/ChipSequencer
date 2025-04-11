@@ -4,6 +4,7 @@
 
     %define OUTPUT_CHANNELS 2
     %define SONG_LENGTH 186253
+    %define SAMPLE_RATE 29102
 
 ; Tuning
     %define TUNING_FREQUENCY 1097337155
@@ -20,13 +21,6 @@
     %define DSP_2_BUFFER_SIZE 0
     %define DSP_BUFFER_SIZE 256
 
-    %ifdef ELF
     extern num_channels
     extern num_dsps
-    %else
-    SEGMENT_DATA
-num_channels:
-    db CHANNELS
-num_dsps:
-    db DSPS
-    %endif
+    extern unit

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <string>
 
+#include "../constants.hpp"
 #include "../init.hpp"
 #include "panel.hpp"
 
@@ -19,8 +20,7 @@ class GUIEnvelopesPanel : public GUIPanel {
     } current_envelope;
 
     int envelope_index = 0;
-    const float max_timer_value = 10.0f;
-    const float timer_constant = UINT16_MAX * 0.001f;
+    const float timer_constant = static_cast<float>(MAX_ENVELOPE_TIMER_LENGTH);
 
     static float cast_to_float(int value, float scale = 1.0f);
     static uint16_t cast_to_int(float value, float scale = 1.0f);

@@ -8,14 +8,12 @@
 #include <portaudio.h>
 #include "driver.hpp"
 
-#define CIRC_BUFFER_CAPACITY 4096 /* no longer used in the double-buffer design */
-#define DOUBLE_BUFFER             /* using double buffering in place of circular buffer */
+#define DEFAULT_FRAMES_PER_BUFFER 1024
 
 class PortAudioDriver : public Driver {
   public:
     PortAudioDriver(
-        uint16_t sample_rate,
-        unsigned long frames_per_buffer = 256
+        unsigned long frames_per_buffer = DEFAULT_FRAMES_PER_BUFFER
     );
 
     void play() override;
@@ -48,7 +46,7 @@ class PortAudioDriver : public Driver {
     std::atomic<int> current_phase;
 
   private:
-    uint16_t sample_rate;
+    uint16_t rate;
     PaStream *stream;
     uint current_index;
     unsigned long frames_per_buffer;

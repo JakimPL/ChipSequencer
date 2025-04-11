@@ -5,11 +5,9 @@
 #include <mutex>
 
 PortAudioDriver::PortAudioDriver(
-    uint16_t sample_rate,
     unsigned long frames_per_buffer
 )
     : Driver(),
-      sample_rate(sample_rate),
       stream(nullptr),
       current_index(0),
       frames_per_buffer(frames_per_buffer) {

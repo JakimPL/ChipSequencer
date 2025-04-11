@@ -4,6 +4,8 @@
 #include "../utils/file.hpp"
 #include "link.hpp"
 
+#include <iostream>
+
 void Link::assign_output() {
     Channel *channel = reinterpret_cast<Channel *>(item);
     void **dsp_output = reinterpret_cast<void **>(item + DSP_OUTPUT);
@@ -25,8 +27,13 @@ void Link::serialize(std::ofstream &file) const {
     write_data(file, &target, sizeof(target));
     write_data(file, &index, sizeof(index));
     if (group >= 2) {
-        const uint8_t _offset = x32_to_x16[group].at(offset);
-        write_data(file, &_offset, sizeof(offset));
+        uint16_t _offset = 0;
+        try {
+            _offset = x32_to_x16[group].at(offset);
+        } catch (const std::out_of_range &exception) {
+            std::cerr << "Error: " << exception.what() << std::endl;
+        }
+        write_data(file, &_offset, sizeof(_offset));
     } else {
         write_data(file, &offset, sizeof(offset));
     }
@@ -40,6 +47,11 @@ void Link::deserialize(std::ifstream &file) {
     read_data(file, &offset, sizeof(offset));
     const size_t group = static_cast<size_t>(target);
     if (group >= 2) {
-        offset = x16_to_x32[group].at(offset);
+        try {
+            offset = x16_to_x32[group].at(offset);
+        } catch (const std::out_of_range &exception) {
+            std::cerr << "Error: " << exception.what() << std::endl;
+            offset = 0;
+        }
     }
 }

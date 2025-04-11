@@ -95,7 +95,6 @@ void GUIOrdersPanel::draw_order() {
         return;
     }
 
-    ImGui::Separator();
     ImGui::Text("Order:");
 
     draw_order_length();
