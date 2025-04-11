@@ -54,6 +54,7 @@ filter:
 
 .apply_filter:
 ; a * y[n] + b * y[n - 1]
+    mov [angle], eax
     mov [value], eax
     fld dword [value]
     fmulp st1, st0
@@ -70,6 +71,13 @@ filter:
 .apply_mode:
     cmp dl, 0
     je .done
+
+.difference:
+    fld dword [value]
+    fld dword [angle]
+    fsubp st1, st0
+    fstp dword [value]
+    mov eax, [value]
 
 .done:
     ret
