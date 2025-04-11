@@ -27,7 +27,6 @@ if __name__ == "__main__":
     def add_config_line(key: Optional[str] = None, value: Optional[Any] = None):
         config_lines.append(get_config_line(key, value))
 
-    add_config_line("sample_rate", config["sample_rate"])
     add_config_line("precalculate", config["precalculate"])
     add_config_line()
 

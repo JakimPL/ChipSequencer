@@ -12,4 +12,4 @@ noise:
 
     SEGMENT_DATA
 noise_seed:
-    resw 1
+    dw 0xACE1

@@ -28,8 +28,8 @@ void Song::new_song() {
     bpm = DEFAULT_BPM;
     normalizer = DEFAULT_NORMALIZER;
     header = {
-        "Unknown",
-        "Untitled",
+        DEFAULT_AUTHOR,
+        DEFAULT_TITLE,
         TRACKER_VERSION
     };
     tuning = {
@@ -91,6 +91,14 @@ void Song::compile(const std::string &filename, bool compress) const {
         std::filesystem::remove_all(temp_base);
         throw;
     }
+}
+
+std::string Song::get_title() const {
+    return header.title;
+}
+
+std::string Song::get_author() const {
+    return header.author;
 }
 
 void Song::set_title(const std::string &title) {
@@ -420,6 +428,7 @@ std::string Song::generate_header_asm_file() const {
     asm_content << "\n";
     asm_content << "    \%define OUTPUT_CHANNELS " << static_cast<int>(output_channels) << "\n";
     asm_content << "    \%define SONG_LENGTH " << song_length << "\n";
+    asm_content << "    \%define SAMPLE_RATE " << sample_rate << "\n";
     asm_content << "\n";
     asm_content << "    \%define TUNING_FREQUENCY " << static_cast<uint32_t>(std::round(frequency_table.get_last_frequency() * 65536.0)) << "\n";
     asm_content << "    \%define TUNING_NOTE_DIVISOR " << static_cast<_Float32>(frequency_table.get_note_divisor()) << "\n";
@@ -460,6 +469,7 @@ nlohmann::json Song::create_header_json() const {
     nlohmann::json json;
     json["general"] = {
         {"bpm", bpm},
+        {"sample_rate", sample_rate},
         {"normalizer", normalizer},
         {"output_channels", output_channels},
         {"rows", max_rows},
@@ -492,15 +502,22 @@ nlohmann::json Song::create_header_json() const {
 
 nlohmann::json Song::import_header(const std::string &filename) {
     nlohmann::json json = read_json(filename);
-    header.title = json["header"]["title"];
-    header.author = json["header"]["author"];
-    header.version = json["header"]["version"];
-    bpm = json["general"]["bpm"];
-    normalizer = json["general"]["normalizer"];
-    output_channels = json["general"]["output_channels"];
-    song_length = json["general"]["song_length"];
-    tuning.edo = json["tuning"]["edo"];
-    tuning.a4_frequency = json["tuning"]["a4_frequency"];
+    const auto &json_header = json["header"];
+    header.title = json_header.value("title", DEFAULT_TITLE);
+    header.author = json_header.value("author", DEFAULT_AUTHOR);
+    header.version = json_header["version"];
+
+    const auto &json_general = json["general"];
+    bpm = json_general["bpm"];
+    sample_rate = json_general.value("sample_rate", DEFAULT_SAMPLE_RATE);
+    normalizer = json_general.value("normalizer", DEFAULT_NORMALIZER);
+    output_channels = json_general.value("output_channels", DEFAULT_OUTPUT_CHANNELS);
+    song_length = json_general.value("song_length", 0);
+    max_rows = json_general.value("rows", 0);
+
+    const auto &json_tuning = json["tuning"];
+    tuning.edo = json_tuning.value("edo", DEFAULT_EDO);
+    tuning.a4_frequency = json_tuning.value("a4_frequency", DEFAULT_A4_FREQUENCY);
     return json;
 }
 

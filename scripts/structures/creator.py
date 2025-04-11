@@ -147,6 +147,7 @@ class Creator:
 
         self.define("OUTPUT_CHANNELS", self.song.output_channels)
         self.define("SONG_LENGTH", self.song.song_length)
+        self.define("SONG_LENGTH", self.song.sample_rate)
         self.comment()
 
     def define_tuning(self):

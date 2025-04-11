@@ -4,6 +4,7 @@
 
     %define OUTPUT_CHANNELS 2
     %define SONG_LENGTH 186253
+    %define SONG_LENGTH 29102
 
 ; Tuning
     %define TUNING_FREQUENCY 1097337155

@@ -1,5 +1,6 @@
 #include "../../general.hpp"
 #include "../../song/functions.hpp"
+#include "../../utils/string.hpp"
 #include "../utils.hpp"
 #include "general.hpp"
 
@@ -33,7 +34,11 @@ void GUIGeneralPanel::draw() {
 }
 
 void GUIGeneralPanel::from() {
+    string_copy_to_buffer(song.get_title(), current_song.title, GUI_MAX_STRING_LENGTH);
+    string_copy_to_buffer(song.get_author(), current_song.author, GUI_MAX_STRING_LENGTH);
+
     current_song.bpm = bpm;
+    current_song.sample_rate = sample_rate;
     current_song.normalizer = normalizer;
     current_song.output_channels = song.get_output_channels();
 }
@@ -42,6 +47,7 @@ void GUIGeneralPanel::to() const {
     song.set_title(current_song.title);
     song.set_author(current_song.author);
 
+    sample_rate = current_song.sample_rate;
     normalizer = current_song.normalizer;
     if (current_song.output_channels != song.get_output_channels()) {
         song.set_output_channels(current_song.output_channels);
@@ -169,10 +175,14 @@ void GUIGeneralPanel::draw_stop_square() const {
 void GUIGeneralPanel::draw_song_info() {
     ImGui::Separator();
     ImGui::Text("Song Details");
-    ImGui::InputText("Name", current_song.name, IM_ARRAYSIZE(current_song.name));
-    ImGui::InputText("Artist", current_song.artist, IM_ARRAYSIZE(current_song.artist));
+    ImGui::InputText("Title", current_song.title, IM_ARRAYSIZE(current_song.title));
+    ImGui::InputText("Author", current_song.author, IM_ARRAYSIZE(current_song.author));
     ImGui::Separator();
+    ImGui::Text("Tempo");
     draw_int_slider("BPM", current_song.bpm, GUI_MIN_BPM, GUI_MAX_BPM);
+    ImGui::Separator();
+    ImGui::Text("Output");
+    draw_float_slider("Sample rate", current_song.sample_rate, GUI_MIN_SAMPLE_RATE, GUI_MAX_SAMPLE_RATE, false, "%.0f");
     draw_float_slider("Normalizer", current_song.normalizer, 0.01f, 2.0f);
     draw_int_slider("Output channels", current_song.output_channels, 1, MAX_OUTPUT_CHANNELS);
 }

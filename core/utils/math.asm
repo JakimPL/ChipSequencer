@@ -97,8 +97,10 @@ half_range:
     dd __float32__(32767.5)
 two:
     dw 2
+    %ifndef ELF
 sample_rate:
     dw SAMPLE_RATE
+    %endif
 y:
     dd 0
 

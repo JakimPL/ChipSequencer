@@ -20,10 +20,10 @@ extern "C" std::array<uint8_t, MAX_CHANNELS> current_sequence;
 extern "C" std::array<uint8_t, MAX_CHANNELS> sequence_current_note;
 
 extern "C" uint16_t ticks_per_beat;
-extern "C" uint16_t sample_rate;
 
 /* Modifiable song data */
 extern uint16_t bpm;
+extern uint16_t sample_rate;
 extern _Float32 normalizer;
 
 extern uint8_t num_channels;

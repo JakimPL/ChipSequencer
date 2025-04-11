@@ -18,7 +18,7 @@ int main() {
     file_driver.initialize();
     file_driver.play();
 #else
-    PortAudioDriver port_audio_driver = PortAudioDriver(sample_rate);
+    PortAudioDriver port_audio_driver = PortAudioDriver();
     port_audio_driver.initialize();
     AudioEngine audio_engine(port_audio_driver);
     gui.set_audio_engine(&audio_engine);

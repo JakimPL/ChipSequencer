@@ -8,7 +8,6 @@
     global calculate_ticks_per_beat
     global ticks_per_beat
 
-    global sample_rate
     global output
     global dsp_input
 
@@ -25,7 +24,9 @@
     extern sound_driver_terminate
 
     extern bpm
+    extern sample_rate
     extern normalizer
+
     extern envelopes
     extern sequences
     extern orders

@@ -24,6 +24,7 @@ def main():
     normalizer = Float(0.25)
     output_channels = 2
     song_length = 186253
+    sample_rate = 29102
     reference_frequency = 0x41680943
     note_divisor = 1.0594630943592953
 
@@ -278,6 +279,7 @@ def main():
 
     song = Song(
         bpm=bpm,
+        sample_rate=sample_rate,
         normalizer=normalizer,
         output_channels=output_channels,
         song_length=song_length,

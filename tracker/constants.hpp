@@ -13,8 +13,12 @@
 
 // Defaults
 #define DEFAULT_BPM 120
+#define DEFAULT_SAMPLE_RATE 29106
 #define DEFAULT_NORMALIZER 0.5
 #define DEFAULT_OUTPUT_CHANNELS 1
+
+#define DEFAULT_TITLE "Untitled"
+#define DEFAULT_AUTHOR "Unknown"
 
 #define DEFAULT_EDO 12
 #define DEFAULT_A4_FREQUENCY 440.0
