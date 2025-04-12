@@ -63,7 +63,12 @@ std::vector<Note> Pattern::to_note_vector() const {
 }
 
 int Pattern::calculate_playing_row(size_t channel_index) {
+    if (indices.empty()) {
+        return -1;
+    }
+
     size_t note_index = sequence_current_note[channel_index] - 1;
+    note_index = std::min(note_index, indices.size() - 1);
     int playing_row = indices[note_index];
     playing_row += durations[note_index];
     playing_row -= 1 + sequence_timer[channel_index] / ticks_per_beat;
