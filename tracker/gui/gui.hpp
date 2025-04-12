@@ -72,6 +72,7 @@ class GUI {
     int page_size = GUI_DEFAULT_PAGE_SIZE;
 
     void update_all();
+    void frame_all();
 };
 ;
 

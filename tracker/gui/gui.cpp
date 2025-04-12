@@ -67,6 +67,8 @@ bool GUI::initialize() {
     io = &ImGui::GetIO();
     (void) io;
 
+    io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
     // set_font();
 
     ImGui::StyleColorsDark();
@@ -178,6 +180,29 @@ void GUI::update_all() {
 }
 
 void GUI::frame() {
+    ImGuiViewport *viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(viewport->WorkSize);
+    ImGui::SetNextWindowViewport(viewport->ID);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
+    window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::Begin("DockSpace", nullptr, window_flags); // Use a unique name for the dockspace window
+    ImGui::PopStyleVar(3);                            // Pop WindowRounding, WindowBorderSize, WindowPadding
+
+    ImGuiID dockspace_id = ImGui::GetID("MyDockSpace"); // Use a unique ID for the dockspace node
+    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+
+    frame_all();
+
+    ImGui::End();
+}
+
+void GUI::frame_all() {
     menu.frame();
     editor.frame();
     general_panel.frame();
