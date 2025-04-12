@@ -7,6 +7,7 @@
 
 #include "../song/links/target.hpp"
 #include "../song/links/type.hpp"
+#include "enums.hpp"
 
 extern std::vector<std::string> channel_names;
 extern std::vector<std::string> dsp_names;
@@ -36,6 +37,18 @@ const std::map<Target, std::string> target_names = {
 const std::map<ItemType, std::string> item_types_names = {
     {ItemType::CHANNEL, "Channel"},
     {ItemType::DSP, "DSP"},
+};
+const std::vector<std::pair<GUIElement, const char *>> menu_items = {
+    {GUIElement::Editor, "Editor"},
+    {GUIElement::General, "General"},
+    {GUIElement::Channels, "Channels"},
+    {GUIElement::DSPs, "DSPs"},
+    {GUIElement::Envelopes, "Envelopes"},
+    {GUIElement::Orders, "Orders"},
+    {GUIElement::Oscillators, "Oscillators"},
+    {GUIElement::Patterns, "Patterns"},
+    {GUIElement::Sequences, "Sequences"},
+    {GUIElement::Wavetables, "Wavetables"},
 };
 
 #endif // GUI_NAMES_HPP

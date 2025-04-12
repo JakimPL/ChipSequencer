@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <iostream>
 
+#include "../imgui/imgui_internal.h"
+
 #include "../general.hpp"
 #include "default.hpp"
 #include "gui.hpp"
@@ -258,4 +260,71 @@ bool GUI::is_paused() const {
 
 void GUI::deselect_all_rows() {
     gui.patterns_panel.deselect_all_rows();
+}
+
+void GUI::set_visibility(const GUIElement element, const bool visible) {
+    switch (element) {
+    case GUIElement::Menu:
+        menu.visible = visible;
+        break;
+    case GUIElement::Editor:
+        editor.visible = visible;
+        break;
+    case GUIElement::General:
+        general_panel.visible = visible;
+        break;
+    case GUIElement::Channels:
+        channels_panel.visible = visible;
+        break;
+    case GUIElement::DSPs:
+        dsps_panel.visible = visible;
+        break;
+    case GUIElement::Envelopes:
+        envelopes_panel.visible = visible;
+        break;
+    case GUIElement::Orders:
+        orders_panel.visible = visible;
+        break;
+    case GUIElement::Oscillators:
+        oscillators_panel.visible = visible;
+        break;
+    case GUIElement::Sequences:
+        sequences_panel.visible = visible;
+        break;
+    case GUIElement::Wavetables:
+        wavetables_panel.visible = visible;
+        break;
+    case GUIElement::Patterns:
+        patterns_panel.visible = visible;
+        break;
+    }
+}
+
+bool GUI::get_visibility(const GUIElement element) const {
+    switch (element) {
+    case GUIElement::Menu:
+        return menu.visible;
+    case GUIElement::Editor:
+        return editor.visible;
+    case GUIElement::General:
+        return general_panel.visible;
+    case GUIElement::Channels:
+        return channels_panel.visible;
+    case GUIElement::DSPs:
+        return dsps_panel.visible;
+    case GUIElement::Envelopes:
+        return envelopes_panel.visible;
+    case GUIElement::Orders:
+        return orders_panel.visible;
+    case GUIElement::Oscillators:
+        return oscillators_panel.visible;
+    case GUIElement::Sequences:
+        return sequences_panel.visible;
+    case GUIElement::Wavetables:
+        return wavetables_panel.visible;
+    case GUIElement::Patterns:
+        return patterns_panel.visible;
+    }
+
+    return false;
 }

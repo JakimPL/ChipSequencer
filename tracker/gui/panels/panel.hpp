@@ -8,11 +8,14 @@ class GUIPanel {
     GUIPanel() = default;
     virtual ~GUIPanel() = default;
 
+    bool visible = true;
+
     virtual void update() = 0;
     void frame();
 
   protected:
     void draw_add_or_remove();
+
     virtual void add() = 0;
     virtual void remove() = 0;
     virtual void from() = 0;

@@ -12,5 +12,7 @@ void GUIPanel::draw_add_or_remove() {
 }
 
 void GUIPanel::frame() {
-    draw();
+    if (visible) {
+        draw();
+    }
 }

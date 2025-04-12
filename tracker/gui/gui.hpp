@@ -36,6 +36,8 @@ class GUI {
     bool is_paused() const;
 
     void change_window_title(const std::string &title);
+    void set_visibility(const GUIElement element, const bool visible);
+    bool get_visibility(const GUIElement element) const;
 
     void set_audio_engine(AudioEngine *engine);
     void update(GUIElement element = GUIElement::All);
