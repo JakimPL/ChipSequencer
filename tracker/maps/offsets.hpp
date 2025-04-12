@@ -47,6 +47,7 @@ const std::vector<std::map<uint16_t, uint16_t>> x16_to_x32 = {
         {7, 7},
         {8, 8},
     },
+    {},
 };
 const std::vector<std::map<uint16_t, uint16_t>> x32_to_x16 = {
     {},
@@ -90,6 +91,7 @@ const std::vector<std::map<uint16_t, uint16_t>> x32_to_x16 = {
         {7, 7},
         {8, 8},
     },
+    {},
 };
 
 #endif // MAPS_OFFSETS_HPP

@@ -6,6 +6,7 @@
 #include <map>
 #include <vector>
 
+#include "key.hpp"
 #include "target.hpp"
 #include "type.hpp"
 
@@ -18,6 +19,7 @@ struct Link {
     void *item = nullptr;
     void *base = nullptr;
     void *pointer = nullptr;
+    LinkKey key;
 
     void assign_output();
     void serialize(std::ofstream &file) const;
