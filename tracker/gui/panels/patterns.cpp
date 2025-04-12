@@ -28,7 +28,7 @@ void GUIPatternsPanel::draw() {
 void GUIPatternsPanel::draw_pages() {
     const int previous_page = page;
     const int pages = std::ceil(static_cast<float>(current_pattern.total_rows) / gui.get_page_size());
-    draw_int_slider("Page", page, 0, pages - 1);
+    draw_int_slider("Page", page, {}, 0, pages - 1);
     if (page != previous_page) {
         deselect_all_rows();
     }

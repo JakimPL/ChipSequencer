@@ -21,7 +21,9 @@ void draw_number_of_items(const std::string &label, const char *label_id, int &v
     value = std::clamp(value, min, max);
 }
 
-void draw_int_slider(const char *label, int &reference, int min, int max) {
+void draw_int_slider(const char *label, int &reference, const LinkKey key, int min, int max) {
+    ImGui::BeginDisabled(link_manager.is_linked(key));
+
     const std::string slider_id = std::string("##") + label + "Slider";
     const std::string input_id = std::string("##") + label + "Input";
     ImGui::PushID(label);
@@ -30,6 +32,8 @@ void draw_int_slider(const char *label, int &reference, int min, int max) {
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
     ImGui::InputInt(input_id.c_str(), &reference, 0, 0);
     ImGui::PopID();
+    ImGui::EndDisabled();
+
     reference = std::clamp(reference, min, max);
 }
 
@@ -163,7 +167,7 @@ bool draw_output(OutputType &output_type) {
             output_type.additive = true;
         }
 
-        draw_int_slider("Channel", output_type.output_channel, 0, song.get_output_channels() - 1);
+        draw_int_slider("Channel", output_type.output_channel, {}, 0, song.get_output_channels() - 1);
         break;
     case OUTPUT_TARGET_DSP:
         if (dsps.empty()) {
@@ -174,7 +178,7 @@ bool draw_output(OutputType &output_type) {
                 output_type.additive = true;
             }
 
-            draw_int_slider("DSP", output_type.dsp_channel, 0, dsps.size() - 1);
+            draw_int_slider("DSP", output_type.dsp_channel, {}, 0, dsps.size() - 1);
             break;
         }
     default:
@@ -221,7 +225,7 @@ bool draw_output(OutputType &output_type) {
     ImGui::Checkbox("Additive", &output_type.additive);
     prepare_combo(variable_types, "##OutputTypeCombo", output_type.variable_type);
     ImGui::BeginDisabled(output_type.variable_type == 0);
-    draw_int_slider("Shift", output_type.shift, 0, 15);
+    draw_int_slider("Shift", output_type.shift, {}, 0, 15);
     ImGui::EndDisabled();
     pop_secondary_style();
 
