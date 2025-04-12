@@ -5,7 +5,6 @@
 #include "wavetables.hpp"
 
 GUIWavetablesPanel::GUIWavetablesPanel() {
-    initialize();
     from();
     update();
 }

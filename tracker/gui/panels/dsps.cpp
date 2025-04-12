@@ -5,12 +5,8 @@
 #include "dsps.hpp"
 
 GUIDSPsPanel::GUIDSPsPanel() {
-    initialize();
     from();
     update();
-}
-
-void GUIDSPsPanel::initialize() {
 }
 
 void GUIDSPsPanel::draw() {

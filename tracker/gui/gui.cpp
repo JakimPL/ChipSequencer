@@ -1,6 +1,8 @@
 #include <algorithm>
+#include <iostream>
 
 #include "../general.hpp"
+#include "default.hpp"
 #include "gui.hpp"
 
 GUI::GUI()
@@ -195,6 +197,12 @@ void GUI::frame() {
     ImGui::PopStyleVar(3);
 
     ImGuiID dockspace_id = ImGui::GetID("DockSpace");
+    ImGuiDockNode *node = ImGui::DockBuilderGetNode(dockspace_id);
+    if (node == nullptr || node->IsLeafNode()) {
+        ImGui::LoadIniSettingsFromMemory(default_ini.c_str(), default_ini.size());
+        std::cout << "Loading default INI settings" << std::endl;
+    }
+
     ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
 
     frame_all();

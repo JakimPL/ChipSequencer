@@ -7,12 +7,8 @@
 #include "channels.hpp"
 
 GUIChannelsPanel::GUIChannelsPanel() {
-    initialize();
     from();
     update();
-}
-
-void GUIChannelsPanel::initialize() {
 }
 
 void GUIChannelsPanel::draw() {
