@@ -13,7 +13,6 @@ class GUIPanel {
 
   protected:
     void draw_add_or_remove();
-    virtual void initialize() = 0;
     virtual void add() = 0;
     virtual void remove() = 0;
     virtual void from() = 0;

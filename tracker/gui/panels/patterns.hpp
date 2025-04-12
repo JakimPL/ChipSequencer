@@ -26,7 +26,6 @@ class GUIPatternsPanel : public GUIPanel {
     void draw_channel(size_t channel_index);
     std::pair<Pattern *, uint16_t> find_pattern_by_current_row() const;
 
-    void initialize() override;
     void from() override;
     void to() const override;
     void add() override {};

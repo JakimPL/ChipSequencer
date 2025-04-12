@@ -5,12 +5,8 @@
 #include "orders.hpp"
 
 GUIOrdersPanel::GUIOrdersPanel() {
-    initialize();
     from();
     update();
-}
-
-void GUIOrdersPanel::initialize() {
 }
 
 void GUIOrdersPanel::draw() {

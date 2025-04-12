@@ -4,10 +4,6 @@
 
 GUIEditorPanel::GUIEditorPanel(int &octave, int &step, int &page)
     : current_octave(octave), jump_step(step), page_size(page) {
-    initialize();
-}
-
-void GUIEditorPanel::initialize() {
 }
 
 void GUIEditorPanel::draw() {

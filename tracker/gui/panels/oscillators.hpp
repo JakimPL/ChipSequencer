@@ -25,7 +25,6 @@ class GUIOscillatorsPanel : public GUIPanel {
     void update_oscillator_name(const int index, const int generator_index = -1);
     void update_oscillator_names();
 
-    void initialize() override;
     void from() override;
     void to() const override;
     void add() override;

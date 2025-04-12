@@ -24,7 +24,6 @@ class GUIWavetablesPanel : public GUIPanel {
     void draw_wavetable_length();
     void draw_waveform();
 
-    void initialize() override;
     void from() override;
     void to() const override;
     void add() override;

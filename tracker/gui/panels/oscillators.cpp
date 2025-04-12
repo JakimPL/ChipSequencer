@@ -7,12 +7,8 @@
 #include "../utils.hpp"
 
 GUIOscillatorsPanel::GUIOscillatorsPanel() {
-    initialize();
     from();
     update();
-}
-
-void GUIOscillatorsPanel::initialize() {
 }
 
 void GUIOscillatorsPanel::draw() {

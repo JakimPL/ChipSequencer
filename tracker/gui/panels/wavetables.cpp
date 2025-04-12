@@ -10,9 +10,6 @@ GUIWavetablesPanel::GUIWavetablesPanel() {
     update();
 }
 
-void GUIWavetablesPanel::initialize() {
-}
-
 void GUIWavetablesPanel::draw() {
     ImGui::Begin("Wavetable Editor");
 
