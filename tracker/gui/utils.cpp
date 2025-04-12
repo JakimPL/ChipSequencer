@@ -76,9 +76,14 @@ void draw_float_slider(const char *label, float &reference, const LinkKey key, f
     reference = std::clamp(reference, min, max);
 }
 
-void draw_knob(const char *label, float &reference, float min, float max) {
+void draw_knob(const char *label, float &reference, const LinkKey key, float min, float max) {
+    ImGui::BeginDisabled(link_manager.is_linked(key));
+    ImGui::PushID(label);
     ImGuiKnobs::Knob(label, &reference, min, max);
     ImGui::SameLine();
+    ImGui::PopID();
+    ImGui::EndDisabled();
+
     reference = std::clamp(reference, min, max);
 }
 
