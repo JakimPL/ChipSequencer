@@ -1,5 +1,5 @@
-#ifndef SONG_TARGET_HPP
-#define SONG_TARGET_HPP
+#ifndef SONG_LINKS_TARGET_HPP
+#define SONG_LINKS_TARGET_HPP
 
 #include <cstdint>
 
@@ -22,4 +22,4 @@ enum class TargetVariableType : uint8_t {
     Int32
 };
 
-#endif // SONG_TARGET_HPP
+#endif // SONG_LINKS_TARGET_HPP

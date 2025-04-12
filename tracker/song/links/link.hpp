@@ -1,5 +1,5 @@
-#ifndef SONG_LINK_HPP
-#define SONG_LINK_HPP
+#ifndef SONG_LINKS_LINK_HPP
+#define SONG_LINKS_LINK_HPP
 
 #include <array>
 #include <cstdint>
@@ -7,11 +7,7 @@
 #include <vector>
 
 #include "target.hpp"
-
-enum class ItemType : u_int8_t {
-    CHANNEL = 0,
-    DSP = 1
-};
+#include "type.hpp"
 
 struct Link {
     ItemType type;
@@ -30,4 +26,4 @@ struct Link {
 
 typedef std::array<std::vector<Link>, 2> Links;
 
-#endif // SONG_LINK_HPP
+#endif // SONG_LINKS_LINK_HPP

@@ -1,7 +1,7 @@
-#include "../constants.hpp"
-#include "../maps/offsets.hpp"
-#include "../structures.hpp"
-#include "../utils/file.hpp"
+#include "../../constants.hpp"
+#include "../../maps/offsets.hpp"
+#include "../../structures.hpp"
+#include "../../utils/file.hpp"
 #include "link.hpp"
 
 #include <iostream>

@@ -8,8 +8,8 @@
 #include "../version.hpp"
 #include "../tuning/frequencies.hpp"
 #include "../tuning/scale.hpp"
-#include "link.hpp"
 #include "validation.hpp"
+#include "links/link.hpp"
 
 class Song {
   private:

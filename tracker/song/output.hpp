@@ -4,7 +4,7 @@
 #include <cstdint>
 
 #include "../maps/routing.hpp"
-#include "link.hpp"
+#include "links/link.hpp"
 
 enum OutputTarget {
     OUTPUT_TARGET_OUTPUT = 0,
