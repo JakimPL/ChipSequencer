@@ -33,7 +33,9 @@ void draw_int_slider(const char *label, int &reference, int min, int max) {
     reference = std::clamp(reference, min, max);
 }
 
-void draw_float_slider(const char *label, float &reference, float min, float max, const GUIScale scale, const char *format) {
+void draw_float_slider(const char *label, float &reference, const LinkKey key, float min, float max, const GUIScale scale, const char *format) {
+    ImGui::BeginDisabled(link_manager.is_linked(key));
+
     const std::string slider_id = std::string("##") + label + "Slider";
     const std::string input_id = std::string("##") + label + "Input";
     ImGui::PushID(label);
@@ -65,6 +67,8 @@ void draw_float_slider(const char *label, float &reference, float min, float max
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
     ImGui::InputFloat(input_id.c_str(), &reference, 0.0f, 0.0f, format);
     ImGui::PopID();
+    ImGui::EndDisabled();
+
     reference = std::clamp(reference, min, max);
 }
 

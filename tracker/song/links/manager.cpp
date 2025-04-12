@@ -112,8 +112,7 @@ void LinkManager::realign_links(const size_t index, const Target target) {
     realign_links(index, target, ItemType::DSP);
 }
 
-bool LinkManager::is_linked(const Target target, const size_t index, const uint16_t offset) const {
-    const LinkKey key = {target, index, offset};
+bool LinkManager::is_linked(const LinkKey key) const {
     return map.find(key) != map.end();
 }
 

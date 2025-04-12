@@ -8,7 +8,7 @@
 
 struct LinkKey {
     Target target = Target::UNUSED;
-    size_t index = -1;
+    int index = -1;
     uint16_t offset = -1;
 
     bool operator==(const LinkKey &other) const {
@@ -20,7 +20,7 @@ template <>
 struct std::hash<LinkKey> {
     std::size_t operator()(const LinkKey &key) const {
         std::size_t h1 = std::hash<int>()(static_cast<int>(key.target));
-        std::size_t h2 = std::hash<size_t>()(key.index);
+        std::size_t h2 = std::hash<int>()(key.index);
         std::size_t h3 = std::hash<uint16_t>()(key.offset);
         return h1 ^ (h2 << 1) ^ (h3 << 2);
     }

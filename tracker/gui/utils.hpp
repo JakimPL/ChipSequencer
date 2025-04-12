@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "../song/links/key.hpp"
 #include "enums.hpp"
 #include "init.hpp"
 #include "pattern.hpp"
@@ -11,7 +12,7 @@
 int clamp_index(int index, const int max);
 void draw_number_of_items(const std::string &label, const char *label_id, int &value, int min, int max, float label_length = 50.0f);
 void draw_int_slider(const char *label, int &reference, int min, int max);
-void draw_float_slider(const char *label, float &reference, float min, float max, const GUIScale scale = GUIScale::Linear, const char *format = "%.4f");
+void draw_float_slider(const char *label, float &reference, const LinkKey = LinkKey(), float min = 0.0f, float max = 1.0f, const GUIScale scale = GUIScale::Linear, const char *format = "%.4f");
 void draw_knob(const char *label, float &reference, float min, float max);
 void draw_popup(const std::string &message);
 bool draw_button(const char *label, const float button_padding = 0.0f);

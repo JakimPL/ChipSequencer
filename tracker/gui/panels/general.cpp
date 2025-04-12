@@ -187,8 +187,8 @@ void GUIGeneralPanel::draw_song_info() {
 
     ImGui::Separator();
     ImGui::Text("Output");
-    draw_float_slider("Sample rate", current_song.sample_rate, GUI_MIN_SAMPLE_RATE, GUI_MAX_SAMPLE_RATE, GUIScale::Linear, "%.0f");
-    draw_float_slider("Normalizer", current_song.normalizer, 0.01f, 2.0f);
+    draw_float_slider("Sample rate", current_song.sample_rate, {}, GUI_MIN_SAMPLE_RATE, GUI_MAX_SAMPLE_RATE, GUIScale::Linear, "%.0f");
+    draw_float_slider("Normalizer", current_song.normalizer, {}, 0.01f, 2.0f);
     draw_int_slider("Output channels", current_song.output_channels, 1, MAX_OUTPUT_CHANNELS);
 }
 
@@ -196,7 +196,7 @@ void GUIGeneralPanel::draw_tuning_settings() {
     ImGui::Separator();
     ImGui::Text("Tuning Settings");
     draw_int_slider("EDO", current_song.edo, MIN_EDO, MAX_EDO);
-    draw_float_slider("A4 Frequency", current_song.a4_frequency, MIN_A4_FREQUENCY, MAX_A4_FREQUENCY);
+    draw_float_slider("A4 Frequency", current_song.a4_frequency, {}, MIN_A4_FREQUENCY, MAX_A4_FREQUENCY);
 
     if (draw_button("Apply Tuning", 100.0f)) {
         gui.stop();

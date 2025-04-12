@@ -163,10 +163,11 @@ void GUIChannelsPanel::draw_channel() {
     prepare_combo(order_names, "##OrderCombo", current_channel.order_index, !current_channel.constant_pitch);
     ImGui::EndDisabled();
 
+    const LinkKey key = {Target::CHANNEL, channel_index, CHANNEL_PITCH};
     if (current_channel.constant_pitch) {
-        draw_float_slider("Pitch", current_channel.pitch, 0.0002f, 65535.0f, GUIScale::Logarithmic);
+        draw_float_slider("Pitch", current_channel.pitch, key, 0.0002f, 65535.0f, GUIScale::Logarithmic);
     } else {
-        draw_float_slider("Transpose", current_channel.pitch, GUI_MIN_TRANSPOSE, GUI_MAX_TRANSPOSE);
+        draw_float_slider("Transpose", current_channel.pitch, key, GUI_MIN_TRANSPOSE, GUI_MAX_TRANSPOSE);
     }
 
     if (draw_output(current_channel.output_type)) {

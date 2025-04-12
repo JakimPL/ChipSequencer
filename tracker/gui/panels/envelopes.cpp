@@ -104,16 +104,16 @@ void GUIEnvelopesPanel::update() {
 
 void GUIEnvelopesPanel::draw_levels() {
     ImGui::Text("Levels");
-    draw_float_slider("Base Volume", current_envelope.base_volume, 0.0f, 1.0f);
-    draw_float_slider("Sustain Level", current_envelope.sustain_level, 0.0f, 1.0f);
+    draw_float_slider("Base Volume", current_envelope.base_volume, {Target::ENVELOPE, envelope_index, ENVELOPE_BASE_VOLUME}, 0.0f, 1.0f);
+    draw_float_slider("Sustain Level", current_envelope.sustain_level, {Target::ENVELOPE, envelope_index, ENVELOPE_SUSTAIN_LEVEL}, 0.0f, 1.0f);
 }
 
 void GUIEnvelopesPanel::draw_timers() {
     ImGui::Text("Timers");
-    draw_float_slider("Attack", current_envelope.attack, 0.0f, GUI_ENVELOPE_MAX_TIMER);
-    draw_float_slider("Decay", current_envelope.decay, 0.0f, GUI_ENVELOPE_MAX_TIMER);
-    draw_float_slider("Hold", current_envelope.hold, 0.0f, GUI_ENVELOPE_MAX_TIMER);
-    draw_float_slider("Release", current_envelope.release, 0.0f, GUI_ENVELOPE_MAX_TIMER);
+    draw_float_slider("Attack", current_envelope.attack, {Target::ENVELOPE, envelope_index, ENVELOPE_ATTACK}, 0.0f, GUI_ENVELOPE_MAX_TIMER);
+    draw_float_slider("Decay", current_envelope.decay, {Target::ENVELOPE, envelope_index, ENVELOPE_DECAY}, 0.0f, GUI_ENVELOPE_MAX_TIMER);
+    draw_float_slider("Hold", current_envelope.hold, {Target::ENVELOPE, envelope_index, ENVELOPE_HOLD}, 0.0f, GUI_ENVELOPE_MAX_TIMER);
+    draw_float_slider("Release", current_envelope.release, {Target::ENVELOPE, envelope_index, ENVELOPE_RELEASE}, 0.0f, GUI_ENVELOPE_MAX_TIMER);
 }
 
 void GUIEnvelopesPanel::draw_envelope_graph() {
