@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "../../general.hpp"
+#include "../../song/links/manager.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
 #include "channels.hpp"
@@ -79,7 +80,7 @@ void GUIChannelsPanel::to() const {
     Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][channel_index];
     current_channel.output_type.set_link(link, ItemType::CHANNEL, channel_index);
     try {
-        song.set_link(link, static_cast<void *>(channel), channel_index);
+        link_manager.set_link(link, static_cast<void *>(channel), channel_index);
     } catch (const std::out_of_range &exception) {
         std::cerr << "Error: " << exception.what() << std::endl;
     }

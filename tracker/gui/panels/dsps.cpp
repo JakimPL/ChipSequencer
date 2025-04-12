@@ -1,4 +1,5 @@
 #include "../../general.hpp"
+#include "../../song/links/manager.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
 #include "dsps.hpp"
@@ -106,7 +107,7 @@ void GUIDSPsPanel::to() const {
 
     Link &link = links[static_cast<size_t>(ItemType::DSP)][dsp_index];
     current_dsp.output_type.set_link(link, ItemType::DSP, dsp_index);
-    song.set_link(link, buffer, dsp_index);
+    link_manager.set_link(link, buffer, dsp_index);
 }
 
 void GUIDSPsPanel::add() {
