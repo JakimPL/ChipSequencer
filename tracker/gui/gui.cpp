@@ -191,10 +191,10 @@ void GUI::frame() {
     window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-    ImGui::Begin("DockSpace", nullptr, window_flags); // Use a unique name for the dockspace window
-    ImGui::PopStyleVar(3);                            // Pop WindowRounding, WindowBorderSize, WindowPadding
+    ImGui::Begin("GeneralDock", nullptr, window_flags);
+    ImGui::PopStyleVar(3);
 
-    ImGuiID dockspace_id = ImGui::GetID("MyDockSpace"); // Use a unique ID for the dockspace node
+    ImGuiID dockspace_id = ImGui::GetID("DockSpace");
     ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
 
     frame_all();

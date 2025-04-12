@@ -34,6 +34,8 @@ class GUIGeneralPanel : public GUIPanel {
     void draw_play_triangle();
     void draw_stop_square() const;
     void draw_song_info();
+    void draw_tempo();
+    void draw_output();
     void draw_tuning_settings();
     void play();
 

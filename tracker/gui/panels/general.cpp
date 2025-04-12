@@ -20,8 +20,27 @@ void GUIGeneralPanel::draw() {
     ImGui::Begin("General");
     from();
     draw_play_button();
-    draw_song_info();
-    draw_tuning_settings();
+
+    if (ImGui::BeginTabBar("GeneralTabs")) {
+        if (ImGui::BeginTabItem("Song")) {
+            draw_song_info();
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Tempo")) {
+            draw_tempo();
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Output")) {
+            draw_output();
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Tuning")) {
+            draw_tuning_settings();
+            ImGui::EndTabItem();
+        }
+        ImGui::EndTabBar();
+    }
+
     check_keyboard_input();
     to();
 
@@ -181,17 +200,18 @@ void GUIGeneralPanel::draw_stop_square() const {
 }
 
 void GUIGeneralPanel::draw_song_info() {
-    ImGui::Separator();
     ImGui::Text("Song Details");
     ImGui::InputText("Title", current_song.title, IM_ARRAYSIZE(current_song.title));
     ImGui::InputText("Author", current_song.author, IM_ARRAYSIZE(current_song.author));
+}
 
-    ImGui::Separator();
+void GUIGeneralPanel::draw_tempo() {
     ImGui::Text("Tempo");
     draw_int_slider("BPM", current_song.bpm, {}, GUI_MIN_BPM, GUI_MAX_BPM);
     draw_int_slider("Division", current_song.division, {}, GUI_MIN_UNIT, GUI_MAX_UNIT);
+}
 
-    ImGui::Separator();
+void GUIGeneralPanel::draw_output() {
     ImGui::Text("Output");
     draw_float_slider("Sample rate", current_song.sample_rate, {}, GUI_MIN_SAMPLE_RATE, GUI_MAX_SAMPLE_RATE, GUIScale::Linear, "%.0f");
     draw_float_slider("Normalizer", current_song.normalizer, {}, 0.01f, 2.0f);
