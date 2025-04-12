@@ -6,8 +6,12 @@
 #include <iostream>
 
 GUIPatternsPanel::GUIPatternsPanel() {
+    initialize();
     from();
     update();
+}
+
+void GUIPatternsPanel::initialize() {
 }
 
 void GUIPatternsPanel::update() {

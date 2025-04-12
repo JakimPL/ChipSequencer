@@ -27,6 +27,7 @@ class GUIChannelsPanel : public GUIPanel {
     void update_channel_name(const int index, const int target_id = -1);
     void update_channel_names();
 
+    void initialize() override;
     void from() override;
     void to() const override;
     void add() override;

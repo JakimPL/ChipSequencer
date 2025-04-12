@@ -5,8 +5,12 @@
 #include "envelopes.hpp"
 
 GUIEnvelopesPanel::GUIEnvelopesPanel() {
+    initialize();
     from();
     update();
+}
+
+void GUIEnvelopesPanel::initialize() {
 }
 
 void GUIEnvelopesPanel::draw() {

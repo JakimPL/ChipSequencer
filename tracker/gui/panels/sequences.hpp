@@ -21,6 +21,7 @@ class GUISequencesPanel : public GUIPanel {
     void draw_sequence_length();
     void draw_sequence();
 
+    void initialize() override;
     void from() override;
     void to() const override;
     void add() override;

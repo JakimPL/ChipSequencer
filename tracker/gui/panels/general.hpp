@@ -37,6 +37,7 @@ class GUIGeneralPanel : public GUIPanel {
     void draw_tuning_settings();
     void play();
 
+    void initialize() override;
     void from() override;
     void to() const override;
     void add() override {};

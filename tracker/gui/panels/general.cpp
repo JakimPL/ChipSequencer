@@ -5,6 +5,10 @@
 #include "general.hpp"
 
 GUIGeneralPanel::GUIGeneralPanel() {
+    initialize();
+}
+
+void GUIGeneralPanel::initialize() {
 }
 
 void GUIGeneralPanel::update() {

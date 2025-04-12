@@ -20,6 +20,7 @@ class GUIMenu : public GUIPanel {
     void file_compile(const bool compress = true);
     void file_exit();
 
+    void initialize() override {};
     void from() override {};
     void to() const override {};
     void add() override {};

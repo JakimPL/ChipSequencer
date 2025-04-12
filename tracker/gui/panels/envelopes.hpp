@@ -30,6 +30,7 @@ class GUIEnvelopesPanel : public GUIPanel {
     void draw_timers();
     void draw_envelope_graph();
 
+    void initialize() override;
     void from() override;
     void to() const override;
     void add() override;

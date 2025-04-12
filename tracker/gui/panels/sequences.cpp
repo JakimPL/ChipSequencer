@@ -8,8 +8,12 @@
 #include "sequences.hpp"
 
 GUISequencesPanel::GUISequencesPanel() {
+    initialize();
     from();
     update();
+}
+
+void GUISequencesPanel::initialize() {
 }
 
 void GUISequencesPanel::draw() {

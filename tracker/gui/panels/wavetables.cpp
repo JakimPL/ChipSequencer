@@ -5,8 +5,12 @@
 #include "wavetables.hpp"
 
 GUIWavetablesPanel::GUIWavetablesPanel() {
+    initialize();
     from();
     update();
+}
+
+void GUIWavetablesPanel::initialize() {
 }
 
 void GUIWavetablesPanel::draw() {
