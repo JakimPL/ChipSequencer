@@ -140,3 +140,92 @@ void LinkManager::assign_key(Link &link) {
     link.key = key;
     map[key] = &link;
 }
+
+void LinkManager::validate_key_and_link(const LinkKey key, const Link *link) const {
+    if (link == nullptr) {
+        throw std::runtime_error("Link is null");
+    }
+    if (link->pointer == nullptr) {
+        throw std::runtime_error("Link pointer is null");
+    }
+    if (key.target != link->target) {
+        throw std::runtime_error("Link target does not match key target");
+    }
+    if (key.offset != link->offset) {
+        throw std::runtime_error("Link offset does not match key target");
+    }
+}
+
+TargetVariableType LinkManager::get_type(const LinkKey key) const {
+    switch (key.target) {
+    case Target::OUTPUT_CHANNEL: {
+        return TargetVariableType::Float;
+    }
+    case Target::DSP_CHANNEL: {
+        return TargetVariableType::Float;
+    }
+    default: {
+        const size_t index = routing_variables.at(key.target).offset_to_index.at(key.offset);
+        return routing_variables.at(key.target).types[index];
+    }
+    }
+}
+
+void LinkManager::capture_parameter(const LinkKey key, const Link *link) {
+    validate_key_and_link(key, link);
+    const TargetVariableType type = get_type(key);
+    switch (type) {
+    case TargetVariableType::Int8:
+        snapshot[key] = *reinterpret_cast<uint8_t *>(link->pointer);
+        break;
+    case TargetVariableType::Int16:
+        snapshot[key] = *reinterpret_cast<uint16_t *>(link->pointer);
+        break;
+    case TargetVariableType::Int32:
+        snapshot[key] = *reinterpret_cast<uint32_t *>(link->pointer);
+        break;
+    case TargetVariableType::Float:
+        snapshot[key] = *reinterpret_cast<_Float32 *>(link->pointer);
+        break;
+    default:
+        throw std::runtime_error("Unknown target variable type");
+    }
+}
+
+void LinkManager::capture_parameters() {
+    snapshot.clear();
+    for (const auto &pair : map) {
+        const LinkKey &key = pair.first;
+        const Link *link = pair.second;
+        capture_parameter(key, link);
+    }
+}
+
+void LinkManager::restore_parameter(const LinkKey key, const Link *link) const {
+    validate_key_and_link(key, link);
+    const TargetVariableType type = get_type(key);
+    switch (type) {
+    case TargetVariableType::Int8:
+        *reinterpret_cast<uint8_t *>(link->pointer) = std::get<uint8_t>(snapshot.at(key));
+        break;
+    case TargetVariableType::Int16:
+        *reinterpret_cast<uint16_t *>(link->pointer) = std::get<uint16_t>(snapshot.at(key));
+        break;
+    case TargetVariableType::Int32:
+        *reinterpret_cast<uint32_t *>(link->pointer) = std::get<uint32_t>(snapshot.at(key));
+        break;
+    case TargetVariableType::Float:
+        *reinterpret_cast<_Float32 *>(link->pointer) = std::get<_Float32>(snapshot.at(key));
+        break;
+    default:
+        throw std::runtime_error("Unknown target variable type");
+    }
+}
+
+void LinkManager::restore_parameters() const {
+    for (const auto &pair : map) {
+        const LinkKey &key = pair.first;
+        const Link *link = pair.second;
+        restore_parameter(key, link);
+    }
+}

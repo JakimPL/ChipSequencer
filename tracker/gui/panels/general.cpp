@@ -91,6 +91,7 @@ void GUIGeneralPanel::play() {
     } else {
         error = false;
         error_message = "";
+        link_manager.capture_parameters();
         gui.play();
     }
 }
@@ -171,6 +172,7 @@ void GUIGeneralPanel::draw_stop_square() const {
     ImGui::InvisibleButton("Stop", ImVec2(sz, sz));
     if (ImGui::IsItemClicked()) {
         gui.stop();
+        link_manager.restore_parameters();
     }
 }
 

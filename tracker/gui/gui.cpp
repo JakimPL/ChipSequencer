@@ -100,11 +100,10 @@ bool GUI::render() {
 }
 
 void GUI::set_font() {
-    ImFontConfig fontConfig;
-    fontConfig.PixelSnapH = true;
-    float fontSize = 13.0f;
-    float largerFontSize = 18.0f;
-    font = io->Fonts->AddFontFromFileTTF("imgui/misc/fonts/ProggyClean.ttf", largerFontSize, &fontConfig);
+    ImFontConfig font_config;
+    font_config.PixelSnapH = true;
+    const float larger_font_size = 18.0f;
+    font = io->Fonts->AddFontFromFileTTF("imgui/misc/fonts/ProggyClean.ttf", larger_font_size, &font_config);
 }
 
 void GUI::terminate() {
