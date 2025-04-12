@@ -40,9 +40,11 @@ void GUIOrdersPanel::from() {
 
     const Order *order = orders[order_index];
     uint16_t total_length = order->order_length;
-    current_order.sequences.resize(total_length);
+    current_order.sequences.clear();
     current_order.length = total_length;
-    std::copy(order->sequences.begin(), order->sequences.begin() + total_length, current_order.sequences.begin());
+    for (size_t i = 0; i < total_length; ++i) {
+        current_order.sequences.push_back(order->sequences[i]);
+    }
 }
 
 void GUIOrdersPanel::to() const {

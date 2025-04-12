@@ -142,6 +142,9 @@ void LinkManager::assign_key(Link &link) {
 }
 
 void LinkManager::validate_key_and_link(const LinkKey key, const Link *link) const {
+    if (key.target == Target::UNUSED) {
+        return;
+    }
     if (link == nullptr) {
         throw std::runtime_error("Link is null");
     }
