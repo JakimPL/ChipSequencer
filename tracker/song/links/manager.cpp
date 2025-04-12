@@ -116,6 +116,15 @@ bool LinkManager::is_linked(const LinkKey key) const {
     return map.find(key) != map.end();
 }
 
+Link *LinkManager::get_link(const LinkKey key) const {
+    const auto it = map.find(key);
+    if (it != map.end()) {
+        return it->second;
+    }
+
+    return nullptr;
+}
+
 void LinkManager::remove_key(Link &link) {
     auto it = map.find(link.key);
     if (it != map.end()) {

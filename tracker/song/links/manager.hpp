@@ -17,6 +17,7 @@ class LinkManager {
     void realign_links(const size_t index, const Target target, const ItemType type);
     void realign_links(const size_t index, const Target target);
     bool is_linked(const LinkKey key) const;
+    Link *get_link(const LinkKey key) const;
 
     void remove_key(Link &link);
     void assign_key(Link &link);

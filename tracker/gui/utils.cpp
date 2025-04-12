@@ -28,9 +28,11 @@ void draw_int_slider(const char *label, int &reference, const LinkKey key, int m
     const std::string input_id = std::string("##") + label + "Input";
     ImGui::PushID(label);
     ImGui::SliderInt(slider_id.c_str(), &reference, min, max, label);
+    draw_link_tooltip(key);
     ImGui::SameLine();
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
     ImGui::InputInt(input_id.c_str(), &reference, 0, 0);
+    draw_link_tooltip(key);
     ImGui::PopID();
     ImGui::EndDisabled();
 
@@ -67,9 +69,11 @@ void draw_float_slider(const char *label, float &reference, const LinkKey key, f
         }
     }
 
+    draw_link_tooltip(key);
     ImGui::SameLine();
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
     ImGui::InputFloat(input_id.c_str(), &reference, 0.0f, 0.0f, format);
+    draw_link_tooltip(key);
     ImGui::PopID();
     ImGui::EndDisabled();
 
@@ -80,6 +84,7 @@ void draw_knob(const char *label, float &reference, const LinkKey key, float min
     ImGui::BeginDisabled(link_manager.is_linked(key));
     ImGui::PushID(label);
     ImGuiKnobs::Knob(label, &reference, min, max);
+    draw_link_tooltip(key);
     ImGui::SameLine();
     ImGui::PopID();
     ImGui::EndDisabled();
@@ -87,12 +92,23 @@ void draw_knob(const char *label, float &reference, const LinkKey key, float min
     reference = std::clamp(reference, min, max);
 }
 
+void draw_link_tooltip(const LinkKey &key) {
+    const Link *link = link_manager.get_link(key);
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && link != nullptr) {
+        const std::string name = link->type == ItemType::DSP ? dsp_names[link->id] : channel_names[link->id];
+
+        std::ostringstream tooltip_stream;
+        tooltip_stream << "Linked by " << name;
+        ImGui::SetTooltip("%s", tooltip_stream.str().c_str());
+    }
+}
+
 void draw_popup(const std::string &message) {
     ImGui::Text("%s", message.c_str());
-    const float buttonWidth = 60.0f;
-    const float windowWidth = ImGui::GetWindowSize().x;
-    ImGui::SetCursorPosX((windowWidth - buttonWidth) * 0.5f);
-    if (ImGui::Button("Close", ImVec2(buttonWidth, 0))) {
+    const float button_width = GUI_BUTTON_WIDTH;
+    const float window_width = ImGui::GetWindowSize().x;
+    ImGui::SetCursorPosX((window_width - button_width) * 0.5f);
+    if (ImGui::Button("Close", ImVec2(button_width, 0))) {
         ImGui::CloseCurrentPopup();
     }
     ImGui::EndPopup();

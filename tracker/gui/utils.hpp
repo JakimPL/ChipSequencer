@@ -11,9 +11,12 @@
 
 int clamp_index(int index, const int max);
 void draw_number_of_items(const std::string &label, const char *label_id, int &value, int min, int max, float label_length = 50.0f);
+
 void draw_int_slider(const char *label, int &reference, const LinkKey key, int min = 0, int max = 1);
 void draw_float_slider(const char *label, float &reference, const LinkKey = LinkKey(), float min = 0.0f, float max = 1.0f, const GUIScale scale = GUIScale::Linear, const char *format = "%.4f");
 void draw_knob(const char *label, float &reference, const LinkKey key, float min = 0.0f, float max = 1.0f);
+void draw_link_tooltip(const LinkKey &key);
+
 void draw_popup(const std::string &message);
 bool draw_button(const char *label, const float button_padding = 0.0f);
 
