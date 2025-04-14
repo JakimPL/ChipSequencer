@@ -113,22 +113,31 @@ void LinkManager::realign_links(const size_t index, const Target target) {
 }
 
 bool LinkManager::is_linked(const LinkKey key) const {
-    return map.find(key) != map.end();
+    const auto it = map.find(key);
+    return it != map.end() && !it->second.empty();
 }
 
-Link *LinkManager::get_link(const LinkKey key) const {
+std::vector<Link *> LinkManager::get_links(const LinkKey key) const {
     const auto it = map.find(key);
     if (it != map.end()) {
         return it->second;
     }
 
-    return nullptr;
+    return {};
 }
 
 void LinkManager::remove_key(Link &link) {
-    auto it = map.find(link.key);
-    if (it != map.end()) {
-        map.erase(it);
+    const auto map_it = map.find(link.key);
+    if (map_it != map.end()) {
+        std::vector<Link *> &links_vector = map_it->second;
+        auto vec_it = std::find(links_vector.begin(), links_vector.end(), &link);
+        if (vec_it != links_vector.end()) {
+            links_vector.erase(vec_it);
+        }
+
+        if (links_vector.empty()) {
+            map.erase(map_it);
+        }
     }
 
     const LinkKey key;
@@ -138,7 +147,7 @@ void LinkManager::remove_key(Link &link) {
 void LinkManager::assign_key(Link &link) {
     const LinkKey key = {link.target, link.index, link.offset};
     link.key = key;
-    map[key] = &link;
+    map[key].push_back(&link);
 }
 
 void LinkManager::validate_key_and_link(const LinkKey key, const Link *link) const {
@@ -199,8 +208,10 @@ void LinkManager::capture_parameters() {
     snapshot.clear();
     for (const auto &pair : map) {
         const LinkKey &key = pair.first;
-        const Link *link = pair.second;
-        capture_parameter(key, link);
+        const std::vector<Link *> &links = pair.second;
+        for (const Link *link : links) {
+            capture_parameter(key, link);
+        }
     }
 }
 
@@ -228,7 +239,9 @@ void LinkManager::restore_parameter(const LinkKey key, const Link *link) const {
 void LinkManager::restore_parameters() const {
     for (const auto &pair : map) {
         const LinkKey &key = pair.first;
-        const Link *link = pair.second;
-        restore_parameter(key, link);
+        const std::vector<Link *> &links = pair.second;
+        for (const Link *link : links) {
+            restore_parameter(key, link);
+        }
     }
 }

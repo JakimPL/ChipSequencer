@@ -2,8 +2,9 @@
 #define SONG_LINKS_MANAGER_HPP
 
 #include <cstdint>
-#include <map>
 #include <variant>
+#include <vector>
+#include <unordered_map>
 
 #include "key.hpp"
 #include "link.hpp"
@@ -12,7 +13,7 @@ using ParameterValue = std::variant<uint8_t, uint16_t, uint32_t, _Float32>;
 
 class LinkManager {
   private:
-    std::unordered_map<LinkKey, Link *> map;
+    std::unordered_map<LinkKey, std::vector<Link *>> map;
     std::unordered_map<LinkKey, ParameterValue> snapshot;
 
     void capture_parameter(const LinkKey key, const Link *link);
@@ -31,7 +32,7 @@ class LinkManager {
     void realign_links(const size_t index, const Target target);
 
     bool is_linked(const LinkKey key) const;
-    Link *get_link(const LinkKey key) const;
+    std::vector<Link *> get_links(const LinkKey key) const;
 
     void capture_parameters();
     void restore_parameters() const;

@@ -93,12 +93,19 @@ void draw_knob(const char *label, float &reference, const LinkKey key, float min
 }
 
 void draw_link_tooltip(const LinkKey &key) {
-    const Link *link = link_manager.get_link(key);
-    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && link != nullptr) {
-        const std::string name = link->type == ItemType::DSP ? dsp_names[link->id] : channel_names[link->id];
-
+    const std::vector<Link *> &links = link_manager.get_links(key);
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
         std::ostringstream tooltip_stream;
-        tooltip_stream << "Linked by " << name;
+        tooltip_stream << "Linked by ";
+        for (size_t i = 0; i < links.size(); ++i) {
+            const Link *link = links[i];
+            const std::string name = link->type == ItemType::DSP ? dsp_names[link->id] : channel_names[link->id];
+            tooltip_stream << name;
+            if (i < links.size() - 1) {
+                tooltip_stream << ", ";
+            }
+        }
+
         ImGui::SetTooltip("%s", tooltip_stream.str().c_str());
     }
 }
