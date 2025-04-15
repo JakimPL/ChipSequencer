@@ -139,11 +139,9 @@ void GUI::set_audio_engine(AudioEngine *engine) {
 }
 
 void GUI::update(GUIElement element) {
-    if (element == GUIElement::All) {
-        return update_all();
-    }
-
     switch (element) {
+    case GUIElement::All:
+        return update_all();
     case GUIElement::Menu:
         return menu.update();
     case GUIElement::Editor:
@@ -160,12 +158,14 @@ void GUI::update(GUIElement element) {
         return orders_panel.update();
     case GUIElement::Oscillators:
         return oscillators_panel.update();
+    case GUIElement::Patterns:
+        return patterns_panel.update();
+    case GUIElement::Routing:
+        return routing_panel.update();
     case GUIElement::Sequences:
         return sequences_panel.update();
     case GUIElement::Wavetables:
         return wavetables_panel.update();
-    case GUIElement::Patterns:
-        return patterns_panel.update();
     }
 }
 
@@ -178,9 +178,10 @@ void GUI::update_all() {
     envelopes_panel.update();
     orders_panel.update();
     oscillators_panel.update();
+    patterns_panel.update();
+    routing_panel.update();
     sequences_panel.update();
     wavetables_panel.update();
-    patterns_panel.update();
 }
 
 void GUI::frame() {
@@ -221,9 +222,25 @@ void GUI::frame_all() {
     envelopes_panel.frame();
     orders_panel.frame();
     oscillators_panel.frame();
+    patterns_panel.frame();
+    routing_panel.frame();
     sequences_panel.frame();
     wavetables_panel.frame();
-    patterns_panel.frame();
+}
+
+void GUI::set_visibility_all(const bool visible) {
+    menu.visible = visible;
+    editor.visible = visible;
+    general_panel.visible = visible;
+    channels_panel.visible = visible;
+    dsps_panel.visible = visible;
+    envelopes_panel.visible = visible;
+    orders_panel.visible = visible;
+    oscillators_panel.visible = visible;
+    patterns_panel.visible = visible;
+    routing_panel.visible = visible;
+    sequences_panel.visible = visible;
+    wavetables_panel.visible = visible;
 }
 
 void GUI::play() const {
@@ -264,6 +281,8 @@ void GUI::deselect_all_rows() {
 
 void GUI::set_visibility(const GUIElement element, const bool visible) {
     switch (element) {
+    case GUIElement::All:
+        break;
     case GUIElement::Menu:
         menu.visible = visible;
         break;
@@ -288,20 +307,25 @@ void GUI::set_visibility(const GUIElement element, const bool visible) {
     case GUIElement::Oscillators:
         oscillators_panel.visible = visible;
         break;
+    case GUIElement::Patterns:
+        patterns_panel.visible = visible;
+        break;
+    case GUIElement::Routing:
+        routing_panel.visible = visible;
+        break;
     case GUIElement::Sequences:
         sequences_panel.visible = visible;
         break;
     case GUIElement::Wavetables:
         wavetables_panel.visible = visible;
         break;
-    case GUIElement::Patterns:
-        patterns_panel.visible = visible;
-        break;
     }
 }
 
 bool GUI::get_visibility(const GUIElement element) const {
     switch (element) {
+    case GUIElement::All:
+        return false;
     case GUIElement::Menu:
         return menu.visible;
     case GUIElement::Editor:
@@ -318,12 +342,14 @@ bool GUI::get_visibility(const GUIElement element) const {
         return orders_panel.visible;
     case GUIElement::Oscillators:
         return oscillators_panel.visible;
+    case GUIElement::Patterns:
+        return patterns_panel.visible;
+    case GUIElement::Routing:
+        return routing_panel.visible;
     case GUIElement::Sequences:
         return sequences_panel.visible;
     case GUIElement::Wavetables:
         return wavetables_panel.visible;
-    case GUIElement::Patterns:
-        return patterns_panel.visible;
     }
 
     return false;

@@ -15,6 +15,7 @@
 #include "panels/oscillators.hpp"
 #include "panels/orders.hpp"
 #include "panels/patterns.hpp"
+#include "panels/routing.hpp"
 #include "panels/sequences.hpp"
 #include "panels/wavetables.hpp"
 
@@ -62,6 +63,7 @@ class GUI {
     GUISequencesPanel sequences_panel;
     GUIWavetablesPanel wavetables_panel;
     GUIPatternsPanel patterns_panel;
+    GUIRoutingPanel routing_panel;
 
     SDL_Window *window;
     SDL_GLContext gl_context;
@@ -75,6 +77,7 @@ class GUI {
 
     void update_all();
     void frame_all();
+    void set_visibility_all(const bool visible);
 };
 ;
 

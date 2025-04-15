@@ -246,6 +246,11 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
             draw_output_parameter(output_type, channel_names, "Channel");
             break;
         }
+        case Target::OUTPUT_CHANNEL:
+        case Target::DSP_CHANNEL:
+        case Target::UNUSED: {
+            throw std::runtime_error("Invalid target type");
+        }
         }
     }
 

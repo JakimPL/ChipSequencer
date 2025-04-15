@@ -86,6 +86,8 @@ void GUIGeneralPanel::play() {
         error = true;
         std::ostringstream stream;
         switch (result) {
+        case ValidationResult::OK:
+            break;
         case ValidationResult::InvalidSongLength:
             stream << "Song is empty!";
             break;

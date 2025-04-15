@@ -97,6 +97,7 @@ add_executable(main
     tracker/gui/panels/oscillators.cpp
     tracker/gui/panels/panel.cpp
     tracker/gui/panels/patterns.cpp
+    tracker/gui/panels/routing.cpp
     tracker/gui/panels/sequences.cpp
     tracker/gui/panels/wavetables.cpp
     tracker/maps/routing.cpp
@@ -113,6 +114,11 @@ add_executable(main
     tracker/utils/math.cpp
     tracker/utils/string.cpp
     tracker/utils/temp.cpp
+)
+
+target_compile_options(main PRIVATE
+    $<$<COMPILE_LANGUAGE:C>:-Werror=switch-enum>
+    $<$<COMPILE_LANGUAGE:CXX>:-Werror=switch-enum -fsanitize=address -g>
 )
 
 add_dependencies(main asm_objects)
