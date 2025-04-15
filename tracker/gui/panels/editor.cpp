@@ -44,10 +44,4 @@ void GUIEditorPanel::check_keyboard_input() {
         const int min_octave = frequency_table.get_min_octave();
         current_octave = std::max(current_octave - 1, min_octave);
     }
-    if (ImGui::IsKeyPressed(ImGuiKey_PageDown)) {
-        jump_step = std::max(jump_step - 1, 0);
-    }
-    if (ImGui::IsKeyPressed(ImGuiKey_PageUp)) {
-        jump_step = std::min(jump_step + 1, GUI_MAX_JUMP_STEP);
-    }
 }
