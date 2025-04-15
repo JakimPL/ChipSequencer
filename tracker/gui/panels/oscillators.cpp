@@ -196,7 +196,7 @@ void GUIOscillatorsPanel::draw_oscillator() {
     case GENERATOR_SQUARE:
         ImGui::Text("Duty Cycle");
         ImGui::NextColumn();
-        draw_float_slider("##DutyCycle", current_oscillator.duty_cycle, 0.0f, 1.0f);
+        draw_float_slider("##DutyCycle", current_oscillator.duty_cycle, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_SQUARE_DUTY_CYCLE}, 0.0f, 1.0f);
         break;
     case GENERATOR_WAVETABLE:
         ImGui::Text("Wavetable");

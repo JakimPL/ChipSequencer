@@ -21,19 +21,27 @@ void draw_number_of_items(const std::string &label, const char *label_id, int &v
     value = std::clamp(value, min, max);
 }
 
-void draw_int_slider(const char *label, int &reference, int min, int max) {
+void draw_int_slider(const char *label, int &reference, const LinkKey key, int min, int max) {
+    ImGui::BeginDisabled(link_manager.is_linked(key));
+
     const std::string slider_id = std::string("##") + label + "Slider";
     const std::string input_id = std::string("##") + label + "Input";
     ImGui::PushID(label);
     ImGui::SliderInt(slider_id.c_str(), &reference, min, max, label);
+    draw_link_tooltip(key);
     ImGui::SameLine();
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
     ImGui::InputInt(input_id.c_str(), &reference, 0, 0);
+    draw_link_tooltip(key);
     ImGui::PopID();
+    ImGui::EndDisabled();
+
     reference = std::clamp(reference, min, max);
 }
 
-void draw_float_slider(const char *label, float &reference, float min, float max, const GUIScale scale, const char *format) {
+void draw_float_slider(const char *label, float &reference, const LinkKey key, float min, float max, const GUIScale scale, const char *format) {
+    ImGui::BeginDisabled(link_manager.is_linked(key));
+
     const std::string slider_id = std::string("##") + label + "Slider";
     const std::string input_id = std::string("##") + label + "Input";
     ImGui::PushID(label);
@@ -61,25 +69,53 @@ void draw_float_slider(const char *label, float &reference, float min, float max
         }
     }
 
+    draw_link_tooltip(key);
     ImGui::SameLine();
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
     ImGui::InputFloat(input_id.c_str(), &reference, 0.0f, 0.0f, format);
+    draw_link_tooltip(key);
     ImGui::PopID();
+    ImGui::EndDisabled();
+
     reference = std::clamp(reference, min, max);
 }
 
-void draw_knob(const char *label, float &reference, float min, float max) {
+void draw_knob(const char *label, float &reference, const LinkKey key, float min, float max) {
+    ImGui::BeginDisabled(link_manager.is_linked(key));
+    ImGui::PushID(label);
     ImGuiKnobs::Knob(label, &reference, min, max);
+    draw_link_tooltip(key);
     ImGui::SameLine();
+    ImGui::PopID();
+    ImGui::EndDisabled();
+
     reference = std::clamp(reference, min, max);
+}
+
+void draw_link_tooltip(const LinkKey &key) {
+    const std::vector<Link *> &links = link_manager.get_links(key);
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+        std::ostringstream tooltip_stream;
+        tooltip_stream << "Linked by ";
+        for (size_t i = 0; i < links.size(); ++i) {
+            const Link *link = links[i];
+            const std::string name = link->type == ItemType::DSP ? dsp_names[link->id] : channel_names[link->id];
+            tooltip_stream << name;
+            if (i < links.size() - 1) {
+                tooltip_stream << ", ";
+            }
+        }
+
+        ImGui::SetTooltip("%s", tooltip_stream.str().c_str());
+    }
 }
 
 void draw_popup(const std::string &message) {
     ImGui::Text("%s", message.c_str());
-    const float buttonWidth = 60.0f;
-    const float windowWidth = ImGui::GetWindowSize().x;
-    ImGui::SetCursorPosX((windowWidth - buttonWidth) * 0.5f);
-    if (ImGui::Button("Close", ImVec2(buttonWidth, 0))) {
+    const float button_width = GUI_BUTTON_WIDTH;
+    const float window_width = ImGui::GetWindowSize().x;
+    ImGui::SetCursorPosX((window_width - button_width) * 0.5f);
+    if (ImGui::Button("Close", ImVec2(button_width, 0))) {
         ImGui::CloseCurrentPopup();
     }
     ImGui::EndPopup();
@@ -159,7 +195,7 @@ bool draw_output(OutputType &output_type) {
             output_type.additive = true;
         }
 
-        draw_int_slider("Channel", output_type.output_channel, 0, song.get_output_channels() - 1);
+        draw_int_slider("Channel", output_type.output_channel, {}, 0, song.get_output_channels() - 1);
         break;
     case OUTPUT_TARGET_DSP:
         if (dsps.empty()) {
@@ -170,7 +206,7 @@ bool draw_output(OutputType &output_type) {
                 output_type.additive = true;
             }
 
-            draw_int_slider("DSP", output_type.dsp_channel, 0, dsps.size() - 1);
+            draw_int_slider("DSP", output_type.dsp_channel, {}, 0, dsps.size() - 1);
             break;
         }
     default:
@@ -217,7 +253,7 @@ bool draw_output(OutputType &output_type) {
     ImGui::Checkbox("Additive", &output_type.additive);
     prepare_combo(variable_types, "##OutputTypeCombo", output_type.variable_type);
     ImGui::BeginDisabled(output_type.variable_type == 0);
-    draw_int_slider("Shift", output_type.shift, 0, 15);
+    draw_int_slider("Shift", output_type.shift, {}, 0, 15);
     ImGui::EndDisabled();
     pop_secondary_style();
 

@@ -8,7 +8,7 @@ from structures.wavetable import Wavetable
 
 CONSTANTS_ASM_FILE = "core/common/const.asm"
 CONSTANTS_CPP_FILE = "tracker/constants.hpp"
-TARGET_HPP_FILE = "tracker/song/target.hpp"
+TARGET_HPP_FILE = "tracker/song/links/target.hpp"
 OFFSETS_HPP_FILE = "tracker/maps/offsets.hpp"
 CONFIG_YAML_FILE = "config.yaml"
 CONFIG_ASM_FILE = "core/common/config.asm"

@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "../constants.hpp"
-#include "../song/target.hpp"
+#include "../song/links/target.hpp"
 
 struct RoutingItems {
     RoutingItems(

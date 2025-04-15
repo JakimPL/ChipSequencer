@@ -8,8 +8,8 @@
 #include "../version.hpp"
 #include "../tuning/frequencies.hpp"
 #include "../tuning/scale.hpp"
-#include "link.hpp"
 #include "validation.hpp"
+#include "links/link.hpp"
 
 class Song {
   private:
@@ -112,11 +112,6 @@ class Song {
     void *add_oscillator();
     Channel *add_channel();
     void *add_dsp();
-
-    void set_link(Link &link, void *item, const u_int8_t i) const;
-    void set_links() const;
-    void realign_links(const size_t index, const Target target, const ItemType type) const;
-    void realign_links(const size_t index, const Target target) const;
 
     void set_buffer_offsets();
 

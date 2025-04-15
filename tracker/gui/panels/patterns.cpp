@@ -3,8 +3,6 @@
 #include "../utils.hpp"
 #include "patterns.hpp"
 
-#include <iostream>
-
 GUIPatternsPanel::GUIPatternsPanel() {
     from();
     update();
@@ -27,8 +25,8 @@ void GUIPatternsPanel::draw() {
 
 void GUIPatternsPanel::draw_pages() {
     const int previous_page = page;
-    const int pages = std::ceil(static_cast<float>(current_pattern.total_rows) / gui.get_page_size());
-    draw_int_slider("Page", page, 0, pages - 1);
+    const int pages = get_pages();
+    draw_int_slider("Page", page, {}, 0, pages - 1);
     if (page != previous_page) {
         deselect_all_rows();
     }
@@ -141,10 +139,40 @@ void GUIPatternsPanel::check_keyboard_input() {
 
     auto [pattern, index] = find_pattern_by_current_row();
     if (pattern != nullptr) {
-        const uint16_t start = page * gui.get_page_size() - index;
-        const uint16_t end = start + gui.get_page_size() - index;
+        const int start = page * gui.get_page_size() - index;
+        const int end = start + gui.get_page_size();
         pattern->handle_input(start, end);
         current_row = pattern->current_row + index;
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_PageDown)) {
+        page = std::min(page + 1, get_pages() - 1);
+    }
+    if (ImGui::IsKeyPressed(ImGuiKey_PageUp)) {
+        page = std::max(page - 1, 0);
+    }
+    if (!current_pattern.patterns.empty()) {
+        auto it = current_pattern.patterns.find(current_channel);
+        if (ImGui::IsKeyPressed(ImGuiKey_LeftArrow)) {
+            if (it == current_pattern.patterns.end() || it == current_pattern.patterns.begin()) {
+                current_channel = current_pattern.patterns.rbegin()->first;
+            } else {
+                --it;
+                current_channel = it->first;
+            }
+        }
+        if (ImGui::IsKeyPressed(ImGuiKey_RightArrow)) {
+            if (it == current_pattern.patterns.end()) {
+                current_channel = current_pattern.patterns.begin()->first;
+            } else {
+                ++it;
+                if (it == current_pattern.patterns.end()) {
+                    current_channel = current_pattern.patterns.begin()->first;
+                } else {
+                    current_channel = it->first;
+                }
+            }
+        }
     }
 }
 
@@ -170,6 +198,10 @@ std::pair<Pattern *, uint16_t> GUIPatternsPanel::find_pattern_by_current_row() c
 
     Pattern *pattern = const_cast<Pattern *>(&patterns.at(pattern_id));
     return {pattern, rows};
+}
+
+int GUIPatternsPanel::get_pages() const {
+    return std::ceil(static_cast<float>(current_pattern.total_rows) / gui.get_page_size());
 }
 
 void GUIPatternsPanel::deselect_all_rows() {

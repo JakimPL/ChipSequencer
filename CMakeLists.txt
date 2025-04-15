@@ -101,9 +101,10 @@ add_executable(main
     tracker/gui/panels/wavetables.cpp
     tracker/maps/routing.cpp
     tracker/song/data.cpp
-    tracker/song/link.cpp
     tracker/song/song.cpp
     tracker/song/output.cpp
+    tracker/song/links/link.cpp
+    tracker/song/links/manager.cpp
     tracker/structures/order.cpp
     tracker/structures/sequence.cpp
     tracker/structures/wavetable.cpp

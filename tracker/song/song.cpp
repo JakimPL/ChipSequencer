@@ -38,7 +38,7 @@ void Song::new_song() {
         DEFAULT_A4_FREQUENCY
     };
     change_tuning(tuning.edo, tuning.a4_frequency);
-    set_links();
+    link_manager.set_links();
 }
 
 void Song::save_to_file(const std::string &filename) {
@@ -47,7 +47,7 @@ void Song::save_to_file(const std::string &filename) {
 
     try {
         calculate_song_length();
-        set_links();
+        link_manager.set_links();
         export_all(song_dir);
         compress_directory(song_dir, filename);
         std::filesystem::remove_all(temp_base);
@@ -298,7 +298,7 @@ Channel *Song::add_channel() {
     channels.push_back(channel);
     num_channels = channels.size();
     links[static_cast<size_t>(ItemType::CHANNEL)].push_back(Link());
-    set_links();
+    link_manager.set_links();
     return channel;
 }
 
@@ -313,7 +313,7 @@ void *Song::add_dsp() {
     dsps.push_back(dsp);
     num_dsps = dsps.size();
     links[static_cast<size_t>(ItemType::DSP)].push_back(Link());
-    set_links();
+    link_manager.set_links();
     return dsp;
 }
 
@@ -321,7 +321,7 @@ void Song::remove_envelope(const size_t index) {
     if (index < envelopes.size()) {
         delete envelopes[index];
         envelopes.erase(envelopes.begin() + index);
-        realign_links(index, Target::ENVELOPE);
+        link_manager.realign_links(index, Target::ENVELOPE);
         for (auto &channel : channels) {
             if (channel->envelope_index >= index) {
                 channel->envelope_index = std::max(0, channel->envelope_index - 1);
@@ -334,7 +334,7 @@ void Song::remove_sequence(const size_t index) {
     if (index < sequences.size()) {
         delete sequences[index];
         sequences.erase(sequences.begin() + index);
-        realign_links(index, Target::SEQUENCE);
+        link_manager.realign_links(index, Target::SEQUENCE);
         for (auto &order : orders) {
             for (size_t i = 0; i < order->order_length; i++) {
                 if (order->sequences[i] >= index) {
@@ -349,7 +349,7 @@ void Song::remove_order(const size_t index) {
     if (index < orders.size()) {
         delete orders[index];
         orders.erase(orders.begin() + index);
-        realign_links(index, Target::ORDER);
+        link_manager.realign_links(index, Target::ORDER);
         for (auto &channel : channels) {
             if (channel->order_index >= index) {
                 channel->order_index = std::max(0, channel->order_index - 1);
@@ -362,7 +362,7 @@ void Song::remove_wavetable(const size_t index) {
     if (index < wavetables.size()) {
         delete wavetables[index];
         wavetables.erase(wavetables.begin() + index);
-        realign_links(index, Target::WAVETABLE);
+        link_manager.realign_links(index, Target::WAVETABLE);
         for (auto &oscillator : oscillators) {
             Oscillator *generic = static_cast<Oscillator *>(oscillator);
             if (generic->generator_index == GENERATOR_WAVETABLE) {
@@ -379,7 +379,7 @@ void Song::remove_oscillator(const size_t index) {
     if (index < oscillators.size()) {
         delete_oscillator(oscillators[index]);
         oscillators.erase(oscillators.begin() + index);
-        realign_links(index, Target::OSCILLATOR);
+        link_manager.realign_links(index, Target::OSCILLATOR);
         for (auto &channel : channels) {
             if (channel->oscillator_index >= index) {
                 channel->oscillator_index = std::max(0, channel->oscillator_index - 1);
@@ -396,8 +396,8 @@ void Song::remove_channel(const size_t index) {
         links[link_type].erase(links[link_type].begin() + index);
         num_channels = channels.size();
 
-        realign_links(index, Target::CHANNEL);
-        set_links();
+        link_manager.realign_links(index, Target::CHANNEL);
+        link_manager.set_links();
     }
 }
 
@@ -409,9 +409,9 @@ void Song::remove_dsp(const size_t index) {
         links[link_type].erase(links[link_type].begin() + index);
         num_dsps = dsps.size();
 
-        realign_links(index, Target::DSP_CHANNEL);
-        realign_links(index, Target::DSP);
-        set_links();
+        link_manager.realign_links(index, Target::DSP_CHANNEL);
+        link_manager.realign_links(index, Target::DSP);
+        link_manager.set_links();
     }
 }
 
@@ -612,109 +612,6 @@ void Song::calculate_song_length() {
     }
 
     song_length = max_rows * ticks_per_beat;
-}
-
-void Song::set_link(Link &link, void *item, const u_int8_t i) const {
-    switch (link.target) {
-    case Target::OUTPUT_CHANNEL:
-        link.base = &output;
-        break;
-    case Target::DSP_CHANNEL:
-        link.base = &dsp_input;
-        break;
-    case Target::ENVELOPE:
-        if (link.index >= envelopes.size()) {
-            link.base = &output;
-        } else {
-            link.base = envelopes[link.index];
-        }
-        break;
-    case Target::SEQUENCE:
-        if (link.index >= sequences.size()) {
-            link.base = &output;
-        } else {
-            link.base = sequences[link.index];
-        }
-        break;
-    case Target::ORDER:
-        if (link.index >= orders.size()) {
-            link.base = &output;
-        } else {
-            link.base = orders[link.index];
-        }
-        break;
-    case Target::OSCILLATOR:
-        if (link.index >= oscillators.size()) {
-            link.base = &output;
-        } else {
-            link.base = oscillators[link.index];
-        }
-        break;
-    case Target::WAVETABLE:
-        if (link.index >= wavetables.size()) {
-            link.base = &output;
-        } else {
-            link.base = wavetables[link.index];
-        }
-        break;
-    case Target::DSP:
-        if (link.index >= dsps.size()) {
-            link.base = &output;
-        } else {
-            link.base = dsps[link.index];
-        }
-        break;
-    case Target::CHANNEL:
-        if (link.index >= channels.size()) {
-            link.base = &output;
-        } else {
-            link.base = channels[link.index];
-        }
-        break;
-    }
-
-    link.id = i;
-    link.item = item;
-    link.pointer = link.base + link.offset;
-    link.assign_output();
-}
-
-void Song::set_links() const {
-    size_t link_type = static_cast<size_t>(ItemType::CHANNEL);
-    for (size_t i = 0; i < channels.size(); i++) {
-        Link &link = links[link_type][i];
-        void *item = channels[i];
-        try {
-            set_link(link, item, i);
-        } catch (const std::out_of_range &exception) {
-            std::cerr << "Error setting link for a channel " << i << ": " << exception.what() << std::endl;
-        }
-    }
-
-    link_type = static_cast<size_t>(ItemType::DSP);
-    for (size_t i = 0; i < dsps.size(); i++) {
-        Link &link = links[link_type][i];
-        void *item = dsps[i];
-        try {
-            set_link(link, item, i);
-        } catch (const std::out_of_range &exception) {
-            std::cerr << "Error setting link for a DSP " << i << ": " << exception.what() << std::endl;
-        }
-    }
-}
-
-void Song::realign_links(const size_t index, const Target target, const ItemType type) const {
-    size_t link_type = static_cast<size_t>(type);
-    for (Link &link : links[link_type]) {
-        if (link.target == target && link.index >= index) {
-            link.index = std::max(0, link.index - 1);
-        }
-    }
-}
-
-void Song::realign_links(const size_t index, const Target target) const {
-    realign_links(index, target, ItemType::CHANNEL);
-    realign_links(index, target, ItemType::DSP);
 }
 
 void Song::set_buffer_offsets() {
@@ -1070,7 +967,7 @@ void Song::import_links(const std::string &song_dir, const nlohmann::json &json)
         links[link_type].push_back(link);
     }
 
-    set_links();
+    link_manager.set_links();
     file.close();
 }
 

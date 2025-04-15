@@ -3,7 +3,7 @@
 
 #include "../constants.hpp"
 #include "../structures.hpp"
-#include "link.hpp"
+#include "links/link.hpp"
 
 typedef _Float32 t_output;
 

@@ -4,6 +4,7 @@
 
 #include "../../general.hpp"
 #include "../../utils/file.hpp"
+#include "../names.hpp"
 #include "../utils.hpp"
 #include "menu.hpp"
 
@@ -40,6 +41,15 @@ void GUIMenu::draw() {
             ImGui::Separator();
             if (ImGui::MenuItem("Exit")) {
                 file_exit();
+            }
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("View")) {
+            for (const auto &[element, name] : menu_items) {
+                const bool visible = gui.get_visibility(element);
+                if (ImGui::MenuItem(name, nullptr, visible)) {
+                    gui.set_visibility(element, !visible);
+                }
             }
             ImGui::EndMenu();
         }

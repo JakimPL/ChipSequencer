@@ -1,4 +1,5 @@
 #include "../../general.hpp"
+#include "../../song/links/manager.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
 #include "dsps.hpp"
@@ -106,7 +107,7 @@ void GUIDSPsPanel::to() const {
 
     Link &link = links[static_cast<size_t>(ItemType::DSP)][dsp_index];
     current_dsp.output_type.set_link(link, ItemType::DSP, dsp_index);
-    song.set_link(link, buffer, dsp_index);
+    link_manager.set_link(link, buffer, dsp_index);
 }
 
 void GUIDSPsPanel::add() {
@@ -182,23 +183,23 @@ void GUIDSPsPanel::draw_dsp() {
 void GUIDSPsPanel::draw_effect() {
     switch (current_dsp.effect_index) {
     case EFFECT_GAINER: {
-        draw_knob("Gain", current_dsp.gainer_gain, 0.0f, 1.0f);
+        draw_knob("Gain", current_dsp.gainer_gain, {Target::DSP, dsp_index, DSP_GAINER_VOLUME}, 0.0f, 1.0f);
         break;
     }
     case EFFECT_DELAY: {
-        draw_knob("Dry", current_dsp.delay_dry, 0.0f, 1.0f);
+        draw_knob("Dry", current_dsp.delay_dry, {Target::DSP, dsp_index, DSP_DELAY_DRY}, 0.0f, 1.0f);
         ImGui::SameLine();
-        draw_knob("Wet", current_dsp.delay_wet, 0.0f, 1.0f);
+        draw_knob("Wet", current_dsp.delay_wet, {Target::DSP, dsp_index, DSP_DELAY_WET}, 0.0f, 1.0f);
         ImGui::SameLine();
-        draw_knob("Feedback", current_dsp.delay_feedback, 0.0f, 1.0f);
+        draw_knob("Feedback", current_dsp.delay_feedback, {Target::DSP, dsp_index, DSP_DELAY_FEEDBACK}, 0.0f, 1.0f);
         ImGui::SameLine();
-        draw_knob("Time", current_dsp.delay_time, 1, MAX_DSP_BUFFER_SIZE);
+        draw_knob("Time", current_dsp.delay_time, {Target::DSP, dsp_index, DSP_DELAY_TIME}, 1, MAX_DSP_BUFFER_SIZE);
         break;
     }
     case EFFECT_FILTER: {
         ImGui::Checkbox("High-pass", &current_dsp.filter_mode);
         ImGui::NewLine();
-        draw_knob("Frequency", current_dsp.filter_cutoff, 0.0f, 1.0f);
+        draw_knob("Frequency", current_dsp.filter_cutoff, {Target::DSP, dsp_index, DSP_FILTER_FREQUENCY}, 0.0f, 1.0f);
         break;
     }
     }

@@ -1,6 +1,10 @@
 #include <algorithm>
+#include <iostream>
+
+#include "../imgui/imgui_internal.h"
 
 #include "../general.hpp"
+#include "default.hpp"
 #include "gui.hpp"
 
 GUI::GUI()
@@ -67,6 +71,8 @@ bool GUI::initialize() {
     io = &ImGui::GetIO();
     (void) io;
 
+    io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
     // set_font();
 
     ImGui::StyleColorsDark();
@@ -100,11 +106,10 @@ bool GUI::render() {
 }
 
 void GUI::set_font() {
-    ImFontConfig fontConfig;
-    fontConfig.PixelSnapH = true;
-    float fontSize = 13.0f;
-    float largerFontSize = 18.0f;
-    font = io->Fonts->AddFontFromFileTTF("imgui/misc/fonts/ProggyClean.ttf", largerFontSize, &fontConfig);
+    ImFontConfig font_config;
+    font_config.PixelSnapH = true;
+    const float larger_font_size = 18.0f;
+    font = io->Fonts->AddFontFromFileTTF("imgui/misc/fonts/ProggyClean.ttf", larger_font_size, &font_config);
 }
 
 void GUI::terminate() {
@@ -179,6 +184,35 @@ void GUI::update_all() {
 }
 
 void GUI::frame() {
+    ImGuiViewport *viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(viewport->WorkSize);
+    ImGui::SetNextWindowViewport(viewport->ID);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
+    window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::Begin("GeneralDock", nullptr, window_flags);
+    ImGui::PopStyleVar(3);
+
+    ImGuiID dockspace_id = ImGui::GetID("DockSpace");
+    ImGuiDockNode *node = ImGui::DockBuilderGetNode(dockspace_id);
+    if (node == nullptr || node->IsLeafNode()) {
+        ImGui::LoadIniSettingsFromMemory(default_ini.c_str(), default_ini.size());
+        std::cout << "Loading default INI settings" << std::endl;
+    }
+
+    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+
+    frame_all();
+
+    ImGui::End();
+}
+
+void GUI::frame_all() {
     menu.frame();
     editor.frame();
     general_panel.frame();
@@ -226,4 +260,71 @@ bool GUI::is_paused() const {
 
 void GUI::deselect_all_rows() {
     gui.patterns_panel.deselect_all_rows();
+}
+
+void GUI::set_visibility(const GUIElement element, const bool visible) {
+    switch (element) {
+    case GUIElement::Menu:
+        menu.visible = visible;
+        break;
+    case GUIElement::Editor:
+        editor.visible = visible;
+        break;
+    case GUIElement::General:
+        general_panel.visible = visible;
+        break;
+    case GUIElement::Channels:
+        channels_panel.visible = visible;
+        break;
+    case GUIElement::DSPs:
+        dsps_panel.visible = visible;
+        break;
+    case GUIElement::Envelopes:
+        envelopes_panel.visible = visible;
+        break;
+    case GUIElement::Orders:
+        orders_panel.visible = visible;
+        break;
+    case GUIElement::Oscillators:
+        oscillators_panel.visible = visible;
+        break;
+    case GUIElement::Sequences:
+        sequences_panel.visible = visible;
+        break;
+    case GUIElement::Wavetables:
+        wavetables_panel.visible = visible;
+        break;
+    case GUIElement::Patterns:
+        patterns_panel.visible = visible;
+        break;
+    }
+}
+
+bool GUI::get_visibility(const GUIElement element) const {
+    switch (element) {
+    case GUIElement::Menu:
+        return menu.visible;
+    case GUIElement::Editor:
+        return editor.visible;
+    case GUIElement::General:
+        return general_panel.visible;
+    case GUIElement::Channels:
+        return channels_panel.visible;
+    case GUIElement::DSPs:
+        return dsps_panel.visible;
+    case GUIElement::Envelopes:
+        return envelopes_panel.visible;
+    case GUIElement::Orders:
+        return orders_panel.visible;
+    case GUIElement::Oscillators:
+        return oscillators_panel.visible;
+    case GUIElement::Sequences:
+        return sequences_panel.visible;
+    case GUIElement::Wavetables:
+        return wavetables_panel.visible;
+    case GUIElement::Patterns:
+        return patterns_panel.visible;
+    }
+
+    return false;
 }
