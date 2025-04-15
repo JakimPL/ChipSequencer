@@ -184,7 +184,7 @@ std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t
     return {index + pattern.notes.size(), select};
 }
 
-bool draw_output(OutputType &output_type) {
+bool draw_output(OutputType &output_type, const int dsp_index) {
     push_secondary_style();
     ImGui::Separator();
     ImGui::Text("Output:");
@@ -198,7 +198,7 @@ bool draw_output(OutputType &output_type) {
         draw_int_slider("Channel", output_type.output_channel, {}, 0, song.get_output_channels() - 1);
         break;
     case OUTPUT_TARGET_DSP:
-        if (dsps.empty()) {
+        if (dsps.empty() || dsp_index >= dsps.size() - 1) {
             ImGui::Text("No DSPs available.");
             break;
         } else {
@@ -206,7 +206,7 @@ bool draw_output(OutputType &output_type) {
                 output_type.additive = true;
             }
 
-            draw_int_slider("DSP", output_type.dsp_channel, {}, 0, dsps.size() - 1);
+            draw_int_slider("DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
             break;
         }
     default:
