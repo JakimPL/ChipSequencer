@@ -21,11 +21,11 @@ GUIRoutingPanel::GUIRoutingPanel() {
 }
 
 void GUIRoutingPanel::update() {
-    collect_nodes();
-    collect_links();
 }
 
 void GUIRoutingPanel::from() {
+    collect_nodes();
+    collect_links();
 }
 
 void GUIRoutingPanel::to() const {
@@ -55,9 +55,9 @@ void GUIRoutingPanel::collect_nodes() {
     const auto &channel_routing = routing_variables.at(Target::CHANNEL);
     for (size_t i = 0; i < channels.size(); ++i) {
         RoutingNode channel_node;
-        channel_node.id = i;
+        channel_node.identifier.id = i;
+        channel_node.identifier.type = Target::CHANNEL;
         channel_node.key = {ItemType::CHANNEL, static_cast<int>(i)};
-        channel_node.type = Target::CHANNEL;
         channel_node.name = channel_names[i];
 
         for (size_t j = 0; j < channel_routing.labels.size(); ++j) {
@@ -78,9 +78,9 @@ void GUIRoutingPanel::collect_nodes() {
     const auto &dsp_routing = routing_variables.at(Target::DSP);
     for (size_t i = 0; i < dsps.size(); ++i) {
         RoutingNode dsp_node;
-        dsp_node.id = i;
+        dsp_node.identifier.id = i;
+        dsp_node.identifier.type = Target::DSP;
         dsp_node.key = {ItemType::DSP, static_cast<int>(i)};
-        dsp_node.type = Target::DSP;
         dsp_node.name = dsp_names[i];
 
         const DSP *dsp = static_cast<DSP *>(dsps[i]);
@@ -105,8 +105,8 @@ void GUIRoutingPanel::collect_nodes() {
     const size_t output_channels = song.get_output_channels();
     for (size_t i = 0; i < output_channels; ++i) {
         RoutingNode output_node;
-        output_node.id = i;
-        output_node.type = Target::OUTPUT_CHANNEL;
+        output_node.identifier.id = i;
+        output_node.identifier.type = Target::OUTPUT_CHANNEL;
         output_node.name = "Output Channel " + std::to_string(i);
         output_node.position = {output_x, current_y};
         current_y += output_node.lines * ImGui::GetTextLineHeight() + vertical_padding;
@@ -176,10 +176,10 @@ void GUIRoutingPanel::draw_all_links() {
     }
 }
 
-void GUIRoutingPanel::draw_node(RoutingNode &node_info, const ImVec2 node_rect_min) {
+void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rect_min) {
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
     std::string id_prefix;
-    switch (node_info.type) {
+    switch (routing_node.identifier.type) {
     case Target::CHANNEL:
         id_prefix = "ChannelNode_";
         break;
@@ -210,7 +210,7 @@ void GUIRoutingPanel::draw_node(RoutingNode &node_info, const ImVec2 node_rect_m
         id_prefix = "UnknownNode_";
         break;
     }
-    const std::string id_str = id_prefix + std::to_string(node_info.id);
+    const std::string id_str = id_prefix + std::to_string(routing_node.identifier.id);
     ImGui::PushID(id_str.c_str());
 
     const ImGuiStyle &style = ImGui::GetStyle();
@@ -218,13 +218,13 @@ void GUIRoutingPanel::draw_node(RoutingNode &node_info, const ImVec2 node_rect_m
     const float node_padding_y = style.WindowPadding.y / 2.0f;
     const float line_height = ImGui::GetTextLineHeight();
 
-    const float node_content_height = node_info.lines * line_height + (node_info.lines > 1 ? (node_info.lines - 1) * style.ItemSpacing.y : 0);
+    const float node_content_height = routing_node.lines * line_height + (routing_node.lines > 1 ? (routing_node.lines - 1) * style.ItemSpacing.y : 0);
     const float node_actual_height = node_content_height + node_padding_y * 2.0f;
 
-    const float name_width = ImGui::CalcTextSize(node_info.name.c_str()).x;
+    const float name_width = ImGui::CalcTextSize(routing_node.name.c_str()).x;
     float max_param_width = 0.0f;
-    if (!node_info.parameters.empty()) {
-        for (const auto &[parameter_key, parameter_label] : node_info.parameters) {
+    if (!routing_node.parameters.empty()) {
+        for (const auto &[parameter_key, parameter_label] : routing_node.parameters) {
             max_param_width = std::max(max_param_width, ImGui::CalcTextSize(parameter_label.c_str()).x);
         }
     }
@@ -232,12 +232,12 @@ void GUIRoutingPanel::draw_node(RoutingNode &node_info, const ImVec2 node_rect_m
     const float node_actual_width = std::max(GUI_ROUTING_NODE_WIDTH, content_width + node_padding_x * 2.0f);
 
     const ImVec2 node_rect_max = {node_rect_min.x + node_actual_width, node_rect_min.y + node_actual_height};
-    node_info.size = {node_actual_width, node_actual_height};
+    routing_node.size = {node_actual_width, node_actual_height};
 
     /* dragging */
     const bool is_hovered = ImGui::IsMouseHoveringRect(node_rect_min, node_rect_max);
     if (dragging_node == nullptr && is_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
-        dragging_node = &node_info;
+        dragging_node = &routing_node;
         ImVec2 current_node_rect_min = node_rect_min;
         drag_node_offset = ImGui::GetMousePos() - current_node_rect_min;
     }
@@ -253,25 +253,25 @@ void GUIRoutingPanel::draw_node(RoutingNode &node_info, const ImVec2 node_rect_m
     ImVec2 current_text_pos = ImVec2(node_rect_min.x + node_padding_x, node_rect_min.y + node_padding_y);
     float pin_y = current_text_pos.y + pin_offset_y;
 
-    if (node_info.type != Target::CHANNEL) {
+    if (routing_node.identifier.type != Target::CHANNEL) {
         const ImVec2 pin_position = ImVec2(node_rect_min.x - GUI_ROUTING_PIN_RADIUS, pin_y);
         draw_list->AddCircleFilled(pin_position, GUI_ROUTING_PIN_RADIUS, pin_color_main);
-        const int index = node_info.id;
-        const uint16_t offset = sizeof(_Float32) * node_info.id;
-        const Target target = node_info.type == Target::DSP ? Target::DSP_CHANNEL : Target::OUTPUT_CHANNEL;
+        const int index = routing_node.identifier.id;
+        const uint16_t offset = sizeof(_Float32) * routing_node.identifier.id;
+        const Target target = routing_node.identifier.type == Target::DSP ? Target::DSP_CHANNEL : Target::OUTPUT_CHANNEL;
         input_pins[{target, index, offset}] = pin_position;
     }
 
-    if (node_info.type != Target::OUTPUT_CHANNEL) {
+    if (routing_node.identifier.type != Target::OUTPUT_CHANNEL) {
         const ImVec2 pin_position = ImVec2(node_rect_max.x + GUI_ROUTING_PIN_RADIUS, pin_y);
         draw_list->AddCircleFilled(pin_position, GUI_ROUTING_PIN_RADIUS, pin_color_main);
-        output_pins[node_info.key.value()] = pin_position;
+        output_pins[routing_node.key.value()] = pin_position;
     }
 
-    draw_list->AddText(current_text_pos, ImGui::GetColorU32(ImGuiCol_Text), node_info.name.c_str());
+    draw_list->AddText(current_text_pos, ImGui::GetColorU32(ImGuiCol_Text), routing_node.name.c_str());
     current_text_pos.y += line_height + style.ItemSpacing.y;
 
-    for (const auto &parameter : node_info.parameters) {
+    for (const auto &parameter : routing_node.parameters) {
         const auto &[parameter_key, parameter_label] = parameter;
         pin_y = current_text_pos.y + pin_offset_y;
         const ImVec2 pin_position = ImVec2(node_rect_min.x - GUI_ROUTING_PIN_RADIUS, pin_y);

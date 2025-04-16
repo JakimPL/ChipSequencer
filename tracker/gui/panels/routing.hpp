@@ -6,27 +6,13 @@
 #include <string>
 #include <vector>
 
-#include "../../song/links/key.hpp"
-#include "../../song/links/type.hpp"
 #include "../imgui/imgui.h"
-#include "panel.hpp"
 
-typedef std::pair<ItemType, int> InputKey;
-typedef LinkKey OutputKey;
+#include "../node.hpp"
+#include "panel.hpp"
 
 class GUIRoutingPanel : public GUIPanel {
   private:
-    struct RoutingNode {
-        size_t id;
-        std::optional<InputKey> key;
-        Target type;
-        std::string name;
-        std::vector<std::pair<OutputKey, std::string>> parameters;
-        ImVec2 position;
-        ImVec2 size;
-        int lines = 1;
-    };
-
     std::vector<RoutingNode> nodes;
     std::map<InputKey, OutputKey> nodes_links;
     std::map<OutputKey, ImVec2> input_pins;
@@ -37,7 +23,7 @@ class GUIRoutingPanel : public GUIPanel {
 
     void collect_links();
     void collect_nodes();
-    void draw_node(RoutingNode &node_info, const ImVec2 node_rect_min);
+    void draw_node(RoutingNode &routing_node, const ImVec2 node_rect_min);
     void draw_nodes();
     void draw_all_links();
 
