@@ -1,6 +1,7 @@
 #ifndef GUI_NODE_HPP
 #define GUI_NODE_HPP
 
+#include <functional>
 #include <optional>
 #include <string>
 #include <vector>
@@ -9,6 +10,7 @@
 
 #include "../song/links/key.hpp"
 #include "../song/links/type.hpp"
+#include "../song/links/target.hpp"
 
 typedef std::pair<ItemType, int> InputKey;
 typedef LinkKey OutputKey;

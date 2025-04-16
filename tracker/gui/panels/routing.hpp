@@ -18,7 +18,7 @@ class GUIRoutingPanel : public GUIPanel {
     std::map<OutputKey, ImVec2> input_pins;
     std::map<InputKey, ImVec2> output_pins;
 
-    RoutingNode *dragging_node = nullptr;
+    std::optional<NodeIdentifier> dragging_node_id;
     ImVec2 drag_node_offset = {0.0f, 0.0f};
 
     void collect_links();
