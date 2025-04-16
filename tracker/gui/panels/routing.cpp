@@ -53,7 +53,7 @@ void GUIRoutingPanel::collect_nodes() {
         channel_node.key = {ItemType::CHANNEL, static_cast<int>(i)};
         channel_node.type = Target::CHANNEL;
         channel_node.name = channel_names[i];
-        channel_node.position = {channel_x, 0.0f};
+        channel_node.position = {channel_x, 25.0f};
 
         for (size_t j = 0; j < channel_routing.labels.size(); ++j) {
             const auto &label = channel_routing.labels[j];
@@ -96,7 +96,7 @@ void GUIRoutingPanel::collect_nodes() {
         output_node.id = i;
         output_node.type = Target::OUTPUT_CHANNEL;
         output_node.name = "Output Channel " + std::to_string(i);
-        output_node.position = {output_x, 0.0f};
+        output_node.position = {output_x, 25.0f};
         nodes.push_back(output_node);
     }
 }
@@ -128,18 +128,16 @@ void GUIRoutingPanel::draw_nodes() {
 
         for (NodeInfo *node_ptr : column_nodes) {
             NodeInfo &node = *node_ptr;
-            node.position.y = current_y;
+            node.position.y += current_y;
             const ImVec2 node_draw_pos = ImVec2(
                 canvas_origin.x + node.position.x - panel_scroll.x,
                 canvas_origin.y + node.position.y - panel_scroll.y
             );
 
-            draw_node(node, draw_list, node_draw_pos);
+            draw_node(node, node_draw_pos);
             current_y += node.size.y + vertical_padding;
         }
     }
-
-    // draw_all_links();
 
     draw_list->PopClipRect();
 
@@ -152,7 +150,28 @@ void GUIRoutingPanel::draw_nodes() {
     }
 }
 
-void GUIRoutingPanel::draw_node(NodeInfo &node_info, ImDrawList *draw_list, const ImVec2 node_rect_min) {
+void GUIRoutingPanel::draw_all_links() {
+    ImDrawList *draw_list = ImGui::GetWindowDrawList();
+    const ImU32 audio_color = IM_COL32(0, 200, 0, 255);
+    const ImU32 control_color = IM_COL32(200, 150, 0, 255);
+    const float line_thickness = 1.5f;
+
+    for (const auto &[source, target] : nodes_links) {
+        auto source_pin_it = output_pins.find(source);
+        auto dest_pin_it = input_pins.find(target);
+
+        if (source_pin_it != output_pins.end() && dest_pin_it != input_pins.end()) {
+            const ImVec2 &source_pos = source_pin_it->second;
+            const ImVec2 &dest_pos = dest_pin_it->second;
+            const bool is_audio_link = target.target == Target::OUTPUT_CHANNEL || target.target == Target::DSP_CHANNEL;
+            ImU32 color = is_audio_link ? audio_color : control_color;
+            draw_list->AddLine(source_pos, dest_pos, color, line_thickness);
+        }
+    }
+}
+
+void GUIRoutingPanel::draw_node(NodeInfo &node_info, const ImVec2 node_rect_min) {
+    ImDrawList *draw_list = ImGui::GetWindowDrawList();
     std::string id_prefix;
     switch (node_info.type) {
     case Target::CHANNEL:
@@ -225,6 +244,10 @@ void GUIRoutingPanel::draw_node(NodeInfo &node_info, ImDrawList *draw_list, cons
     if (node_info.type != Target::CHANNEL) {
         const ImVec2 pin_position = ImVec2(node_rect_min.x - pin_radius, pin_y);
         draw_list->AddCircleFilled(pin_position, pin_radius, pin_color_main);
+        const int index = node_info.id;
+        const uint16_t offset = sizeof(_Float32) * node_info.id;
+        const Target target = node_info.type == Target::DSP ? Target::DSP_CHANNEL : Target::OUTPUT_CHANNEL;
+        input_pins[{target, index, offset}] = pin_position;
     }
 
     if (node_info.type != Target::OUTPUT_CHANNEL) {
@@ -236,16 +259,14 @@ void GUIRoutingPanel::draw_node(NodeInfo &node_info, ImDrawList *draw_list, cons
     draw_list->AddText(current_text_pos, ImGui::GetColorU32(ImGuiCol_Text), node_info.name.c_str());
     current_text_pos.y += line_height + style.ItemSpacing.y;
 
-    if (!node_info.parameters.empty()) {
-        for (const auto &parameter : node_info.parameters) {
-            const auto &[parameter_key, parameter_label] = parameter;
-            pin_y = current_text_pos.y + pin_offset_y;
-            const ImVec2 pin_position = ImVec2(node_rect_max.x + pin_radius, pin_y);
-            draw_list->AddCircleFilled(pin_position, pin_radius, pin_color_param);
-            draw_list->AddText(current_text_pos, pin_color_param, parameter_label.c_str());
-            current_text_pos.y += line_height + style.ItemSpacing.y;
-            input_pins[parameter_key] = pin_position;
-        }
+    for (const auto &parameter : node_info.parameters) {
+        const auto &[parameter_key, parameter_label] = parameter;
+        pin_y = current_text_pos.y + pin_offset_y;
+        const ImVec2 pin_position = ImVec2(node_rect_min.x - pin_radius, pin_y);
+        draw_list->AddCircleFilled(pin_position, pin_radius, pin_color_param);
+        draw_list->AddText(current_text_pos, pin_color_param, parameter_label.c_str());
+        current_text_pos.y += line_height + style.ItemSpacing.y;
+        input_pins[parameter_key] = pin_position;
     }
 
     ImGui::PopID();
@@ -257,6 +278,7 @@ void GUIRoutingPanel::draw() {
 
     from();
     draw_nodes();
+    draw_all_links();
     check_keyboard_input();
     to();
 

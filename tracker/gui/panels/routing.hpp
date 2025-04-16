@@ -38,8 +38,9 @@ class GUIRoutingPanel : public GUIPanel {
 
     void collect_links();
     void collect_nodes();
-    void draw_node(NodeInfo &node_info, ImDrawList *draw_list, const ImVec2 node_rect_min);
+    void draw_node(NodeInfo &node_info, const ImVec2 node_rect_min);
     void draw_nodes();
+    void draw_all_links();
 
     void add() override {};
     void remove() override {};
