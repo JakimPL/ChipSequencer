@@ -29,7 +29,7 @@ class GUISequencesPanel : public GUIPanel {
     void check_keyboard_input() override;
 
   public:
-    GUISequencesPanel();
+    GUISequencesPanel(const bool visible = true);
     void update() override;
 };
 

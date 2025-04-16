@@ -5,7 +5,7 @@
 
 class GUIPanel {
   public:
-    GUIPanel() = default;
+    GUIPanel(const bool visible = true);
     virtual ~GUIPanel() = default;
 
     bool visible = true;

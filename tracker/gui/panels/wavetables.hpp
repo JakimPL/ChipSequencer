@@ -32,7 +32,7 @@ class GUIWavetablesPanel : public GUIPanel {
     void check_keyboard_input() override;
 
   public:
-    GUIWavetablesPanel();
+    GUIWavetablesPanel(const bool visible = true);
     void update();
 };
 

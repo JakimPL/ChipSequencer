@@ -23,6 +23,7 @@ class GUIEditorPanel : public GUIPanel {
 
   public:
     GUIEditorPanel(
+        const bool visible,
         int &current_octave,
         int &jump_step,
         int &page_size

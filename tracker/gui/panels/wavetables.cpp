@@ -4,7 +4,8 @@
 #include "../utils.hpp"
 #include "wavetables.hpp"
 
-GUIWavetablesPanel::GUIWavetablesPanel() {
+GUIWavetablesPanel::GUIWavetablesPanel(const bool visible)
+    : GUIPanel(visible) {
     from();
     update();
 }

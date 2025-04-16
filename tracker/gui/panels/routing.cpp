@@ -18,7 +18,8 @@
 #include "../utils.hpp"
 #include "routing.hpp"
 
-GUIRoutingPanel::GUIRoutingPanel() {
+GUIRoutingPanel::GUIRoutingPanel(const bool visible)
+    : GUIPanel(visible) {
 }
 
 void GUIRoutingPanel::update() {

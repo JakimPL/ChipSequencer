@@ -48,7 +48,7 @@ class GUIRoutingPanel : public GUIPanel {
     void check_keyboard_input() override;
 
   public:
-    GUIRoutingPanel();
+    GUIRoutingPanel(const bool visible = true);
     void update() override;
 };
 

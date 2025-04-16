@@ -4,7 +4,8 @@
 #include "../utils.hpp"
 #include "envelopes.hpp"
 
-GUIEnvelopesPanel::GUIEnvelopesPanel() {
+GUIEnvelopesPanel::GUIEnvelopesPanel(const bool visible)
+    : GUIPanel(visible) {
     from();
     update();
 }

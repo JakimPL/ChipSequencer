@@ -1,5 +1,9 @@
 #include "panel.hpp"
 
+GUIPanel::GUIPanel(const bool visible)
+    : visible(visible) {
+}
+
 void GUIPanel::draw_add_or_remove() {
     if (ImGui::Button("+")) {
         add();

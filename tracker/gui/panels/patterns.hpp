@@ -35,7 +35,7 @@ class GUIPatternsPanel : public GUIPanel {
     void check_keyboard_input() override;
 
   public:
-    GUIPatternsPanel();
+    GUIPatternsPanel(const bool visible = true);
     void update() override;
     void deselect_all_rows();
 };

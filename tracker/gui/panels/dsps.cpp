@@ -4,7 +4,8 @@
 #include "../utils.hpp"
 #include "dsps.hpp"
 
-GUIDSPsPanel::GUIDSPsPanel() {
+GUIDSPsPanel::GUIDSPsPanel(const bool visible)
+    : GUIPanel(visible) {
     from();
     update();
 }

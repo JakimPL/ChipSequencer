@@ -34,7 +34,7 @@ class GUIOrdersPanel : public GUIPanel {
     void check_keyboard_input() override;
 
   public:
-    GUIOrdersPanel();
+    GUIOrdersPanel(const bool visible = true);
     void update() override;
 };
 

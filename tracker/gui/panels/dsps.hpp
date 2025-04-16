@@ -42,7 +42,7 @@ class GUIDSPsPanel : public GUIPanel {
     void check_keyboard_input() override;
 
   public:
-    GUIDSPsPanel();
+    GUIDSPsPanel(const bool visible = true);
     void update() override;
 };
 

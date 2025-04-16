@@ -4,7 +4,8 @@
 #include "../utils.hpp"
 #include "general.hpp"
 
-GUIGeneralPanel::GUIGeneralPanel() {
+GUIGeneralPanel::GUIGeneralPanel(const bool visible)
+    : GUIPanel(visible) {
 }
 
 void GUIGeneralPanel::update() {

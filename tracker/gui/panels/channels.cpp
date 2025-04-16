@@ -6,7 +6,8 @@
 #include "../utils.hpp"
 #include "channels.hpp"
 
-GUIChannelsPanel::GUIChannelsPanel() {
+GUIChannelsPanel::GUIChannelsPanel(const bool visible)
+    : GUIPanel(visible) {
     from();
     update();
 }

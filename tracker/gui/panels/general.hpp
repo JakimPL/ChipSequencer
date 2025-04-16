@@ -47,7 +47,7 @@ class GUIGeneralPanel : public GUIPanel {
     void check_keyboard_input() override {};
 
   public:
-    GUIGeneralPanel();
+    GUIGeneralPanel(const bool visible = true);
     void update() override;
 };
 
