@@ -27,6 +27,14 @@ class GUIRoutingPanel : public GUIPanel {
     void draw_nodes();
     void draw_all_links();
 
+    RoutingNode *handle_node_dragging(const ImVec2 &canvas_origin);
+    void update_channel_node(size_t index, size_t existing_index, std::vector<RoutingNode> &next_nodes);
+    void add_channel_node(size_t index, std::vector<RoutingNode> &next_nodes, std::map<float, float> &column_next_y);
+    void update_dsp_node(size_t index, size_t existing_index, std::vector<RoutingNode> &next_nodes);
+    void add_dsp_node(size_t index, std::vector<RoutingNode> &next_nodes, std::map<float, float> &column_next_y);
+    void update_output_node(size_t index, size_t existing_index, std::vector<RoutingNode> &next_nodes);
+    void add_output_node(size_t index, std::vector<RoutingNode> &next_nodes, std::map<float, float> &column_next_y);
+
     void add() override {};
     void remove() override {};
     void from() override;
