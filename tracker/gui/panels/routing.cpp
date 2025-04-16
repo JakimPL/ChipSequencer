@@ -30,15 +30,14 @@ void GUIRoutingPanel::from() {
 }
 
 void GUIRoutingPanel::to() const {
-    for (const auto &[source, target] : nodes_links) {
-        const ItemType type = source.first;
-        const size_t id = source.second;
-        const size_t item = target.index;
+    for (const auto &[source_key, target_key] : nodes_links) {
+        const ItemType type = source_key.first;
+        const size_t id = source_key.second;
         Link &link = links[static_cast<size_t>(type)][id];
-        if (item > id || type != ItemType::DSP || target.target != Target::DSP_CHANNEL) {
-            link.target = target.target;
-            link.index = item;
-            link.offset = target.offset;
+        if (is_linking_possible(source_key, target_key)) {
+            link.target = target_key.target;
+            link.index = target_key.index;
+            link.offset = target_key.offset;
             link_manager.set_link(link, link.item, id);
         }
     }
@@ -361,8 +360,10 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
     draw_list->AddRectFilled(node_rect_min, node_rect_max, node_bg_color, 4.0f);
     draw_list->AddRect(node_rect_min, node_rect_max, IM_COL32(100, 100, 100, 255), 4.0f);
 
-    const ImU32 pin_color_main = IM_COL32(255, 255, 255, 255);
-    const ImU32 pin_color_param = IM_COL32(150, 150, 150, 255);
+    const uint8_t alpha = link_dragging_source_key.has_value() ? 100 : 255;
+    const ImU32 pin_color_main = IM_COL32(255, 255, 255, alpha);
+    const ImU32 pin_color_parameter = IM_COL32(150, 150, 150, alpha);
+    const ImU32 pin_color_available = IM_COL32(250, 250, 150, 255);
     const float pin_offset_y = line_height * 0.5f;
 
     ImVec2 current_text_pos = ImVec2(node_rect_min.x + node_padding_x, node_rect_min.y + node_padding_y);
@@ -379,12 +380,16 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
     }
 
     if (routing_node.identifier.type != Target::CHANNEL) {
-        const ImVec2 pin_position = ImVec2(node_rect_min.x - GUI_ROUTING_PIN_RADIUS, pin_y);
-        draw_list->AddCircleFilled(pin_position, GUI_ROUTING_PIN_RADIUS, pin_color_main);
         const int index = routing_node.identifier.id;
         const uint16_t offset = sizeof(_Float32) * routing_node.identifier.id;
         const Target target = routing_node.identifier.type == Target::DSP ? Target::DSP_CHANNEL : Target::OUTPUT_CHANNEL;
         const OutputKey key = {target, index, offset};
+
+        const bool linking_possible = link_dragging_source_key.has_value() && is_linking_possible(link_dragging_source_key.value(), key);
+        const ImU32 color = linking_possible ? pin_color_available : pin_color_main;
+        const ImVec2 pin_position = ImVec2(node_rect_min.x - GUI_ROUTING_PIN_RADIUS, pin_y);
+        draw_list->AddCircleFilled(pin_position, GUI_ROUTING_PIN_RADIUS, color);
+
         input_pins[key] = pin_position;
         set_dragging_target_key(pin_position, key);
     }
@@ -396,8 +401,9 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
         const auto &[parameter_key, parameter_label] = parameter;
         pin_y = current_text_pos.y + pin_offset_y;
         const ImVec2 pin_position = ImVec2(node_rect_min.x - GUI_ROUTING_PIN_RADIUS, pin_y);
-        draw_list->AddCircleFilled(pin_position, GUI_ROUTING_PIN_RADIUS, pin_color_param);
-        draw_list->AddText(current_text_pos, pin_color_param, parameter_label.c_str());
+        const ImU32 color = link_dragging_source_key.has_value() ? pin_color_available : pin_color_parameter;
+        draw_list->AddCircleFilled(pin_position, GUI_ROUTING_PIN_RADIUS, color);
+        draw_list->AddText(current_text_pos, color, parameter_label.c_str());
         current_text_pos.y += line_height + style.ItemSpacing.y;
         input_pins[parameter_key] = pin_position;
         set_dragging_target_key(pin_position, parameter_key);
@@ -469,6 +475,14 @@ void GUIRoutingPanel::set_dragging_target_key(const ImVec2 pin_position, const O
         nodes_links[source_key] = key;
         link_dragging_source_key = std::nullopt;
     }
+}
+
+bool GUIRoutingPanel::is_linking_possible(const InputKey &source_key, const OutputKey &target_key) const {
+    const ItemType type = source_key.first;
+    const size_t id = source_key.second;
+    const size_t item = target_key.index;
+    const Target target = target_key.target;
+    return (item > id || type != ItemType::DSP || target != Target::DSP_CHANNEL);
 }
 
 void GUIRoutingPanel::check_keyboard_input() {

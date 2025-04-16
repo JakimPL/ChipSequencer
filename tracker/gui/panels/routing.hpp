@@ -28,6 +28,7 @@ class GUIRoutingPanel : public GUIPanel {
     void draw_nodes();
     void draw_all_links();
 
+    bool is_linking_possible(const InputKey &source_key, const OutputKey &target_key) const;
     RoutingNode *handle_node_dragging(const ImVec2 &canvas_origin);
     void set_dragging_source_key(const ImVec2 pin_position, const InputKey &key);
     void set_dragging_target_key(const ImVec2 pin_position, const OutputKey &key);
