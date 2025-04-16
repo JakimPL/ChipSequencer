@@ -3,10 +3,13 @@
 
 #include <map>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "../constants.hpp"
 #include "../song/links/target.hpp"
+
+typedef std::tuple<std::vector<size_t>, std::vector<std::string>, std::vector<uint16_t>, std::vector<TargetVariableType>> RoutingTuple;
 
 struct RoutingItems {
     RoutingItems(
@@ -22,7 +25,7 @@ struct RoutingItems {
     std::vector<int> constraints;
     std::map<uint16_t, size_t> offset_to_index;
 
-    std::pair<std::vector<size_t>, std::vector<std::string>> filter_items(const int index) const;
+    RoutingTuple filter_items(const int index) const;
 };
 
 const std::map<Target, RoutingItems> routing_variables = {

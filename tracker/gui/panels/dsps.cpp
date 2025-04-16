@@ -4,7 +4,8 @@
 #include "../utils.hpp"
 #include "dsps.hpp"
 
-GUIDSPsPanel::GUIDSPsPanel() {
+GUIDSPsPanel::GUIDSPsPanel(const bool visible)
+    : GUIPanel(visible) {
     from();
     update();
 }
@@ -177,7 +178,7 @@ void GUIDSPsPanel::draw_dsp() {
     draw_effect();
     ImGui::NewLine();
 
-    draw_output(current_dsp.output_type);
+    draw_output(current_dsp.output_type, dsp_index);
 }
 
 void GUIDSPsPanel::draw_effect() {

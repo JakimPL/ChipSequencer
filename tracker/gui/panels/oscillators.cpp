@@ -6,7 +6,8 @@
 #include "../names.hpp"
 #include "../utils.hpp"
 
-GUIOscillatorsPanel::GUIOscillatorsPanel() {
+GUIOscillatorsPanel::GUIOscillatorsPanel(const bool visible)
+    : GUIPanel(visible) {
     from();
     update();
 }

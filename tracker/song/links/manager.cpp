@@ -62,6 +62,8 @@ void LinkManager::set_link(Link &link, void *item, const uint8_t i) {
             link.base = channels[link.index];
         }
         break;
+    case Target::UNUSED:
+        throw std::runtime_error("Invalid link target");
     }
 
     link.id = i;
@@ -176,11 +178,22 @@ TargetVariableType LinkManager::get_type(const LinkKey key) const {
     case Target::DSP_CHANNEL: {
         return TargetVariableType::Float;
     }
-    default: {
+    case Target::ENVELOPE:
+    case Target::SEQUENCE:
+    case Target::ORDER:
+    case Target::OSCILLATOR:
+    case Target::WAVETABLE:
+    case Target::DSP:
+    case Target::CHANNEL: {
         const size_t index = routing_variables.at(key.target).offset_to_index.at(key.offset);
         return routing_variables.at(key.target).types[index];
     }
+    case Target::UNUSED: {
+        throw std::runtime_error("Invalid target type");
     }
+    }
+
+    throw std::runtime_error("Invalid target type");
 }
 
 void LinkManager::capture_parameter(const LinkKey key, const Link *link) {

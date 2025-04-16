@@ -12,6 +12,7 @@ enum class GUIElement {
     Orders,
     Oscillators,
     Patterns,
+    Routing,
     Sequences,
     Wavetables
 };

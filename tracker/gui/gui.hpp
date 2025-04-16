@@ -15,6 +15,7 @@
 #include "panels/oscillators.hpp"
 #include "panels/orders.hpp"
 #include "panels/patterns.hpp"
+#include "panels/routing.hpp"
 #include "panels/sequences.hpp"
 #include "panels/wavetables.hpp"
 
@@ -52,7 +53,7 @@ class GUI {
     AudioEngine *audio_engine;
 
     GUIMenu menu;
-    GUIEditorPanel editor = GUIEditorPanel(current_octave, jump_step, page_size);
+    GUIEditorPanel editor = GUIEditorPanel(true, current_octave, jump_step, page_size);
     GUIGeneralPanel general_panel;
     GUIChannelsPanel channels_panel;
     GUIDSPsPanel dsps_panel;
@@ -62,6 +63,7 @@ class GUI {
     GUISequencesPanel sequences_panel;
     GUIWavetablesPanel wavetables_panel;
     GUIPatternsPanel patterns_panel;
+    GUIRoutingPanel routing_panel = GUIRoutingPanel(false);
 
     SDL_Window *window;
     SDL_GLContext gl_context;
@@ -75,6 +77,7 @@ class GUI {
 
     void update_all();
     void frame_all();
+    void set_visibility_all(const bool visible);
 };
 ;
 

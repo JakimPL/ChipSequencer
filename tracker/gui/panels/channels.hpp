@@ -35,7 +35,7 @@ class GUIChannelsPanel : public GUIPanel {
     void check_keyboard_input() override;
 
   public:
-    GUIChannelsPanel();
+    GUIChannelsPanel(const bool visible = true);
     void update() override;
 };
 

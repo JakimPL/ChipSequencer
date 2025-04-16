@@ -7,7 +7,8 @@
 #include "../utils.hpp"
 #include "sequences.hpp"
 
-GUISequencesPanel::GUISequencesPanel() {
+GUISequencesPanel::GUISequencesPanel(const bool visible)
+    : GUIPanel(visible) {
     from();
     update();
 }

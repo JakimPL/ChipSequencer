@@ -38,7 +38,7 @@ class GUIEnvelopesPanel : public GUIPanel {
     void check_keyboard_input() override;
 
   public:
-    GUIEnvelopesPanel();
+    GUIEnvelopesPanel(const bool visible = true);
     void update() override;
 };
 

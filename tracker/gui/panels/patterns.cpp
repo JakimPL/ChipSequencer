@@ -3,7 +3,8 @@
 #include "../utils.hpp"
 #include "patterns.hpp"
 
-GUIPatternsPanel::GUIPatternsPanel() {
+GUIPatternsPanel::GUIPatternsPanel(const bool visible)
+    : GUIPanel(visible) {
     from();
     update();
 }

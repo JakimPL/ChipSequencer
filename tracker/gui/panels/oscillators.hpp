@@ -33,7 +33,7 @@ class GUIOscillatorsPanel : public GUIPanel {
     void check_keyboard_input() override;
 
   public:
-    GUIOscillatorsPanel();
+    GUIOscillatorsPanel(const bool visible = true);
     void update() override;
 };
 

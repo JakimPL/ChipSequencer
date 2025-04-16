@@ -14,6 +14,10 @@ struct LinkKey {
     bool operator==(const LinkKey &other) const {
         return target == other.target && index == other.index && offset == other.offset;
     }
+
+    bool operator<(const LinkKey &other) const {
+        return std::tie(target, index, offset) < std::tie(other.target, other.index, other.offset);
+    }
 };
 
 template <>

@@ -184,7 +184,7 @@ std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t
     return {index + pattern.notes.size(), select};
 }
 
-bool draw_output(OutputType &output_type) {
+bool draw_output(OutputType &output_type, const int dsp_index) {
     push_secondary_style();
     ImGui::Separator();
     ImGui::Text("Output:");
@@ -198,7 +198,7 @@ bool draw_output(OutputType &output_type) {
         draw_int_slider("Channel", output_type.output_channel, {}, 0, song.get_output_channels() - 1);
         break;
     case OUTPUT_TARGET_DSP:
-        if (dsps.empty()) {
+        if (dsps.empty() || dsp_index >= static_cast<int>(dsps.size()) - 1) {
             ImGui::Text("No DSPs available.");
             break;
         } else {
@@ -206,7 +206,7 @@ bool draw_output(OutputType &output_type) {
                 output_type.additive = true;
             }
 
-            draw_int_slider("DSP", output_type.dsp_channel, {}, 0, dsps.size() - 1);
+            draw_int_slider("DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
             break;
         }
     default:
@@ -245,6 +245,11 @@ bool draw_output(OutputType &output_type) {
         case Target::CHANNEL: {
             draw_output_parameter(output_type, channel_names, "Channel");
             break;
+        }
+        case Target::OUTPUT_CHANNEL:
+        case Target::DSP_CHANNEL:
+        case Target::UNUSED: {
+            throw std::runtime_error("Invalid target type");
         }
         }
     }
@@ -291,7 +296,7 @@ void draw_output_parameter_oscillator(OutputType &output_type) {
 
     const RoutingItems &routing = routing_variables.at(Target::OSCILLATOR);
     const Oscillator *oscillator = static_cast<Oscillator *>(oscillators[output_type.index]);
-    const auto [indices, labels] = routing.filter_items(oscillator->generator_index);
+    const auto [indices, labels, offsets, types] = routing.filter_items(oscillator->generator_index);
     int &item = output_type.routing_item;
 
     if (labels.empty()) {
@@ -319,7 +324,7 @@ void draw_output_parameter_dsp(OutputType &output_type) {
 
     const RoutingItems &routing = routing_variables.at(Target::DSP);
     const DSP *dsp = static_cast<DSP *>(dsps[output_type.index]);
-    const auto [indices, labels] = routing.filter_items(dsp->effect_index);
+    const auto [indices, labels, offsets, types] = routing.filter_items(dsp->effect_index);
     int &item = output_type.routing_item;
 
     if (labels.empty()) {

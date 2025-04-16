@@ -167,7 +167,7 @@ void Song::set_author(const std::string &author) {
 void Song::change_tuning(const uint8_t new_edo, const double base_frequency) {
     scale_composer.compose(new_edo);
     frequency_table.calculate(base_frequency);
-    double frequency = frequency_table.get_last_frequency();
+    const double frequency = frequency_table.get_last_frequency();
     std::cout << "New tuning: " << static_cast<int>(new_edo) << "-edo" << std::endl;
     std::cout << "Reference frequency: " << static_cast<float>(frequency) << " Hz" << std::endl;
     reference_frequency = static_cast<uint64_t>(std::round(frequency * 65536.0));

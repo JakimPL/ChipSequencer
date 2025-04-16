@@ -2,8 +2,8 @@
 #include "../constants.hpp"
 #include "editor.hpp"
 
-GUIEditorPanel::GUIEditorPanel(int &octave, int &step, int &page)
-    : current_octave(octave), jump_step(step), page_size(page) {
+GUIEditorPanel::GUIEditorPanel(const bool visible, int &octave, int &step, int &page)
+    : GUIPanel(visible), current_octave(octave), jump_step(step), page_size(page) {
 }
 
 void GUIEditorPanel::draw() {

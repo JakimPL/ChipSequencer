@@ -8,7 +8,8 @@
 #include "../utils.hpp"
 #include "menu.hpp"
 
-GUIMenu::GUIMenu() {
+GUIMenu::GUIMenu(const bool visible)
+    : GUIPanel(visible) {
 }
 
 void GUIMenu::draw() {

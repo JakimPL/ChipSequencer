@@ -4,7 +4,8 @@
 #include "../utils.hpp"
 #include "orders.hpp"
 
-GUIOrdersPanel::GUIOrdersPanel() {
+GUIOrdersPanel::GUIOrdersPanel(const bool visible)
+    : GUIPanel(visible) {
     from();
     update();
 }

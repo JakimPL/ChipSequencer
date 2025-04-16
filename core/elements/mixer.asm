@@ -5,12 +5,11 @@ mix:
     mov eax, dword __float32__(0.0)
     mov [output], eax
 .mix:
-    mov cl, [num_channels]
+    xor cl, cl
 .mix_loop:
-    cmp cl, 0
+    cmp cl, [num_channels]
     je .dsp
 
-    dec cl
     mov [current_channel], cl
 
 .process_channel:
@@ -23,16 +22,16 @@ mix:
     call store_output
 
     mov cl, [current_channel]
+    inc cl
     jmp .mix_loop
 
 .dsp:
     xor eax, eax
-    mov cl, [num_dsps]
+    xor cl, cl
 .dsp_loop:
-    cmp cl, 0
+    cmp cl, [num_dsps]
     je .normalize
 
-    dec cl
     mov [current_dsp], cl
 .process_dsp:
     call load_dsp
@@ -41,6 +40,7 @@ mix:
     call store_output
 
     mov cl, [current_dsp]
+    inc cl
     jmp .dsp_loop
 
 .normalize:
