@@ -43,8 +43,8 @@ void GUIRoutingPanel::collect_nodes() {
     nodes.clear();
 
     const float channel_x = 50.0f;
-    const float dsp_x = channel_x + node_width + 50.0f;
-    const float output_x = dsp_x + node_width + 50.0f;
+    const float dsp_x = channel_x + GUI_ROUTING_NODE_WIDTH + 50.0f;
+    const float output_x = dsp_x + GUI_ROUTING_NODE_WIDTH + 50.0f;
 
     const auto &channel_routing = routing_variables.at(Target::CHANNEL);
     for (size_t i = 0; i < channels.size(); ++i) {
@@ -152,20 +152,27 @@ void GUIRoutingPanel::draw_nodes() {
 
 void GUIRoutingPanel::draw_all_links() {
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
-    const ImU32 audio_color = IM_COL32(0, 200, 0, 255);
-    const ImU32 control_color = IM_COL32(200, 150, 0, 255);
     const float line_thickness = 1.5f;
+    const ImU32 audio_color = IM_COL32(0, 200, 0, 255);
+    const ImU32 parameter_color = IM_COL32(200, 150, 0, 255);
 
     for (const auto &[source, target] : nodes_links) {
         auto source_pin_it = output_pins.find(source);
         auto dest_pin_it = input_pins.find(target);
 
         if (source_pin_it != output_pins.end() && dest_pin_it != input_pins.end()) {
-            const ImVec2 &source_pos = source_pin_it->second;
-            const ImVec2 &dest_pos = dest_pin_it->second;
+            const ImVec2 &p1 = source_pin_it->second;
+            const ImVec2 &p4 = dest_pin_it->second;
+
+            const float horizontal_distance = std::abs(p4.x - p1.x);
+            const float control_offset_x = std::max(30.0f, horizontal_distance * 0.4f);
+
+            const ImVec2 p2 = ImVec2(p1.x + control_offset_x, p1.y);
+            const ImVec2 p3 = ImVec2(p4.x - control_offset_x, p4.y);
+
             const bool is_audio_link = target.target == Target::OUTPUT_CHANNEL || target.target == Target::DSP_CHANNEL;
-            ImU32 color = is_audio_link ? audio_color : control_color;
-            draw_list->AddLine(source_pos, dest_pos, color, line_thickness);
+            const ImU32 color = is_audio_link ? audio_color : parameter_color;
+            draw_list->AddBezierCubic(p1, p2, p3, p4, color, line_thickness, GUI_ROUTING_CURVE_SEGMENTS);
         }
     }
 }
@@ -223,7 +230,7 @@ void GUIRoutingPanel::draw_node(NodeInfo &node_info, const ImVec2 node_rect_min)
         }
     }
     const float content_width = std::max(name_width, max_param_width);
-    const float node_actual_width = std::max(node_width, content_width + node_padding_x * 2.0f);
+    const float node_actual_width = std::max(GUI_ROUTING_NODE_WIDTH, content_width + node_padding_x * 2.0f);
 
     const ImVec2 node_rect_max = {node_rect_min.x + node_actual_width, node_rect_min.y + node_actual_height};
     node_info.size = {node_actual_width, node_actual_height};
@@ -233,7 +240,6 @@ void GUIRoutingPanel::draw_node(NodeInfo &node_info, const ImVec2 node_rect_min)
     draw_list->AddRectFilled(node_rect_min, node_rect_max, node_bg_color, 4.0f);
     draw_list->AddRect(node_rect_min, node_rect_max, IM_COL32(100, 100, 100, 255), 4.0f);
 
-    const float pin_radius = 4.0f;
     const ImU32 pin_color_main = IM_COL32(255, 255, 255, 255);
     const ImU32 pin_color_param = IM_COL32(150, 150, 150, 255);
     const float pin_offset_y = line_height * 0.5f;
@@ -242,8 +248,8 @@ void GUIRoutingPanel::draw_node(NodeInfo &node_info, const ImVec2 node_rect_min)
 
     float pin_y = current_text_pos.y + pin_offset_y;
     if (node_info.type != Target::CHANNEL) {
-        const ImVec2 pin_position = ImVec2(node_rect_min.x - pin_radius, pin_y);
-        draw_list->AddCircleFilled(pin_position, pin_radius, pin_color_main);
+        const ImVec2 pin_position = ImVec2(node_rect_min.x - GUI_ROUTING_PIN_RADIUS, pin_y);
+        draw_list->AddCircleFilled(pin_position, GUI_ROUTING_PIN_RADIUS, pin_color_main);
         const int index = node_info.id;
         const uint16_t offset = sizeof(_Float32) * node_info.id;
         const Target target = node_info.type == Target::DSP ? Target::DSP_CHANNEL : Target::OUTPUT_CHANNEL;
@@ -251,8 +257,8 @@ void GUIRoutingPanel::draw_node(NodeInfo &node_info, const ImVec2 node_rect_min)
     }
 
     if (node_info.type != Target::OUTPUT_CHANNEL) {
-        const ImVec2 pin_position = ImVec2(node_rect_max.x + pin_radius, pin_y);
-        draw_list->AddCircleFilled(pin_position, pin_radius, pin_color_main);
+        const ImVec2 pin_position = ImVec2(node_rect_max.x + GUI_ROUTING_PIN_RADIUS, pin_y);
+        draw_list->AddCircleFilled(pin_position, GUI_ROUTING_PIN_RADIUS, pin_color_main);
         output_pins[node_info.key.value()] = pin_position;
     }
 
@@ -262,8 +268,8 @@ void GUIRoutingPanel::draw_node(NodeInfo &node_info, const ImVec2 node_rect_min)
     for (const auto &parameter : node_info.parameters) {
         const auto &[parameter_key, parameter_label] = parameter;
         pin_y = current_text_pos.y + pin_offset_y;
-        const ImVec2 pin_position = ImVec2(node_rect_min.x - pin_radius, pin_y);
-        draw_list->AddCircleFilled(pin_position, pin_radius, pin_color_param);
+        const ImVec2 pin_position = ImVec2(node_rect_min.x - GUI_ROUTING_PIN_RADIUS, pin_y);
+        draw_list->AddCircleFilled(pin_position, GUI_ROUTING_PIN_RADIUS, pin_color_param);
         draw_list->AddText(current_text_pos, pin_color_param, parameter_label.c_str());
         current_text_pos.y += line_height + style.ItemSpacing.y;
         input_pins[parameter_key] = pin_position;

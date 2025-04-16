@@ -33,8 +33,6 @@ class GUIRoutingPanel : public GUIPanel {
     std::map<InputKey, ImVec2> output_pins;
 
     ImVec2 panel_scroll = {0.0f, 0.0f};
-    const float node_width = 150.0f;
-    const float pin_radius = 4.0f;
 
     void collect_links();
     void collect_nodes();
