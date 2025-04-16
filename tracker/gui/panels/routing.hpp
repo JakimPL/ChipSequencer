@@ -18,6 +18,7 @@ class GUIRoutingPanel : public GUIPanel {
     std::map<OutputKey, ImVec2> input_pins;
     std::map<InputKey, ImVec2> output_pins;
 
+    std::optional<InputKey> link_dragging_source_key;
     std::optional<NodeIdentifier> dragging_node_id;
     ImVec2 drag_node_offset = {0.0f, 0.0f};
 
@@ -28,6 +29,9 @@ class GUIRoutingPanel : public GUIPanel {
     void draw_all_links();
 
     RoutingNode *handle_node_dragging(const ImVec2 &canvas_origin);
+    void set_dragging_source_key(const ImVec2 pin_position, const InputKey &key);
+    void set_dragging_target_key(const ImVec2 pin_position, const OutputKey &key);
+
     void update_channel_node(size_t index, size_t existing_index, std::vector<RoutingNode> &next_nodes);
     void add_channel_node(size_t index, std::vector<RoutingNode> &next_nodes, std::map<float, float> &column_next_y);
     void update_dsp_node(size_t index, size_t existing_index, std::vector<RoutingNode> &next_nodes);
