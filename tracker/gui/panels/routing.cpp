@@ -49,28 +49,41 @@ void GUIRoutingPanel::collect_nodes() {
     const auto &channel_routing = routing_variables.at(Target::CHANNEL);
     for (size_t i = 0; i < channels.size(); ++i) {
         NodeInfo channel_node;
-        channel_node.id = static_cast<int>(i);
+        channel_node.id = i;
+        channel_node.key = {ItemType::CHANNEL, static_cast<int>(i)};
         channel_node.type = Target::CHANNEL;
         channel_node.name = channel_names[i];
         channel_node.position = {channel_x, 0.0f};
-        for (const auto &label : channel_routing.labels) {
-            channel_node.parameters.push_back(label);
+
+        for (size_t j = 0; j < channel_routing.labels.size(); ++j) {
+            const auto &label = channel_routing.labels[j];
+            const auto &offset = channel_routing.offsets[j];
+            const OutputKey key = {Target::CHANNEL, static_cast<int>(i), offset};
+            channel_node.parameters.push_back({key, label});
             channel_node.lines += 1;
         }
+
         nodes.push_back(channel_node);
     }
 
     const auto &dsp_routing = routing_variables.at(Target::DSP);
     for (size_t i = 0; i < dsps.size(); ++i) {
         NodeInfo dsp_node;
-        dsp_node.id = static_cast<int>(i);
+        dsp_node.id = i;
+        dsp_node.key = {ItemType::DSP, static_cast<int>(i)};
         dsp_node.type = Target::DSP;
         dsp_node.name = dsp_names[i];
         dsp_node.position = {dsp_x, 0.0f};
+
         const DSP *dsp = static_cast<DSP *>(dsps[i]);
-        const auto labels = dsp_routing.filter_items(dsp->effect_index).second;
-        for (const auto &label : labels) {
-            dsp_node.parameters.push_back(label);
+        const auto filtered_items = dsp_routing.filter_items(dsp->effect_index);
+        const auto labels = std::get<1>(filtered_items);
+        const auto offsets = std::get<2>(filtered_items);
+        for (size_t j = 0; j < labels.size(); ++j) {
+            const auto &label = labels[j];
+            const auto &offset = offsets[j];
+            const OutputKey key = {Target::DSP, static_cast<int>(i), offsets[j]};
+            dsp_node.parameters.push_back({key, label});
             dsp_node.lines += 1;
         }
 
@@ -80,7 +93,7 @@ void GUIRoutingPanel::collect_nodes() {
     const size_t output_channels = song.get_output_channels();
     for (size_t i = 0; i < output_channels; ++i) {
         NodeInfo output_node;
-        output_node.id = static_cast<int>(i);
+        output_node.id = i;
         output_node.type = Target::OUTPUT_CHANNEL;
         output_node.name = "Output Channel " + std::to_string(i);
         output_node.position = {output_x, 0.0f};
@@ -89,6 +102,9 @@ void GUIRoutingPanel::collect_nodes() {
 }
 
 void GUIRoutingPanel::draw_nodes() {
+    input_pins.clear();
+    output_pins.clear();
+
     panel_scroll = ImVec2(ImGui::GetScrollX(), ImGui::GetScrollY());
     const ImVec2 canvas_origin = ImGui::GetCursorScreenPos();
     const ImVec2 canvas_sz = ImGui::GetContentRegionAvail();
@@ -183,8 +199,8 @@ void GUIRoutingPanel::draw_node(NodeInfo &node_info, ImDrawList *draw_list, cons
     const float name_width = ImGui::CalcTextSize(node_info.name.c_str()).x;
     float max_param_width = 0.0f;
     if (!node_info.parameters.empty()) {
-        for (const auto &param : node_info.parameters) {
-            max_param_width = std::max(max_param_width, ImGui::CalcTextSize(param.c_str()).x);
+        for (const auto &[parameter_key, parameter_label] : node_info.parameters) {
+            max_param_width = std::max(max_param_width, ImGui::CalcTextSize(parameter_label.c_str()).x);
         }
     }
     const float content_width = std::max(name_width, max_param_width);
@@ -206,20 +222,29 @@ void GUIRoutingPanel::draw_node(NodeInfo &node_info, ImDrawList *draw_list, cons
     ImVec2 current_text_pos = ImVec2(node_rect_min.x + node_padding_x, node_rect_min.y + node_padding_y);
 
     float pin_y = current_text_pos.y + pin_offset_y;
-    draw_list->AddCircleFilled(ImVec2(node_rect_min.x - pin_radius, pin_y), pin_radius, pin_color_main);
-    if (node_info.type != Target::OUTPUT_CHANNEL) {
-        draw_list->AddCircleFilled(ImVec2(node_rect_max.x + pin_radius, pin_y), pin_radius, pin_color_main);
+    if (node_info.type != Target::CHANNEL) {
+        const ImVec2 pin_position = ImVec2(node_rect_min.x - pin_radius, pin_y);
+        draw_list->AddCircleFilled(pin_position, pin_radius, pin_color_main);
     }
+
+    if (node_info.type != Target::OUTPUT_CHANNEL) {
+        const ImVec2 pin_position = ImVec2(node_rect_max.x + pin_radius, pin_y);
+        draw_list->AddCircleFilled(pin_position, pin_radius, pin_color_main);
+        output_pins[node_info.key.value()] = pin_position;
+    }
+
     draw_list->AddText(current_text_pos, ImGui::GetColorU32(ImGuiCol_Text), node_info.name.c_str());
     current_text_pos.y += line_height + style.ItemSpacing.y;
 
     if (!node_info.parameters.empty()) {
-        for (const auto &param : node_info.parameters) {
+        for (const auto &parameter : node_info.parameters) {
+            const auto &[parameter_key, parameter_label] = parameter;
             pin_y = current_text_pos.y + pin_offset_y;
-            draw_list->AddCircleFilled(ImVec2(node_rect_min.x - pin_radius, pin_y), pin_radius, pin_color_param);
-            draw_list->AddCircleFilled(ImVec2(node_rect_max.x + pin_radius, pin_y), pin_radius, pin_color_param);
-            draw_list->AddText(current_text_pos, ImGui::GetColorU32(ImGuiCol_Text), param.c_str());
+            const ImVec2 pin_position = ImVec2(node_rect_max.x + pin_radius, pin_y);
+            draw_list->AddCircleFilled(pin_position, pin_radius, pin_color_param);
+            draw_list->AddText(current_text_pos, pin_color_param, parameter_label.c_str());
             current_text_pos.y += line_height + style.ItemSpacing.y;
+            input_pins[parameter_key] = pin_position;
         }
     }
 

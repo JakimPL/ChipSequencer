@@ -2,6 +2,7 @@
 #define GUI_PANELS_ROUTING_HPP
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -10,20 +11,26 @@
 #include "../imgui/imgui.h"
 #include "panel.hpp"
 
+typedef std::pair<ItemType, int> InputKey;
+typedef LinkKey OutputKey;
+
 class GUIRoutingPanel : public GUIPanel {
   private:
     struct NodeInfo {
-        int id;
+        size_t id;
+        std::optional<InputKey> key;
         Target type;
         std::string name;
-        std::vector<std::string> parameters;
+        std::vector<std::pair<OutputKey, std::string>> parameters;
         ImVec2 position;
         ImVec2 size;
         int lines = 1;
     };
 
     std::vector<NodeInfo> nodes;
-    std::map<std::pair<ItemType, int>, LinkKey> nodes_links;
+    std::map<InputKey, OutputKey> nodes_links;
+    std::map<OutputKey, ImVec2> input_pins;
+    std::map<InputKey, ImVec2> output_pins;
 
     ImVec2 panel_scroll = {0.0f, 0.0f};
     const float node_width = 150.0f;
