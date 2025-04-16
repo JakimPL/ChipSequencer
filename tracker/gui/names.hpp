@@ -47,6 +47,7 @@ const std::vector<std::pair<GUIElement, const char *>> menu_items = {
     {GUIElement::Orders, "Orders"},
     {GUIElement::Oscillators, "Oscillators"},
     {GUIElement::Patterns, "Patterns"},
+    {GUIElement::Routing, "Routing"},
     {GUIElement::Sequences, "Sequences"},
     {GUIElement::Wavetables, "Wavetables"},
 };

@@ -48,7 +48,7 @@ void GUIRoutingPanel::collect_nodes() {
 
     const auto &channel_routing = routing_variables.at(Target::CHANNEL);
     for (size_t i = 0; i < channels.size(); ++i) {
-        NodeInfo channel_node;
+        RoutingNode channel_node;
         channel_node.id = i;
         channel_node.key = {ItemType::CHANNEL, static_cast<int>(i)};
         channel_node.type = Target::CHANNEL;
@@ -68,7 +68,7 @@ void GUIRoutingPanel::collect_nodes() {
 
     const auto &dsp_routing = routing_variables.at(Target::DSP);
     for (size_t i = 0; i < dsps.size(); ++i) {
-        NodeInfo dsp_node;
+        RoutingNode dsp_node;
         dsp_node.id = i;
         dsp_node.key = {ItemType::DSP, static_cast<int>(i)};
         dsp_node.type = Target::DSP;
@@ -92,7 +92,7 @@ void GUIRoutingPanel::collect_nodes() {
 
     const size_t output_channels = song.get_output_channels();
     for (size_t i = 0; i < output_channels; ++i) {
-        NodeInfo output_node;
+        RoutingNode output_node;
         output_node.id = i;
         output_node.type = Target::OUTPUT_CHANNEL;
         output_node.name = "Output Channel " + std::to_string(i);
@@ -113,7 +113,7 @@ void GUIRoutingPanel::draw_nodes() {
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
     draw_list->PushClipRect(canvas_origin, canvas_p1, true);
 
-    std::map<float, std::vector<NodeInfo *>> nodes_by_column;
+    std::map<float, std::vector<RoutingNode *>> nodes_by_column;
     for (auto &node : nodes) {
         nodes_by_column[node.position.x].push_back(&node);
     }
@@ -124,10 +124,10 @@ void GUIRoutingPanel::draw_nodes() {
     for (auto &pair : nodes_by_column) {
         float current_y = initial_y_offset;
         const float column_x = pair.first;
-        const std::vector<NodeInfo *> &column_nodes = pair.second;
+        const std::vector<RoutingNode *> &column_nodes = pair.second;
 
-        for (NodeInfo *node_ptr : column_nodes) {
-            NodeInfo &node = *node_ptr;
+        for (RoutingNode *node_ptr : column_nodes) {
+            RoutingNode &node = *node_ptr;
             node.position.y += current_y;
             const ImVec2 node_draw_pos = ImVec2(
                 canvas_origin.x + node.position.x - panel_scroll.x,
@@ -177,7 +177,7 @@ void GUIRoutingPanel::draw_all_links() {
     }
 }
 
-void GUIRoutingPanel::draw_node(NodeInfo &node_info, const ImVec2 node_rect_min) {
+void GUIRoutingPanel::draw_node(RoutingNode &node_info, const ImVec2 node_rect_min) {
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
     std::string id_prefix;
     switch (node_info.type) {

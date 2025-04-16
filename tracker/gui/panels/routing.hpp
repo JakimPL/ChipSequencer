@@ -16,7 +16,7 @@ typedef LinkKey OutputKey;
 
 class GUIRoutingPanel : public GUIPanel {
   private:
-    struct NodeInfo {
+    struct RoutingNode {
         size_t id;
         std::optional<InputKey> key;
         Target type;
@@ -27,7 +27,7 @@ class GUIRoutingPanel : public GUIPanel {
         int lines = 1;
     };
 
-    std::vector<NodeInfo> nodes;
+    std::vector<RoutingNode> nodes;
     std::map<InputKey, OutputKey> nodes_links;
     std::map<OutputKey, ImVec2> input_pins;
     std::map<InputKey, ImVec2> output_pins;
@@ -36,7 +36,7 @@ class GUIRoutingPanel : public GUIPanel {
 
     void collect_links();
     void collect_nodes();
-    void draw_node(NodeInfo &node_info, const ImVec2 node_rect_min);
+    void draw_node(RoutingNode &node_info, const ImVec2 node_rect_min);
     void draw_nodes();
     void draw_all_links();
 
