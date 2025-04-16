@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "../init.hpp"
+
 #include "../../general.hpp"
 #include "../../maps/routing.hpp"
 #include "../../song/links/link.hpp"
@@ -16,15 +18,14 @@
 #include "routing.hpp"
 
 GUIRoutingPanel::GUIRoutingPanel() {
-    update();
 }
 
 void GUIRoutingPanel::update() {
+    collect_nodes();
+    collect_links();
 }
 
 void GUIRoutingPanel::from() {
-    collect_nodes();
-    collect_links();
 }
 
 void GUIRoutingPanel::to() const {
@@ -46,6 +47,11 @@ void GUIRoutingPanel::collect_nodes() {
     const float dsp_x = channel_x + GUI_ROUTING_NODE_WIDTH + 50.0f;
     const float output_x = dsp_x + GUI_ROUTING_NODE_WIDTH + 50.0f;
 
+    const float vertical_padding = 20.0f;
+    const float initial_y_offset = 20.0f;
+
+    float current_y = 25.0f;
+
     const auto &channel_routing = routing_variables.at(Target::CHANNEL);
     for (size_t i = 0; i < channels.size(); ++i) {
         RoutingNode channel_node;
@@ -53,7 +59,6 @@ void GUIRoutingPanel::collect_nodes() {
         channel_node.key = {ItemType::CHANNEL, static_cast<int>(i)};
         channel_node.type = Target::CHANNEL;
         channel_node.name = channel_names[i];
-        channel_node.position = {channel_x, 25.0f};
 
         for (size_t j = 0; j < channel_routing.labels.size(); ++j) {
             const auto &label = channel_routing.labels[j];
@@ -63,9 +68,13 @@ void GUIRoutingPanel::collect_nodes() {
             channel_node.lines += 1;
         }
 
+        channel_node.position = {channel_x, current_y};
+        current_y += channel_node.lines * ImGui::GetTextLineHeight() + vertical_padding;
+
         nodes.push_back(channel_node);
     }
 
+    current_y = 0.0f;
     const auto &dsp_routing = routing_variables.at(Target::DSP);
     for (size_t i = 0; i < dsps.size(); ++i) {
         RoutingNode dsp_node;
@@ -73,7 +82,6 @@ void GUIRoutingPanel::collect_nodes() {
         dsp_node.key = {ItemType::DSP, static_cast<int>(i)};
         dsp_node.type = Target::DSP;
         dsp_node.name = dsp_names[i];
-        dsp_node.position = {dsp_x, 0.0f};
 
         const DSP *dsp = static_cast<DSP *>(dsps[i]);
         const auto filtered_items = dsp_routing.filter_items(dsp->effect_index);
@@ -87,16 +95,22 @@ void GUIRoutingPanel::collect_nodes() {
             dsp_node.lines += 1;
         }
 
+        dsp_node.position = {dsp_x, current_y};
+        current_y += dsp_node.lines * ImGui::GetTextLineHeight() + vertical_padding;
+
         nodes.push_back(dsp_node);
     }
 
+    current_y = 25.0f;
     const size_t output_channels = song.get_output_channels();
     for (size_t i = 0; i < output_channels; ++i) {
         RoutingNode output_node;
         output_node.id = i;
         output_node.type = Target::OUTPUT_CHANNEL;
         output_node.name = "Output Channel " + std::to_string(i);
-        output_node.position = {output_x, 25.0f};
+        output_node.position = {output_x, current_y};
+        current_y += output_node.lines * ImGui::GetTextLineHeight() + vertical_padding;
+
         nodes.push_back(output_node);
     }
 }
@@ -105,7 +119,6 @@ void GUIRoutingPanel::draw_nodes() {
     input_pins.clear();
     output_pins.clear();
 
-    panel_scroll = ImVec2(ImGui::GetScrollX(), ImGui::GetScrollY());
     const ImVec2 canvas_origin = ImGui::GetCursorScreenPos();
     const ImVec2 canvas_sz = ImGui::GetContentRegionAvail();
     const ImVec2 canvas_p1 = ImVec2(canvas_origin.x + canvas_sz.x, canvas_origin.y + canvas_sz.y);
@@ -113,40 +126,26 @@ void GUIRoutingPanel::draw_nodes() {
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
     draw_list->PushClipRect(canvas_origin, canvas_p1, true);
 
-    std::map<float, std::vector<RoutingNode *>> nodes_by_column;
-    for (auto &node : nodes) {
-        nodes_by_column[node.position.x].push_back(&node);
+    /* drag nodes */
+    if (dragging_node != nullptr) {
+        if (ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
+            ImVec2 current_mouse_pos = ImGui::GetMousePos();
+            dragging_node->position = current_mouse_pos - canvas_origin - drag_node_offset;
+        }
+        if (ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
+            dragging_node = nullptr;
+        }
     }
 
-    const float vertical_padding = 10.0f;
-    const float initial_y_offset = 20.0f;
-
-    for (auto &pair : nodes_by_column) {
-        float current_y = initial_y_offset;
-        const float column_x = pair.first;
-        const std::vector<RoutingNode *> &column_nodes = pair.second;
-
-        for (RoutingNode *node_ptr : column_nodes) {
-            RoutingNode &node = *node_ptr;
-            node.position.y += current_y;
-            const ImVec2 node_draw_pos = ImVec2(
-                canvas_origin.x + node.position.x - panel_scroll.x,
-                canvas_origin.y + node.position.y - panel_scroll.y
-            );
-
-            draw_node(node, node_draw_pos);
-            current_y += node.size.y + vertical_padding;
-        }
+    for (RoutingNode &node : nodes) {
+        const ImVec2 node_draw_pos = canvas_origin + node.position;
+        draw_node(node, node_draw_pos);
     }
 
     draw_list->PopClipRect();
 
-    if (ImGui::IsWindowHovered() && !ImGui::IsAnyItemActive() && ImGui::IsMouseDragging(ImGuiMouseButton_Middle, 0.0f)) {
+    if (dragging_node == nullptr && ImGui::IsWindowHovered() && !ImGui::IsAnyItemActive() && ImGui::IsMouseDragging(ImGuiMouseButton_Middle, 0.0f)) {
         const ImVec2 mouse_delta = ImGui::GetIO().MouseDelta;
-        panel_scroll.x -= mouse_delta.x;
-        panel_scroll.y -= mouse_delta.y;
-        ImGui::SetScrollX(panel_scroll.x);
-        ImGui::SetScrollY(panel_scroll.y);
     }
 }
 
@@ -235,7 +234,14 @@ void GUIRoutingPanel::draw_node(RoutingNode &node_info, const ImVec2 node_rect_m
     const ImVec2 node_rect_max = {node_rect_min.x + node_actual_width, node_rect_min.y + node_actual_height};
     node_info.size = {node_actual_width, node_actual_height};
 
-    bool is_hovered = ImGui::IsMouseHoveringRect(node_rect_min, node_rect_max);
+    /* dragging */
+    const bool is_hovered = ImGui::IsMouseHoveringRect(node_rect_min, node_rect_max);
+    if (dragging_node == nullptr && is_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+        dragging_node = &node_info;
+        ImVec2 current_node_rect_min = node_rect_min;
+        drag_node_offset = ImGui::GetMousePos() - current_node_rect_min;
+    }
+
     ImU32 node_bg_color = is_hovered ? IM_COL32(70, 70, 70, 200) : IM_COL32(50, 50, 50, 200);
     draw_list->AddRectFilled(node_rect_min, node_rect_max, node_bg_color, 4.0f);
     draw_list->AddRect(node_rect_min, node_rect_max, IM_COL32(100, 100, 100, 255), 4.0f);
@@ -245,8 +251,8 @@ void GUIRoutingPanel::draw_node(RoutingNode &node_info, const ImVec2 node_rect_m
     const float pin_offset_y = line_height * 0.5f;
 
     ImVec2 current_text_pos = ImVec2(node_rect_min.x + node_padding_x, node_rect_min.y + node_padding_y);
-
     float pin_y = current_text_pos.y + pin_offset_y;
+
     if (node_info.type != Target::CHANNEL) {
         const ImVec2 pin_position = ImVec2(node_rect_min.x - GUI_ROUTING_PIN_RADIUS, pin_y);
         draw_list->AddCircleFilled(pin_position, GUI_ROUTING_PIN_RADIUS, pin_color_main);
