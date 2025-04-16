@@ -22,21 +22,25 @@ GUIRoutingPanel::GUIRoutingPanel() {
 }
 
 void GUIRoutingPanel::update() {
+}
+
+void GUIRoutingPanel::from() {
     collect_nodes();
     collect_links();
 }
 
-void GUIRoutingPanel::from() {
-}
-
 void GUIRoutingPanel::to() const {
     for (const auto &[source, target] : nodes_links) {
+        const ItemType type = source.first;
         const size_t id = source.second;
-        Link &link = links[static_cast<size_t>(source.first)][id];
-        link.target = target.target;
-        link.index = target.index;
-        link.offset = target.offset;
-        link_manager.set_link(link, link.item, id);
+        const size_t item = target.index;
+        Link &link = links[static_cast<size_t>(type)][id];
+        if (item > id || type != ItemType::DSP || target.target != Target::DSP_CHANNEL) {
+            link.target = target.target;
+            link.index = item;
+            link.offset = target.offset;
+            link_manager.set_link(link, link.item, id);
+        }
     }
 }
 
@@ -256,6 +260,7 @@ void GUIRoutingPanel::draw_all_links() {
     const float line_thickness = 1.5f;
     const ImU32 audio_color = IM_COL32(0, 200, 0, 255);
     const ImU32 parameter_color = IM_COL32(200, 150, 0, 255);
+    const ImU32 dragging_color = IM_COL32(150, 150, 150, 255);
 
     for (const auto &[source, target] : nodes_links) {
         const bool dragging = link_dragging_source_key.has_value() && link_dragging_source_key.value() == source;
@@ -264,13 +269,17 @@ void GUIRoutingPanel::draw_all_links() {
 
         if (source_pin_it != output_pins.end() && dest_pin_it != input_pins.end()) {
             ImVec2 p1, p4;
+            ImU32 color;
             if (dragging) {
                 const ImVec2 mouse_pos = ImGui::GetMousePos();
                 p1 = source_pin_it->second;
                 p4 = mouse_pos;
+                color = dragging_color;
             } else {
                 p1 = source_pin_it->second;
                 p4 = dest_pin_it->second;
+                const bool is_audio_link = target.target == Target::OUTPUT_CHANNEL || target.target == Target::DSP_CHANNEL;
+                color = is_audio_link ? audio_color : parameter_color;
             }
 
             const float horizontal_distance = std::abs(p4.x - p1.x);
@@ -279,8 +288,6 @@ void GUIRoutingPanel::draw_all_links() {
             const ImVec2 p2 = ImVec2(p1.x + control_offset_x, p1.y);
             const ImVec2 p3 = ImVec2(p4.x - control_offset_x, p4.y);
 
-            const bool is_audio_link = target.target == Target::OUTPUT_CHANNEL || target.target == Target::DSP_CHANNEL;
-            const ImU32 color = is_audio_link ? audio_color : parameter_color;
             draw_list->AddBezierCubic(p1, p2, p3, p4, color, line_thickness, GUI_ROUTING_CURVE_SEGMENTS);
         }
     }
@@ -393,7 +400,7 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
         draw_list->AddText(current_text_pos, pin_color_param, parameter_label.c_str());
         current_text_pos.y += line_height + style.ItemSpacing.y;
         input_pins[parameter_key] = pin_position;
-        // set_dragging_target_key(pin_position, key);
+        set_dragging_target_key(pin_position, parameter_key);
     }
 
     ImGui::PopID();
