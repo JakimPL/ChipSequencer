@@ -5,8 +5,6 @@
 #include <vector>
 #include <unordered_map>
 
-#include <iostream>
-
 #include "../init.hpp"
 
 #include "../../general.hpp"
@@ -24,14 +22,22 @@ GUIRoutingPanel::GUIRoutingPanel() {
 }
 
 void GUIRoutingPanel::update() {
-}
-
-void GUIRoutingPanel::from() {
     collect_nodes();
     collect_links();
 }
 
+void GUIRoutingPanel::from() {
+}
+
 void GUIRoutingPanel::to() const {
+    for (const auto &[source, target] : nodes_links) {
+        const size_t id = source.second;
+        Link &link = links[static_cast<size_t>(source.first)][id];
+        link.target = target.target;
+        link.index = target.index;
+        link.offset = target.offset;
+        link_manager.set_link(link, link.item, id);
+    }
 }
 
 void GUIRoutingPanel::collect_links() {
@@ -372,9 +378,8 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
         const uint16_t offset = sizeof(_Float32) * routing_node.identifier.id;
         const Target target = routing_node.identifier.type == Target::DSP ? Target::DSP_CHANNEL : Target::OUTPUT_CHANNEL;
         const OutputKey key = {target, index, offset};
-
-        set_dragging_target_key(pin_position, key);
         input_pins[key] = pin_position;
+        set_dragging_target_key(pin_position, key);
     }
 
     draw_list->AddText(current_text_pos, ImGui::GetColorU32(ImGuiCol_Text), routing_node.name.c_str());
@@ -388,6 +393,7 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
         draw_list->AddText(current_text_pos, pin_color_param, parameter_label.c_str());
         current_text_pos.y += line_height + style.ItemSpacing.y;
         input_pins[parameter_key] = pin_position;
+        // set_dragging_target_key(pin_position, key);
     }
 
     ImGui::PopID();
@@ -435,7 +441,8 @@ RoutingNode *GUIRoutingPanel::handle_node_dragging(const ImVec2 &canvas_origin) 
 }
 
 void GUIRoutingPanel::set_dragging_source_key(const ImVec2 pin_position, const InputKey &key) {
-    const bool is_pin_hovered = ImGui::IsMouseHoveringRect(pin_position - ImVec2(GUI_ROUTING_PIN_RADIUS, GUI_ROUTING_PIN_RADIUS), pin_position + ImVec2(GUI_ROUTING_PIN_RADIUS, GUI_ROUTING_PIN_RADIUS));
+    const ImVec2 radius = ImVec2(GUI_ROUTING_PIN_RADIUS, GUI_ROUTING_PIN_RADIUS);
+    const bool is_pin_hovered = ImGui::IsMouseHoveringRect(pin_position - radius, pin_position + radius);
     if (is_pin_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
         if (link_dragging_source_key.has_value() && link_dragging_source_key.value() == key) {
             link_dragging_source_key = std::nullopt;
@@ -448,15 +455,12 @@ void GUIRoutingPanel::set_dragging_source_key(const ImVec2 pin_position, const I
 }
 
 void GUIRoutingPanel::set_dragging_target_key(const ImVec2 pin_position, const OutputKey &key) {
-    const bool is_pin_hovered = ImGui::IsMouseHoveringRect(pin_position - ImVec2(GUI_ROUTING_PIN_RADIUS, GUI_ROUTING_PIN_RADIUS), pin_position + ImVec2(GUI_ROUTING_PIN_RADIUS, GUI_ROUTING_PIN_RADIUS));
-    if (is_pin_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
-        if (link_dragging_source_key.has_value()) {
-            const InputKey source_key = link_dragging_source_key.value();
-            if (nodes_links.find(source_key) == nodes_links.end()) {
-                nodes_links[source_key] = key;
-            }
-            link_dragging_source_key = std::nullopt;
-        }
+    const ImVec2 radius = ImVec2(GUI_ROUTING_PIN_RADIUS, GUI_ROUTING_PIN_RADIUS);
+    const bool is_pin_hovered = ImGui::IsMouseHoveringRect(pin_position - radius, pin_position + radius);
+    if (link_dragging_source_key.has_value() && is_pin_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+        const InputKey source_key = link_dragging_source_key.value();
+        nodes_links[source_key] = key;
+        link_dragging_source_key = std::nullopt;
     }
 }
 

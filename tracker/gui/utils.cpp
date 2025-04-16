@@ -198,7 +198,7 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
         draw_int_slider("Channel", output_type.output_channel, {}, 0, song.get_output_channels() - 1);
         break;
     case OUTPUT_TARGET_DSP:
-        if (dsps.empty() || dsp_index >= dsps.size() - 1) {
+        if (dsps.empty() || dsp_index >= static_cast<int>(dsps.size()) - 1) {
             ImGui::Text("No DSPs available.");
             break;
         } else {
