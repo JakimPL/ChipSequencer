@@ -8,17 +8,6 @@
     global calculate_ticks_per_beat
     global ticks_per_beat
 
-    global output
-    global dsp_input
-
-    global envelope_timer
-    global sequence_timer
-    global oscillator_timer
-    global pitch
-
-    global current_sequence
-    global sequence_current_note
-
     extern sound_driver_step
     extern sound_driver_initialize
     extern sound_driver_terminate

@@ -65,12 +65,22 @@
 
 #define MAX_ENVELOPE_TIMER_LENGTH 10
 
+// Let C = magic_constant. Each frame, an envelope timer increases by C / v.
+// where v is proportional to time t belonging to the range [0, MAX_ENVELOPE_TIMER_LENGTH].
+// v is 16-bit, so 0xFFFF corresponds to MAX_ENVELOPE_TIMER_LENGTH (10 s by default):
+// v = 0xFFFF * t / MAX_ENVELOPE_TIMER_LENGTH
+// The counter is being reset when it exceeds dividend := sample_rate << 14.
+// Since there are t * sample_rate frames, the equation is:
+// C / v * sample_rate * t = dividend
+// which simplifies to:
+#define MAGIC_CONSTANT (0xFFFF << 14) / MAX_ENVELOPE_TIMER_LENGTH
+
 // Phases
-#define ATTACK 0
-#define DECAY 1
-#define HOLD 2
-#define RELEASE 3
-#define NOTE_CUT 4
+#define PHASE_ATTACK 0
+#define PHASE_DECAY 1
+#define PHASE_HOLD 2
+#define PHASE_RELEASE 3
+#define PHASE_NOTE_CUT 4
 
 // Envelope
 #define ENVELOPE_BASE_VOLUME 0

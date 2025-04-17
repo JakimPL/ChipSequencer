@@ -24,7 +24,7 @@ adsr:
     movzx ebx, byte [envelope_mode + eax]
     LOAD_OFFSET eax, envelope_offset
     movzx ecx, word [eax + ENVELOPE_ATTACK + 2 * ebx]
-    mov eax, [magic_constant]
+    mov eax, MAGIC_CONSTANT
     cmp ecx, 0
     je .done
     div ecx
@@ -90,21 +90,10 @@ reset_envelope:
 
 set_release:
     movzx ecx, byte [current_channel]
-    mov byte [envelope_mode + ecx], RELEASE
+    mov byte [envelope_mode + ecx], PHASE_RELEASE
     ret
 
     SEGMENT_DATA
-magic_constant:
-; Let C = magic_constant. Each frame, an envelope timer increases by C / v.
-; where v is proportional to time t belonging to the range [0, MAX_ENVELOPE_TIMER_LENGTH].
-; v is 16-bit, so 0xFFFF corresponds to MAX_ENVELOPE_TIMER_LENGTH (10 s by default):
-; v = 0xFFFF * t / MAX_ENVELOPE_TIMER_LENGTH
-; The counter is being reset when it exceeds dividend := sample_rate << 14.
-; Since there are t * sample_rate frames, the equation is:
-; C / v * sample_rate * t = dividend
-; which simplifies to:
-    dd (0xFFFF << 14) / MAX_ENVELOPE_TIMER_LENGTH
-
 phases:
     %ifdef ELF
     dd attack

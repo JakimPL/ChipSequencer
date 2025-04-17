@@ -17,6 +17,9 @@ class GUIEnvelopesPanel : public GUIPanel {
         float decay = 0.0f;
         float hold = 0.0f;
         float release = 0.0f;
+
+        std::vector<float> timers;
+        std::vector<float> positions;
     } current_envelope;
 
     int envelope_index = 0;
