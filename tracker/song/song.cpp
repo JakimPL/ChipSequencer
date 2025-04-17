@@ -854,11 +854,11 @@ void Song::export_offsets(const std::string &filename) const {
 
 void Song::export_links(const std::string &filename) const {
     std::ofstream file(filename, std::ios::binary);
-    for (const auto &link : links[0]) {
-        link.serialize(file);
-    }
-    for (const auto &link : links[1]) {
-        link.serialize(file);
+    for (const ItemType &type : {ItemType::CHANNEL, ItemType::DSP}) {
+        const size_t link_type = static_cast<size_t>(type);
+        for (const auto &link : links[link_type]) {
+            link.serialize(file);
+        }
     }
     file.close();
 }
@@ -978,8 +978,7 @@ void Song::clear_data() {
     wavetables.clear();
     dsps.clear();
     channels.clear();
-    links[static_cast<size_t>(ItemType::CHANNEL)].clear();
-    links[static_cast<size_t>(ItemType::DSP)].clear();
+    link_manager.reset();
     num_channels = 0;
     num_dsps = 0;
 }

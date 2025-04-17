@@ -3,6 +3,11 @@
 #include "../../general.hpp"
 #include "manager.hpp"
 
+void LinkManager::reset() {
+    links[static_cast<size_t>(ItemType::CHANNEL)].clear();
+    links[static_cast<size_t>(ItemType::DSP)].clear();
+}
+
 void LinkManager::set_link(Link &link, void *item, const uint8_t i) {
     remove_key(link);
 
@@ -75,6 +80,7 @@ void LinkManager::set_link(Link &link, void *item, const uint8_t i) {
 }
 
 void LinkManager::set_links() {
+    clear();
     size_t link_type = static_cast<size_t>(ItemType::CHANNEL);
     for (size_t i = 0; i < channels.size(); i++) {
         Link &link = links[link_type][i];
@@ -257,4 +263,9 @@ void LinkManager::restore_parameters() const {
             restore_parameter(key, link);
         }
     }
+}
+
+void LinkManager::clear() {
+    map.clear();
+    snapshot.clear();
 }

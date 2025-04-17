@@ -32,6 +32,7 @@ class GUIEnvelopesPanel : public GUIPanel {
     void draw_levels();
     void draw_timers();
     void draw_envelope_graph();
+    void gather_envelope_positions();
 
     void from() override;
     void to() const override;

@@ -65,6 +65,10 @@ void GUIEnvelopesPanel::from() {
     current_envelope.hold = cast_to_float(envelope->hold, timer_constant);
     current_envelope.release = cast_to_float(envelope->release, timer_constant);
 
+    gather_envelope_positions();
+}
+
+void GUIEnvelopesPanel::gather_envelope_positions() {
     current_envelope.timers.clear();
     current_envelope.timers.push_back(current_envelope.attack);
     current_envelope.timers.push_back(current_envelope.decay);
@@ -72,9 +76,13 @@ void GUIEnvelopesPanel::from() {
     current_envelope.timers.push_back(current_envelope.release);
 
     current_envelope.positions.clear();
+    if (!gui.is_playing()) {
+        return;
+    }
+
     for (const Channel *channel : channels) {
-        const size_t envelope_index = channel->envelope_index;
-        if (envelope_index == envelope_index) {
+        const size_t index = channel->envelope_index;
+        if (index == envelope_index) {
             const uint8_t mode = envelope_mode[envelope_index];
             float timer = 0;
             for (uint8_t i = 0; i < mode; ++i) {
