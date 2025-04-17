@@ -16,10 +16,10 @@
     %define WAVETABLE_SIZE 24
 
 ; Buffers
-    %define DSP_0_BUFFER_SIZE 256
+    %define DSP_0_BUFFER_SIZE 0
     %define DSP_1_BUFFER_SIZE 0
-    %define DSP_2_BUFFER_SIZE 0
-    %define DSP_BUFFER_SIZE 256
+    %define DSP_2_BUFFER_SIZE 1
+    %define DSP_BUFFER_SIZE 1
 
     extern num_channels
     extern num_dsps

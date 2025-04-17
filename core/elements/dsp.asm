@@ -76,18 +76,18 @@ increment_dsp_timer:
 
 ; Effects
     %include "core/dsp/gainer.asm"
-    %include "core/dsp/delay.asm"
+    %include "core/dsp/distort.asm"
     %include "core/dsp/filter.asm"
 
     SEGMENT_DATA
 effects:
     %ifdef ELF
     dd gainer
-    dd delay
+    dd distortion
     dd filter
     %else
     dw gainer
-    dw delay
+    dw distortion
     dw filter
     %endif
 

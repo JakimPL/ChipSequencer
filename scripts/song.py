@@ -3,7 +3,7 @@ from pathlib import Path
 from pyconf import ASM_SONG_DATA_FILE, ASM_SONG_HEADER_FILE
 from structures.channel import Channel
 from structures.creator import Creator
-from structures.dsp import DSPDelay, DSPFilter, DSPGainer
+from structures.dsp import DSPDistortion, DSPFilter, DSPGainer
 from structures.envelope import Envelope
 from structures.order import Order
 from structures.oscillator import OscillatorSaw, OscillatorSine, OscillatorSquare, OscillatorWavetable
@@ -180,20 +180,17 @@ def main():
         Wavetable([0x00, 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70]),
     ]
 
-    effect_delay = DSPDelay(
+    effect_distortion = DSPDistortion(
         output=Output(),
         output_flag=0,
-        dry=0x7FFF,
-        wet=0x6FFF,
-        feedback=0x5FFF,
-        delay_time=0x0100,
+        level=0x7FFF,
     )
 
     effect_gainer = DSPGainer(output=Output(), output_flag=0, volume=0x9FFF)
 
     effect_filter = DSPFilter(output=Output(), output_flag=0, frequency=0x0150)
 
-    dsps = [effect_delay, effect_gainer, effect_filter]
+    dsps = [effect_distortion, effect_gainer, effect_filter]
 
     osc1 = Channel(
         envelope_index=1,

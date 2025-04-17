@@ -14,11 +14,8 @@ class GUIDSPsPanel : public GUIPanel {
         // gainer
         float gainer_gain = 0.5f;
 
-        // delay
-        float delay_dry = 0.5f;
-        float delay_wet = 0.5f;
-        float delay_feedback = 0.5f;
-        float delay_time = 256.0f;
+        // distortion
+        float distortion_level = 0.5f;
 
         // filter
         float filter_cutoff = 8000.0f;

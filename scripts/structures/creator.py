@@ -268,11 +268,8 @@ class Creator:
             match dsp.effect_index:
                 case Effects.EFFECT_GAINER:
                     self.value(dsp.volume, "volume", fmt="x")
-                case Effects.EFFECT_DELAY:
-                    self.value(dsp.dry, "dry", fmt="x")
-                    self.value(dsp.wet, "wet", fmt="x")
-                    self.value(dsp.feedback, "feedback", fmt="x")
-                    self.reference(Word, f"DSP_{i}_BUFFER_SIZE", "delay_time")
+                case Effects.EFFECT_DISTORTION:
+                    self.value(dsp.level, "level", fmt="x")
                 case Effects.EFFECT_FILTER:
                     self.value(dsp.frequency, "frequency")
 

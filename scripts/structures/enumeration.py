@@ -16,5 +16,5 @@ class Generators(Enumeration):
 
 class Effects(Enumeration):
     EFFECT_GAINER = 0
-    EFFECT_DELAY = 1
+    EFFECT_DISTORTION = 1
     EFFECT_FILTER = 2

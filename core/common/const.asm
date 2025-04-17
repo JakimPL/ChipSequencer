@@ -152,13 +152,10 @@
     %define DSP_GAINER_VOLUME 8
     %define SIZE_DSP_GAINER 16
 
-; Delay
-    %define EFFECT_DELAY 1
-    %define DSP_DELAY_DRY 8
-    %define DSP_DELAY_WET 10
-    %define DSP_DELAY_FEEDBACK 12
-    %define DSP_DELAY_TIME 14
-    %define SIZE_DSP_DELAY 16
+; Distortion
+    %define EFFECT_DISTORTION 1
+    %define DSP_DISTORTION_LEVEL 8
+    %define SIZE_DSP_DISTORTION 16
 
 ; Filter
     %define EFFECT_FILTER 2
@@ -175,15 +172,12 @@
 ; Gainer
     %define EFFECT_GAINER 0
     %define DSP_GAINER_VOLUME 5
-    %define SIZE_DSP_GAINER 16
+    %define SIZE_DSP_GAINER 7
 
-; Delay
-    %define EFFECT_DELAY 1
-    %define DSP_DELAY_DRY 5
-    %define DSP_DELAY_WET 7
-    %define DSP_DELAY_FEEDBACK 9
-    %define DSP_DELAY_TIME 11
-    %define SIZE_DSP_DELAY 13
+; Distortion
+    %define EFFECT_DISTORTION 1
+    %define DSP_DISTORTION_LEVEL 5
+    %define SIZE_DSP_DISTORTION 7
 
 ; Filter
     %define EFFECT_FILTER 2

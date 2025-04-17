@@ -79,6 +79,5 @@ class GUI {
     void frame_all();
     void set_visibility_all(const bool visible);
 };
-;
 
 #endif // GUI_GUI_HPP
