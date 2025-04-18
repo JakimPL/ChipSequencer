@@ -37,7 +37,23 @@ load_table_16bit_item:
 ; AX  - input timer/output
     mul ebx
     div ecx
-    mov ax, [esi + 2 * eax]
+    shr ecx, 16
+    mov [value], ecx
+    shr edx, 16
+    mov [angle], edx
+    xor edx, edx
+    dec bx
+    mov cx, [esi + 2 * eax]
+    cmp ax, bx
+    jne .load_items
+.modulo:
+    sub ax, bx
+.load_items:
+    mov bx, [esi + 2 * eax + 2]
+    lea esi, [angle]
+    lea edi, [value]
+    call interpolate
+    movzx eax, ax
     ret
 
 load_table_8bit_item:
