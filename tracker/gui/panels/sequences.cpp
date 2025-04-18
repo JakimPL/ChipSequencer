@@ -106,5 +106,9 @@ void GUISequencesPanel::check_keyboard_input() {
         return;
     }
 
+    if (ImGui::GetIO().WantCaptureKeyboard) {
+        return;
+    }
+
     current_sequence.pattern.handle_input();
 }
