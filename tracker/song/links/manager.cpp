@@ -260,7 +260,12 @@ void LinkManager::restore_parameters() const {
         const LinkKey &key = pair.first;
         const std::vector<Link *> &links = pair.second;
         for (const Link *link : links) {
-            restore_parameter(key, link);
+            try {
+                restore_parameter(key, link);
+            } catch (const std::out_of_range &exception) {
+                std::cerr << "Error restoring parameter for a key " << static_cast<int>(key.target)
+                          << ", " << key.index << " link: " << exception.what() << std::endl;
+            }
         }
     }
 }

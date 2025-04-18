@@ -218,7 +218,6 @@ void GUIGeneralPanel::draw_output() {
 }
 
 void GUIGeneralPanel::draw_tuning_settings() {
-    ImGui::Separator();
     ImGui::Text("Tuning Settings");
     draw_int_slider("EDO", current_song.edo, {}, MIN_EDO, MAX_EDO);
     draw_float_slider("A4 Frequency", current_song.a4_frequency, {}, MIN_A4_FREQUENCY, MAX_A4_FREQUENCY);
