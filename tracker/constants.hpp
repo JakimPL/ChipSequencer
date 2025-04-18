@@ -121,7 +121,7 @@
 #endif
 
 // Channel output masks
-#define MASK_ADDITIVE 0b01000000
+#define MASK_OPERATION 0b11000000
 #define MASK_VARIABLE_TYPE 0b00110000
 #define MASK_SHIFT 0b00001111
 
