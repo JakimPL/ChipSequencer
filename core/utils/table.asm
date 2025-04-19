@@ -39,9 +39,9 @@ load_table_16bit_item:
     jc .no_interpolation
 .interpolation:
     call sample_interpolation_set
-    call sample_interpolation_modulo
     mov cx, [esi + 2 * eax]
-    mov bx, [esi + 2 * eax + 2]
+    call sample_interpolation_modulo
+    mov bx, [esi + 2 * eax]
     call sample_interpolation_apply
     jmp .done
 .no_interpolation:
@@ -96,6 +96,7 @@ sample_interpolation_modulo:
 sample_interpolation_apply:
     lea esi, [angle]
     lea edi, [value]
+    xchg bx, cx
     call interpolate
     movzx eax, ax
     ret

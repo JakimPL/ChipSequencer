@@ -6,7 +6,7 @@
     extern sound_driver_terminate
     extern calculate
 
-    %ifdef 32BIT
+    %ifdef ELF
     section .text
     %else
     bits 16
