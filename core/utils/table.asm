@@ -54,9 +54,10 @@ load_table_8bit_item:
 ; ECX - divisor
 ; SI  - table address
 ; AX  - input timer/output
-    call load_table_item
-    jc .no_interpolation
+    cmp dl, 0
+    je .no_interpolation
 .interpolation:
+    call load_table_item
     call sample_interpolation_set
     movzx cx, byte [esi + eax]
     call sample_interpolation_modulo
@@ -64,6 +65,7 @@ load_table_8bit_item:
     call sample_interpolation_apply
     jmp .done
 .no_interpolation:
+    call load_table_item
     mov al, [esi + eax]
 .done:
     ret
