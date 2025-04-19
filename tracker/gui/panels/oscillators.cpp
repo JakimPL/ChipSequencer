@@ -52,6 +52,8 @@ void GUIOscillatorsPanel::from() {
     }
     case GENERATOR_SAW: {
         current_oscillator.type = "Saw";
+        const OscillatorSaw *saw = static_cast<OscillatorSaw *>(oscillator);
+        current_oscillator.saw_reverse = saw->reverse;
         break;
     }
     case GENERATOR_SINE: {
@@ -92,6 +94,7 @@ void GUIOscillatorsPanel::to() const {
         OscillatorSaw *osc = new (buffer) OscillatorSaw();
         osc->generator_index = GENERATOR_SAW;
         osc->oscillator_size = SIZE_OSCILLATOR_SAW;
+        osc->reverse = current_oscillator.saw_reverse;
         break;
     }
     case GENERATOR_SINE: {
@@ -200,6 +203,9 @@ void GUIOscillatorsPanel::draw_oscillator() {
         ImGui::Text("Duty Cycle");
         ImGui::NextColumn();
         draw_float_slider("##DutyCycle", current_oscillator.square_duty_cycle, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_SQUARE_DUTY_CYCLE}, 0.0f, 1.0f);
+        break;
+    case GENERATOR_SAW:
+        ImGui::Checkbox("Reverse", &current_oscillator.saw_reverse);
         break;
     case GENERATOR_WAVETABLE:
         ImGui::Text("Wavetable");

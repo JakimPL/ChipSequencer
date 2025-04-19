@@ -136,7 +136,8 @@
 
 // Saw wave
 #define GENERATOR_SAW 1
-#define SIZE_OSCILLATOR_SAW 1
+#define OSCILLATOR_SAW_REVERSE 2
+#define SIZE_OSCILLATOR_SAW 2
 
 // Sine wave
 #define GENERATOR_SINE 2

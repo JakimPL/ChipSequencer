@@ -134,13 +134,13 @@ oscillators:
     db GENERATOR_SQUARE      ; generator_index
     db 0x20                  ; duty_cycle
 .oscillator_1:
-    db 1                     ; oscillator_size
+    db 2                     ; oscillator_size
     db GENERATOR_SAW         ; generator_index
 .oscillator_2:
     db 1                     ; oscillator_size
     db GENERATOR_SINE        ; generator_index
 .oscillator_3:
-    db 2                     ; oscillator_size
+    db 3                     ; oscillator_size
     db GENERATOR_WAVETABLE   ; generator_index
     db 1                     ; wavetable_index
 

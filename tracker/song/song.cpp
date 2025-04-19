@@ -757,6 +757,7 @@ void *Song::deserialize_oscillator(std::ifstream &file) const {
         return reinterpret_cast<void *>(oscillator);
     } else if (oscillator_type == GENERATOR_SAW) {
         OscillatorSaw *oscillator = new OscillatorSaw();
+        read_data(file, &oscillator->reverse, sizeof(oscillator->reverse));
         return reinterpret_cast<void *>(oscillator);
     } else if (oscillator_type == GENERATOR_SINE) {
         OscillatorSine *oscillator = new OscillatorSine();
