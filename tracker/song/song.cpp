@@ -764,6 +764,7 @@ void *Song::deserialize_oscillator(std::ifstream &file) const {
     } else if (oscillator_type == GENERATOR_WAVETABLE) {
         OscillatorWavetable *oscillator = new OscillatorWavetable();
         read_data(file, &oscillator->wavetable_index, sizeof(oscillator->wavetable_index));
+        read_data(file, &oscillator->interpolation, sizeof(oscillator->interpolation));
         return reinterpret_cast<void *>(oscillator);
     } else if (oscillator_type == GENERATOR_NOISE) {
         OscillatorNoise *oscillator = new OscillatorNoise();

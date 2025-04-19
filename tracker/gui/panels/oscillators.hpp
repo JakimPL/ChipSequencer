@@ -12,8 +12,9 @@ class GUIOscillatorsPanel : public GUIPanel {
     struct CurrentOscillator {
         int generator_index = -1;
         std::string type = "";
-        float duty_cycle = 0.0f;
+        float square_duty_cycle = 0.0f;
         int wavetable_index = -1;
+        bool wavetable_interpolation = false;
     } current_oscillator;
 
     int oscillator_index = 0;

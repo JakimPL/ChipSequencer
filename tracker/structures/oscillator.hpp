@@ -35,7 +35,7 @@ struct OscillatorWavetable {
     uint8_t oscillator_size = SIZE_OSCILLATOR_WAVETABLE;
     uint8_t generator_index = GENERATOR_WAVETABLE;
     uint8_t wavetable_index;
-    uint8_t pad[1];
+    uint8_t interpolation;
 };
 
 struct OscillatorNoise {

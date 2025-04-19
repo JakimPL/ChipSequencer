@@ -39,8 +39,8 @@ load_table_16bit_item:
     jc .no_interpolation
 .interpolation:
     call sample_interpolation_set
-    mov cx, [esi + 2 * eax]
     call sample_interpolation_modulo
+    mov cx, [esi + 2 * eax]
     mov bx, [esi + 2 * eax + 2]
     call sample_interpolation_apply
     jmp .done
@@ -60,7 +60,7 @@ load_table_8bit_item:
     call sample_interpolation_set
     movzx cx, byte [esi + eax]
     call sample_interpolation_modulo
-    movzx bx, byte [esi + eax + 1]
+    movzx bx, byte [esi + eax]
     call sample_interpolation_apply
     jmp .done
 .no_interpolation:
@@ -85,6 +85,7 @@ sample_interpolation_set:
 sample_interpolation_modulo:
     cmp ax, bx
     je .modulo
+    inc ax
     ret
 .modulo:
     sub ax, bx
