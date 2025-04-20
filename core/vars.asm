@@ -1,3 +1,16 @@
+    global envelope_timer
+    global sequence_timer
+    global oscillator_timer
+    global pitch
+
+    global envelope_mode
+    global current_sequence
+    global sequence_current_note
+
+    global dsp_input
+    global dsp_timer
+    global output
+
     SEGMENT_BSS
     envelope_timer resd MAX_CHANNELS
     sequence_timer resd MAX_CHANNELS

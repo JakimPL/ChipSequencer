@@ -26,16 +26,14 @@ struct DSPGainer {
     uint8_t pad[6];
 };
 
-struct DSPDelay {
-    uint8_t dsp_size = SIZE_DSP_DELAY;
-    uint8_t effect_index = EFFECT_DELAY;
+struct DSPDistortion {
+    uint8_t dsp_size = SIZE_DSP_DISTORTION;
+    uint8_t effect_index = EFFECT_DISTORTION;
     uint8_t output_flag;
     uint8_t _unused;
     void *output;
-    uint16_t dry;
-    uint16_t wet;
-    uint16_t feedback;
-    uint16_t delay_time;
+    uint16_t level;
+    uint8_t pad[6];
 };
 
 struct DSPFilter {

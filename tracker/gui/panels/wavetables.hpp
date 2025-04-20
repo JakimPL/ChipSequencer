@@ -14,7 +14,7 @@ class GUIWavetablesPanel : public GUIPanel {
     struct CurrentWavetable {
         std::vector<float> wave = {};
         int size = 0;
-        bool interpolate = false;
+        bool interpolation = false;
     } current_wavetable;
 
     int wavetable_index = 0;

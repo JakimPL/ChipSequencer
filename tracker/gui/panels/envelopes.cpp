@@ -64,6 +64,38 @@ void GUIEnvelopesPanel::from() {
     current_envelope.decay = cast_to_float(envelope->decay, timer_constant);
     current_envelope.hold = cast_to_float(envelope->hold, timer_constant);
     current_envelope.release = cast_to_float(envelope->release, timer_constant);
+
+    gather_envelope_positions();
+}
+
+void GUIEnvelopesPanel::gather_envelope_positions() {
+    current_envelope.timers.clear();
+    current_envelope.timers.push_back(current_envelope.attack);
+    current_envelope.timers.push_back(current_envelope.decay);
+    current_envelope.timers.push_back(current_envelope.hold);
+    current_envelope.timers.push_back(current_envelope.release);
+
+    current_envelope.positions.clear();
+    if (!gui.is_playing()) {
+        return;
+    }
+
+    for (const Channel *channel : channels) {
+        const size_t index = channel->envelope_index;
+        if (index == envelope_index) {
+            const uint8_t mode = envelope_mode[envelope_index];
+            float timer = 0;
+            for (uint8_t i = 0; i < mode; ++i) {
+                timer += current_envelope.timers[i];
+            }
+            if (mode != PHASE_NOTE_CUT) {
+                const float fraction = static_cast<float>(envelope_timer[envelope_index]) / (sample_rate << 14);
+                timer += current_envelope.timers[mode] * fraction;
+            }
+
+            current_envelope.positions.push_back(timer);
+        }
+    }
 }
 
 void GUIEnvelopesPanel::to() const {
@@ -166,6 +198,11 @@ void GUIEnvelopesPanel::draw_envelope_graph() {
     draw_list->AddCircleFilled(p2, 3.0f, IM_COL32(255, 165, 0, 255));
     draw_list->AddCircleFilled(p3, 3.0f, IM_COL32(75, 255, 130, 255));
     draw_list->AddCircleFilled(p4, 3.0f, IM_COL32(0, 144, 255, 255));
+
+    for (const float position : current_envelope.positions) {
+        const float x = canvas_p0.x + size.x * (position / static_cast<float>(total_time));
+        draw_list->AddLine(ImVec2(x, canvas_p0.y), ImVec2(x, canvas_p1.y), IM_COL32(255, 255, 0, 128), 1.0f);
+    }
 }
 
 void GUIEnvelopesPanel::check_keyboard_input() {

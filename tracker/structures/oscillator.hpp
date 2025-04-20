@@ -22,7 +22,8 @@ struct OscillatorSquare {
 struct OscillatorSaw {
     uint8_t oscillator_size = SIZE_OSCILLATOR_SAW;
     uint8_t generator_index = GENERATOR_SAW;
-    uint8_t pad[2];
+    uint8_t reverse;
+    uint8_t pad[1];
 };
 
 struct OscillatorSine {
@@ -35,7 +36,7 @@ struct OscillatorWavetable {
     uint8_t oscillator_size = SIZE_OSCILLATOR_WAVETABLE;
     uint8_t generator_index = GENERATOR_WAVETABLE;
     uint8_t wavetable_index;
-    uint8_t pad[1];
+    uint8_t interpolation;
 };
 
 struct OscillatorNoise {

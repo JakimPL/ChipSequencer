@@ -50,13 +50,10 @@ void GUIDSPsPanel::from() {
         current_dsp.gainer_gain = static_cast<float>(gainer->volume) / UINT16_MAX;
         break;
     }
-    case EFFECT_DELAY: {
-        current_dsp.type = "Delay";
-        const DSPDelay *delay = static_cast<const DSPDelay *>(dsp);
-        current_dsp.delay_dry = static_cast<float>(delay->dry) / UINT16_MAX;
-        current_dsp.delay_wet = static_cast<float>(delay->wet) / UINT16_MAX;
-        current_dsp.delay_feedback = static_cast<float>(delay->feedback) / UINT16_MAX;
-        current_dsp.delay_time = delay->delay_time;
+    case EFFECT_DISTORTION: {
+        current_dsp.type = "Distortion";
+        const DSPDistortion *distortion = static_cast<const DSPDistortion *>(dsp);
+        current_dsp.distortion_level = static_cast<float>(distortion->level) / UINT16_MAX;
         break;
     }
     case EFFECT_FILTER: {
@@ -86,14 +83,11 @@ void GUIDSPsPanel::to() const {
         dsp->volume = static_cast<uint16_t>(std::round(current_dsp.gainer_gain * UINT16_MAX));
         break;
     }
-    case EFFECT_DELAY: {
+    case EFFECT_DISTORTION: {
         static_cast<DSP *>(buffer)->~DSP();
-        DSPDelay *dsp = new (buffer) DSPDelay();
-        dsp->effect_index = EFFECT_DELAY;
-        dsp->dry = static_cast<uint16_t>(std::round(current_dsp.delay_dry * UINT16_MAX));
-        dsp->wet = static_cast<uint16_t>(std::round(current_dsp.delay_wet * UINT16_MAX));
-        dsp->feedback = static_cast<uint16_t>(std::round(current_dsp.delay_feedback * UINT16_MAX));
-        dsp->delay_time = static_cast<uint16_t>(std::round(current_dsp.delay_time));
+        DSPDistortion *dsp = new (buffer) DSPDistortion();
+        dsp->effect_index = EFFECT_DISTORTION;
+        dsp->level = static_cast<uint16_t>(std::round(current_dsp.distortion_level * UINT16_MAX));
         break;
     }
     case EFFECT_FILTER: {
@@ -187,14 +181,9 @@ void GUIDSPsPanel::draw_effect() {
         draw_knob("Gain", current_dsp.gainer_gain, {Target::DSP, dsp_index, DSP_GAINER_VOLUME}, 0.0f, 1.0f);
         break;
     }
-    case EFFECT_DELAY: {
-        draw_knob("Dry", current_dsp.delay_dry, {Target::DSP, dsp_index, DSP_DELAY_DRY}, 0.0f, 1.0f);
+    case EFFECT_DISTORTION: {
+        draw_knob("Level", current_dsp.distortion_level, {Target::DSP, dsp_index, DSP_DISTORTION_LEVEL}, 0.0f, 1.0f);
         ImGui::SameLine();
-        draw_knob("Wet", current_dsp.delay_wet, {Target::DSP, dsp_index, DSP_DELAY_WET}, 0.0f, 1.0f);
-        ImGui::SameLine();
-        draw_knob("Feedback", current_dsp.delay_feedback, {Target::DSP, dsp_index, DSP_DELAY_FEEDBACK}, 0.0f, 1.0f);
-        ImGui::SameLine();
-        draw_knob("Time", current_dsp.delay_time, {Target::DSP, dsp_index, DSP_DELAY_TIME}, 1, MAX_DSP_BUFFER_SIZE);
         break;
     }
     case EFFECT_FILTER: {

@@ -17,7 +17,7 @@
 #define DEFAULT_DIVISION 4
 #define DEFAULT_SAMPLE_RATE 44100
 #define DEFAULT_NORMALIZER 0.5
-#define DEFAULT_OUTPUT_CHANNELS 1
+#define DEFAULT_OUTPUT_CHANNELS 2
 
 #define DEFAULT_TITLE "Untitled"
 #define DEFAULT_AUTHOR "Unknown"
@@ -65,12 +65,22 @@
 
 #define MAX_ENVELOPE_TIMER_LENGTH 10
 
+// Let C = magic_constant. Each frame, an envelope timer increases by C / v.
+// where v is proportional to time t belonging to the range [0, MAX_ENVELOPE_TIMER_LENGTH].
+// v is 16-bit, so 0xFFFF corresponds to MAX_ENVELOPE_TIMER_LENGTH (10 s by default):
+// v = 0xFFFF * t / MAX_ENVELOPE_TIMER_LENGTH
+// The counter is being reset when it exceeds dividend := sample_rate << 14.
+// Since there are t * sample_rate frames, the equation is:
+// C / v * sample_rate * t = dividend
+// which simplifies to:
+#define MAGIC_CONSTANT (0xFFFF << 14) / MAX_ENVELOPE_TIMER_LENGTH
+
 // Phases
-#define ATTACK 0
-#define DECAY 1
-#define HOLD 2
-#define RELEASE 3
-#define NOTE_CUT 4
+#define PHASE_ATTACK 0
+#define PHASE_DECAY 1
+#define PHASE_HOLD 2
+#define PHASE_RELEASE 3
+#define PHASE_NOTE_CUT 4
 
 // Envelope
 #define ENVELOPE_BASE_VOLUME 0
@@ -111,7 +121,7 @@
 #endif
 
 // Channel output masks
-#define MASK_ADDITIVE 0b01000000
+#define MASK_OPERATION 0b11000000
 #define MASK_VARIABLE_TYPE 0b00110000
 #define MASK_SHIFT 0b00001111
 
@@ -126,7 +136,8 @@
 
 // Saw wave
 #define GENERATOR_SAW 1
-#define SIZE_OSCILLATOR_SAW 1
+#define OSCILLATOR_SAW_REVERSE 2
+#define SIZE_OSCILLATOR_SAW 2
 
 // Sine wave
 #define GENERATOR_SINE 2
@@ -135,7 +146,8 @@
 // Wavetable
 #define GENERATOR_WAVETABLE 3
 #define OSCILLATOR_WAVETABLE_WAVETABLE_INDEX 2
-#define SIZE_OSCILLATOR_WAVETABLE 2
+#define OSCILLATOR_WAVETABLE_INTERPOLATION 3
+#define SIZE_OSCILLATOR_WAVETABLE 3
 
 // Noise
 #define GENERATOR_NOISE 4
@@ -154,13 +166,10 @@
 #define DSP_GAINER_VOLUME 8
 #define SIZE_DSP_GAINER 16
 
-// Delay
-#define EFFECT_DELAY 1
-#define DSP_DELAY_DRY 8
-#define DSP_DELAY_WET 10
-#define DSP_DELAY_FEEDBACK 12
-#define DSP_DELAY_TIME 14
-#define SIZE_DSP_DELAY 16
+// Distortion
+#define EFFECT_DISTORTION 1
+#define DSP_DISTORTION_LEVEL 8
+#define SIZE_DSP_DISTORTION 16
 
 // Filter
 #define EFFECT_FILTER 2
@@ -177,15 +186,12 @@
 // Gainer
 #define EFFECT_GAINER 0
 #define DSP_GAINER_VOLUME 5
-#define SIZE_DSP_GAINER 16
+#define SIZE_DSP_GAINER 7
 
-// Delay
-#define EFFECT_DELAY 1
-#define DSP_DELAY_DRY 5
-#define DSP_DELAY_WET 7
-#define DSP_DELAY_FEEDBACK 9
-#define DSP_DELAY_TIME 11
-#define SIZE_DSP_DELAY 13
+// Distortion
+#define EFFECT_DISTORTION 1
+#define DSP_DISTORTION_LEVEL 5
+#define SIZE_DSP_DISTORTION 7
 
 // Filter
 #define EFFECT_FILTER 2

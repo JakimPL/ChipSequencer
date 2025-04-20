@@ -96,48 +96,11 @@ void Song::compile(const std::string &filename, bool compress) const {
 
 void Song::render(const std::string &filename) {
     calculate_song_length();
-
-    std::vector<float> samples;
-    samples.reserve(song_length);
-    initialize();
-    for (size_t i = 0; i < song_length; i++) {
-        mix();
-        samples.push_back(output);
-    }
-
-    uint16_t audio_format = 3;
-    uint16_t num_channels = 1;
-    uint32_t sample_rate_value = sample_rate;
-    uint16_t bits_per_sample = 32;
-    uint16_t block_align = num_channels * sizeof(float);
-    uint32_t byte_rate = sample_rate_value * block_align;
-    uint32_t subchunk2_size = samples.size() * block_align;
-    uint32_t chunk_size = 36 + subchunk2_size;
-
-    std::ofstream outfile(filename, std::ios::binary);
-    if (!outfile) {
-        throw std::runtime_error("Failed to open file: " + filename);
-    }
-
-    outfile.write("RIFF", 4);
-    outfile.write(reinterpret_cast<const char *>(&chunk_size), 4);
-    outfile.write("WAVE", 4);
-
-    outfile.write("fmt ", 4);
-    uint32_t subchunk1_size = 16;
-    outfile.write(reinterpret_cast<const char *>(&subchunk1_size), 4);
-    outfile.write(reinterpret_cast<const char *>(&audio_format), 2);
-    outfile.write(reinterpret_cast<const char *>(&num_channels), 2);
-    outfile.write(reinterpret_cast<const char *>(&sample_rate_value), 4);
-    outfile.write(reinterpret_cast<const char *>(&byte_rate), 4);
-    outfile.write(reinterpret_cast<const char *>(&block_align), 2);
-    outfile.write(reinterpret_cast<const char *>(&bits_per_sample), 2);
-
-    outfile.write("data", 4);
-    outfile.write(reinterpret_cast<const char *>(&subchunk2_size), 4);
-
-    outfile.write(reinterpret_cast<const char *>(samples.data()), samples.size() * sizeof(float));
-    outfile.close();
+    file_driver.set_length(song_length);
+    file_driver.set_sample_rate(sample_rate);
+    file_driver.set_output_channels(output_channels);
+    file_driver.set_output_filename(filename);
+    file_driver.play();
 }
 
 std::string Song::get_title() const {
@@ -667,17 +630,14 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
     const uint8_t *bytes = static_cast<const uint8_t *>(dsp);
     const uint8_t dsp_type = bytes[1];
     uint16_t null = 0;
-    if (dsp_type == EFFECT_DELAY) {
-        DSPDelay *delay = reinterpret_cast<DSPDelay *>(dsp);
+    if (dsp_type == EFFECT_DISTORTION) {
+        DSPDistortion *distortion = reinterpret_cast<DSPDistortion *>(dsp);
         uint8_t size = 12;
         write_data(file, &size, sizeof(size));
-        write_data(file, &delay->effect_index, sizeof(delay->effect_index));
-        write_data(file, &delay->output_flag, sizeof(delay->output_flag));
+        write_data(file, &distortion->effect_index, sizeof(distortion->effect_index));
+        write_data(file, &distortion->output_flag, sizeof(distortion->output_flag));
         write_data(file, &null, sizeof(null));
-        write_data(file, &delay->dry, sizeof(delay->dry));
-        write_data(file, &delay->wet, sizeof(delay->wet));
-        write_data(file, &delay->feedback, sizeof(delay->feedback));
-        write_data(file, &delay->delay_time, sizeof(delay->delay_time));
+        write_data(file, &distortion->level, sizeof(distortion->level));
     } else if (dsp_type == EFFECT_GAINER) {
         DSPGainer *gainer = reinterpret_cast<DSPGainer *>(dsp);
         uint16_t null = 0;
@@ -719,17 +679,14 @@ void *Song::deserialize_dsp(std::ifstream &file) const {
     read_data(file, &size, sizeof(size));
     read_data(file, &effect_type, sizeof(effect_type));
 
-    if (effect_type == EFFECT_DELAY) {
-        DSPDelay *delay = new DSPDelay();
-        delay->dsp_size = SIZE_DSP_DELAY;
-        delay->output = &output;
-        read_data(file, &delay->output_flag, sizeof(delay->output_flag));
+    if (effect_type == EFFECT_DISTORTION) {
+        DSPDistortion *distortion = new DSPDistortion();
+        distortion->dsp_size = SIZE_DSP_DISTORTION;
+        distortion->output = &output;
+        read_data(file, &distortion->output_flag, sizeof(distortion->output_flag));
         file.seekg(sizeof(uint16_t), std::ios::cur);
-        read_data(file, &delay->dry, sizeof(delay->dry));
-        read_data(file, &delay->wet, sizeof(delay->wet));
-        read_data(file, &delay->feedback, sizeof(delay->feedback));
-        read_data(file, &delay->delay_time, sizeof(delay->delay_time));
-        return reinterpret_cast<void *>(delay);
+        read_data(file, &distortion->level, sizeof(distortion->level));
+        return reinterpret_cast<void *>(distortion);
     } else if (effect_type == EFFECT_GAINER) {
         DSPGainer *gainer = new DSPGainer();
         gainer->dsp_size = SIZE_DSP_GAINER;
@@ -763,6 +720,7 @@ void *Song::deserialize_oscillator(std::ifstream &file) const {
         return reinterpret_cast<void *>(oscillator);
     } else if (oscillator_type == GENERATOR_SAW) {
         OscillatorSaw *oscillator = new OscillatorSaw();
+        read_data(file, &oscillator->reverse, sizeof(oscillator->reverse));
         return reinterpret_cast<void *>(oscillator);
     } else if (oscillator_type == GENERATOR_SINE) {
         OscillatorSine *oscillator = new OscillatorSine();
@@ -770,6 +728,7 @@ void *Song::deserialize_oscillator(std::ifstream &file) const {
     } else if (oscillator_type == GENERATOR_WAVETABLE) {
         OscillatorWavetable *oscillator = new OscillatorWavetable();
         read_data(file, &oscillator->wavetable_index, sizeof(oscillator->wavetable_index));
+        read_data(file, &oscillator->interpolation, sizeof(oscillator->interpolation));
         return reinterpret_cast<void *>(oscillator);
     } else if (oscillator_type == GENERATOR_NOISE) {
         OscillatorNoise *oscillator = new OscillatorNoise();
@@ -860,11 +819,11 @@ void Song::export_offsets(const std::string &filename) const {
 
 void Song::export_links(const std::string &filename) const {
     std::ofstream file(filename, std::ios::binary);
-    for (const auto &link : links[0]) {
-        link.serialize(file);
-    }
-    for (const auto &link : links[1]) {
-        link.serialize(file);
+    for (const ItemType &type : {ItemType::CHANNEL, ItemType::DSP}) {
+        const size_t link_type = static_cast<size_t>(type);
+        for (const auto &link : links[link_type]) {
+            link.serialize(file);
+        }
     }
     file.close();
 }
@@ -984,8 +943,7 @@ void Song::clear_data() {
     wavetables.clear();
     dsps.clear();
     channels.clear();
-    links[static_cast<size_t>(ItemType::CHANNEL)].clear();
-    links[static_cast<size_t>(ItemType::DSP)].clear();
+    link_manager.reset();
     num_channels = 0;
     num_dsps = 0;
 }
@@ -997,16 +955,24 @@ void Song::delete_oscillator(void *oscillator) {
 
     const uint8_t *bytes = static_cast<const uint8_t *>(oscillator);
     const uint8_t dsp_type = bytes[1];
-    if (dsp_type == GENERATOR_SQUARE) {
+    switch (dsp_type) {
+    case GENERATOR_SQUARE:
         delete static_cast<OscillatorSquare *>(oscillator);
-    } else if (dsp_type == GENERATOR_SAW) {
+        break;
+    case GENERATOR_SAW:
         delete static_cast<OscillatorSaw *>(oscillator);
-    } else if (dsp_type == GENERATOR_SINE) {
+        break;
+    case GENERATOR_SINE:
         delete static_cast<OscillatorSine *>(oscillator);
-    } else if (dsp_type == GENERATOR_WAVETABLE) {
+        break;
+    case GENERATOR_WAVETABLE:
         delete static_cast<OscillatorWavetable *>(oscillator);
-    } else if (dsp_type == GENERATOR_NOISE) {
+        break;
+    case GENERATOR_NOISE:
         delete static_cast<OscillatorNoise *>(oscillator);
+        break;
+    default:
+        throw std::runtime_error("Unknown oscillator type: " + std::to_string(dsp_type));
     }
 }
 
@@ -1017,11 +983,17 @@ void Song::delete_dsp(void *dsp) {
 
     const uint8_t *bytes = static_cast<const uint8_t *>(dsp);
     const uint8_t dsp_type = bytes[1];
-    if (dsp_type == EFFECT_DELAY) {
-        delete static_cast<DSPDelay *>(dsp);
-    } else if (dsp_type == EFFECT_GAINER) {
+    switch (dsp_type) {
+    case EFFECT_GAINER:
         delete static_cast<DSPGainer *>(dsp);
-    } else if (dsp_type == EFFECT_FILTER) {
+        break;
+    case EFFECT_DISTORTION:
+        delete static_cast<DSPDistortion *>(dsp);
+        break;
+    case EFFECT_FILTER:
         delete static_cast<DSPFilter *>(dsp);
+        break;
+    default:
+        throw std::runtime_error("Unknown DSP type: " + std::to_string(dsp_type));
     }
 }

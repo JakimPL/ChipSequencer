@@ -3,6 +3,11 @@
 #include "../../general.hpp"
 #include "manager.hpp"
 
+void LinkManager::reset() {
+    links[static_cast<size_t>(ItemType::CHANNEL)].clear();
+    links[static_cast<size_t>(ItemType::DSP)].clear();
+}
+
 void LinkManager::set_link(Link &link, void *item, const uint8_t i) {
     remove_key(link);
 
@@ -75,6 +80,7 @@ void LinkManager::set_link(Link &link, void *item, const uint8_t i) {
 }
 
 void LinkManager::set_links() {
+    clear();
     size_t link_type = static_cast<size_t>(ItemType::CHANNEL);
     for (size_t i = 0; i < channels.size(); i++) {
         Link &link = links[link_type][i];
@@ -254,7 +260,17 @@ void LinkManager::restore_parameters() const {
         const LinkKey &key = pair.first;
         const std::vector<Link *> &links = pair.second;
         for (const Link *link : links) {
-            restore_parameter(key, link);
+            try {
+                restore_parameter(key, link);
+            } catch (const std::out_of_range &exception) {
+                std::cerr << "Error restoring parameter for a key " << static_cast<int>(key.target)
+                          << ", " << key.index << " link: " << exception.what() << std::endl;
+            }
         }
     }
+}
+
+void LinkManager::clear() {
+    map.clear();
+    snapshot.clear();
 }

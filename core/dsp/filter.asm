@@ -54,17 +54,16 @@ filter:
 
 .apply_filter:
 ; a * y[n] + b * y[n - 1]
-    mov [angle], eax
     mov [value], eax
     fld dword [value]
-    fmulp st1, st0
+    fld st0
+    fmulp st2, st0
+    fxch st2
 
     mov [value], ebx
-    fld dword [value]
-    fmulp st2, st0
-
-    faddp st1, st0
-    fstp dword [value]
+    fmul dword [value]
+    faddp st1
+    fst dword [value]
     mov eax, [value]
     MOV_TO_SI eax
 
@@ -73,13 +72,13 @@ filter:
     je .done
 
 .difference:
-    fld dword [value]
-    fld dword [angle]
-    fsubp st1, st0
+    fsub st1, st0
+    fxch st1
     fstp dword [value]
     mov eax, [value]
 
 .done:
+    fstp st0
     ret
 
     SEGMENT_BSS

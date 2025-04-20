@@ -25,11 +25,12 @@ class OscillatorSquare(Oscillator):
 
 
 class OscillatorSaw(Oscillator):
-    def __init__(self):
+    def __init__(self, reverse: bool = False):
         super().__init__(Generators.GENERATOR_SAW)
+        self.reverse = reverse
 
     def __len__(self) -> int:
-        return 1
+        return 2
 
 
 class OscillatorSine(Oscillator):
@@ -43,12 +44,13 @@ class OscillatorSine(Oscillator):
 class OscillatorWavetable(Oscillator):
     wavetable_index: Byte
 
-    def __init__(self, wavetable_index: Union[int, Byte]):
+    def __init__(self, wavetable_index: Union[int, Byte], interpolate: bool = False):
         super().__init__(Generators.GENERATOR_WAVETABLE)
         self.wavetable_index = Byte(wavetable_index)
+        self.interpolate = interpolate
 
     def __len__(self) -> int:
-        return 2
+        return 3
 
 
 class OscillatorNoise(Oscillator):

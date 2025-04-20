@@ -134,13 +134,13 @@ oscillators:
     db GENERATOR_SQUARE      ; generator_index
     db 0x20                  ; duty_cycle
 .oscillator_1:
-    db 1                     ; oscillator_size
+    db 2                     ; oscillator_size
     db GENERATOR_SAW         ; generator_index
 .oscillator_2:
     db 1                     ; oscillator_size
     db GENERATOR_SINE        ; generator_index
 .oscillator_3:
-    db 2                     ; oscillator_size
+    db 3                     ; oscillator_size
     db GENERATOR_WAVETABLE   ; generator_index
     db 1                     ; wavetable_index
 
@@ -154,22 +154,19 @@ wavetables:
 
 dsps:
 .dsp_0:
-    db 12                    ; dsp_size
-    db EFFECT_DELAY          ; effect_index
+    db 7                     ; dsp_size
+    db EFFECT_DISTORTION     ; effect_index
     db 0b00000000            ; output_flag
     dw output                ; output
-    dw 0x7FFF                ; dry
-    dw 0x6FFF                ; wet
-    dw 0x5FFF                ; feedback
-    dw DSP_0_BUFFER_SIZE     ; delay_time
+    dw 0x7FFF                ; level
 .dsp_1:
-    db 6                     ; dsp_size
+    db 7                     ; dsp_size
     db EFFECT_GAINER         ; effect_index
     db 0b00000000            ; output_flag
     dw output                ; output
     dw 0x9FFF                ; volume
 .dsp_2:
-    db 6                     ; dsp_size
+    db 8                     ; dsp_size
     db EFFECT_FILTER         ; effect_index
     db 0b00000000            ; output_flag
     dw output                ; output
@@ -244,5 +241,5 @@ channels:
 
 buffer_offsets:
     dw 0                     ; dsp_0_buffer_offset
-    dw 256                   ; dsp_1_buffer_offset
-    dw 256                   ; dsp_2_buffer_offset
+    dw 0                     ; dsp_1_buffer_offset
+    dw 0                     ; dsp_2_buffer_offset

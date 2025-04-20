@@ -95,6 +95,10 @@ void draw_knob(const char *label, float &reference, const LinkKey key, float min
 void draw_link_tooltip(const LinkKey &key) {
     const std::vector<Link *> &links = link_manager.get_links(key);
     if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+        if (links.empty()) {
+            return;
+        }
+
         std::ostringstream tooltip_stream;
         tooltip_stream << "Linked by ";
         for (size_t i = 0; i < links.size(); ++i) {
@@ -192,7 +196,7 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
     switch (output_type.target) {
     case OUTPUT_TARGET_OUTPUT:
         if (result) {
-            output_type.additive = true;
+            output_type.operation = static_cast<int>(OutputOperation::Add);
         }
 
         draw_int_slider("Channel", output_type.output_channel, {}, 0, song.get_output_channels() - 1);
@@ -203,7 +207,7 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
             break;
         } else {
             if (result) {
-                output_type.additive = true;
+                output_type.operation = static_cast<int>(OutputOperation::Add);
             }
 
             draw_int_slider("DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
@@ -211,7 +215,7 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
         }
     default:
         if (result) {
-            output_type.additive = false;
+            output_type.operation = static_cast<int>(OutputOperation::Add);
         }
 
         ImGui::Separator();
@@ -255,7 +259,9 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
     }
 
     ImGui::Separator();
-    ImGui::Checkbox("Additive", &output_type.additive);
+    ImGui::Text("Operation:");
+    prepare_combo(operation_names, "##OutputTypeOperation", output_type.operation);
+    ImGui::Text("Variable:");
     prepare_combo(variable_types, "##OutputTypeCombo", output_type.variable_type);
     ImGui::BeginDisabled(output_type.variable_type == 0);
     draw_int_slider("Shift", output_type.shift, {}, 0, 15);

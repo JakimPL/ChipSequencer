@@ -2,8 +2,11 @@
 mix:
     pusha
     call clear_dsps
+    mov edi, output
+    xor ecx, ecx
+    mov cl, MAX_OUTPUT_CHANNELS
     mov eax, dword __float32__(0.0)
-    mov [output], eax
+    rep stosd
 .mix:
     xor cl, cl
 .mix_loop:
@@ -68,20 +71,34 @@ store_output:
     xor edx, edx
 .set_size:
     test cl, 0b00110000
-    je .add_float
+    je .add_or_multiply_float
     jpe .add_32_bit
     test cl, 0b00010000
     jne .add_8_bit
     test cl, 0b00100000
     jne .add_16_bit
-.add_float:
+.add_or_multiply_float:
     mov [value], eax
     fld dword [value]
+    test cl, 0b10000000
+    jz .add_float
+.multiply_float:
+    %ifdef ELF
+    fmul dword [edi]
+    %else
+    fmul dword [di]
+    %endif
+    jmp .store_float
+.add_float:
     %ifdef ELF
     fadd dword [edi]
-    fstp dword [edi]
     %else
     fadd dword [di]
+    %endif
+.store_float:
+    %ifdef ELF
+    fstp dword [edi]
+    %else
     fstp dword [di]
     %endif
     fstp st0

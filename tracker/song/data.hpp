@@ -5,17 +5,16 @@
 #include "../structures.hpp"
 #include "links/link.hpp"
 
-typedef _Float32 t_output;
-
 /* Read-only internals */
-extern "C" t_output output;
-extern "C" t_output dsp_input;
+extern "C" std::array<_Float32, MAX_OUTPUT_CHANNELS> output;
+extern "C" std::array<_Float32, MAX_DSPS> dsp_input;
 
 extern "C" std::array<uint32_t, MAX_CHANNELS> envelope_timer;
 extern "C" std::array<uint32_t, MAX_CHANNELS> sequence_timer;
 extern "C" std::array<uint32_t, MAX_CHANNELS> oscillator_timer;
 extern "C" std::array<uint8_t, MAX_CHANNELS> pitch;
 
+extern "C" std::array<uint8_t, MAX_CHANNELS> envelope_mode;
 extern "C" std::array<uint8_t, MAX_CHANNELS> current_sequence;
 extern "C" std::array<uint8_t, MAX_CHANNELS> sequence_current_note;
 

@@ -47,11 +47,13 @@ void GUIOscillatorsPanel::from() {
     case GENERATOR_SQUARE: {
         current_oscillator.type = "Square";
         const OscillatorSquare *square = static_cast<OscillatorSquare *>(oscillator);
-        current_oscillator.duty_cycle = static_cast<float>(square->duty_cycle) / UINT8_MAX;
+        current_oscillator.square_duty_cycle = static_cast<float>(square->duty_cycle) / UINT8_MAX;
         break;
     }
     case GENERATOR_SAW: {
         current_oscillator.type = "Saw";
+        const OscillatorSaw *saw = static_cast<OscillatorSaw *>(oscillator);
+        current_oscillator.saw_reverse = saw->reverse;
         break;
     }
     case GENERATOR_SINE: {
@@ -62,6 +64,7 @@ void GUIOscillatorsPanel::from() {
         current_oscillator.type = "Wavetable";
         const OscillatorWavetable *wavetable = static_cast<OscillatorWavetable *>(oscillator);
         current_oscillator.wavetable_index = wavetable->wavetable_index;
+        current_oscillator.wavetable_interpolation = wavetable->interpolation;
         break;
     }
     case GENERATOR_NOISE: {
@@ -83,7 +86,7 @@ void GUIOscillatorsPanel::to() const {
         OscillatorSquare *osc = new (buffer) OscillatorSquare();
         osc->generator_index = GENERATOR_SQUARE;
         osc->oscillator_size = SIZE_OSCILLATOR_SQUARE;
-        osc->duty_cycle = static_cast<uint8_t>(std::round(current_oscillator.duty_cycle * UINT8_MAX));
+        osc->duty_cycle = static_cast<uint8_t>(std::round(current_oscillator.square_duty_cycle * UINT8_MAX));
         break;
     }
     case GENERATOR_SAW: {
@@ -91,6 +94,7 @@ void GUIOscillatorsPanel::to() const {
         OscillatorSaw *osc = new (buffer) OscillatorSaw();
         osc->generator_index = GENERATOR_SAW;
         osc->oscillator_size = SIZE_OSCILLATOR_SAW;
+        osc->reverse = current_oscillator.saw_reverse;
         break;
     }
     case GENERATOR_SINE: {
@@ -106,6 +110,7 @@ void GUIOscillatorsPanel::to() const {
         osc->generator_index = GENERATOR_WAVETABLE;
         osc->oscillator_size = SIZE_OSCILLATOR_WAVETABLE;
         osc->wavetable_index = current_oscillator.wavetable_index;
+        osc->interpolation = current_oscillator.wavetable_interpolation;
         break;
     }
     case GENERATOR_NOISE: {
@@ -197,12 +202,17 @@ void GUIOscillatorsPanel::draw_oscillator() {
     case GENERATOR_SQUARE:
         ImGui::Text("Duty Cycle");
         ImGui::NextColumn();
-        draw_float_slider("##DutyCycle", current_oscillator.duty_cycle, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_SQUARE_DUTY_CYCLE}, 0.0f, 1.0f);
+        draw_float_slider("##DutyCycle", current_oscillator.square_duty_cycle, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_SQUARE_DUTY_CYCLE}, 0.0f, 1.0f);
+        break;
+    case GENERATOR_SAW:
+        ImGui::Checkbox("Reverse", &current_oscillator.saw_reverse);
         break;
     case GENERATOR_WAVETABLE:
         ImGui::Text("Wavetable");
         ImGui::NextColumn();
         prepare_combo(wavetable_names, "##WavetableCombo", current_oscillator.wavetable_index, true);
+        ImGui::NextColumn();
+        ImGui::Checkbox("Interpolation", &current_oscillator.wavetable_interpolation);
         break;
     }
 

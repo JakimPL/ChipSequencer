@@ -15,6 +15,20 @@ GUI::~GUI() {
     terminate();
 }
 
+void GUI::save(const std::string &filename) {
+    current_path = filename;
+    song.save_to_file(current_path);
+    change_window_title(current_path.filename().string());
+}
+
+void GUI::open(const std::string &filename) {
+    song.load_from_file(filename);
+    current_path = filename;
+
+    change_window_title(current_path.filename().string());
+    update();
+}
+
 void GUI::change_window_title(const std::string &title) {
     std::string window_title = APPLICATION_TITLE;
     if (!title.empty()) {
@@ -51,7 +65,7 @@ bool GUI::initialize() {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
-    window = SDL_CreateWindow(APPLICATION_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, GUI_WINDOW_WIDTH, GUI_WINDOW_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+    window = SDL_CreateWindow(APPLICATION_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, GUI_WINDOW_WIDTH, GUI_WINDOW_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
     if (!window) {
         printf("Failed to create SDL window: %s\n", SDL_GetError());
         return false;
@@ -245,6 +259,7 @@ void GUI::set_visibility_all(const bool visible) {
 
 void GUI::play() const {
     if (audio_engine != nullptr) {
+        audio_engine->set_output_channels(song.get_output_channels());
         if (audio_engine->is_playing()) {
             audio_engine->pause();
         } else {

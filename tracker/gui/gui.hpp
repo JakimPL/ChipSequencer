@@ -36,6 +36,9 @@ class GUI {
     bool is_playing() const;
     bool is_paused() const;
 
+    void save(const std::string &filename);
+    void open(const std::string &filename);
+
     void change_window_title(const std::string &title);
     void set_visibility(const GUIElement element, const bool visible);
     bool get_visibility(const GUIElement element) const;
@@ -63,7 +66,7 @@ class GUI {
     GUISequencesPanel sequences_panel;
     GUIWavetablesPanel wavetables_panel;
     GUIPatternsPanel patterns_panel;
-    GUIRoutingPanel routing_panel = GUIRoutingPanel(false);
+    GUIRoutingPanel routing_panel;
 
     SDL_Window *window;
     SDL_GLContext gl_context;
@@ -79,6 +82,5 @@ class GUI {
     void frame_all();
     void set_visibility_all(const bool visible);
 };
-;
 
 #endif // GUI_GUI_HPP

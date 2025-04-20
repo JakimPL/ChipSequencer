@@ -146,6 +146,10 @@ void GUIOrdersPanel::check_keyboard_input() {
         return;
     }
 
+    if (ImGui::GetIO().WantCaptureKeyboard) {
+        return;
+    }
+
     if (selected_sequence < 0 || selected_sequence >= current_order.sequences.size())
         return;
 

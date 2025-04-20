@@ -45,7 +45,6 @@ void GUIWavetablesPanel::from() {
 
     const Wavetable *wavetable = wavetables[wavetable_index];
     current_wavetable.size = wavetable->wavetable_size;
-    current_wavetable.interpolate = false;
     if (current_wavetable.wave.size() != current_wavetable.size) {
         current_wavetable.wave.resize(std::min(current_wavetable.size, max_points));
     }
@@ -108,12 +107,12 @@ void GUIWavetablesPanel::draw_wavetable_length() {
 }
 
 void GUIWavetablesPanel::draw_waveform() {
-    ImGui::Checkbox("Interpolate", &current_wavetable.interpolate);
-
     if (wavetables.empty()) {
         ImGui::Text("No wavetables available.");
         return;
     }
+
+    ImGui::Checkbox("Show interpolation", &current_wavetable.interpolation);
 
     ImGui::Text("Waveform:");
     draw_wavetable_length();
@@ -180,7 +179,7 @@ void GUIWavetablesPanel::draw_waveform() {
         const float y2 = y_center - current_wavetable.wave[i + 1 == data_size ? 0 : i + 1] * (size.y / 2.0f);
 
         draw_list->AddCircleFilled(ImVec2(x1, y1), 3.0f, IM_COL32(0, 255, 0, 255));
-        if (current_wavetable.interpolate) {
+        if (current_wavetable.interpolation) {
             draw_list->AddLine(ImVec2(x1, y1), ImVec2(x2, y2), IM_COL32(0, 255, 0, 255), 1.0f);
         } else {
             draw_list->AddCircleFilled(ImVec2(x2, y1), 3.0f, IM_COL32(0, 255, 0, 255));

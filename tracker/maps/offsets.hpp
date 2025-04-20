@@ -26,6 +26,7 @@ const std::vector<std::map<uint16_t, uint16_t>> x16_to_x32 = {
     {
         {1, 1},
         {2, 2},
+        {3, 3},
     },
     {
         {1, 1},
@@ -36,8 +37,6 @@ const std::vector<std::map<uint16_t, uint16_t>> x16_to_x32 = {
         {3, 4},
         {5, 8},
         {7, 10},
-        {9, 12},
-        {11, 14},
     },
     {
         {0, 0},
@@ -70,6 +69,7 @@ const std::vector<std::map<uint16_t, uint16_t>> x32_to_x16 = {
     {
         {1, 1},
         {2, 2},
+        {3, 3},
     },
     {
         {1, 1},
@@ -80,8 +80,6 @@ const std::vector<std::map<uint16_t, uint16_t>> x32_to_x16 = {
         {4, 3},
         {8, 5},
         {10, 7},
-        {12, 9},
-        {14, 11},
     },
     {
         {0, 0},

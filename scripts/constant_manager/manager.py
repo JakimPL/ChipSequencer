@@ -75,7 +75,11 @@ class ConstantManager:
                 elf = None
                 continue
 
-            _, key, value = line.split(" ")
+            split = line.split(" ")
+            if len(split) != 3:
+                continue
+
+            _, key, value = split
             group = key.split("_")[0].lower()
             if '"' in value:
                 continue

@@ -12,8 +12,15 @@ enum OutputTarget {
     OUTPUT_TARGET_PARAMETER = 2,
 };
 
+enum class OutputOperation {
+    Add = 0b00,
+    Set = 0b01,
+    Multiply = 0b10,
+    Zero = 0b11,
+};
+
 struct OutputType {
-    bool additive = true;
+    int operation = static_cast<int>(OutputOperation::Add);
     int shift = 0;
     int variable_type;
     int target;

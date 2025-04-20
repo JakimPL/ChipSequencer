@@ -35,9 +35,18 @@ load_table_16bit_item:
 ; ECX - divisor
 ; SI  - table address
 ; AX  - input timer/output
-    mul ebx
-    div ecx
+    call load_table_item
+    jc .no_interpolation
+.interpolation:
+    call sample_interpolation_set
+    mov cx, [esi + 2 * eax]
+    call sample_interpolation_modulo
+    mov bx, [esi + 2 * eax]
+    call sample_interpolation_apply
+    jmp .done
+.no_interpolation:
     mov ax, [esi + 2 * eax]
+.done:
     ret
 
 load_table_8bit_item:
@@ -45,7 +54,49 @@ load_table_8bit_item:
 ; ECX - divisor
 ; SI  - table address
 ; AX  - input timer/output
+    cmp dl, 0
+    je .no_interpolation
+.interpolation:
+    call load_table_item
+    call sample_interpolation_set
+    movzx cx, byte [esi + eax]
+    call sample_interpolation_modulo
+    movzx bx, byte [esi + eax]
+    call sample_interpolation_apply
+    jmp .done
+.no_interpolation:
+    call load_table_item
+    mov al, [esi + eax]
+.done:
+    ret
+
+load_table_item:
     mul ebx
     div ecx
-    mov al, [esi + eax]
+    ret
+
+sample_interpolation_set:
+    shr ecx, 16
+    mov [value], ecx
+    shr edx, 16
+    mov [angle], edx
+    xor edx, edx
+    dec bx
+    ret
+
+sample_interpolation_modulo:
+    cmp ax, bx
+    je .modulo
+    inc ax
+    ret
+.modulo:
+    sub ax, bx
+    ret
+
+sample_interpolation_apply:
+    lea esi, [angle]
+    lea edi, [value]
+    xchg bx, cx
+    call interpolate
+    movzx eax, ax
     ret

@@ -23,8 +23,10 @@ class LinkManager {
 
     void remove_key(Link &link);
     void assign_key(Link &link);
+    void clear();
 
   public:
+    void reset();
     void set_link(Link &link, void *item, const uint8_t i);
     void set_links();
 
