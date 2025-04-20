@@ -13,13 +13,9 @@ int main() {
         return 1;
     }
 
-#if SAVE_TO_FILE
-    FileDriver file_driver = FileDriver(target, "output.txt");
-    file_driver.initialize();
-    file_driver.play();
-#else
     PortAudioDriver port_audio_driver = PortAudioDriver();
     port_audio_driver.initialize();
+    file_driver.initialize();
     AudioEngine audio_engine(port_audio_driver);
     gui.set_audio_engine(&audio_engine);
 
@@ -29,6 +25,5 @@ int main() {
 
     terminate();
 
-#endif
     return 0;
 }

@@ -1,8 +1,9 @@
-#include "port.hpp"
-#include <iostream>
-#include <portaudio.h>
 #include <algorithm>
+#include <iostream>
 #include <mutex>
+#include <portaudio.h>
+
+#include "port.hpp"
 
 PortAudioDriver::PortAudioDriver(
     unsigned long frames_per_buffer
@@ -26,7 +27,7 @@ void PortAudioDriver::reset_buffer() {
     buffer_cv.notify_all();
 }
 
-void PortAudioDriver::submit_buffer(const t_output *data, size_t size) {
+void PortAudioDriver::submit_buffer(const _Float32 *data, size_t size) {
     std::unique_lock<std::mutex> lock(buffer_mutex);
     if (size > pingpong_buffer.size()) {
         size = pingpong_buffer.size();

@@ -63,7 +63,7 @@ class GUI {
     GUISequencesPanel sequences_panel;
     GUIWavetablesPanel wavetables_panel;
     GUIPatternsPanel patterns_panel;
-    GUIRoutingPanel routing_panel = GUIRoutingPanel(false);
+    GUIRoutingPanel routing_panel;
 
     SDL_Window *window;
     SDL_GLContext gl_context;

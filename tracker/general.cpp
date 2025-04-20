@@ -4,6 +4,7 @@
 ScaleComposer scale_composer = ScaleComposer();
 FrequencyTable frequency_table = FrequencyTable(scale_composer, DEFAULT_A4_FREQUENCY);
 LinkManager link_manager;
+FileDriver file_driver;
 
 Song song;
 GUI gui;

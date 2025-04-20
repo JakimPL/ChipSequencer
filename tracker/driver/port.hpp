@@ -26,18 +26,9 @@ class PortAudioDriver : public Driver {
     bool stop_stream();
 
     void reset_buffer();
-    void submit_buffer(const t_output *data, size_t size);
+    void submit_buffer(const _Float32 *data, size_t size);
 
-    friend int audio_callback(
-        const void *input_buffer,
-        void *output_buffer,
-        unsigned long frames_per_buffer,
-        const PaStreamCallbackTimeInfo *time_info,
-        PaStreamCallbackFlags status_flags,
-        void *user_data
-    );
-
-    std::vector<t_output> pingpong_buffer;
+    std::vector<_Float32> pingpong_buffer;
     unsigned long get_frames_per_buffer() const { return frames_per_buffer; }
 
     std::mutex buffer_mutex;

@@ -92,7 +92,7 @@ void AudioEngine::playback_function() {
                     unsigned long offset = phase * driver.get_frames_per_buffer();
                     for (unsigned long i = 0; i < driver.get_frames_per_buffer(); ++i) {
                         mix();
-                        driver.pingpong_buffer[offset + i] = output;
+                        driver.pingpong_buffer[offset + i] = output[0];
                     }
                     driver.half_consumed[phase].store(false);
                 }
