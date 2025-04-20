@@ -8,13 +8,12 @@ class FileDriver : public Driver {
   public:
     FileDriver();
 
-    bool initialize() override;
     void terminate() override;
     void play() override;
 
-    void set_length(size_t length);
-    void set_sample_rate(int rate);
-    void set_output_channels(int channels);
+    void set_length(const size_t length);
+    void set_sample_rate(const int rate);
+    void set_output_channels(const int channels);
     void set_output_filename(const std::string &filename);
 
   private:

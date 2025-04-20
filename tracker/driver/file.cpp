@@ -11,11 +11,6 @@
 FileDriver::FileDriver() {
 }
 
-bool FileDriver::initialize() {
-    samples.clear();
-    return true;
-}
-
 void FileDriver::terminate() {
     return;
 }
@@ -32,17 +27,20 @@ void FileDriver::play() {
         }
         samples.push_back(frame);
     }
+
+    save_output_to_file();
+    std::cout << "Render saved to " << filename << std::endl;
 }
 
-void FileDriver::set_length(size_t length) {
+void FileDriver::set_length(const size_t length) {
     song_length = length;
 }
 
-void FileDriver::set_sample_rate(int rate) {
+void FileDriver::set_sample_rate(const int rate) {
     sample_rate = rate;
 }
 
-void FileDriver::set_output_channels(int channels) {
+void FileDriver::set_output_channels(const int channels) {
     output_channels = channels;
 }
 

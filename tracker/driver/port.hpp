@@ -18,8 +18,8 @@ class PortAudioDriver : public Driver {
 
     void play() override;
     void terminate() override;
-    bool initialize() override;
 
+    bool initialize();
     bool open_stream();
     bool close_stream();
     bool start_stream();

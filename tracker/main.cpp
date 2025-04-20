@@ -15,7 +15,6 @@ int main() {
 
     PortAudioDriver port_audio_driver = PortAudioDriver();
     port_audio_driver.initialize();
-    file_driver.initialize();
     AudioEngine audio_engine(port_audio_driver);
     gui.set_audio_engine(&audio_engine);
 

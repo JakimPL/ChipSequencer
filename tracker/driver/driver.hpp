@@ -9,7 +9,6 @@ class Driver {
   public:
     virtual ~Driver() = default;
 
-    virtual bool initialize() = 0;
     virtual void terminate() = 0;
     virtual void play() = 0;
 };
