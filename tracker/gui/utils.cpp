@@ -193,15 +193,30 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
     ImGui::Separator();
     ImGui::Text("Output:");
     const bool result = prepare_combo(target_types, "##OutputTargetCombo", output_type.target);
-    switch (output_type.target) {
-    case OUTPUT_TARGET_OUTPUT:
+    const size_t output_channels = song.get_output_channels();
+
+    switch (static_cast<OutputTarget>(output_type.target)) {
+    case OutputTarget::Splitter:
+    /*
+        if (result) {
+            output_type.operation = static_cast<int>(OutputOperation::Add);
+        }
+        ImGui::Text("Splitter:");
+        ImGui::SameLine();
+        for (size_t i = 0; i < output_channels; ++i) {
+            const std::string label = "##Splitter" + std::to_string(i);
+            draw_float_slider(label.c_str(), output_type.splitter[i], {}, 0.0f, 1.0f);
+        }
+        break;
+        */
+    case OutputTarget::DirectOutput:
         if (result) {
             output_type.operation = static_cast<int>(OutputOperation::Add);
         }
 
-        draw_int_slider("Channel", output_type.output_channel, {}, 0, song.get_output_channels() - 1);
+        draw_int_slider("Channel", output_type.output_channel, {}, 0, output_channels - 1);
         break;
-    case OUTPUT_TARGET_DSP:
+    case OutputTarget::DSP:
         if (dsps.empty() || dsp_index >= static_cast<int>(dsps.size()) - 1) {
             ImGui::Text("No DSPs available.");
             break;
@@ -213,14 +228,14 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
             draw_int_slider("DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
             break;
         }
-    default:
+    case OutputTarget::Parameter:
         if (result) {
             output_type.operation = static_cast<int>(OutputOperation::Add);
         }
 
         ImGui::Separator();
         prepare_combo(parameter_types, "##OutputParameterCombo", output_type.parameter_type);
-        const Target target = static_cast<Target>(output_type.parameter_type + OUTPUT_TARGET_PARAMETER);
+        const Target target = static_cast<Target>(output_type.parameter_type + static_cast<int>(OutputTarget::Parameter));
         switch (target) {
         case Target::ENVELOPE: {
             draw_output_parameter(output_type, envelope_names, "Envelope");
@@ -250,6 +265,7 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
             draw_output_parameter(output_type, channel_names, "Channel");
             break;
         }
+        case Target::SPLITTER:
         case Target::OUTPUT_CHANNEL:
         case Target::DSP_CHANNEL:
         case Target::UNUSED: {
@@ -278,7 +294,7 @@ void draw_output_parameter(OutputType &output_type, const std::vector<std::strin
         return;
     }
 
-    const Target target = static_cast<Target>(output_type.parameter_type + OUTPUT_TARGET_PARAMETER);
+    const Target target = static_cast<Target>(output_type.parameter_type + static_cast<int>(OutputTarget::Parameter));
     const RoutingItems &routing = routing_variables.at(target);
     int &item = output_type.routing_item;
 

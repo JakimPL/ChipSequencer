@@ -19,16 +19,19 @@ void OutputType::from_output_flag(const uint8_t output_flag) {
 
 void OutputType::from_link(const Link &link) {
     target = static_cast<int>(link.target);
-    switch (target) {
-    case OUTPUT_TARGET_OUTPUT:
+    OutputTarget output_target = static_cast<OutputTarget>(std::min(0, target));
+    switch (output_target) {
+    case OutputTarget::Splitter:
+    case OutputTarget::DirectOutput:
         output_channel = link.index;
         break;
-    case OUTPUT_TARGET_DSP:
+    case OutputTarget::DSP:
         dsp_channel = link.index;
         break;
-    default:
-        parameter_type = target - OUTPUT_TARGET_PARAMETER;
-        target = OUTPUT_TARGET_PARAMETER;
+    case OutputTarget::Parameter:
+        const int target_offset = static_cast<int>(OutputTarget::Parameter);
+        parameter_type = target - target_offset;
+        target = target_offset;
         const auto &routing = routing_variables.at(link.target);
         index = link.index;
         try {
@@ -48,19 +51,25 @@ void OutputType::from_link(const Link &link) {
 void OutputType::set_link(Link &link, const ItemType type, const uint8_t id) const {
     link.type = type;
     link.id = id;
-    switch (target) {
-    case OUTPUT_TARGET_OUTPUT:
+    OutputTarget label = static_cast<OutputTarget>(target);
+    switch (label) {
+    case OutputTarget::Splitter:
+        link.target = Target::SPLITTER;
+        link.index = output_channel;
+        link.offset = sizeof(_Float32) * output_channel;
+        break;
+    case OutputTarget::DirectOutput:
         link.target = Target::OUTPUT_CHANNEL;
         link.index = output_channel;
-        link.offset = 4 * output_channel;
+        link.offset = sizeof(_Float32) * output_channel;
         break;
-    case OUTPUT_TARGET_DSP:
+    case OutputTarget::DSP:
         link.target = Target::DSP_CHANNEL;
         link.index = dsp_channel;
-        link.offset = 4 * dsp_channel;
+        link.offset = sizeof(_Float32) * dsp_channel;
         break;
-    case OUTPUT_TARGET_PARAMETER:
-        link.target = static_cast<Target>(parameter_type + OUTPUT_TARGET_PARAMETER);
+    case OutputTarget::Parameter:
+        link.target = static_cast<Target>(parameter_type + static_cast<int>(OutputTarget::Parameter));
         link.index = index;
         link.offset = offset;
         break;

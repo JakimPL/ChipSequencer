@@ -7,10 +7,11 @@
 #include "../structures/channel.hpp"
 #include "links/link.hpp"
 
-enum OutputTarget {
-    OUTPUT_TARGET_OUTPUT = 0,
-    OUTPUT_TARGET_DSP = 1,
-    OUTPUT_TARGET_PARAMETER = 2,
+enum class OutputTarget {
+    Splitter = 0,
+    DirectOutput = 1,
+    DSP = 2,
+    Parameter = 3,
 };
 
 enum class OutputOperation {

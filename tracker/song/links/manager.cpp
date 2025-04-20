@@ -12,6 +12,7 @@ void LinkManager::set_link(Link &link, void *item, const uint8_t i) {
     remove_key(link);
 
     switch (link.target) {
+    case Target::SPLITTER:
     case Target::OUTPUT_CHANNEL:
         link.base = &output;
         break;
@@ -178,9 +179,8 @@ void LinkManager::validate_key_and_link(const LinkKey key, const Link *link) con
 
 TargetVariableType LinkManager::get_type(const LinkKey key) const {
     switch (key.target) {
-    case Target::OUTPUT_CHANNEL: {
-        return TargetVariableType::Float;
-    }
+    case Target::SPLITTER:
+    case Target::OUTPUT_CHANNEL:
     case Target::DSP_CHANNEL: {
         return TargetVariableType::Float;
     }
