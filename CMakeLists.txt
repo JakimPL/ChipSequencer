@@ -29,6 +29,10 @@ if (NOT GTK_FOUND)
     message(FATAL_ERROR "GTK not found")
 endif()
 
+pkg_check_modules(SNDFILE REQUIRED sndfile)
+if (NOT SNDFILE_FOUND)
+    message(FATAL_ERROR "libsndfile not found. Please install libsndfile-dev:i386.")
+endif()
 
 set(ASM_SOURCE_DIR "${CMAKE_SOURCE_DIR}")
 set(ASM_SOURCE_FILE "${CMAKE_SOURCE_DIR}/core/player.asm")
@@ -64,6 +68,7 @@ target_include_directories(song PUBLIC
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/imgui
     ${CMAKE_SOURCE_DIR}/imgui-knobs
+    ${SNDFILE_INCLUDE_DIRS}
 )
 target_link_libraries(song PUBLIC imgui imgui_knobs)
 
@@ -139,6 +144,7 @@ target_link_libraries(main
     pthread
     z
     nfd
+    ${SNDFILE_LIBRARIES}
 )
 
 set_target_properties(main PROPERTIES

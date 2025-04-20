@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <sndfile.h>
 
 #include "../song/data.hpp"
 #include "../song/functions.hpp"
@@ -22,9 +23,12 @@ void FileDriver::play() {
     for (size_t i = 0; i < song_length; i++) {
         mix();
         std::vector<float> frame;
+        std::cout << "Frame " << i << ": ";
         for (size_t j = 0; j < output_channels; j++) {
             frame.push_back(output[j]);
+            std::cout << output[j] << " ";
         }
+        std::cout << std::endl;
         samples.push_back(frame);
     }
 
@@ -49,56 +53,33 @@ void FileDriver::set_output_filename(const std::string &filename) {
 }
 
 void FileDriver::save_output_to_file() {
-    const uint16_t audio_format = IEEE_FLOAT;
-    const uint16_t num_channels = static_cast<uint16_t>(output_channels);
-    const uint32_t sample_rate_value = static_cast<uint32_t>(sample_rate);
-    const uint16_t bits_per_sample = BITS_PER_SAMPLE;
+    SF_INFO sfinfo;
+    sfinfo.channels = output_channels;
+    sfinfo.samplerate = sample_rate;
+    sfinfo.format = SF_FORMAT_WAV | SF_FORMAT_FLOAT;
+    sfinfo.frames = samples.size();
+    sfinfo.sections = 0;
+    sfinfo.seekable = 0;
 
-    if (num_channels == 0 || sample_rate_value == 0) {
-        throw std::runtime_error("Invalid audio parameters: channels or sample rate is zero.");
-    }
-    if (samples.empty() || samples[0].size() != num_channels) {
-        throw std::runtime_error("Sample data is inconsistent with channel count.");
-    }
-
-    const uint16_t block_align = num_channels * (bits_per_sample / 8);
-    const uint32_t byte_rate = sample_rate_value * block_align;
-    const uint32_t total_samples = samples.size() * num_channels;
-    const uint32_t subchunk2_size = total_samples * (bits_per_sample / 8);
-    const uint32_t chunk_size = 36 + subchunk2_size;
-
-    std::ofstream outfile(filename, std::ios::binary);
-    if (!outfile) {
-        throw std::runtime_error("Failed to open file: " + filename);
+    SNDFILE *sndfile = sf_open(filename.c_str(), SFM_WRITE, &sfinfo);
+    if (!sndfile) {
+        std::cerr << "Error opening output file: " << sf_strerror(sndfile) << std::endl;
+        return;
     }
 
-    /* RIFF */
-    outfile.write("RIFF", 4);
-    outfile.write(reinterpret_cast<const char *>(&chunk_size), 4);
-    outfile.write("WAVE", 4);
+    std::vector<float> interleaved;
+    interleaved.reserve(samples.size() * output_channels);
 
-    /* FORMAT */
-    outfile.write("fmt ", 4);
-    const uint32_t subchunk1_size = 16;
-    outfile.write(reinterpret_cast<const char *>(&subchunk1_size), 4);
-    outfile.write(reinterpret_cast<const char *>(&audio_format), 2);
-    outfile.write(reinterpret_cast<const char *>(&num_channels), 2);
-    outfile.write(reinterpret_cast<const char *>(&sample_rate_value), 4);
-    outfile.write(reinterpret_cast<const char *>(&byte_rate), 4);
-    outfile.write(reinterpret_cast<const char *>(&block_align), 2);
-    outfile.write(reinterpret_cast<const char *>(&bits_per_sample), 2);
-
-    /* DATA */
-    outfile.write("data", 4);
-    outfile.write(reinterpret_cast<const char *>(&subchunk2_size), 4);
-
-    for (size_t i = 0; i < samples.size(); ++i) {
-        if (samples[i].size() != num_channels) {
-            outfile.close();
-            throw std::runtime_error("Inconsistent number of channels in sample data at time step " + std::to_string(i));
+    for (const auto &frame : samples) {
+        for (size_t c = 0; c < output_channels; ++c) {
+            interleaved.push_back(c < frame.size() ? frame[c] : 0.0f);
         }
-        outfile.write(reinterpret_cast<const char *>(samples[i].data()), num_channels * sizeof(float));
     }
 
-    outfile.close();
+    sf_count_t written = sf_writef_float(sndfile, interleaved.data(), samples.size());
+    if (written != static_cast<sf_count_t>(samples.size())) {
+        std::cerr << "Failed to write all frames!" << std::endl;
+    }
+
+    sf_close(sndfile);
 }

@@ -2,8 +2,10 @@
 mix:
     pusha
     call clear_dsps
+    mov edi, output
+    mov cl, MAX_OUTPUT_CHANNELS
     mov eax, dword __float32__(0.0)
-    mov [output], eax
+    rep stosd
 .mix:
     xor cl, cl
 .mix_loop:
