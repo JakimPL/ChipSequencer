@@ -20,6 +20,8 @@ class AudioEngine {
     bool is_playing() const;
     bool is_paused() const;
 
+    void set_output_channels(const int channels);
+
   private:
     void playback_function();
 
@@ -29,6 +31,8 @@ class AudioEngine {
     std::thread playback_thread;
 
     static constexpr size_t buffer_size = BUFFER_SIZE;
+
+    void join_thread();
 };
 
 #endif // AUDIO_ENGINE_HPP

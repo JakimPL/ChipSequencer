@@ -23,12 +23,9 @@ void FileDriver::play() {
     for (size_t i = 0; i < song_length; i++) {
         mix();
         std::vector<float> frame;
-        std::cout << "Frame " << i << ": ";
         for (size_t j = 0; j < output_channels; j++) {
             frame.push_back(output[j]);
-            std::cout << output[j] << " ";
         }
-        std::cout << std::endl;
         samples.push_back(frame);
     }
 

@@ -11,9 +11,7 @@ AudioEngine::AudioEngine(PortAudioDriver &driver)
 
 AudioEngine::~AudioEngine() {
     stop();
-    if (playback_thread.joinable()) {
-        playback_thread.join();
-    }
+    join_thread();
     driver.close_stream();
 }
 
@@ -39,6 +37,7 @@ void AudioEngine::play() {
     initialize();
     playing = true;
     paused = false;
+    join_thread();
     playback_thread = std::thread(&AudioEngine::playback_function, this);
 }
 
@@ -49,9 +48,7 @@ void AudioEngine::pause() {
 void AudioEngine::stop() {
     playing = false;
     driver.buffer_cv.notify_all();
-    if (playback_thread.joinable()) {
-        playback_thread.join();
-    }
+    join_thread();
     driver.stop_stream();
     driver.close_stream();
     driver.reset_buffer();
@@ -66,6 +63,10 @@ bool AudioEngine::is_paused() const {
 }
 
 void AudioEngine::playback_function() {
+    size_t output_channels = driver.get_output_channels();
+    unsigned long frames_per_half_buffer = driver.get_frames_per_buffer();
+    unsigned long samples_per_half_buffer = frames_per_half_buffer * output_channels;
+
     while (playing) {
         std::unique_lock<std::mutex> lock(driver.buffer_mutex);
         driver.buffer_cv.wait(lock, [&] {
@@ -76,28 +77,33 @@ void AudioEngine::playback_function() {
             break;
         }
 
-        if (paused) {
-            for (int phase = 0; phase < 2; ++phase) {
-                if (driver.half_consumed[phase].load()) {
-                    unsigned long offset = phase * driver.get_frames_per_buffer();
-                    for (unsigned long i = 0; i < driver.get_frames_per_buffer(); ++i) {
-                        driver.pingpong_buffer[offset + i] = 0;
-                    }
-                    driver.half_consumed[phase].store(false);
-                }
-            }
-        } else {
-            for (int phase = 0; phase < 2; ++phase) {
-                if (driver.half_consumed[phase].load()) {
-                    unsigned long offset = phase * driver.get_frames_per_buffer();
-                    for (unsigned long i = 0; i < driver.get_frames_per_buffer(); ++i) {
+        for (int phase = 0; phase < 2; ++phase) {
+            if (driver.half_consumed[phase].load()) {
+                unsigned long sample_offset = phase * samples_per_half_buffer;
+
+                if (paused) {
+                    std::fill_n(driver.pingpong_buffer.begin() + sample_offset, samples_per_half_buffer, 0.0f);
+                } else {
+                    for (unsigned long frame = 0; frame < frames_per_half_buffer; ++frame) {
                         mix();
-                        driver.pingpong_buffer[offset + i] = output[0];
+                        size_t offset = sample_offset + frame * output_channels;
+                        for (size_t i = 0; i < output_channels; ++i) {
+                            driver.pingpong_buffer[offset + i] = output[i];
+                        }
                     }
-                    driver.half_consumed[phase].store(false);
                 }
+                driver.half_consumed[phase].store(false);
             }
         }
-        lock.unlock();
     }
+}
+
+void AudioEngine::join_thread() {
+    if (playback_thread.joinable()) {
+        playback_thread.join();
+    }
+}
+
+void AudioEngine::set_output_channels(const int channels) {
+    driver.set_output_channels(channels);
 }

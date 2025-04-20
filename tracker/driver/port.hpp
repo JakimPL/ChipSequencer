@@ -29,7 +29,9 @@ class PortAudioDriver : public Driver {
     void submit_buffer(const _Float32 *data, size_t size);
 
     std::vector<_Float32> pingpong_buffer;
-    unsigned long get_frames_per_buffer() const { return frames_per_buffer; }
+    unsigned long get_frames_per_buffer() const;
+    size_t get_output_channels() const;
+    void set_output_channels(const int channels);
 
     std::mutex buffer_mutex;
     std::condition_variable buffer_cv;
@@ -41,7 +43,7 @@ class PortAudioDriver : public Driver {
     PaStream *stream;
     uint current_index;
     unsigned long frames_per_buffer;
-    int output_channels = 1;
+    int output_channels = DEFAULT_OUTPUT_CHANNELS;
 
     static int audio_callback(
         const void *input_buffer,
