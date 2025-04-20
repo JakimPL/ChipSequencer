@@ -36,6 +36,9 @@ class GUI {
     bool is_playing() const;
     bool is_paused() const;
 
+    void save(const std::string &filename);
+    void open(const std::string &filename);
+
     void change_window_title(const std::string &title);
     void set_visibility(const GUIElement element, const bool visible);
     bool get_visibility(const GUIElement element) const;

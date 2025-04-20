@@ -107,10 +107,7 @@ void GUIMenu::file_save_as() {
         std::filesystem::path new_path(target_path);
         free(target_path);
         new_path = check_and_correct_path_by_extension(new_path, ".seq");
-
-        current_path = new_path;
-        song.save_to_file(current_path);
-        gui.change_window_title(current_path.filename().string());
+        gui.save(new_path);
     } else if (result != NFD_CANCEL) {
         std::cerr << "Error: " << NFD_GetError() << std::endl;
     }
@@ -125,11 +122,7 @@ void GUIMenu::file_open() {
 
         gui.stop();
         try {
-            song.load_from_file(file_path);
-            current_path = file_path;
-
-            gui.change_window_title(current_path.filename().string());
-            gui.update();
+            gui.open(file_path);
         } catch (nlohmann::json::exception &exception) {
             load_error = true;
             std::cerr << "Failed to parse JSON file: " << exception.what() << std::endl;

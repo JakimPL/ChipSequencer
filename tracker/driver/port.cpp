@@ -67,7 +67,7 @@ bool PortAudioDriver::open_stream() {
     PaError err = Pa_OpenDefaultStream(
         &stream,
         0,
-        1,
+        output_channels,
         paFloat32,
         sample_rate,
         frames_per_buffer,
@@ -83,27 +83,38 @@ bool PortAudioDriver::open_stream() {
 }
 
 bool PortAudioDriver::close_stream() {
+    if (!stream) {
+        return true;
+    }
+
     PaError err = Pa_CloseStream(stream);
     if (err != paNoError) {
         std::cerr << "PortAudio error: " << Pa_GetErrorText(err) << std::endl;
-        Pa_Terminate();
         return false;
     }
+
     return true;
 }
 
 bool PortAudioDriver::start_stream() {
+    if (!stream) {
+        return false;
+    }
+
     PaError err = Pa_StartStream(stream);
     if (err != paNoError) {
         std::cerr << "PortAudio error: " << Pa_GetErrorText(err) << std::endl;
-        Pa_CloseStream(stream);
-        Pa_Terminate();
         return false;
     }
+
     return true;
 }
 
 bool PortAudioDriver::stop_stream() {
+    if (!stream) {
+        return false;
+    }
+
     PaError err = Pa_StopStream(stream);
     if (err != paNoError) {
         std::cerr << "PortAudio error: " << Pa_GetErrorText(err) << std::endl;
@@ -111,6 +122,7 @@ bool PortAudioDriver::stop_stream() {
         Pa_Terminate();
         return false;
     }
+
     return true;
 }
 

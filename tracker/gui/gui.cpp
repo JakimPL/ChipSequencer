@@ -15,6 +15,20 @@ GUI::~GUI() {
     terminate();
 }
 
+void GUI::save(const std::string &filename) {
+    current_path = filename;
+    song.save_to_file(current_path);
+    change_window_title(current_path.filename().string());
+}
+
+void GUI::open(const std::string &filename) {
+    song.load_from_file(filename);
+    current_path = filename;
+
+    change_window_title(current_path.filename().string());
+    update();
+}
+
 void GUI::change_window_title(const std::string &title) {
     std::string window_title = APPLICATION_TITLE;
     if (!title.empty()) {

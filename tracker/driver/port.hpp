@@ -41,6 +41,7 @@ class PortAudioDriver : public Driver {
     PaStream *stream;
     uint current_index;
     unsigned long frames_per_buffer;
+    int output_channels = 1;
 
     static int audio_callback(
         const void *input_buffer,

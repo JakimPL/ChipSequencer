@@ -1,5 +1,5 @@
-#include <array>
 #include <iostream>
+#include <string>
 
 #include "general.hpp"
 #include "audio/engine.hpp"
@@ -8,7 +8,7 @@
 #include "gui/gui.hpp"
 #include "song/functions.hpp"
 
-int main() {
+int main(int argc, char *argv[]) {
     if (!gui.initialize()) {
         return 1;
     }
@@ -17,6 +17,11 @@ int main() {
     port_audio_driver.initialize();
     AudioEngine audio_engine(port_audio_driver);
     gui.set_audio_engine(&audio_engine);
+
+    if (argc > 1) {
+        std::string filename = argv[1];
+        gui.open(filename);
+    }
 
     while (!gui.is_done()) {
         gui.render();
