@@ -623,6 +623,7 @@ void Song::serialize_channel(std::ofstream &file, Channel *channel) const {
     write_data(file, &channel->oscillator_index, sizeof(channel->oscillator_index));
     write_data(file, &channel->pitch, sizeof(channel->pitch));
     write_data(file, &channel->output_flag, sizeof(channel->output_flag));
+    write_data(file, channel->splitter, sizeof(channel->splitter));
     write_data(file, &null, sizeof(null));
 }
 
@@ -669,6 +670,7 @@ Channel *Song::deserialize_channel(std::ifstream &file) const {
     read_data(file, &channel->oscillator_index, sizeof(channel->oscillator_index));
     read_data(file, &channel->pitch, sizeof(channel->pitch));
     read_data(file, &channel->output_flag, sizeof(channel->output_flag));
+    read_data(file, &channel->splitter, sizeof(channel->splitter));
     file.seekg(sizeof(uint16_t), std::ios::cur);
     channel->output = &output;
     return channel;

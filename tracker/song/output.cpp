@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "../constants.hpp"
 #include "output.hpp"
 
@@ -62,5 +64,22 @@ void OutputType::set_link(Link &link, const ItemType type, const uint8_t id) con
         link.index = index;
         link.offset = offset;
         break;
+    }
+}
+
+void OutputType::load_splitter(const uint8_t target[]) {
+    splitter_on = false;
+    for (size_t i = 0; i < MAX_OUTPUT_CHANNELS; ++i) {
+        if (splitter[i] > 0) {
+            splitter_on = true;
+        }
+
+        splitter[i] = static_cast<float>(target[i]) / UINT8_MAX;
+    }
+}
+
+void OutputType::set_splitter(uint8_t target[]) const {
+    for (size_t i = 0; i < MAX_OUTPUT_CHANNELS; ++i) {
+        target[i] = splitter_on ? static_cast<uint8_t>(std::round(splitter[i] * UINT8_MAX)) : 0;
     }
 }

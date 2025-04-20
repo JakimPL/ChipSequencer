@@ -4,6 +4,7 @@
 #include <cstdint>
 
 #include "../maps/routing.hpp"
+#include "../structures/channel.hpp"
 #include "links/link.hpp"
 
 enum OutputTarget {
@@ -35,10 +36,16 @@ struct OutputType {
     int index;
     int offset;
 
+    bool splitter_on = true;
+    std::array<float, MAX_OUTPUT_CHANNELS> splitter = {0.5f, 0.5f, 0.0f, 0.0f};
+
     uint8_t calculate_output_flag() const;
     void from_output_flag(const uint8_t output_flag);
     void from_link(const Link &link);
     void set_link(Link &link, const ItemType type, const uint8_t id) const;
+
+    void load_splitter(const uint8_t target[]);
+    void set_splitter(uint8_t target[]) const;
 };
 
 #endif // SONG_OUTPUT_HPP

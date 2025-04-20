@@ -107,7 +107,8 @@
     %define CHANNEL_PITCH 3
     %define CHANNEL_OUTPUT_FLAG 7
     %define CHANNEL_OUTPUT 8
-    %define SIZE_CHANNEL 12
+    %define CHANNEL_SPLITTER 12
+    %define SIZE_CHANNEL 16
     %else
     %define CHANNEL_ENVELOPE_INDEX 0
     %define CHANNEL_ORDER_INDEX 1
@@ -115,7 +116,8 @@
     %define CHANNEL_PITCH 3
     %define CHANNEL_OUTPUT_FLAG 7
     %define CHANNEL_OUTPUT 8
-    %define SIZE_CHANNEL 10
+    %define CHANNEL_SPLITTER 10
+    %define SIZE_CHANNEL 14
     %endif
 
 ; Channel output masks
