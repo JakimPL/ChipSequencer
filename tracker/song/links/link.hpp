@@ -14,7 +14,7 @@ struct Link {
     ItemType type;
     uint8_t id;
     Target target;
-    uint8_t index;
+    uint32_t index;
     uint16_t offset;
     void *item = nullptr;
     void *base = nullptr;

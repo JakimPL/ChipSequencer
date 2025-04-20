@@ -1,6 +1,7 @@
 #ifndef GUI_PANELS_ROUTING_HPP
 #define GUI_PANELS_ROUTING_HPP
 
+#include <cstdint>
 #include <map>
 #include <optional>
 #include <string>
@@ -26,6 +27,7 @@ class GUIRoutingPanel : public GUIPanel {
     void collect_nodes();
     void draw_node(RoutingNode &routing_node, const ImVec2 node_rect_min);
     void draw_nodes();
+    void draw_link(const InputKey source, const OutputKey target, uint8_t alpha = UINT8_MAX);
     void draw_all_links();
 
     bool is_linking_possible(const InputKey &source_key, const OutputKey &target_key) const;

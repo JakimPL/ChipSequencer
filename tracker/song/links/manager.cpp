@@ -110,7 +110,7 @@ void LinkManager::realign_links(const size_t index, const Target target, const I
     for (Link &link : links[link_type]) {
         if (link.target == target && link.index >= index) {
             remove_key(link);
-            link.index = std::max(0, link.index - 1);
+            link.index = std::max(0, static_cast<int>(link.index) - 1);
             assign_key(link);
         }
     }
@@ -154,7 +154,7 @@ void LinkManager::remove_key(Link &link) {
 }
 
 void LinkManager::assign_key(Link &link) {
-    const LinkKey key = {link.target, link.index, link.offset};
+    const LinkKey key = {link.target, static_cast<int>(link.index), link.offset};
     link.key = key;
     map[key].push_back(&link);
 }

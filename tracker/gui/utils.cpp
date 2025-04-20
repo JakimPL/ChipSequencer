@@ -196,27 +196,29 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
     const size_t output_channels = song.get_output_channels();
 
     switch (static_cast<OutputTarget>(output_type.target)) {
-    case OutputTarget::Splitter:
-    /*
+    case OutputTarget::Splitter: {
         if (result) {
             output_type.operation = static_cast<int>(OutputOperation::Add);
         }
         ImGui::Text("Splitter:");
-        ImGui::SameLine();
         for (size_t i = 0; i < output_channels; ++i) {
-            const std::string label = "##Splitter" + std::to_string(i);
+            const std::string label = "Channel " + std::to_string(i);
             draw_float_slider(label.c_str(), output_type.splitter[i], {}, 0.0f, 1.0f);
         }
+
+        // temporary
+        draw_int_slider("Channel", output_type.output_channel, {}, 0, output_channels - 1);
         break;
-        */
-    case OutputTarget::DirectOutput:
+    }
+    case OutputTarget::DirectOutput: {
         if (result) {
             output_type.operation = static_cast<int>(OutputOperation::Add);
         }
 
         draw_int_slider("Channel", output_type.output_channel, {}, 0, output_channels - 1);
         break;
-    case OutputTarget::DSP:
+    }
+    case OutputTarget::DSP: {
         if (dsps.empty() || dsp_index >= static_cast<int>(dsps.size()) - 1) {
             ImGui::Text("No DSPs available.");
             break;
@@ -228,7 +230,8 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
             draw_int_slider("DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
             break;
         }
-    case OutputTarget::Parameter:
+    }
+    case OutputTarget::Parameter: {
         if (result) {
             output_type.operation = static_cast<int>(OutputOperation::Add);
         }
@@ -272,6 +275,7 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
             throw std::runtime_error("Invalid target type");
         }
         }
+    }
     }
 
     ImGui::Separator();

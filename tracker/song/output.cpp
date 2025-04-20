@@ -1,4 +1,5 @@
 #include <cmath>
+#include <cstring>
 
 #include "../constants.hpp"
 #include "output.hpp"
@@ -22,6 +23,8 @@ void OutputType::from_link(const Link &link) {
     OutputTarget output_target = static_cast<OutputTarget>(std::min(0, target));
     switch (output_target) {
     case OutputTarget::Splitter:
+        output_channel = 0;
+        break;
     case OutputTarget::DirectOutput:
         output_channel = link.index;
         break;
@@ -53,26 +56,30 @@ void OutputType::set_link(Link &link, const ItemType type, const uint8_t id) con
     link.id = id;
     OutputTarget label = static_cast<OutputTarget>(target);
     switch (label) {
-    case OutputTarget::Splitter:
+    case OutputTarget::Splitter: {
         link.target = Target::SPLITTER;
-        link.index = output_channel;
+        link.index = get_splitter_data();
         link.offset = sizeof(_Float32) * output_channel;
         break;
-    case OutputTarget::DirectOutput:
+    }
+    case OutputTarget::DirectOutput: {
         link.target = Target::OUTPUT_CHANNEL;
         link.index = output_channel;
         link.offset = sizeof(_Float32) * output_channel;
         break;
-    case OutputTarget::DSP:
+    }
+    case OutputTarget::DSP: {
         link.target = Target::DSP_CHANNEL;
         link.index = dsp_channel;
         link.offset = sizeof(_Float32) * dsp_channel;
         break;
-    case OutputTarget::Parameter:
+    }
+    case OutputTarget::Parameter: {
         link.target = static_cast<Target>(parameter_type + static_cast<int>(OutputTarget::Parameter));
         link.index = index;
         link.offset = offset;
         break;
+    }
     }
 }
 
@@ -91,4 +98,21 @@ void OutputType::set_splitter(uint8_t target[]) const {
     for (size_t i = 0; i < MAX_OUTPUT_CHANNELS; ++i) {
         target[i] = splitter_on ? static_cast<uint8_t>(std::round(splitter[i] * UINT8_MAX)) : 0;
     }
+}
+
+uint32_t OutputType::get_splitter_data() const {
+    uint32_t splitter_data;
+    uint8_t data[MAX_OUTPUT_CHANNELS];
+    for (size_t i = 0; i < MAX_OUTPUT_CHANNELS; ++i) {
+        data[i] = std::round(splitter[i] * UINT8_MAX);
+    }
+
+    memcpy(&splitter_data, data, sizeof(uint32_t));
+    return splitter_data;
+}
+
+std::array<uint8_t, MAX_OUTPUT_CHANNELS> OutputType::unpack_splitter_data(uint32_t splitter_data) {
+    std::array<uint8_t, MAX_OUTPUT_CHANNELS> data;
+    memcpy(data.data(), &splitter_data, sizeof(uint32_t));
+    return data;
 }
