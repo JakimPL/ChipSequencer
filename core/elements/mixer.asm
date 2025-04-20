@@ -3,6 +3,7 @@ mix:
     pusha
     call clear_dsps
     mov edi, output
+    xor ecx, ecx
     mov cl, MAX_OUTPUT_CHANNELS
     mov eax, dword __float32__(0.0)
     rep stosd
