@@ -66,10 +66,29 @@ store_output:
     je .store_single_output
     mov bl, 0
 .store_multiple_outputs:
+    push eax
+
+.apply_weight:
+    mov [value], eax
+    fld dword [value]
+    mov dword [value], 0
+    mov byte [value], dl
+    fimul dword [value]
+    fidiv word [i_255]
+    fstp dword [value]
+    mov eax, [value]
+
+.store:
+    push edx
     call store_single_output
+    pop edx
+
+.increment:
+    shr edx, 8
     add edi, 4
     inc bl
     cmp bl, MAX_OUTPUT_CHANNELS
+    pop eax
     jnge .store_multiple_outputs
     ret
 .store_single_output:
