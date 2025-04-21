@@ -206,8 +206,6 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
             draw_float_slider(label.c_str(), output_type.splitter[i], {}, 0.0f, 1.0f);
         }
 
-        // temporary
-        draw_int_slider("Channel", output_type.output_channel, {}, 0, output_channels - 1);
         break;
     }
     case OutputTarget::DirectOutput: {

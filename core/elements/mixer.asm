@@ -64,11 +64,13 @@ mix:
 store_output:
     cmp edx, 0
     je .store_single_output
+    mov bl, 0
 .store_multiple_outputs:
     call store_single_output
     add edi, 4
-    cmp edi, output + MAX_OUTPUT_CHANNELS * 4
-    jge .store_multiple_outputs
+    inc bl
+    cmp bl, MAX_OUTPUT_CHANNELS
+    jnge .store_multiple_outputs
     ret
 .store_single_output:
     call store_single_output
