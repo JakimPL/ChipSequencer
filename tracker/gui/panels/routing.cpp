@@ -376,6 +376,12 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
     if (!dragging_node_id.has_value() && is_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
         dragging_node_id = routing_node.identifier;
         drag_node_offset = ImGui::GetMousePos() - node_rect_min;
+        const Target target = routing_node.identifier.type;
+        if (target == Target::CHANNEL) {
+            gui.set_index(GUIElement::Channels, routing_node.identifier.id);
+        } else if (target == Target::DSP) {
+            gui.set_index(GUIElement::DSPs, routing_node.identifier.id);
+        }
     }
 
     ImU32 node_bg_color = is_hovered ? IM_COL32(70, 70, 70, 200) : IM_COL32(50, 50, 50, 200);
