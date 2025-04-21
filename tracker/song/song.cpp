@@ -27,6 +27,8 @@ void Song::new_song() {
     clear_data();
     bpm = DEFAULT_BPM;
     sample_rate = DEFAULT_SAMPLE_RATE;
+    note_divisor = DEFAULT_NOTE_DIVISOR;
+    unit = DEFAULT_UNIT;
     normalizer = DEFAULT_NORMALIZER;
     header = {
         DEFAULT_AUTHOR,
@@ -72,6 +74,7 @@ void Song::load_from_file(const std::string &filename) {
         import_all(song_dir, json);
         update_sizes();
         change_tuning(tuning.edo, tuning.a4_frequency);
+        link_manager.set_links();
 
         std::filesystem::remove_all(temp_base);
     } catch (const std::exception &exception) {

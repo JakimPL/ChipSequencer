@@ -84,14 +84,10 @@ void OutputType::set_link(Link &link, const ItemType type, const uint8_t id) con
     }
 }
 
-void OutputType::load_splitter(const uint8_t target[]) {
-    splitter_on = false;
+void OutputType::load_splitter(const uint8_t target[], const Link &link) {
+    splitter_on = link.target == Target::SPLITTER;
     for (size_t i = 0; i < MAX_OUTPUT_CHANNELS; ++i) {
-        if (splitter[i] > 0) {
-            splitter_on = true;
-        }
-
-        splitter[i] = static_cast<float>(target[i]) / UINT8_MAX;
+        splitter[i] = splitter_on ? static_cast<float>(target[i]) / UINT8_MAX : 0.0f;
     }
 }
 

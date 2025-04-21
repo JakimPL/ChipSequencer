@@ -13,7 +13,7 @@ struct DSP {
     uint8_t output_flag;
     uint8_t _unused;
     void *output;
-    uint32_t splitter;
+    uint8_t splitter[MAX_OUTPUT_CHANNELS];
     uint8_t pad[4];
 };
 

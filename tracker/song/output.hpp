@@ -45,7 +45,7 @@ struct OutputType {
     void from_link(const Link &link);
     void set_link(Link &link, const ItemType type, const uint8_t id) const;
 
-    void load_splitter(const uint8_t target[]);
+    void load_splitter(const uint8_t target[], const Link &link);
     void set_splitter(uint8_t target[]) const;
     uint32_t get_splitter_data() const;
     static std::array<uint8_t, MAX_OUTPUT_CHANNELS> unpack_splitter_data(uint32_t splitter_data);

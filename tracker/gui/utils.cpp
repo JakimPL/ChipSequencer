@@ -231,7 +231,7 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
     }
     case OutputTarget::Parameter: {
         if (result) {
-            output_type.operation = static_cast<int>(OutputOperation::Add);
+            output_type.operation = static_cast<int>(OutputOperation::Set);
         }
 
         ImGui::Separator();
