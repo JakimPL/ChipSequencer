@@ -188,3 +188,7 @@ void GUIOrdersPanel::check_keyboard_input() {
         digit_buffer.clear();
     }
 }
+
+void GUIOrdersPanel::set_index(const int index) {
+    order_index = clamp_index(index, orders.size());
+}

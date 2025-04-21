@@ -30,6 +30,7 @@ class GUIMenu : public GUIPanel {
   public:
     GUIMenu(const bool visible = true);
     void update() override {};
+    void set_index(const int index) override {};
 };
 
 #endif // GUI_PANELS_MENU_HPP

@@ -11,6 +11,7 @@ class GUIPanel {
     bool visible = true;
 
     virtual void update() = 0;
+    virtual void set_index(const int index) = 0;
     void frame();
 
   protected:

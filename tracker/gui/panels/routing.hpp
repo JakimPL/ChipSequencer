@@ -52,6 +52,7 @@ class GUIRoutingPanel : public GUIPanel {
   public:
     GUIRoutingPanel(const bool visible = true);
     void update() override;
+    void set_index(const int index) override {};
 };
 
 #endif // GUI_PANELS_ROUTING_HPP

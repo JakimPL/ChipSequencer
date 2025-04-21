@@ -112,3 +112,7 @@ void GUISequencesPanel::check_keyboard_input() {
 
     current_sequence.pattern.handle_input();
 }
+
+void GUISequencesPanel::set_index(const int index) {
+    sequence_index = clamp_index(index, sequences.size());
+}

@@ -34,6 +34,7 @@ class GUIWavetablesPanel : public GUIPanel {
   public:
     GUIWavetablesPanel(const bool visible = true);
     void update();
+    void set_index(const int index) override;
 };
 
 #endif // GUI_PANELS_WAVETABLES_HPP

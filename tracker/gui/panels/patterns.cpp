@@ -212,3 +212,7 @@ void GUIPatternsPanel::deselect_all_rows() {
         }
     }
 }
+
+void GUIPatternsPanel::set_index(const int index) {
+    current_index = static_cast<size_t>(index);
+}
