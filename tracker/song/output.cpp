@@ -20,7 +20,8 @@ void OutputType::from_output_flag(const uint8_t output_flag) {
 
 void OutputType::from_link(const Link &link) {
     target = static_cast<int>(link.target);
-    OutputTarget output_target = static_cast<OutputTarget>(std::min(0, target));
+    const int max_parameter = static_cast<int>(OutputTarget::Parameter);
+    OutputTarget output_target = static_cast<OutputTarget>(std::min(max_parameter, target));
     switch (output_target) {
     case OutputTarget::Splitter:
         output_channel = 0;
@@ -32,7 +33,7 @@ void OutputType::from_link(const Link &link) {
         dsp_channel = link.index;
         break;
     case OutputTarget::Parameter:
-        const int target_offset = static_cast<int>(OutputTarget::Parameter);
+        const int target_offset = max_parameter;
         parameter_type = target - target_offset;
         target = target_offset;
         const auto &routing = routing_variables.at(link.target);

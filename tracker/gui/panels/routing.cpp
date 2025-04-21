@@ -262,7 +262,7 @@ void GUIRoutingPanel::draw_link(const InputKey source, const OutputKey target, u
     const float line_thickness = 1.5f;
     const ImU32 audio_color = IM_COL32(0, 200, 0, alpha);
     const ImU32 parameter_color = IM_COL32(200, 150, 0, alpha);
-    const ImU32 dragging_color = IM_COL32(150, 150, 150, alpha);
+    const ImU32 dragging_color = IM_COL32(150, 150, 150, 255);
 
     const bool dragging = link_dragging_source_key.has_value() && link_dragging_source_key.value() == source;
     auto source_pin_it = output_pins.find(source);

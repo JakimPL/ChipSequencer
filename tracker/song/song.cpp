@@ -258,6 +258,8 @@ Channel *Song::add_channel() {
     channel->output_flag = 0;
     channel->pitch = DEFAULT_CHANNEL_PITCH;
     channel->output = &output;
+    channel->splitter[0] = 0x80;
+    channel->splitter[1] = 0x80;
     channels.push_back(channel);
     num_channels = channels.size();
     links[static_cast<size_t>(ItemType::CHANNEL)].push_back(Link());
