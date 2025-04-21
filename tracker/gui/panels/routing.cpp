@@ -323,6 +323,8 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
         id_prefix = "DSPNode_";
         break;
     case Target::SPLITTER:
+        id_prefix = "SplitterNode_";
+        break;
     case Target::OUTPUT_CHANNEL:
         id_prefix = "OutputNode_";
         break;

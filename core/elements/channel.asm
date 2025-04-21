@@ -55,6 +55,7 @@ play_channel:
 load_channel_target:
     LOAD_OFFSET ecx, channel_offset
     mov edi, [CHANNEL_OUTPUT + ecx]
+    mov edx, [CHANNEL_SPLITTER + ecx]
     mov cl, [CHANNEL_OUTPUT_FLAG + ecx]
     ret
 

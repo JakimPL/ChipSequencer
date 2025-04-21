@@ -62,6 +62,19 @@ mix:
     ret
 
 store_output:
+    cmp edx, 0
+    je .store_single_output
+.store_multiple_outputs:
+    call store_single_output
+    add edi, 4
+    cmp edi, output + MAX_OUTPUT_CHANNELS * 4
+    jnge .store_multiple_outputs
+    ret
+.store_single_output:
+    call store_single_output
+    ret
+
+store_single_output:
     MOV_FROM_DI edx
 
 .check_mode:
