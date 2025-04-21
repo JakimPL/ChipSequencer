@@ -160,21 +160,22 @@
     %define DSP_EFFECT_INDEX 1
     %define DSP_OUTPUT_FLAG 2
     %define DSP_OUTPUT 4
+    %define DSP_SPLITTER 8
 
 ; Gainer
     %define EFFECT_GAINER 0
-    %define DSP_GAINER_VOLUME 8
+    %define DSP_GAINER_VOLUME 12
     %define SIZE_DSP_GAINER 16
 
 ; Distortion
     %define EFFECT_DISTORTION 1
-    %define DSP_DISTORTION_LEVEL 8
+    %define DSP_DISTORTION_LEVEL 12
     %define SIZE_DSP_DISTORTION 16
 
 ; Filter
     %define EFFECT_FILTER 2
-    %define DSP_FILTER_FREQUENCY 8
-    %define DSP_FILTER_MODE 10
+    %define DSP_FILTER_FREQUENCY 12
+    %define DSP_FILTER_MODE 14
     %define SIZE_DSP_FILTER 16
 
     %else
@@ -182,20 +183,21 @@
     %define DSP_EFFECT_INDEX 1
     %define DSP_OUTPUT_FLAG 2
     %define DSP_OUTPUT 3
+    %define DSP_SPLITTER 5
 
 ; Gainer
     %define EFFECT_GAINER 0
-    %define DSP_GAINER_VOLUME 5
-    %define SIZE_DSP_GAINER 7
+    %define DSP_GAINER_VOLUME 9
+    %define SIZE_DSP_GAINER 11
 
 ; Distortion
     %define EFFECT_DISTORTION 1
-    %define DSP_DISTORTION_LEVEL 5
-    %define SIZE_DSP_DISTORTION 7
+    %define DSP_DISTORTION_LEVEL 9
+    %define SIZE_DSP_DISTORTION 11
 
 ; Filter
     %define EFFECT_FILTER 2
-    %define DSP_FILTER_FREQUENCY 5
-    %define DSP_FILTER_MODE 7
-    %define SIZE_DSP_FILTER 8
+    %define DSP_FILTER_FREQUENCY 9
+    %define DSP_FILTER_MODE 11
+    %define SIZE_DSP_FILTER 12
     %endif

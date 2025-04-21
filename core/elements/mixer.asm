@@ -68,7 +68,7 @@ store_output:
     call store_single_output
     add edi, 4
     cmp edi, output + MAX_OUTPUT_CHANNELS * 4
-    jnge .store_multiple_outputs
+    jge .store_multiple_outputs
     ret
 .store_single_output:
     call store_single_output
