@@ -36,6 +36,7 @@ class GUIOrdersPanel : public GUIPanel {
   public:
     GUIOrdersPanel(const bool visible = true);
     void update() override;
+    void set_index(const int index) override;
 };
 
 #endif // GUI_PANELS_ORDERS_HPP

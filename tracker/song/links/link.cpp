@@ -2,6 +2,7 @@
 #include "../../maps/offsets.hpp"
 #include "../../structures.hpp"
 #include "../../utils/file.hpp"
+#include "../output.hpp"
 #include "link.hpp"
 
 #include <iostream>
@@ -26,7 +27,7 @@ void Link::serialize(std::ofstream &file) const {
     write_data(file, &id, sizeof(id));
     write_data(file, &target, sizeof(target));
     write_data(file, &index, sizeof(index));
-    if (group >= 2) {
+    if (group >= static_cast<size_t>(OutputTarget::Parameter)) {
         uint16_t _offset = 0;
         try {
             _offset = x32_to_x16[group].at(offset);
@@ -46,7 +47,7 @@ void Link::deserialize(std::ifstream &file) {
     read_data(file, &index, sizeof(index));
     read_data(file, &offset, sizeof(offset));
     const size_t group = static_cast<size_t>(target);
-    if (group >= 2) {
+    if (group >= static_cast<size_t>(OutputTarget::Parameter)) {
         try {
             offset = x16_to_x32[group].at(offset);
         } catch (const std::out_of_range &exception) {

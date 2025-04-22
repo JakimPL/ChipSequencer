@@ -30,6 +30,7 @@ class GUIEditorPanel : public GUIPanel {
     );
 
     void update() override {};
+    void set_index(const int index) override {};
 };
 
 #endif // GUI_PANELS_EDITOR_HPP

@@ -196,3 +196,7 @@ void GUIWavetablesPanel::update() {
 
 void GUIWavetablesPanel::check_keyboard_input() {
 }
+
+void GUIWavetablesPanel::set_index(const int index) {
+    wavetable_index = clamp_index(index, wavetables.size());
+};

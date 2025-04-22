@@ -1,14 +1,13 @@
 #include "routing.hpp"
 
-RoutingItems::RoutingItems(
-    std::vector<std::string> labels,
-    std::vector<uint16_t> offsets,
-    std::vector<TargetVariableType> types,
-    std::vector<int> constraints
-)
-    : labels(labels), offsets(offsets), types(types), constraints(constraints) {
-    for (size_t i = 0; i < offsets.size(); ++i) {
-        offset_to_index[offsets[i]] = i;
+RoutingItems::RoutingItems(std::vector<RoutingItem> items) {
+    for (size_t i = 0; i < items.size(); ++i) {
+        const auto &item = items[i];
+        labels.push_back(item.label);
+        offsets.push_back(item.offset);
+        types.push_back(item.type);
+        constraints.push_back(item.constraint);
+        offset_to_index[item.offset] = i;
     }
 }
 

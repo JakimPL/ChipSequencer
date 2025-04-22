@@ -152,6 +152,43 @@ void GUI::set_audio_engine(AudioEngine *engine) {
     audio_engine = engine;
 }
 
+void GUI::set_index(const GUIElement element, const int index) {
+    switch (element) {
+    case GUIElement::All:
+    case GUIElement::Menu:
+    case GUIElement::Editor:
+    case GUIElement::General:
+        break;
+    case GUIElement::Channels:
+        channels_panel.set_index(index);
+        break;
+    case GUIElement::DSPs:
+        dsps_panel.set_index(index);
+        break;
+    case GUIElement::Envelopes:
+        envelopes_panel.set_index(index);
+        break;
+    case GUIElement::Orders:
+        orders_panel.set_index(index);
+        break;
+    case GUIElement::Oscillators:
+        oscillators_panel.set_index(index);
+        break;
+    case GUIElement::Patterns:
+        patterns_panel.set_index(index);
+        break;
+    case GUIElement::Routing:
+        routing_panel.set_index(index);
+        break;
+    case GUIElement::Sequences:
+        sequences_panel.set_index(index);
+        break;
+    case GUIElement::Wavetables:
+        wavetables_panel.set_index(index);
+        break;
+    }
+}
+
 void GUI::update(GUIElement element) {
     switch (element) {
     case GUIElement::All:

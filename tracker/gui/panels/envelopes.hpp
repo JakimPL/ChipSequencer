@@ -44,6 +44,7 @@ class GUIEnvelopesPanel : public GUIPanel {
   public:
     GUIEnvelopesPanel(const bool visible = true);
     void update() override;
+    void set_index(const int index) override;
 };
 
 #endif // GUI_PANELS_ENVELOPES_HPP

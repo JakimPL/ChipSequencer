@@ -85,6 +85,8 @@ note_divisor:
     %endif
 f_65536:
     dd 65536.0
+i_255:
+    dw 255
 
 oscillators_table:
     %ifdef ELF

@@ -41,6 +41,7 @@ class GUIDSPsPanel : public GUIPanel {
   public:
     GUIDSPsPanel(const bool visible = true);
     void update() override;
+    void set_index(const int index) override;
 };
 
 #endif // GUI_PANELS_DSPS_HPP

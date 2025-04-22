@@ -43,6 +43,7 @@ class GUIOscillatorsPanel : public GUIPanel {
   public:
     GUIOscillatorsPanel(const bool visible = true);
     void update() override;
+    void set_index(const int index) override;
 };
 
 #endif // GUI_PANELS_OSCILLATORS_HPP

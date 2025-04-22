@@ -178,7 +178,8 @@ void GUIPatternsPanel::check_keyboard_input() {
 }
 
 std::pair<Pattern *, uint16_t> GUIPatternsPanel::find_pattern_by_current_row() const {
-    if (current_channel >= current_pattern.patterns.size()) {
+    const auto it = current_pattern.patterns.find(current_channel);
+    if (it == current_pattern.patterns.end()) {
         return {nullptr, 0};
     }
 
@@ -211,4 +212,8 @@ void GUIPatternsPanel::deselect_all_rows() {
             p.current_row = -1;
         }
     }
+}
+
+void GUIPatternsPanel::set_index(const int index) {
+    current_index = static_cast<size_t>(index);
 }

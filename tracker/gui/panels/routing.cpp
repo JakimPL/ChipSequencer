@@ -1,9 +1,12 @@
 #include <algorithm>
 #include <cmath>
+#include <cstring>
 #include <map>
 #include <string>
 #include <vector>
 #include <unordered_map>
+
+#include <iostream>
 
 #include "../init.hpp"
 
@@ -255,40 +258,55 @@ void GUIRoutingPanel::draw_nodes() {
     draw_list->PopClipRect();
 }
 
-void GUIRoutingPanel::draw_all_links() {
-    ImDrawList *draw_list = ImGui::GetWindowDrawList();
+void GUIRoutingPanel::draw_link(const InputKey source, const OutputKey target, uint8_t alpha) {
     const float line_thickness = 1.5f;
-    const ImU32 audio_color = IM_COL32(0, 200, 0, 255);
-    const ImU32 parameter_color = IM_COL32(200, 150, 0, 255);
+    const ImU32 audio_color = IM_COL32(0, 200, 0, alpha);
+    const ImU32 parameter_color = IM_COL32(200, 150, 0, alpha);
     const ImU32 dragging_color = IM_COL32(150, 150, 150, 255);
 
+    const bool dragging = link_dragging_source_key.has_value() && link_dragging_source_key.value() == source;
+    auto source_pin_it = output_pins.find(source);
+    auto dest_pin_it = input_pins.find(target);
+
+    ImDrawList *draw_list = ImGui::GetWindowDrawList();
+    if (source_pin_it != output_pins.end() && dest_pin_it != input_pins.end()) {
+        ImVec2 p1, p4;
+        ImU32 color;
+        if (dragging) {
+            const ImVec2 mouse_pos = ImGui::GetMousePos();
+            p1 = source_pin_it->second;
+            p4 = mouse_pos;
+            color = dragging_color;
+        } else {
+            p1 = source_pin_it->second;
+            p4 = dest_pin_it->second;
+            const bool is_audio_link = target.target == Target::OUTPUT_CHANNEL || target.target == Target::DSP_CHANNEL;
+            color = is_audio_link ? audio_color : parameter_color;
+        }
+
+        const float horizontal_distance = std::abs(p4.x - p1.x);
+        const float control_offset_x = std::max(30.0f, horizontal_distance * 0.4f);
+
+        const ImVec2 p2 = ImVec2(p1.x + control_offset_x, p1.y);
+        const ImVec2 p3 = ImVec2(p4.x - control_offset_x, p4.y);
+
+        draw_list->AddBezierCubic(p1, p2, p3, p4, color, line_thickness, GUI_ROUTING_CURVE_SEGMENTS);
+    }
+}
+
+void GUIRoutingPanel::draw_all_links() {
+    ImDrawList *draw_list = ImGui::GetWindowDrawList();
     for (const auto &[source, target] : nodes_links) {
-        const bool dragging = link_dragging_source_key.has_value() && link_dragging_source_key.value() == source;
-        auto source_pin_it = output_pins.find(source);
-        auto dest_pin_it = input_pins.find(target);
-
-        if (source_pin_it != output_pins.end() && dest_pin_it != input_pins.end()) {
-            ImVec2 p1, p4;
-            ImU32 color;
-            if (dragging) {
-                const ImVec2 mouse_pos = ImGui::GetMousePos();
-                p1 = source_pin_it->second;
-                p4 = mouse_pos;
-                color = dragging_color;
-            } else {
-                p1 = source_pin_it->second;
-                p4 = dest_pin_it->second;
-                const bool is_audio_link = target.target == Target::OUTPUT_CHANNEL || target.target == Target::DSP_CHANNEL;
-                color = is_audio_link ? audio_color : parameter_color;
+        if (target.target == Target::SPLITTER) {
+            const size_t output_channels = song.get_output_channels();
+            std::array<uint8_t, MAX_OUTPUT_CHANNELS> splitter = OutputType::unpack_splitter_data(target.index);
+            for (size_t i = 0; i < output_channels; ++i) {
+                const uint16_t offset = sizeof(_Float32) * i;
+                const OutputKey target_key = {Target::OUTPUT_CHANNEL, static_cast<int>(i), offset};
+                draw_link(source, target_key, splitter[i]);
             }
-
-            const float horizontal_distance = std::abs(p4.x - p1.x);
-            const float control_offset_x = std::max(30.0f, horizontal_distance * 0.4f);
-
-            const ImVec2 p2 = ImVec2(p1.x + control_offset_x, p1.y);
-            const ImVec2 p3 = ImVec2(p4.x - control_offset_x, p4.y);
-
-            draw_list->AddBezierCubic(p1, p2, p3, p4, color, line_thickness, GUI_ROUTING_CURVE_SEGMENTS);
+        } else {
+            draw_link(source, target);
         }
     }
 }
@@ -303,6 +321,9 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
     case Target::DSP:
     case Target::DSP_CHANNEL:
         id_prefix = "DSPNode_";
+        break;
+    case Target::SPLITTER:
+        id_prefix = "SplitterNode_";
         break;
     case Target::OUTPUT_CHANNEL:
         id_prefix = "OutputNode_";
@@ -355,6 +376,12 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
     if (!dragging_node_id.has_value() && is_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
         dragging_node_id = routing_node.identifier;
         drag_node_offset = ImGui::GetMousePos() - node_rect_min;
+        const Target target = routing_node.identifier.type;
+        if (target == Target::CHANNEL) {
+            gui.set_index(GUIElement::Channels, routing_node.identifier.id);
+        } else if (target == Target::DSP) {
+            gui.set_index(GUIElement::DSPs, routing_node.identifier.id);
+        }
     }
 
     ImU32 node_bg_color = is_hovered ? IM_COL32(70, 70, 70, 200) : IM_COL32(50, 50, 50, 200);

@@ -9,6 +9,11 @@
 #include "init.hpp"
 #include "pattern.hpp"
 
+struct GUIState {
+    bool value_changed;
+    bool right_clicked;
+};
+
 int clamp_index(int index, const int max);
 void draw_number_of_items(const std::string &label, const char *label_id, int &value, int min, int max, float label_length = 50.0f);
 
@@ -26,7 +31,7 @@ void draw_output_parameter_oscillator(OutputType &output_type);
 void draw_output_parameter_dsp(OutputType &output_type);
 
 std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header = true, const size_t index = 0, const int playing_row = -1, const uint16_t start = 0, const uint16_t end = UINT16_MAX);
-bool prepare_combo(const std::vector<std::string> &names, std::string label, int &index, const bool error_if_empty = false);
+GUIState prepare_combo(const std::vector<std::string> &names, std::string label, int &index, const bool error_if_empty = false);
 void update_items(std::vector<std::string> &names, size_t size, std::string label, int &index);
 void push_secondary_style();
 void pop_secondary_style();

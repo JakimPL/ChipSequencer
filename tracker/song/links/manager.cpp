@@ -12,6 +12,7 @@ void LinkManager::set_link(Link &link, void *item, const uint8_t i) {
     remove_key(link);
 
     switch (link.target) {
+    case Target::SPLITTER:
     case Target::OUTPUT_CHANNEL:
         link.base = &output;
         break;
@@ -109,7 +110,7 @@ void LinkManager::realign_links(const size_t index, const Target target, const I
     for (Link &link : links[link_type]) {
         if (link.target == target && link.index >= index) {
             remove_key(link);
-            link.index = std::max(0, link.index - 1);
+            link.index = std::max(0, static_cast<int>(link.index) - 1);
             assign_key(link);
         }
     }
@@ -153,7 +154,7 @@ void LinkManager::remove_key(Link &link) {
 }
 
 void LinkManager::assign_key(Link &link) {
-    const LinkKey key = {link.target, link.index, link.offset};
+    const LinkKey key = {link.target, static_cast<int>(link.index), link.offset};
     link.key = key;
     map[key].push_back(&link);
 }
@@ -178,9 +179,8 @@ void LinkManager::validate_key_and_link(const LinkKey key, const Link *link) con
 
 TargetVariableType LinkManager::get_type(const LinkKey key) const {
     switch (key.target) {
-    case Target::OUTPUT_CHANNEL: {
-        return TargetVariableType::Float;
-    }
+    case Target::SPLITTER:
+    case Target::OUTPUT_CHANNEL:
     case Target::DSP_CHANNEL: {
         return TargetVariableType::Float;
     }

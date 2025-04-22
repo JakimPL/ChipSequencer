@@ -4,12 +4,14 @@
 #include <cstdint>
 
 #include "../maps/routing.hpp"
+#include "../structures/channel.hpp"
 #include "links/link.hpp"
 
-enum OutputTarget {
-    OUTPUT_TARGET_OUTPUT = 0,
-    OUTPUT_TARGET_DSP = 1,
-    OUTPUT_TARGET_PARAMETER = 2,
+enum class OutputTarget {
+    Splitter = 0,
+    DirectOutput = 1,
+    DSP = 2,
+    Parameter = 3,
 };
 
 enum class OutputOperation {
@@ -35,10 +37,18 @@ struct OutputType {
     int index;
     int offset;
 
+    bool splitter_on = true;
+    std::array<float, MAX_OUTPUT_CHANNELS> splitter = {0.5f, 0.5f, 0.0f, 0.0f};
+
     uint8_t calculate_output_flag() const;
     void from_output_flag(const uint8_t output_flag);
     void from_link(const Link &link);
     void set_link(Link &link, const ItemType type, const uint8_t id) const;
+
+    void load_splitter(const uint8_t target[], const Link &link);
+    void set_splitter(uint8_t target[]) const;
+    uint32_t get_splitter_data() const;
+    static std::array<uint8_t, MAX_OUTPUT_CHANNELS> unpack_splitter_data(uint32_t splitter_data);
 };
 
 #endif // SONG_OUTPUT_HPP

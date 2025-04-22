@@ -27,6 +27,8 @@ void Song::new_song() {
     clear_data();
     bpm = DEFAULT_BPM;
     sample_rate = DEFAULT_SAMPLE_RATE;
+    note_divisor = DEFAULT_NOTE_DIVISOR;
+    unit = DEFAULT_UNIT;
     normalizer = DEFAULT_NORMALIZER;
     header = {
         DEFAULT_AUTHOR,
@@ -72,6 +74,7 @@ void Song::load_from_file(const std::string &filename) {
         import_all(song_dir, json);
         update_sizes();
         change_tuning(tuning.edo, tuning.a4_frequency);
+        link_manager.set_links();
 
         std::filesystem::remove_all(temp_base);
     } catch (const std::exception &exception) {
@@ -258,6 +261,8 @@ Channel *Song::add_channel() {
     channel->output_flag = 0;
     channel->pitch = DEFAULT_CHANNEL_PITCH;
     channel->output = &output;
+    channel->splitter[0] = 0x80;
+    channel->splitter[1] = 0x80;
     channels.push_back(channel);
     num_channels = channels.size();
     links[static_cast<size_t>(ItemType::CHANNEL)].push_back(Link());
@@ -623,6 +628,7 @@ void Song::serialize_channel(std::ofstream &file, Channel *channel) const {
     write_data(file, &channel->oscillator_index, sizeof(channel->oscillator_index));
     write_data(file, &channel->pitch, sizeof(channel->pitch));
     write_data(file, &channel->output_flag, sizeof(channel->output_flag));
+    write_data(file, channel->splitter, sizeof(channel->splitter));
     write_data(file, &null, sizeof(null));
 }
 
@@ -637,6 +643,7 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
         write_data(file, &distortion->effect_index, sizeof(distortion->effect_index));
         write_data(file, &distortion->output_flag, sizeof(distortion->output_flag));
         write_data(file, &null, sizeof(null));
+        write_data(file, &distortion->splitter, sizeof(distortion->splitter));
         write_data(file, &distortion->level, sizeof(distortion->level));
     } else if (dsp_type == EFFECT_GAINER) {
         DSPGainer *gainer = reinterpret_cast<DSPGainer *>(dsp);
@@ -646,6 +653,7 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
         write_data(file, &gainer->effect_index, sizeof(gainer->effect_index));
         write_data(file, &gainer->output_flag, sizeof(gainer->output_flag));
         write_data(file, &null, sizeof(null));
+        write_data(file, &gainer->splitter, sizeof(gainer->splitter));
         write_data(file, &gainer->volume, sizeof(gainer->volume));
     } else if (dsp_type == EFFECT_FILTER) {
         DSPFilter *filter = reinterpret_cast<DSPFilter *>(dsp);
@@ -655,6 +663,7 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
         write_data(file, &filter->effect_index, sizeof(filter->effect_index));
         write_data(file, &filter->output_flag, sizeof(filter->output_flag));
         write_data(file, &null, sizeof(null));
+        write_data(file, &filter->splitter, sizeof(filter->splitter));
         write_data(file, &filter->frequency, sizeof(filter->frequency));
         write_data(file, &filter->mode, sizeof(filter->mode));
     } else {
@@ -669,6 +678,7 @@ Channel *Song::deserialize_channel(std::ifstream &file) const {
     read_data(file, &channel->oscillator_index, sizeof(channel->oscillator_index));
     read_data(file, &channel->pitch, sizeof(channel->pitch));
     read_data(file, &channel->output_flag, sizeof(channel->output_flag));
+    read_data(file, &channel->splitter, sizeof(channel->splitter));
     file.seekg(sizeof(uint16_t), std::ios::cur);
     channel->output = &output;
     return channel;
@@ -685,6 +695,7 @@ void *Song::deserialize_dsp(std::ifstream &file) const {
         distortion->output = &output;
         read_data(file, &distortion->output_flag, sizeof(distortion->output_flag));
         file.seekg(sizeof(uint16_t), std::ios::cur);
+        read_data(file, &distortion->splitter, sizeof(distortion->splitter));
         read_data(file, &distortion->level, sizeof(distortion->level));
         return reinterpret_cast<void *>(distortion);
     } else if (effect_type == EFFECT_GAINER) {
@@ -693,6 +704,7 @@ void *Song::deserialize_dsp(std::ifstream &file) const {
         gainer->output = &output;
         read_data(file, &gainer->output_flag, sizeof(gainer->output_flag));
         file.seekg(sizeof(uint16_t), std::ios::cur);
+        read_data(file, &gainer->splitter, sizeof(gainer->splitter));
         read_data(file, &gainer->volume, sizeof(gainer->volume));
         return reinterpret_cast<void *>(gainer);
     } else if (effect_type == EFFECT_FILTER) {
@@ -701,6 +713,7 @@ void *Song::deserialize_dsp(std::ifstream &file) const {
         filter->output = &output;
         read_data(file, &filter->output_flag, sizeof(filter->output_flag));
         file.seekg(sizeof(uint16_t), std::ios::cur);
+        read_data(file, &filter->splitter, sizeof(filter->splitter));
         read_data(file, &filter->frequency, sizeof(filter->frequency));
         read_data(file, &filter->mode, sizeof(filter->mode));
         return reinterpret_cast<void *>(filter);

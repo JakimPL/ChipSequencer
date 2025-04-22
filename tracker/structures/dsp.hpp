@@ -13,7 +13,8 @@ struct DSP {
     uint8_t output_flag;
     uint8_t _unused;
     void *output;
-    uint8_t pad[8];
+    uint8_t splitter[MAX_OUTPUT_CHANNELS];
+    uint8_t pad[4];
 };
 
 struct DSPGainer {
@@ -22,8 +23,9 @@ struct DSPGainer {
     uint8_t output_flag;
     uint8_t _unused;
     void *output;
+    uint8_t splitter[MAX_OUTPUT_CHANNELS];
     uint16_t volume;
-    uint8_t pad[6];
+    uint8_t pad[2];
 };
 
 struct DSPDistortion {
@@ -32,8 +34,9 @@ struct DSPDistortion {
     uint8_t output_flag;
     uint8_t _unused;
     void *output;
+    uint8_t splitter[MAX_OUTPUT_CHANNELS];
     uint16_t level;
-    uint8_t pad[6];
+    uint8_t pad[2];
 };
 
 struct DSPFilter {
@@ -42,9 +45,10 @@ struct DSPFilter {
     uint8_t output_flag;
     uint8_t _unused;
     void *output;
+    uint8_t splitter[MAX_OUTPUT_CHANNELS];
     uint16_t frequency;
     uint8_t mode;
-    uint8_t pad[5];
+    uint8_t pad[1];
 };
 
 typedef std::vector<void *> DSPs;

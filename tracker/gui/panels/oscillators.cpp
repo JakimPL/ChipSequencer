@@ -178,7 +178,7 @@ void GUIOscillatorsPanel::draw_oscillator_type() {
     ImGui::Text("Type");
     ImGui::NextColumn();
 
-    if (prepare_combo(generator_names, "##GeneratorCombo", current_oscillator.generator_index)) {
+    if (prepare_combo(generator_names, "##GeneratorCombo", current_oscillator.generator_index).value_changed) {
         update_oscillator_name(oscillator_index, current_oscillator.generator_index);
     }
 
@@ -210,7 +210,10 @@ void GUIOscillatorsPanel::draw_oscillator() {
     case GENERATOR_WAVETABLE:
         ImGui::Text("Wavetable");
         ImGui::NextColumn();
-        prepare_combo(wavetable_names, "##WavetableCombo", current_oscillator.wavetable_index, true);
+        if (prepare_combo(wavetable_names, "##WavetableCombo", current_oscillator.wavetable_index, true).right_clicked) {
+            gui.set_index(GUIElement::Wavetables, current_oscillator.wavetable_index);
+        }
+
         ImGui::NextColumn();
         ImGui::Checkbox("Interpolation", &current_oscillator.wavetable_interpolation);
         break;
@@ -220,4 +223,8 @@ void GUIOscillatorsPanel::draw_oscillator() {
 }
 
 void GUIOscillatorsPanel::check_keyboard_input() {
+}
+
+void GUIOscillatorsPanel::set_index(const int index) {
+    oscillator_index = clamp_index(index, oscillators.size());
 }

@@ -67,6 +67,7 @@ void GUIDSPsPanel::from() {
 
     const Link &link = links[static_cast<size_t>(ItemType::DSP)][dsp_index];
     current_dsp.output_type.from_link(link);
+    current_dsp.output_type.load_splitter(generic->splitter, link);
 }
 
 void GUIDSPsPanel::to() const {
@@ -102,6 +103,7 @@ void GUIDSPsPanel::to() const {
 
     Link &link = links[static_cast<size_t>(ItemType::DSP)][dsp_index];
     current_dsp.output_type.set_link(link, ItemType::DSP, dsp_index);
+    current_dsp.output_type.set_splitter(static_cast<DSP *>(buffer)->splitter);
     link_manager.set_link(link, buffer, dsp_index);
 }
 
@@ -154,7 +156,7 @@ void GUIDSPsPanel::draw_dsp_type() {
     ImGui::Text("Type");
     ImGui::NextColumn();
 
-    if (prepare_combo(effect_names, "##GeneratorCombo", current_dsp.effect_index)) {
+    if (prepare_combo(effect_names, "##GeneratorCombo", current_dsp.effect_index).value_changed) {
         update_dsp_name(dsp_index, current_dsp.effect_index);
     }
 
@@ -196,4 +198,8 @@ void GUIDSPsPanel::draw_effect() {
 }
 
 void GUIDSPsPanel::check_keyboard_input() {
+}
+
+void GUIDSPsPanel::set_index(const int index) {
+    dsp_index = clamp_index(index, dsps.size());
 }
