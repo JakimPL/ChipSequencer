@@ -20,6 +20,12 @@ class GUIDSPsPanel : public GUIPanel {
         // filter
         float filter_cutoff = 8000.0f;
         bool filter_mode = false;
+
+        // delay
+        float delay_dry = 0.5f;
+        float delay_wet = 0.5f;
+        float delay_feedback = 0.25f;
+        float delay_time = 1.0f;
     } current_dsp;
 
     int dsp_index = 0;

@@ -154,19 +154,19 @@ wavetables:
 
 dsps:
 .dsp_0:
-    db 7                     ; dsp_size
+    db 11                    ; dsp_size
     db EFFECT_DISTORTION     ; effect_index
     db 0b00000000            ; output_flag
     dw output                ; output
     dw 0x7FFF                ; level
 .dsp_1:
-    db 7                     ; dsp_size
+    db 11                    ; dsp_size
     db EFFECT_GAINER         ; effect_index
     db 0b00000000            ; output_flag
     dw output                ; output
     dw 0x9FFF                ; volume
 .dsp_2:
-    db 8                     ; dsp_size
+    db 12                    ; dsp_size
     db EFFECT_FILTER         ; effect_index
     db 0b00000000            ; output_flag
     dw output                ; output

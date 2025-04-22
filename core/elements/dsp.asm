@@ -79,6 +79,7 @@ increment_dsp_timer:
     %include "core/dsp/gainer.asm"
     %include "core/dsp/distort.asm"
     %include "core/dsp/filter.asm"
+    %include "core/dsp/delay.asm"
 
     SEGMENT_DATA
 effects:
@@ -86,10 +87,12 @@ effects:
     dd gainer
     dd distortion
     dd filter
+    dd delay
     %else
     dw gainer
     dw distortion
     dw filter
+    dw delay
     %endif
 
     SEGMENT_BSS
