@@ -633,32 +633,36 @@ void Song::serialize_channel(std::ofstream &file, Channel *channel) const {
 }
 
 void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
-    const uint8_t *bytes = static_cast<const uint8_t *>(dsp);
-    const uint8_t dsp_type = bytes[1];
+    const uint8_t effect_index = static_cast<DSP *>(dsp)->effect_index;
     uint16_t null = 0;
-    if (dsp_type == EFFECT_DISTORTION) {
+    switch (effect_index) {
+    case EFFECT_DISTORTION: {
         DSPDistortion *distortion = reinterpret_cast<DSPDistortion *>(dsp);
-        uint8_t size = 12;
+        uint8_t size = SIZE_DSP_DISTORTION;
         write_data(file, &size, sizeof(size));
         write_data(file, &distortion->effect_index, sizeof(distortion->effect_index));
         write_data(file, &distortion->output_flag, sizeof(distortion->output_flag));
         write_data(file, &null, sizeof(null));
         write_data(file, &distortion->splitter, sizeof(distortion->splitter));
         write_data(file, &distortion->level, sizeof(distortion->level));
-    } else if (dsp_type == EFFECT_GAINER) {
+        return;
+    }
+    case EFFECT_GAINER: {
         DSPGainer *gainer = reinterpret_cast<DSPGainer *>(dsp);
         uint16_t null = 0;
-        uint8_t size = 6;
+        uint8_t size = SIZE_DSP_GAINER;
         write_data(file, &size, sizeof(size));
         write_data(file, &gainer->effect_index, sizeof(gainer->effect_index));
         write_data(file, &gainer->output_flag, sizeof(gainer->output_flag));
         write_data(file, &null, sizeof(null));
         write_data(file, &gainer->splitter, sizeof(gainer->splitter));
         write_data(file, &gainer->volume, sizeof(gainer->volume));
-    } else if (dsp_type == EFFECT_FILTER) {
+        return;
+    }
+    case EFFECT_FILTER: {
         DSPFilter *filter = reinterpret_cast<DSPFilter *>(dsp);
         uint16_t null = 0;
-        uint8_t size = 6;
+        uint8_t size = SIZE_DSP_FILTER;
         write_data(file, &size, sizeof(size));
         write_data(file, &filter->effect_index, sizeof(filter->effect_index));
         write_data(file, &filter->output_flag, sizeof(filter->output_flag));
@@ -666,8 +670,24 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
         write_data(file, &filter->splitter, sizeof(filter->splitter));
         write_data(file, &filter->frequency, sizeof(filter->frequency));
         write_data(file, &filter->mode, sizeof(filter->mode));
-    } else {
-        throw std::runtime_error("Unknown DSP type: " + std::to_string(dsp_type));
+        return;
+    }
+    case EFFECT_DELAY: {
+        DSPDelay *delay = reinterpret_cast<DSPDelay *>(dsp);
+        uint8_t size = SIZE_DSP_DELAY;
+        write_data(file, &size, sizeof(size));
+        write_data(file, &delay->effect_index, sizeof(delay->effect_index));
+        write_data(file, &delay->output_flag, sizeof(delay->output_flag));
+        write_data(file, &null, sizeof(null));
+        write_data(file, &delay->dry, sizeof(delay->dry));
+        write_data(file, &delay->wet, sizeof(delay->wet));
+        write_data(file, &delay->feedback, sizeof(delay->feedback));
+        write_data(file, &delay->delay_time, sizeof(delay->delay_time));
+        return;
+    }
+    default: {
+        throw std::runtime_error("Unknown DSP type: " + std::to_string(effect_index));
+    }
     }
 }
 
@@ -685,11 +705,12 @@ Channel *Song::deserialize_channel(std::ifstream &file) const {
 }
 
 void *Song::deserialize_dsp(std::ifstream &file) const {
-    uint8_t size, effect_type;
+    uint8_t size, effect_index;
     read_data(file, &size, sizeof(size));
-    read_data(file, &effect_type, sizeof(effect_type));
+    read_data(file, &effect_index, sizeof(effect_index));
 
-    if (effect_type == EFFECT_DISTORTION) {
+    switch (effect_index) {
+    case EFFECT_DISTORTION: {
         DSPDistortion *distortion = new DSPDistortion();
         distortion->dsp_size = SIZE_DSP_DISTORTION;
         distortion->output = &output;
@@ -698,7 +719,8 @@ void *Song::deserialize_dsp(std::ifstream &file) const {
         read_data(file, &distortion->splitter, sizeof(distortion->splitter));
         read_data(file, &distortion->level, sizeof(distortion->level));
         return reinterpret_cast<void *>(distortion);
-    } else if (effect_type == EFFECT_GAINER) {
+    }
+    case EFFECT_GAINER: {
         DSPGainer *gainer = new DSPGainer();
         gainer->dsp_size = SIZE_DSP_GAINER;
         gainer->output = &output;
@@ -707,7 +729,8 @@ void *Song::deserialize_dsp(std::ifstream &file) const {
         read_data(file, &gainer->splitter, sizeof(gainer->splitter));
         read_data(file, &gainer->volume, sizeof(gainer->volume));
         return reinterpret_cast<void *>(gainer);
-    } else if (effect_type == EFFECT_FILTER) {
+    }
+    case EFFECT_FILTER: {
         DSPFilter *filter = new DSPFilter();
         filter->dsp_size = SIZE_DSP_FILTER;
         filter->output = &output;
@@ -717,8 +740,22 @@ void *Song::deserialize_dsp(std::ifstream &file) const {
         read_data(file, &filter->frequency, sizeof(filter->frequency));
         read_data(file, &filter->mode, sizeof(filter->mode));
         return reinterpret_cast<void *>(filter);
-    } else {
-        throw std::runtime_error("Unknown DSP type: " + std::to_string(effect_type));
+    }
+    case EFFECT_DELAY: {
+        DSPDelay *delay = new DSPDelay();
+        delay->dsp_size = SIZE_DSP_DELAY;
+        delay->output = &output;
+        read_data(file, &delay->output_flag, sizeof(delay->output_flag));
+        file.seekg(sizeof(uint16_t), std::ios::cur);
+        read_data(file, &delay->dry, sizeof(delay->dry));
+        read_data(file, &delay->wet, sizeof(delay->wet));
+        read_data(file, &delay->feedback, sizeof(delay->feedback));
+        read_data(file, &delay->delay_time, sizeof(delay->delay_time));
+        return reinterpret_cast<void *>(delay);
+    }
+    default: {
+        throw std::runtime_error("Unknown DSP type: " + std::to_string(effect_index));
+    }
     }
 }
 
@@ -727,27 +764,34 @@ void *Song::deserialize_oscillator(std::ifstream &file) const {
     read_data(file, &size, sizeof(size));
     read_data(file, &oscillator_type, sizeof(oscillator_type));
 
-    if (oscillator_type == GENERATOR_SQUARE) {
+    switch (oscillator_type) {
+    case GENERATOR_SQUARE: {
         OscillatorSquare *oscillator = new OscillatorSquare();
         read_data(file, &oscillator->duty_cycle, sizeof(oscillator->duty_cycle));
         return reinterpret_cast<void *>(oscillator);
-    } else if (oscillator_type == GENERATOR_SAW) {
+    }
+    case GENERATOR_SAW: {
         OscillatorSaw *oscillator = new OscillatorSaw();
         read_data(file, &oscillator->reverse, sizeof(oscillator->reverse));
         return reinterpret_cast<void *>(oscillator);
-    } else if (oscillator_type == GENERATOR_SINE) {
+    }
+    case GENERATOR_SINE: {
         OscillatorSine *oscillator = new OscillatorSine();
         return reinterpret_cast<void *>(oscillator);
-    } else if (oscillator_type == GENERATOR_WAVETABLE) {
+    }
+    case GENERATOR_WAVETABLE: {
         OscillatorWavetable *oscillator = new OscillatorWavetable();
         read_data(file, &oscillator->wavetable_index, sizeof(oscillator->wavetable_index));
         read_data(file, &oscillator->interpolation, sizeof(oscillator->interpolation));
         return reinterpret_cast<void *>(oscillator);
-    } else if (oscillator_type == GENERATOR_NOISE) {
+    }
+    case GENERATOR_NOISE: {
         OscillatorNoise *oscillator = new OscillatorNoise();
         return reinterpret_cast<void *>(oscillator);
-    } else {
+    }
+    default: {
         throw std::runtime_error("Unknown oscillator type: " + std::to_string(oscillator_type));
+    }
     }
 }
 
