@@ -155,16 +155,25 @@ void GUIChannelsPanel::draw_channel() {
     }
 
     ImGui::Text("Envelope:");
-    prepare_combo(envelope_names, "##EnvelopeCombo", current_channel.envelope_index, true);
+    if (prepare_combo(envelope_names, "##EnvelopeCombo", current_channel.envelope_index, true).right_clicked) {
+        gui.set_index(GUIElement::Envelopes, current_channel.envelope_index);
+    }
+
     ImGui::Text("Oscillator:");
-    prepare_combo(oscillator_names, "##OscillatorCombo", current_channel.oscillator_index, true);
+    if (prepare_combo(oscillator_names, "##OscillatorCombo", current_channel.oscillator_index, true).right_clicked) {
+        gui.set_index(GUIElement::Oscillators, current_channel.oscillator_index);
+    }
+
     if (ImGui::Checkbox("Constant Pitch", &current_channel.constant_pitch)) {
         current_channel.order_index = 0;
     }
 
     ImGui::SameLine();
     ImGui::BeginDisabled(current_channel.constant_pitch);
-    prepare_combo(order_names, "##OrderCombo", current_channel.order_index, !current_channel.constant_pitch);
+    if (prepare_combo(order_names, "##OrderCombo", current_channel.order_index, !current_channel.constant_pitch).right_clicked) {
+        gui.set_index(GUIElement::Orders, current_channel.order_index);
+    }
+
     ImGui::EndDisabled();
 
     const LinkKey key = {Target::CHANNEL, channel_index, CHANNEL_PITCH};

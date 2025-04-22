@@ -192,12 +192,12 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
     push_secondary_style();
     ImGui::Separator();
     ImGui::Text("Output:");
-    const bool result = prepare_combo(target_types, "##OutputTargetCombo", output_type.target);
+    const bool value_changed = prepare_combo(target_types, "##OutputTargetCombo", output_type.target).value_changed;
     const size_t output_channels = song.get_output_channels();
 
     switch (static_cast<OutputTarget>(output_type.target)) {
     case OutputTarget::Splitter: {
-        if (result) {
+        if (value_changed) {
             output_type.operation = static_cast<int>(OutputOperation::Add);
         }
         ImGui::Text("Splitter:");
@@ -209,7 +209,7 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
         break;
     }
     case OutputTarget::DirectOutput: {
-        if (result) {
+        if (value_changed) {
             output_type.operation = static_cast<int>(OutputOperation::Add);
         }
 
@@ -221,7 +221,7 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
             ImGui::Text("No DSPs available.");
             break;
         } else {
-            if (result) {
+            if (value_changed) {
                 output_type.operation = static_cast<int>(OutputOperation::Add);
             }
 
@@ -230,7 +230,7 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
         }
     }
     case OutputTarget::Parameter: {
-        if (result) {
+        if (value_changed) {
             output_type.operation = static_cast<int>(OutputOperation::Set);
         }
 
@@ -286,7 +286,7 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
     ImGui::EndDisabled();
     pop_secondary_style();
 
-    return result;
+    return value_changed;
 }
 
 void draw_output_parameter(OutputType &output_type, const std::vector<std::string> &names, const std::string label) {
@@ -300,7 +300,7 @@ void draw_output_parameter(OutputType &output_type, const std::vector<std::strin
     const RoutingItems &routing = routing_variables.at(target);
     int &item = output_type.routing_item;
 
-    if (prepare_combo(names, "##OutputParameter" + label + "Combo", output_type.index, true)) {
+    if (prepare_combo(names, "##OutputParameter" + label + "Combo", output_type.index, true).value_changed) {
         item = 0;
     }
 
@@ -328,7 +328,7 @@ void draw_output_parameter_oscillator(OutputType &output_type) {
         return;
     }
 
-    if (prepare_combo(oscillator_names, "##OutputParameterOscillatorCombo", output_type.index, true)) {
+    if (prepare_combo(oscillator_names, "##OutputParameterOscillatorCombo", output_type.index, true).value_changed) {
         item = 0;
     }
 
@@ -356,7 +356,7 @@ void draw_output_parameter_dsp(OutputType &output_type) {
         return;
     }
 
-    if (prepare_combo(dsp_names, "##OutputParameterDSPCombo", output_type.index, true)) {
+    if (prepare_combo(dsp_names, "##OutputParameterDSPCombo", output_type.index, true).value_changed) {
         item = 0;
     }
 
@@ -368,7 +368,7 @@ void draw_output_parameter_dsp(OutputType &output_type) {
     }
 }
 
-bool prepare_combo(const std::vector<std::string> &names, std::string label, int &index, const bool error_if_empty) {
+GUIState prepare_combo(const std::vector<std::string> &names, std::string label, int &index, const bool error_if_empty) {
     std::vector<const char *> names_cstr;
     for (const auto &name : names) {
         names_cstr.push_back(name.c_str());
@@ -382,14 +382,15 @@ bool prepare_combo(const std::vector<std::string> &names, std::string label, int
         ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.0f);
     }
 
-    const bool result = ImGui::Combo(label.c_str(), &index, names_cstr.data(), names_cstr.size());
+    const bool value_changed = ImGui::Combo(label.c_str(), &index, names_cstr.data(), names_cstr.size());
+    const bool right_clicked = ImGui::IsItemClicked(ImGuiMouseButton_Right);
 
     if (error_if_empty && names.empty()) {
         ImGui::PopStyleVar();
         ImGui::PopStyleColor();
     }
 
-    return result;
+    return {value_changed, right_clicked};
 }
 
 void update_items(std::vector<std::string> &names, size_t size, std::string label, int &index) {

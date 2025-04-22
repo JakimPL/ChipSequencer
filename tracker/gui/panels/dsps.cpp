@@ -156,7 +156,7 @@ void GUIDSPsPanel::draw_dsp_type() {
     ImGui::Text("Type");
     ImGui::NextColumn();
 
-    if (prepare_combo(effect_names, "##GeneratorCombo", current_dsp.effect_index)) {
+    if (prepare_combo(effect_names, "##GeneratorCombo", current_dsp.effect_index).value_changed) {
         update_dsp_name(dsp_index, current_dsp.effect_index);
     }
 
