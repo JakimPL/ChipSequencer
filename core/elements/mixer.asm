@@ -69,14 +69,7 @@ store_output:
     push eax
 
 .apply_weight:
-    mov [value], eax
-    fld dword [value]
-    mov dword [value], 0
-    mov byte [value], dl
-    fimul dword [value]
-    fidiv word [i_255]
-    fstp dword [value]
-    mov eax, [value]
+    call multiply_by_byte_integer
 
 .store:
     push edx

@@ -73,7 +73,20 @@ float_to_integer:
     add eax, BASE_VOLUME
     ret
 
-multiply_by_integer:
+multiply_by_byte_integer:
+; EAX - input float, output
+; EDX - input 8-bit integer
+    mov [value], eax
+    fld dword [value]
+    mov dword [value], 0
+    mov byte [value], dl
+    fimul dword [value]
+    fidiv word [i_255]
+    fstp dword [value]
+    mov eax, [value]
+    ret
+
+multiply_by_word_integer:
 ; EAX - input float, output
 ; EBX - input 16-bit integer
     mov [value], ebx

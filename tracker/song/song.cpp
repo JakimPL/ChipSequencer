@@ -679,6 +679,7 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
         write_data(file, &delay->effect_index, sizeof(delay->effect_index));
         write_data(file, &delay->output_flag, sizeof(delay->output_flag));
         write_data(file, &null, sizeof(null));
+        write_data(file, &delay->splitter, sizeof(delay->splitter));
         write_data(file, &delay->dry, sizeof(delay->dry));
         write_data(file, &delay->wet, sizeof(delay->wet));
         write_data(file, &delay->feedback, sizeof(delay->feedback));
@@ -747,6 +748,7 @@ void *Song::deserialize_dsp(std::ifstream &file) const {
         delay->output = &output;
         read_data(file, &delay->output_flag, sizeof(delay->output_flag));
         file.seekg(sizeof(uint16_t), std::ios::cur);
+        read_data(file, &delay->splitter, sizeof(delay->splitter));
         read_data(file, &delay->dry, sizeof(delay->dry));
         read_data(file, &delay->wet, sizeof(delay->wet));
         read_data(file, &delay->feedback, sizeof(delay->feedback));
@@ -1043,13 +1045,16 @@ void Song::delete_dsp(void *dsp) {
     switch (dsp_type) {
     case EFFECT_GAINER:
         delete static_cast<DSPGainer *>(dsp);
-        break;
+        return;
     case EFFECT_DISTORTION:
         delete static_cast<DSPDistortion *>(dsp);
-        break;
+        return;
     case EFFECT_FILTER:
         delete static_cast<DSPFilter *>(dsp);
-        break;
+        return;
+    case EFFECT_DELAY:
+        delete static_cast<DSPFilter *>(dsp);
+        return;
     default:
         throw std::runtime_error("Unknown DSP type: " + std::to_string(dsp_type));
     }
