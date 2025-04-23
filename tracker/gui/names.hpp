@@ -19,14 +19,15 @@ extern std::vector<std::string> wavetable_names;
 
 const std::vector<std::string> effect_names = {"Gainer", "Distortion", "Filter", "Delay"};
 const std::vector<std::string> parameter_types = {"Envelope", "Sequence", "Order", "Oscillator", "Wavetable", "DSP", "Channel"};
-const std::vector<std::string> target_types = {"Splitter", "Direct output", "DSP", "Parameter"};
+const std::vector<std::string> target_types = {"Output Splitter", "DSP Splitter", "Direct output", "DSP", "Parameter"};
 const std::vector<std::string> operation_names = {"Add", "Set", "Multiply", "Zero"};
 const std::vector<std::string> variable_types = {"Float", "Int8", "Int16", "Int32"};
 const std::vector<std::string> generator_names = {"Square", "Saw", "Sine", "Wavetable", "Noise"};
 const std::map<Target, std::string> target_names = {
-    {Target::SPLITTER, "Splitter"},
-    {Target::OUTPUT_CHANNEL, "Output"},
-    {Target::DSP_CHANNEL, "DSP"},
+    {Target::SPLITTER_OUTPUT, "Output Splitter"},
+    {Target::SPLITTER_DSP, "DSP Splitter"},
+    {Target::DIRECT_OUTPUT, "Output"},
+    {Target::DIRECT_DSP, "DSP"},
     {Target::ENVELOPE, "Envelope"},
     {Target::SEQUENCE, "Sequence"},
     {Target::ORDER, "Order"},

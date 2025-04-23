@@ -4,9 +4,10 @@
 #include <cstdint>
 
 enum class Target : uint8_t {
-    SPLITTER,
-    OUTPUT_CHANNEL,
-    DSP_CHANNEL,
+    SPLITTER_OUTPUT,
+    SPLITTER_DSP,
+    DIRECT_OUTPUT,
+    DIRECT_DSP,
     ENVELOPE,
     SEQUENCE,
     ORDER,

@@ -11,9 +11,10 @@ class LinkType(Enum):
 
 
 class LinkTarget(Enum):
-    SPLITTER = "splitter"
-    OUTPUT_CHANNEL = "output_channel"
-    DSP_CHANNEL = "dsp_channel"
+    SPLITTER_OUTPUT = "splitter_output"
+    SPLITTER_DSP = "splitter_dsp"
+    DIRECT_OUTPUT = "direct_output"
+    DIRECT_DSP = "direct_dsp"
     ENVELOPE = "envelope"
     SEQUENCE = "sequence"
     ORDER = "order"
@@ -26,17 +27,18 @@ class LinkTarget(Enum):
     @staticmethod
     def from_integer(integer: int) -> "LinkTarget":
         dictionary: Dict[int, LinkTarget] = {
-            0: LinkTarget.SPLITTER,
-            1: LinkTarget.OUTPUT_CHANNEL,
-            2: LinkTarget.DSP_CHANNEL,
-            3: LinkTarget.ENVELOPE,
-            4: LinkTarget.SEQUENCE,
-            5: LinkTarget.ORDER,
-            6: LinkTarget.OSCILLATOR,
-            7: LinkTarget.WAVETABLE,
-            8: LinkTarget.DSP,
-            9: LinkTarget.CHANNEL,
-            10: LinkTarget.UNUSED,
+            0: LinkTarget.SPLITTER_OUTPUT,
+            1: LinkTarget.SPLITTER_DSP,
+            2: LinkTarget.DIRECT_OUTPUT,
+            3: LinkTarget.DIRECT_DSP,
+            4: LinkTarget.ENVELOPE,
+            5: LinkTarget.SEQUENCE,
+            6: LinkTarget.ORDER,
+            7: LinkTarget.OSCILLATOR,
+            8: LinkTarget.WAVETABLE,
+            9: LinkTarget.DSP,
+            10: LinkTarget.CHANNEL,
+            11: LinkTarget.UNUSED,
         }
 
         return dictionary[integer]

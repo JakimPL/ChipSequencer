@@ -8,10 +8,11 @@
 #include "links/link.hpp"
 
 enum class OutputTarget {
-    Splitter = 0,
-    DirectOutput = 1,
-    DSP = 2,
-    Parameter = 3,
+    OutputSplitter,
+    DSPSplitter,
+    DirectOutput,
+    DirectDSP,
+    Parameter,
 };
 
 enum class OutputOperation {

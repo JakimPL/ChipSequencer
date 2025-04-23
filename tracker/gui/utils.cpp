@@ -196,13 +196,27 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
     const size_t output_channels = song.get_output_channels();
 
     switch (static_cast<OutputTarget>(output_type.target)) {
-    case OutputTarget::Splitter: {
+    case OutputTarget::OutputSplitter: {
         if (value_changed) {
             output_type.operation = static_cast<int>(OutputOperation::Add);
         }
         ImGui::Text("Splitter:");
         for (size_t i = 0; i < output_channels; ++i) {
             const std::string label = "Channel " + std::to_string(i);
+            draw_float_slider(label.c_str(), output_type.splitter[i], {}, 0.0f, 1.0f);
+        }
+
+        break;
+    }
+    case OutputTarget::DSPSplitter: {
+        if (value_changed) {
+            output_type.operation = static_cast<int>(OutputOperation::Add);
+        }
+        ImGui::Text("Initial DSP:");
+        prepare_combo(dsp_names, "##SplitterDSPCombo", output_type.dsp_channel, true);
+        ImGui::Text("Splitter:");
+        for (size_t i = output_type.dsp_channel; i < dsps.size(); ++i) {
+            const std::string label = "DSP " + std::to_string(i);
             draw_float_slider(label.c_str(), output_type.splitter[i], {}, 0.0f, 1.0f);
         }
 
@@ -216,7 +230,7 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
         draw_int_slider("Channel", output_type.output_channel, {}, 0, output_channels - 1);
         break;
     }
-    case OutputTarget::DSP: {
+    case OutputTarget::DirectDSP: {
         if (dsps.empty() || dsp_index >= static_cast<int>(dsps.size()) - 1) {
             ImGui::Text("No DSPs available.");
             break;
@@ -266,9 +280,10 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
             draw_output_parameter(output_type, channel_names, "Channel");
             break;
         }
-        case Target::SPLITTER:
-        case Target::OUTPUT_CHANNEL:
-        case Target::DSP_CHANNEL:
+        case Target::SPLITTER_OUTPUT:
+        case Target::SPLITTER_DSP:
+        case Target::DIRECT_OUTPUT:
+        case Target::DIRECT_DSP:
         case Target::UNUSED: {
             throw std::runtime_error("Invalid target type");
         }

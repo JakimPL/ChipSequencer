@@ -377,7 +377,7 @@ void Song::remove_dsp(const size_t index) {
         links[link_type].erase(links[link_type].begin() + index);
         num_dsps = dsps.size();
 
-        link_manager.realign_links(index, Target::DSP_CHANNEL);
+        link_manager.realign_links(index, Target::DIRECT_DSP);
         link_manager.realign_links(index, Target::DSP);
         link_manager.set_links();
     }
