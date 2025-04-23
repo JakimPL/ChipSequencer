@@ -34,13 +34,13 @@ clear_dsp:
     ret
 
 initialize_dsp_buffers:
-    mov bx, DSP_BUFFER_SIZE
+    mov ebx, DSP_BUFFER_SIZE
     mov esi, initialize_dsp_buffer
     call reset
     ret
 
 initialize_dsp_buffer:
-    movzx ecx, bx
+    mov ecx, ebx
     mov dword [dsp_buffer + 4 * ecx], __float32__(0.0)
     ret
 

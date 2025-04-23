@@ -56,7 +56,7 @@ class Compiler:
         source = "PLAYER.EXE" if self.compress else "MAIN.EXE"
         shutil.copy(self.bin_dir / source, self.target_path)
 
-    def compile(self, pack: bool = False, terminate: bool = True) -> None:
+    def compile(self, pack: bool = False, terminate: bool = False) -> None:
         args = ["dosbox", "-noautoexec", "-c", "mount c: .", "-c", "c:", "-c", "call compile.bat"]
 
         if pack:
@@ -77,7 +77,7 @@ class Compiler:
         binary_data = load_binary(links_path)
 
         links = []
-        format_string = "<BBBBH"
+        format_string = "<BBBIH"
         struct_size = struct.calcsize(format_string)
 
         for i in range(0, len(binary_data), struct_size):
@@ -113,9 +113,11 @@ class Compiler:
             else:
                 raise ValueError(f"Invalid type: {link.type}")
 
-            if target == LinkTarget.OUTPUT:
+            if target == LinkTarget.SPLITTER:
                 reference = references["output"][1]
-            elif target == LinkTarget.DSP_INPUT:
+            elif target == LinkTarget.OUTPUT_CHANNEL:
+                reference = references["output"][1]
+            elif target == LinkTarget.DSP_CHANNEL:
                 reference = references["dsp_input"][1]
             else:
                 reference = references[f"{target.value}s.{target.value}_{link.index}"][1]
