@@ -73,7 +73,7 @@ filter:
 .difference:
     fsub st1, st0
     fxch st1
-    call save_eax_to_fpu
+    call save_eax_from_fpu
 
 .done:
     fstp st0

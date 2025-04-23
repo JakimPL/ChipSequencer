@@ -51,7 +51,7 @@ mix:
     fld dword [normalizer]
     fmul
 
-    call save_eax_to_fpu
+    call save_eax_from_fpu
 
     %ifndef ELF
     call float_to_integer

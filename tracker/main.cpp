@@ -20,7 +20,11 @@ int main(int argc, char *argv[]) {
 
     if (argc > 1) {
         std::string filename = argv[1];
-        gui.open(filename);
+        try {
+            gui.open(filename);
+        } catch (std::runtime_error &exception) {
+            std::cerr << "Failed to read data file: " << exception.what() << std::endl;
+        }
     }
 
     while (!gui.is_done()) {

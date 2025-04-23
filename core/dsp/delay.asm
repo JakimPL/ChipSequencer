@@ -1,6 +1,5 @@
     SEGMENT_CODE
 delay:
-    ret
     call load_dsp_buffer
     LOAD_OFFSET ecx, dsp_offset
     movzx edx, byte [DSP_DELAY_DRY + ecx]
@@ -21,5 +20,6 @@ delay:
 
 .done:
     pop eax
-    fstp
+    MOV_TO_SI eax
+    call save_eax_from_fpu
     ret

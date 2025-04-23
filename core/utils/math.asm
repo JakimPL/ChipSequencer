@@ -54,7 +54,7 @@ load_eax_to_fpu:
     fld dword [value]
     ret
 
-save_eax_to_fpu:
+save_eax_from_fpu:
     fstp dword [value]
     mov eax, [value]
     ret
@@ -67,7 +67,7 @@ integer_to_float:
     fild dword [value]
     fld dword [half_range]
     fdiv
-    call save_eax_to_fpu
+    call save_eax_from_fpu
     ret
 
 float_to_integer:
@@ -96,7 +96,7 @@ multiply_by_byte_integer_to_eax:
 ; DL - input 8-bit integer
     call load_eax_to_fpu
     call multiply_by_byte_integer
-    call save_eax_to_fpu
+    call save_eax_from_fpu
     mov eax, [value]
     ret
 
@@ -114,7 +114,7 @@ multiply_by_word_integer_to_eax:
     fild dword [value]
     mov [value], eax
     call multiply_by_word_integer
-    call save_eax_to_fpu
+    call save_eax_from_fpu
     ret
 
     SEGMENT_DATA
