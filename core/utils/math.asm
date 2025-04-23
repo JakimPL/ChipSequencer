@@ -49,6 +49,16 @@ generate_sine_table:
     fstp st0
     ret
 
+load_eax_to_fpu:
+    mov [value], eax
+    fld dword [value]
+    ret
+
+save_eax_to_fpu:
+    fstp dword [value]
+    mov eax, [value]
+    ret
+
 integer_to_float:
 ; EAX - input/output
     sub eax, BASE_VOLUME
@@ -57,8 +67,7 @@ integer_to_float:
     fild dword [value]
     fld dword [half_range]
     fdiv
-    fstp dword [value]
-    mov eax, [value]
+    call save_eax_to_fpu
     ret
 
 float_to_integer:
@@ -74,11 +83,8 @@ float_to_integer:
     ret
 
 multiply_by_byte_integer:
-; EAX - input float
-; EDX - input 8-bit integer
-; FPU - output
-    mov [value], eax
-    fld dword [value]
+; FPU - input/output
+; DL - input 8-bit integer
     mov dword [value], 0
     mov byte [value], dl
     fimul dword [value]
@@ -87,19 +93,16 @@ multiply_by_byte_integer:
 
 multiply_by_byte_integer_to_eax:
 ; EAX - input float, output
-; EDX - input 8-bit integer
+; DL - input 8-bit integer
+    call load_eax_to_fpu
     call multiply_by_byte_integer
-    fstp dword [value]
+    call save_eax_to_fpu
     mov eax, [value]
     ret
 
 multiply_by_word_integer:
-; EAX - input float
+; FPU - input/output
 ; EBX - input 16-bit integer
-; FPU - output
-    mov [value], ebx
-    fild dword [value]
-    mov [value], eax
     fmul dword [value]
     fdiv dword [half_range]
     ret
@@ -107,9 +110,11 @@ multiply_by_word_integer:
 multiply_by_word_integer_to_eax:
 ; EAX - input float, output
 ; EBX - input 16-bit integer
+    mov [value], ebx
+    fild dword [value]
+    mov [value], eax
     call multiply_by_word_integer
-    fstp dword [value]
-    mov eax, [value]
+    call save_eax_to_fpu
     ret
 
     SEGMENT_DATA

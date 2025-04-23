@@ -54,8 +54,7 @@ filter:
 
 .apply_filter:
 ; a * y[n] + b * y[n - 1]
-    mov [value], eax
-    fld dword [value]
+    call load_eax_to_fpu
     fld st0
     fmulp st2, st0
     fxch st2
@@ -74,8 +73,7 @@ filter:
 .difference:
     fsub st1, st0
     fxch st1
-    fstp dword [value]
-    mov eax, [value]
+    call save_eax_to_fpu
 
 .done:
     fstp st0

@@ -51,8 +51,7 @@ mix:
     fld dword [normalizer]
     fmul
 
-    fstp dword [value]
-    mov eax, [value]
+    call save_eax_to_fpu
 
     %ifndef ELF
     call float_to_integer
@@ -105,8 +104,7 @@ store_single_output:
     test cl, 0b00100000
     jne .add_16_bit
 .add_or_multiply_float:
-    mov [value], eax
-    fld dword [value]
+    call load_eax_to_fpu
     test cl, 0b10000000
     jz .add_float
 .multiply_float:
