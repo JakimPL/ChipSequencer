@@ -22,6 +22,6 @@
     sequence_current_note resb MAX_CHANNELS
 
     dsp_input resd MAX_DSPS
-    dsp_timer resw MAX_DSPS
+    dsp_timer resd MAX_DSPS
 
     wavetable_samples resw MAX_WAVETABLE_SIZE

@@ -19,7 +19,7 @@ reset_dsps:
 
 reset_dsp:
     movzx ecx, bl
-    mov dword [dsp_timer + 2 * ecx], 0
+    mov dword [dsp_timer + 4 * ecx], 0
     ret
 
 clear_dsps:
@@ -58,21 +58,21 @@ load_dsp_target:
 
 load_dsp_buffer:
     movzx ecx, byte [current_dsp]
-    movzx esi, word [dsp_timer + 2 * ecx]
-    shl si, 2
-    add si, [buffer_offsets + 2 * ecx]
+    mov esi, [dsp_timer + 4 * ecx]
+    shl esi, 2
+    add esi, [buffer_offsets + 4 * ecx]
     add esi, dsp_buffer
     ret
 
 increment_dsp_timer:
     movzx ecx, byte [current_dsp]
-    mov bx, [dsp_timer + 2 * ecx]
-    inc bx
-    cmp bx, dx
+    mov ebx, [dsp_timer + 4 * ecx]
+    inc ebx
+    cmp ebx, edx
     jne .done
-    sub bx, dx
+    sub ebx, edx
 .done:
-    mov [dsp_timer + 2 * ecx], bx
+    mov [dsp_timer + 4 * ecx], ebx
     ret
 
 ; Effects

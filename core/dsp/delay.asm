@@ -15,7 +15,13 @@ delay:
     fadd st0, st1
 
 .increment_dsp_timer:
-    movzx edx, word [DSP_DELAY_TIME + ecx]
+    movzx ebx, word [DSP_DELAY_TIME + ecx]
+    mov eax, [sample_rate]
+    shr eax, 3
+    imul eax, 5
+    mul ebx
+    shr eax, 12
+    mov edx, eax
     call increment_dsp_timer
 
 .done:

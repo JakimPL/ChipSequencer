@@ -6,7 +6,7 @@ from structures.dsp import DSP
 from structures.enumeration import Effects, Generators
 from structures.output import Output
 from structures.song import Song
-from structures.types import Byte, Data, Word, convert
+from structures.types import Byte, Data, Dword, Word, convert
 
 
 class Creator:
@@ -290,7 +290,7 @@ class Creator:
         self.label("buffer_offsets")
         offset = 0
         for i, dsp in enumerate(self.song.dsps):
-            self.value(Word(offset), f"dsp_{i}_buffer_offset")
+            self.value(Dword(offset), f"dsp_{i}_buffer_offset")
             offset += dsp.buffer
 
         self.comment()

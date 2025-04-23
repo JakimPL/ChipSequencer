@@ -69,7 +69,7 @@ void GUIDSPsPanel::from() {
         current_dsp.delay_dry = static_cast<float>(delay->dry) / UINT8_MAX;
         current_dsp.delay_wet = static_cast<float>(delay->wet) / UINT8_MAX;
         current_dsp.delay_feedback = static_cast<float>(delay->feedback) / UINT8_MAX;
-        current_dsp.delay_time = static_cast<float>(delay->delay_time);
+        current_dsp.delay_time = static_cast<float>(delay->delay_time) / UINT16_MAX * 20;
         break;
     }
     }
@@ -115,7 +115,7 @@ void GUIDSPsPanel::to() const {
         dsp->dry = static_cast<uint8_t>(std::round(current_dsp.delay_dry * UINT8_MAX));
         dsp->wet = static_cast<uint8_t>(std::round(current_dsp.delay_wet * UINT8_MAX));
         dsp->feedback = static_cast<uint8_t>(std::round(current_dsp.delay_feedback * UINT8_MAX));
-        dsp->delay_time = static_cast<uint16_t>(std::round(current_dsp.delay_time));
+        dsp->delay_time = static_cast<uint16_t>(std::round(current_dsp.delay_time * UINT16_MAX / 20));
         break;
     }
     }
@@ -220,7 +220,7 @@ void GUIDSPsPanel::draw_effect() {
         ImGui::SameLine();
         draw_knob("Feedback", current_dsp.delay_feedback, {Target::DSP, dsp_index, DSP_DELAY_FEEDBACK}, 0.0f, 1.0f);
         ImGui::SameLine();
-        draw_knob("Time", current_dsp.delay_time, {Target::DSP, dsp_index, DSP_DELAY_TIME}, 1, UINT16_MAX);
+        draw_knob("Time", current_dsp.delay_time, {Target::DSP, dsp_index, DSP_DELAY_TIME}, 0.01f, 10.0f);
         break;
     }
     }

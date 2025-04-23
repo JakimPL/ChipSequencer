@@ -7,7 +7,7 @@ filter:
     add esi, dsp_buffer
     %else
     movzx ecx, byte [current_dsp]
-    mov esi, [buffer_offsets + 2 * ecx]
+    mov esi, [buffer_offsets + 4 * ecx]
     add esi, dsp_buffer
     %endif
 

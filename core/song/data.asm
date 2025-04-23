@@ -240,6 +240,6 @@ channels:
     dw oscillators.oscillator_0 + OSCILLATOR_SQUARE_DUTY_CYCLE ; output
 
 buffer_offsets:
-    dw 0                     ; dsp_0_buffer_offset
-    dw 0                     ; dsp_1_buffer_offset
-    dw 0                     ; dsp_2_buffer_offset
+    dd 0                     ; dsp_0_buffer_offset
+    dd 0                     ; dsp_1_buffer_offset
+    dd 0                     ; dsp_2_buffer_offset
