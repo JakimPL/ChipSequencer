@@ -59,7 +59,7 @@
     %define MAX_DSPS 16
 
     %define MAX_WAVETABLE_SIZE 512
-    %define MAX_DSP_BUFFER_SIZE 256
+    %define MAX_DSP_BUFFER_SIZE 32768
 
     %define MAX_ENVELOPE_TIMER_LENGTH 10
 

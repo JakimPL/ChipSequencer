@@ -74,43 +74,42 @@ float_to_integer:
     ret
 
 multiply_by_byte_integer:
-; EAX - input float, output
+; EAX - input float
 ; EDX - input 8-bit integer
+; FPU - output
     mov [value], eax
     fld dword [value]
     mov dword [value], 0
     mov byte [value], dl
     fimul dword [value]
     fidiv word [i_255]
+    ret
+
+multiply_by_byte_integer_to_eax:
+; EAX - input float, output
+; EDX - input 8-bit integer
+    call multiply_by_byte_integer
     fstp dword [value]
     mov eax, [value]
     ret
 
 multiply_by_word_integer:
-; EAX - input float, output
+; EAX - input float
 ; EBX - input 16-bit integer
+; FPU - output
     mov [value], ebx
     fild dword [value]
     mov [value], eax
-    fld dword [value]
-    fmul
-    fld dword [half_range]
-    fdiv
-    fstp dword [value]
-    mov eax, [value]
+    fmul dword [value]
+    fdiv dword [half_range]
     ret
 
-add_floats:
-; EAX - input/output
-; EBX - input float
-    mov dword [value], ebx
-    fld dword [value]
-    mov dword [value], eax
-    fld dword [value]
-    fadd
+multiply_by_word_integer_to_eax:
+; EAX - input float, output
+; EBX - input 16-bit integer
+    call multiply_by_word_integer
     fstp dword [value]
-    fstp st0
-    mov eax, dword [value]
+    mov eax, [value]
     ret
 
     SEGMENT_DATA
