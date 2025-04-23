@@ -68,7 +68,7 @@ store_output:
     push eax
 
 .apply_weight:
-    call multiply_by_byte_integer
+    call multiply_by_byte_integer_to_eax
 
 .store:
     push edx

@@ -6,8 +6,6 @@
 #include <vector>
 #include <unordered_map>
 
-#include <iostream>
-
 #include "../init.hpp"
 
 #include "../../general.hpp"
@@ -307,10 +305,12 @@ void GUIRoutingPanel::draw_all_links() {
             }
         } else if (target.target == Target::SPLITTER_DSP) {
             std::array<uint8_t, MAX_OUTPUT_CHANNELS> splitter = OutputType::unpack_splitter_data(target.index);
-            size_t end = dsps.size() - target.offset / sizeof(_Float32);
-            for (size_t i = 0; i < end; ++i) {
-                const uint16_t offset = sizeof(_Float32) * i;
-                const OutputKey target_key = {Target::DIRECT_DSP, static_cast<int>(i), offset};
+            int start = target.offset / sizeof(_Float32);
+            int end = std::clamp(static_cast<int>(dsps.size()) - start, 0, MAX_OUTPUT_CHANNELS);
+            for (int i = 0; i < end; ++i) {
+                const size_t j = start + i;
+                const uint16_t offset = sizeof(_Float32) * j;
+                const OutputKey target_key = {Target::DIRECT_DSP, static_cast<int>(j), offset};
                 draw_link(source, target_key, splitter[i]);
             }
         } else {

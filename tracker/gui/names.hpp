@@ -19,7 +19,7 @@ extern std::vector<std::string> wavetable_names;
 
 const std::vector<std::string> effect_names = {"Gainer", "Distortion", "Filter", "Delay"};
 const std::vector<std::string> parameter_types = {"Envelope", "Sequence", "Order", "Oscillator", "Wavetable", "DSP", "Channel"};
-const std::vector<std::string> target_types = {"Output Splitter", "DSP Splitter", "Direct output", "DSP", "Parameter"};
+const std::vector<std::string> target_types = {"Output splitter", "DSP splitter", "Direct output", "DSP", "Parameter"};
 const std::vector<std::string> operation_names = {"Add", "Set", "Multiply", "Zero"};
 const std::vector<std::string> variable_types = {"Float", "Int8", "Int16", "Int32"};
 const std::vector<std::string> generator_names = {"Square", "Saw", "Sine", "Wavetable", "Noise"};

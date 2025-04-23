@@ -209,15 +209,24 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
         break;
     }
     case OutputTarget::DSPSplitter: {
+        if (dsps.empty() || dsp_index >= static_cast<int>(dsps.size()) - 1) {
+            ImGui::Text("No DSPs available.");
+            break;
+        }
+
         if (value_changed) {
             output_type.operation = static_cast<int>(OutputOperation::Add);
         }
+
         ImGui::Text("Initial DSP:");
-        prepare_combo(dsp_names, "##SplitterDSPCombo", output_type.dsp_channel, true);
+        draw_int_slider("DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
         ImGui::Text("Splitter:");
-        for (size_t i = output_type.dsp_channel; i < dsps.size(); ++i) {
-            const std::string label = "DSP " + std::to_string(i);
-            draw_float_slider(label.c_str(), output_type.splitter[i], {}, 0.0f, 1.0f);
+        int start = output_type.dsp_channel;
+        int end = start + std::clamp(static_cast<int>(dsps.size()) - start, 0, MAX_OUTPUT_CHANNELS);
+        for (int i = output_type.dsp_channel; i < end; ++i) {
+            const size_t j = i - output_type.dsp_channel;
+            const std::string label = dsp_names[i];
+            draw_float_slider(label.c_str(), output_type.splitter[j], {}, 0.0f, 1.0f);
         }
 
         break;
@@ -234,14 +243,14 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
         if (dsps.empty() || dsp_index >= static_cast<int>(dsps.size()) - 1) {
             ImGui::Text("No DSPs available.");
             break;
-        } else {
-            if (value_changed) {
-                output_type.operation = static_cast<int>(OutputOperation::Add);
-            }
-
-            draw_int_slider("DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
-            break;
         }
+
+        if (value_changed) {
+            output_type.operation = static_cast<int>(OutputOperation::Add);
+        }
+
+        draw_int_slider("DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
+        break;
     }
     case OutputTarget::Parameter: {
         if (value_changed) {
