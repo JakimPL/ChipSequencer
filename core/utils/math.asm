@@ -94,8 +94,7 @@ multiply_by_byte_integer:
 multiply_by_byte_integer_to_eax:
 ; EAX - input float, output
 ; DL - input 8-bit integer
-    call load_eax_to_fpu
-    call multiply_by_byte_integer
+    call load_eax_to_fpu_and_multiply_by_word_integer
     call save_eax_from_fpu
     mov eax, [value]
     ret
@@ -115,6 +114,11 @@ multiply_by_word_integer_to_eax:
     mov [value], eax
     call multiply_by_word_integer
     call save_eax_from_fpu
+    ret
+
+load_eax_to_fpu_and_multiply_by_word_integer:
+    call load_eax_to_fpu
+    call multiply_by_byte_integer
     ret
 
     SEGMENT_DATA

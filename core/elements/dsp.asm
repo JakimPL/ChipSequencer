@@ -64,6 +64,16 @@ load_dsp_buffer:
     add esi, dsp_buffer
     ret
 
+calculate_number_of_samples:
+; EBX - input time value
+    mov eax, [sample_rate]
+    shr eax, 3
+    imul eax, 5
+    mul ebx
+    shr eax, 12
+    mov edx, eax
+    ret
+
 increment_dsp_timer:
     movzx ecx, byte [current_dsp]
     mov ebx, [dsp_timer + 4 * ecx]
