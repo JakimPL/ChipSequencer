@@ -61,7 +61,7 @@ load_channel_target:
 
     SEGMENT_BSS
     current_channel resb 1
-    %ifdef ELF
+    %ifndef BITS_16
     channel_offset resd 1
     envelope_offset resd 1
     order_offset resd 1

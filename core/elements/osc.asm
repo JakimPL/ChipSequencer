@@ -1,4 +1,4 @@
-    %ifdef ELF
+    %ifdef TRACKER
     extern reference_frequency
     extern note_divisor
     %endif
@@ -77,7 +77,7 @@ apply_volume:
     %include "core/osc/noise.asm"
 
     SEGMENT_DATA
-    %ifndef ELF
+    %ifndef TRACKER
 reference_frequency:
     dq TUNING_FREQUENCY
 note_divisor:
@@ -89,7 +89,7 @@ i_255:
     dw 255
 
 oscillators_table:
-    %ifdef ELF
+    %ifndef BITS_16
     dd square
     dd saw
     dd sine

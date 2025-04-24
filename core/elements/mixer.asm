@@ -53,7 +53,7 @@ mix:
 
     call save_eax_from_fpu
 
-    %ifndef ELF
+    %ifndef TRACKER
     call float_to_integer
     %endif
     mov [output], eax
@@ -108,20 +108,20 @@ store_single_output:
     test cl, 0b10000000
     jz .add_float
 .multiply_float:
-    %ifdef ELF
+    %ifndef BITS_16
     fmul dword [edi]
     %else
     fmul dword [di]
     %endif
     jmp .store_float
 .add_float:
-    %ifdef ELF
+    %ifndef BITS_16
     fadd dword [edi]
     %else
     fadd dword [di]
     %endif
 .store_float:
-    %ifdef ELF
+    %ifndef BITS_16
     fstp dword [edi]
     %else
     fstp dword [di]

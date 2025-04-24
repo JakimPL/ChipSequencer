@@ -21,7 +21,7 @@ reset:
     cmp bx, 0
     je .done
     dec bx
-    %ifdef ELF
+    %ifndef BITS_16
     call esi
     %else
     call si

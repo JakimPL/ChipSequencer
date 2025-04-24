@@ -60,7 +60,7 @@ class ConstantManager:
     def convert_asm_to_cpp(data: str) -> str:
         output = data.replace(";", "//").replace("%", "#")
         output = re.sub(r"^[ \t]+", "", output, flags=re.MULTILINE)
-        return "#define ELF\n\n" + output
+        return "#define TRACKER\n\n" + output
 
     @staticmethod
     def parse(string: str) -> Union[float, int]:
@@ -75,12 +75,12 @@ class ConstantManager:
 
     @staticmethod
     def parse_cpp_constants(cpp_constants: str) -> Tuple[DefaultDict[str, Dict[str, int]], ...]:
-        lines = [line for line in cpp_constants.splitlines() if line.startswith("#") and line != "#define ELF"]
+        lines = [line for line in cpp_constants.splitlines() if line.startswith("#") and line != "#define TRACKER"]
         x16 = defaultdict(dict)
         x32 = defaultdict(dict)
         elf = None
         for line in lines:
-            if line == "#ifdef ELF":
+            if line == "#ifdef TRACKER":
                 elf = True
                 continue
             if line == "#else":

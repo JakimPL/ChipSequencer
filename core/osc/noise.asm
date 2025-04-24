@@ -24,7 +24,7 @@ initialize_seeds:
 
     SEGMENT_BSS
 noise_seed:
-    %ifdef ELF
+    %ifdef TRACKER
     resw MAX_CHANNELS
     %else
     resw CHANNELS

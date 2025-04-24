@@ -93,7 +93,7 @@ increment_dsp_timer:
 
     SEGMENT_DATA
 effects:
-    %ifdef ELF
+    %ifndef BITS_16
     dd gainer
     dd distortion
     dd filter
@@ -108,7 +108,7 @@ effects:
     SEGMENT_BSS
     current_dsp resb 1
     current_effect resb 1
-    %ifdef ELF
+    %ifndef BITS_16
     dsp_offset resd 1
     %else
     dsp_offset resw 1

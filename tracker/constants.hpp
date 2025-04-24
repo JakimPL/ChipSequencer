@@ -1,4 +1,4 @@
-#define ELF
+#define TRACKER
 
 // BIOS
 #define BIOS_KEYBOARD_INTERRUPT 0x16
@@ -102,7 +102,7 @@
 #define WAVETABLE_START 1
 
 // Channel
-#ifdef ELF
+#ifdef TRACKER
 #define CHANNEL_ENVELOPE_INDEX 0
 #define CHANNEL_ORDER_INDEX 1
 #define CHANNEL_OSCILLATOR_INDEX 2
@@ -157,7 +157,7 @@
 #define NOISE_SEED 0xACE1
 #define NOISE_GALOIS_GENERATOR 0xB400
 
-#ifdef ELF
+#ifdef TRACKER
 // DSP
 #define DSP_EFFECT_INDEX 1
 #define DSP_OUTPUT_FLAG 2

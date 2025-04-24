@@ -1,7 +1,7 @@
     SEGMENT_CODE
 filter:
 .load_buffer:
-    %ifdef ELF
+    %ifdef TRACKER
     movzx esi, byte [current_dsp]
     shl esi, 8
     add esi, dsp_buffer

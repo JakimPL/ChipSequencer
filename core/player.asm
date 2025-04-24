@@ -67,13 +67,13 @@ calculate:
     SEGMENT_BSS
     dividend resd 1
     output resd MAX_OUTPUT_CHANNELS
-    %ifdef ELF
+    %ifdef TRACKER
     dsp_buffer resd MAX_DSPS * MAX_DSP_BUFFER_SIZE
     %else
     dsp_buffer resd DSPS * MAX_DSP_BUFFER_SIZE
     %endif
 
-    %ifndef ELF
+    %ifndef TRACKER
     group dgroup bss data
     %endif
 

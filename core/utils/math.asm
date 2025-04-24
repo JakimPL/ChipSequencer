@@ -130,7 +130,7 @@ half_range:
     dd __float32__(32767.5)
 two:
     dw 2
-    %ifndef ELF
+    %ifndef TRACKER
 sample_rate:
     dd SAMPLE_RATE
     %endif
