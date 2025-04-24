@@ -496,11 +496,7 @@ void GUIRoutingPanel::set_dragging_source_key(const ImVec2 pin_position, const I
     const ImVec2 radius = ImVec2(GUI_ROUTING_PIN_RADIUS, GUI_ROUTING_PIN_RADIUS);
     const bool is_pin_hovered = ImGui::IsMouseHoveringRect(pin_position - radius, pin_position + radius);
     if (is_pin_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
-        if (link_dragging_source_key.has_value() && link_dragging_source_key.value() == key) {
-            link_dragging_source_key = std::nullopt;
-        } else {
-            link_dragging_source_key = key;
-        }
+        link_dragging_source_key = key;
     } else if (ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
         link_dragging_source_key = std::nullopt;
     }
