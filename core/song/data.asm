@@ -154,19 +154,19 @@ wavetables:
 
 dsps:
 .dsp_0:
-    db 7                     ; dsp_size
+    db 11                    ; dsp_size
     db EFFECT_DISTORTION     ; effect_index
     db 0b00000000            ; output_flag
     dw output                ; output
     dw 0x7FFF                ; level
 .dsp_1:
-    db 7                     ; dsp_size
+    db 11                    ; dsp_size
     db EFFECT_GAINER         ; effect_index
     db 0b00000000            ; output_flag
     dw output                ; output
     dw 0x9FFF                ; volume
 .dsp_2:
-    db 8                     ; dsp_size
+    db 12                    ; dsp_size
     db EFFECT_FILTER         ; effect_index
     db 0b00000000            ; output_flag
     dw output                ; output
@@ -240,6 +240,6 @@ channels:
     dw oscillators.oscillator_0 + OSCILLATOR_SQUARE_DUTY_CYCLE ; output
 
 buffer_offsets:
-    dw 0                     ; dsp_0_buffer_offset
-    dw 0                     ; dsp_1_buffer_offset
-    dw 0                     ; dsp_2_buffer_offset
+    dd 0                     ; dsp_0_buffer_offset
+    dd 0                     ; dsp_1_buffer_offset
+    dd 0                     ; dsp_2_buffer_offset

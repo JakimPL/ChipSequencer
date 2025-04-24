@@ -6,8 +6,6 @@
 #include <vector>
 #include <unordered_map>
 
-#include <iostream>
-
 #include "../init.hpp"
 
 #include "../../general.hpp"
@@ -112,7 +110,7 @@ void GUIRoutingPanel::collect_nodes() {
 
     const size_t output_channels_count = song.get_output_channels();
     for (size_t i = 0; i < output_channels_count; ++i) {
-        NodeIdentifier current_id = {Target::OUTPUT_CHANNEL, i};
+        NodeIdentifier current_id = {Target::DIRECT_OUTPUT, i};
         auto it = existing_node_indices.find(current_id);
 
         if (it != existing_node_indices.end()) {
@@ -224,7 +222,7 @@ void GUIRoutingPanel::add_output_node(size_t index, std::vector<RoutingNode> &ne
     const float dsp_x = channel_x + GUI_ROUTING_NODE_WIDTH + 50.0f;
     const float output_x = dsp_x + GUI_ROUTING_NODE_WIDTH + 50.0f;
     const float vertical_padding = 20.0f;
-    NodeIdentifier current_id = {Target::OUTPUT_CHANNEL, index};
+    NodeIdentifier current_id = {Target::DIRECT_OUTPUT, index};
 
     RoutingNode output_node;
     output_node.identifier = current_id;
@@ -280,7 +278,7 @@ void GUIRoutingPanel::draw_link(const InputKey source, const OutputKey target, u
         } else {
             p1 = source_pin_it->second;
             p4 = dest_pin_it->second;
-            const bool is_audio_link = target.target == Target::OUTPUT_CHANNEL || target.target == Target::DSP_CHANNEL;
+            const bool is_audio_link = target.target == Target::DIRECT_OUTPUT || target.target == Target::DIRECT_DSP;
             color = is_audio_link ? audio_color : parameter_color;
         }
 
@@ -297,12 +295,22 @@ void GUIRoutingPanel::draw_link(const InputKey source, const OutputKey target, u
 void GUIRoutingPanel::draw_all_links() {
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
     for (const auto &[source, target] : nodes_links) {
-        if (target.target == Target::SPLITTER) {
+        if (target.target == Target::SPLITTER_OUTPUT) {
             const size_t output_channels = song.get_output_channels();
             std::array<uint8_t, MAX_OUTPUT_CHANNELS> splitter = OutputType::unpack_splitter_data(target.index);
             for (size_t i = 0; i < output_channels; ++i) {
                 const uint16_t offset = sizeof(_Float32) * i;
-                const OutputKey target_key = {Target::OUTPUT_CHANNEL, static_cast<int>(i), offset};
+                const OutputKey target_key = {Target::DIRECT_OUTPUT, static_cast<int>(i), offset};
+                draw_link(source, target_key, splitter[i]);
+            }
+        } else if (target.target == Target::SPLITTER_DSP) {
+            std::array<uint8_t, MAX_OUTPUT_CHANNELS> splitter = OutputType::unpack_splitter_data(target.index);
+            int start = target.offset / sizeof(_Float32);
+            int end = std::clamp(static_cast<int>(dsps.size()) - start, 0, MAX_OUTPUT_CHANNELS);
+            for (int i = 0; i < end; ++i) {
+                const size_t j = start + i;
+                const uint16_t offset = sizeof(_Float32) * j;
+                const OutputKey target_key = {Target::DIRECT_DSP, static_cast<int>(j), offset};
                 draw_link(source, target_key, splitter[i]);
             }
         } else {
@@ -319,13 +327,16 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
         id_prefix = "ChannelNode_";
         break;
     case Target::DSP:
-    case Target::DSP_CHANNEL:
+    case Target::DIRECT_DSP:
         id_prefix = "DSPNode_";
         break;
-    case Target::SPLITTER:
-        id_prefix = "SplitterNode_";
+    case Target::SPLITTER_OUTPUT:
+        id_prefix = "SplitterOutputNode_";
         break;
-    case Target::OUTPUT_CHANNEL:
+    case Target::SPLITTER_DSP:
+        id_prefix = "SplitterDSPNode_";
+        break;
+    case Target::DIRECT_OUTPUT:
         id_prefix = "OutputNode_";
         break;
     case Target::ENVELOPE:
@@ -397,7 +408,7 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
     ImVec2 current_text_pos = ImVec2(node_rect_min.x + node_padding_x, node_rect_min.y + node_padding_y);
     float pin_y = current_text_pos.y + pin_offset_y;
 
-    if (routing_node.identifier.type != Target::OUTPUT_CHANNEL) {
+    if (routing_node.identifier.type != Target::DIRECT_OUTPUT) {
         const ImVec2 pin_position = ImVec2(node_rect_max.x + GUI_ROUTING_PIN_RADIUS, pin_y);
         draw_list->AddCircleFilled(pin_position, GUI_ROUTING_PIN_RADIUS, pin_color_main);
         const InputKey key = routing_node.key.value();
@@ -410,7 +421,7 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
     if (routing_node.identifier.type != Target::CHANNEL) {
         const int index = routing_node.identifier.id;
         const uint16_t offset = sizeof(_Float32) * routing_node.identifier.id;
-        const Target target = routing_node.identifier.type == Target::DSP ? Target::DSP_CHANNEL : Target::OUTPUT_CHANNEL;
+        const Target target = routing_node.identifier.type == Target::DSP ? Target::DIRECT_DSP : Target::DIRECT_OUTPUT;
         const OutputKey key = {target, index, offset};
 
         const bool linking_possible = link_dragging_source_key.has_value() && is_linking_possible(link_dragging_source_key.value(), key);
@@ -485,11 +496,7 @@ void GUIRoutingPanel::set_dragging_source_key(const ImVec2 pin_position, const I
     const ImVec2 radius = ImVec2(GUI_ROUTING_PIN_RADIUS, GUI_ROUTING_PIN_RADIUS);
     const bool is_pin_hovered = ImGui::IsMouseHoveringRect(pin_position - radius, pin_position + radius);
     if (is_pin_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
-        if (link_dragging_source_key.has_value() && link_dragging_source_key.value() == key) {
-            link_dragging_source_key = std::nullopt;
-        } else {
-            link_dragging_source_key = key;
-        }
+        link_dragging_source_key = key;
     } else if (ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
         link_dragging_source_key = std::nullopt;
     }
@@ -510,7 +517,7 @@ bool GUIRoutingPanel::is_linking_possible(const InputKey &source_key, const Outp
     const size_t id = source_key.second;
     const size_t item = target_key.index;
     const Target target = target_key.target;
-    return (item > id || type != ItemType::DSP || target != Target::DSP_CHANNEL);
+    return (item > id || type != ItemType::DSP || target != Target::DIRECT_DSP);
 }
 
 void GUIRoutingPanel::check_keyboard_input() {

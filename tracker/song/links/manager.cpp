@@ -12,64 +12,75 @@ void LinkManager::set_link(Link &link, void *item, const uint8_t i) {
     remove_key(link);
 
     switch (link.target) {
-    case Target::SPLITTER:
-    case Target::OUTPUT_CHANNEL:
+    case Target::SPLITTER_OUTPUT:
+    case Target::DIRECT_OUTPUT: {
         link.base = &output;
         break;
-    case Target::DSP_CHANNEL:
+    }
+    case Target::SPLITTER_DSP:
+    case Target::DIRECT_DSP: {
         link.base = &dsp_input;
         break;
-    case Target::ENVELOPE:
+    }
+    case Target::ENVELOPE: {
         if (link.index >= envelopes.size()) {
             link.base = &output;
         } else {
             link.base = envelopes[link.index];
         }
         break;
-    case Target::SEQUENCE:
+    }
+    case Target::SEQUENCE: {
         if (link.index >= sequences.size()) {
             link.base = &output;
         } else {
             link.base = sequences[link.index];
         }
         break;
-    case Target::ORDER:
+    }
+    case Target::ORDER: {
         if (link.index >= orders.size()) {
             link.base = &output;
         } else {
             link.base = orders[link.index];
         }
         break;
-    case Target::OSCILLATOR:
+    }
+    case Target::OSCILLATOR: {
         if (link.index >= oscillators.size()) {
             link.base = &output;
         } else {
             link.base = oscillators[link.index];
         }
         break;
-    case Target::WAVETABLE:
+    }
+    case Target::WAVETABLE: {
         if (link.index >= wavetables.size()) {
             link.base = &output;
         } else {
             link.base = wavetables[link.index];
         }
         break;
-    case Target::DSP:
+    }
+    case Target::DSP: {
         if (link.index >= dsps.size()) {
             link.base = &output;
         } else {
             link.base = dsps[link.index];
         }
         break;
-    case Target::CHANNEL:
+    }
+    case Target::CHANNEL: {
         if (link.index >= channels.size()) {
             link.base = &output;
         } else {
             link.base = channels[link.index];
         }
         break;
-    case Target::UNUSED:
+    }
+    case Target::UNUSED: {
         throw std::runtime_error("Invalid link target");
+    }
     }
 
     link.id = i;
@@ -179,9 +190,10 @@ void LinkManager::validate_key_and_link(const LinkKey key, const Link *link) con
 
 TargetVariableType LinkManager::get_type(const LinkKey key) const {
     switch (key.target) {
-    case Target::SPLITTER:
-    case Target::OUTPUT_CHANNEL:
-    case Target::DSP_CHANNEL: {
+    case Target::SPLITTER_OUTPUT:
+    case Target::SPLITTER_DSP:
+    case Target::DIRECT_OUTPUT:
+    case Target::DIRECT_DSP: {
         return TargetVariableType::Float;
     }
     case Target::ENVELOPE:

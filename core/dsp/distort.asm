@@ -29,7 +29,5 @@ distortion:
 
 ; arctan(x * p) / arctan(p)
     fdivp st1, st0
-    fstp dword [value]
-
-    mov eax, [value]
+    call save_eax_from_fpu
     ret

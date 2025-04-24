@@ -77,7 +77,7 @@ class Compiler:
         binary_data = load_binary(links_path)
 
         links = []
-        format_string = "<BBBBH"
+        format_string = "<BBBIH"
         struct_size = struct.calcsize(format_string)
 
         for i in range(0, len(binary_data), struct_size):
@@ -113,9 +113,9 @@ class Compiler:
             else:
                 raise ValueError(f"Invalid type: {link.type}")
 
-            if target == LinkTarget.OUTPUT:
+            if target == LinkTarget.SPLITTER_OUTPUT or target == LinkTarget.DIRECT_OUTPUT:
                 reference = references["output"][1]
-            elif target == LinkTarget.DSP_INPUT:
+            elif target == LinkTarget.SPLITTER_DSP or target == LinkTarget.DIRECT_DSP:
                 reference = references["dsp_input"][1]
             else:
                 reference = references[f"{target.value}s.{target.value}_{link.index}"][1]

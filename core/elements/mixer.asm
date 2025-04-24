@@ -51,8 +51,7 @@ mix:
     fld dword [normalizer]
     fmul
 
-    fstp dword [value]
-    mov eax, [value]
+    call save_eax_from_fpu
 
     %ifndef ELF
     call float_to_integer
@@ -69,14 +68,7 @@ store_output:
     push eax
 
 .apply_weight:
-    mov [value], eax
-    fld dword [value]
-    mov dword [value], 0
-    mov byte [value], dl
-    fimul dword [value]
-    fidiv word [i_255]
-    fstp dword [value]
-    mov eax, [value]
+    call multiply_by_byte_integer_to_eax
 
 .store:
     push edx
@@ -112,8 +104,7 @@ store_single_output:
     test cl, 0b00100000
     jne .add_16_bit
 .add_or_multiply_float:
-    mov [value], eax
-    fld dword [value]
+    call load_eax_to_fpu
     test cl, 0b10000000
     jz .add_float
 .multiply_float:

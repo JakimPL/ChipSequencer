@@ -63,6 +63,15 @@ void GUIDSPsPanel::from() {
         current_dsp.filter_mode = filter->mode;
         break;
     }
+    case EFFECT_DELAY: {
+        current_dsp.type = "Delay";
+        const DSPDelay *delay = static_cast<const DSPDelay *>(dsp);
+        current_dsp.delay_dry = static_cast<float>(delay->dry) / UINT8_MAX;
+        current_dsp.delay_wet = static_cast<float>(delay->wet) / UINT8_MAX;
+        current_dsp.delay_feedback = static_cast<float>(delay->feedback) / UINT8_MAX;
+        current_dsp.delay_time = static_cast<float>(delay->delay_time) / UINT16_MAX * 20;
+        break;
+    }
     }
 
     const Link &link = links[static_cast<size_t>(ItemType::DSP)][dsp_index];
@@ -97,6 +106,16 @@ void GUIDSPsPanel::to() const {
         dsp->effect_index = EFFECT_FILTER;
         dsp->frequency = static_cast<uint16_t>(std::round(current_dsp.filter_cutoff * UINT16_MAX));
         dsp->mode = current_dsp.filter_mode;
+        break;
+    }
+    case EFFECT_DELAY: {
+        static_cast<DSP *>(buffer)->~DSP();
+        DSPDelay *dsp = new (buffer) DSPDelay();
+        dsp->effect_index = EFFECT_DELAY;
+        dsp->dry = static_cast<uint8_t>(std::round(current_dsp.delay_dry * UINT8_MAX));
+        dsp->wet = static_cast<uint8_t>(std::round(current_dsp.delay_wet * UINT8_MAX));
+        dsp->feedback = static_cast<uint8_t>(std::round(current_dsp.delay_feedback * UINT8_MAX));
+        dsp->delay_time = static_cast<uint16_t>(std::round(current_dsp.delay_time * UINT16_MAX / 20));
         break;
     }
     }
@@ -192,6 +211,16 @@ void GUIDSPsPanel::draw_effect() {
         ImGui::Checkbox("High-pass", &current_dsp.filter_mode);
         ImGui::NewLine();
         draw_knob("Frequency", current_dsp.filter_cutoff, {Target::DSP, dsp_index, DSP_FILTER_FREQUENCY}, 0.0f, 1.0f);
+        break;
+    }
+    case EFFECT_DELAY: {
+        draw_knob("Dry", current_dsp.delay_dry, {Target::DSP, dsp_index, DSP_DELAY_DRY}, 0.0f, 1.0f);
+        ImGui::SameLine();
+        draw_knob("Wet", current_dsp.delay_wet, {Target::DSP, dsp_index, DSP_DELAY_WET}, 0.0f, 1.0f);
+        ImGui::SameLine();
+        draw_knob("Feedback", current_dsp.delay_feedback, {Target::DSP, dsp_index, DSP_DELAY_FEEDBACK}, 0.0f, 1.0f);
+        ImGui::SameLine();
+        draw_knob("Time", current_dsp.delay_time, {Target::DSP, dsp_index, DSP_DELAY_TIME}, 0.01f, 10.0f);
         break;
     }
     }

@@ -19,7 +19,7 @@ reset_dsps:
 
 reset_dsp:
     movzx ecx, bl
-    mov dword [dsp_timer + 2 * ecx], 0
+    mov dword [dsp_timer + 4 * ecx], 0
     ret
 
 clear_dsps:
@@ -34,13 +34,13 @@ clear_dsp:
     ret
 
 initialize_dsp_buffers:
-    mov bx, DSP_BUFFER_SIZE
+    mov ebx, DSP_BUFFER_SIZE
     mov esi, initialize_dsp_buffer
     call reset
     ret
 
 initialize_dsp_buffer:
-    movzx ecx, bx
+    mov ecx, ebx
     mov dword [dsp_buffer + 4 * ecx], __float32__(0.0)
     ret
 
@@ -58,27 +58,38 @@ load_dsp_target:
 
 load_dsp_buffer:
     movzx ecx, byte [current_dsp]
-    movzx esi, word [dsp_timer + 2 * ecx]
-    shl si, 2
-    add si, [buffer_offsets + 2 * ecx]
+    mov esi, [dsp_timer + 4 * ecx]
+    shl esi, 2
+    add esi, [buffer_offsets + 4 * ecx]
     add esi, dsp_buffer
+    ret
+
+calculate_number_of_samples:
+; EBX - input time value
+    mov eax, [sample_rate]
+    shr eax, 3
+    imul eax, 5
+    mul ebx
+    shr eax, 12
+    mov edx, eax
     ret
 
 increment_dsp_timer:
     movzx ecx, byte [current_dsp]
-    mov bx, [dsp_timer + 2 * ecx]
-    inc bx
-    cmp bx, dx
+    mov ebx, [dsp_timer + 4 * ecx]
+    inc ebx
+    cmp ebx, edx
     jne .done
-    sub bx, dx
+    sub ebx, edx
 .done:
-    mov [dsp_timer + 2 * ecx], bx
+    mov [dsp_timer + 4 * ecx], ebx
     ret
 
 ; Effects
     %include "core/dsp/gainer.asm"
     %include "core/dsp/distort.asm"
     %include "core/dsp/filter.asm"
+    %include "core/dsp/delay.asm"
 
     SEGMENT_DATA
 effects:
@@ -86,10 +97,12 @@ effects:
     dd gainer
     dd distortion
     dd filter
+    dd delay
     %else
     dw gainer
     dw distortion
     dw filter
+    dw delay
     %endif
 
     SEGMENT_BSS

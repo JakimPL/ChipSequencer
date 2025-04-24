@@ -67,6 +67,10 @@ const std::map<Target, RoutingItems> routing_variables = {
             {"Gain", DSP_GAINER_VOLUME, TargetVariableType::Int16, EFFECT_GAINER},
             {"Level", DSP_DISTORTION_LEVEL, TargetVariableType::Int16, EFFECT_DISTORTION},
             {"Cutoff frequency", DSP_FILTER_FREQUENCY, TargetVariableType::Int16, EFFECT_FILTER},
+            {"Dry", DSP_DELAY_DRY, TargetVariableType::Int8, EFFECT_DELAY},
+            {"Wet", DSP_DELAY_WET, TargetVariableType::Int8, EFFECT_DELAY},
+            {"Feedback", DSP_DELAY_FEEDBACK, TargetVariableType::Int8, EFFECT_DELAY},
+            {"Delay time", DSP_DELAY_TIME, TargetVariableType::Int16, EFFECT_DELAY},
         }),
     },
     {

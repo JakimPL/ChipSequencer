@@ -22,14 +22,20 @@ void OutputType::from_link(const Link &link) {
     target = static_cast<int>(link.target);
     const int max_parameter = static_cast<int>(OutputTarget::Parameter);
     OutputTarget output_target = static_cast<OutputTarget>(std::min(max_parameter, target));
+
+    output_channel = 0;
+    dsp_channel = 0;
     switch (output_target) {
-    case OutputTarget::Splitter:
-        output_channel = 0;
+    case OutputTarget::OutputSplitter:
+        output_channel = link.offset / sizeof(_Float32);
+        break;
+    case OutputTarget::DSPSplitter:
+        dsp_channel = link.offset / sizeof(_Float32);
         break;
     case OutputTarget::DirectOutput:
         output_channel = link.index;
         break;
-    case OutputTarget::DSP:
+    case OutputTarget::DirectDSP:
         dsp_channel = link.index;
         break;
     case OutputTarget::Parameter:
@@ -57,20 +63,26 @@ void OutputType::set_link(Link &link, const ItemType type, const uint8_t id) con
     link.id = id;
     OutputTarget label = static_cast<OutputTarget>(target);
     switch (label) {
-    case OutputTarget::Splitter: {
-        link.target = Target::SPLITTER;
+    case OutputTarget::OutputSplitter: {
+        link.target = Target::SPLITTER_OUTPUT;
         link.index = get_splitter_data();
-        link.offset = sizeof(_Float32) * output_channel;
+        link.offset = 0;
+        break;
+    }
+    case OutputTarget::DSPSplitter: {
+        link.target = Target::SPLITTER_DSP;
+        link.index = get_splitter_data();
+        link.offset = sizeof(_Float32) * dsp_channel;
         break;
     }
     case OutputTarget::DirectOutput: {
-        link.target = Target::OUTPUT_CHANNEL;
+        link.target = Target::DIRECT_OUTPUT;
         link.index = output_channel;
         link.offset = sizeof(_Float32) * output_channel;
         break;
     }
-    case OutputTarget::DSP: {
-        link.target = Target::DSP_CHANNEL;
+    case OutputTarget::DirectDSP: {
+        link.target = Target::DIRECT_DSP;
         link.index = dsp_channel;
         link.offset = sizeof(_Float32) * dsp_channel;
         break;
@@ -85,7 +97,7 @@ void OutputType::set_link(Link &link, const ItemType type, const uint8_t id) con
 }
 
 void OutputType::load_splitter(const uint8_t target[], const Link &link) {
-    splitter_on = link.target == Target::SPLITTER;
+    splitter_on = link.target == Target::SPLITTER_OUTPUT || link.target == Target::SPLITTER_DSP;
     for (size_t i = 0; i < MAX_OUTPUT_CHANNELS; ++i) {
         splitter[i] = splitter_on ? static_cast<float>(target[i]) / UINT8_MAX : 0.0f;
     }

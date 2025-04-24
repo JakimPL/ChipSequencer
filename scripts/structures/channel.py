@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Union
 
 from structures.output import Output
-from structures.types import Byte, Dword, Word
+from structures.types import Byte, Dword
 
 
 @dataclass
@@ -11,8 +11,9 @@ class Channel:
     order_index: Byte
     oscillator_index: Byte
     pitch: Dword
-    output: Output
     output_flag: Byte
+    output: Output
+    splitter: Dword
 
     def __init__(
         self,
@@ -22,6 +23,7 @@ class Channel:
         pitch: Union[int, Dword],
         output_flag: Union[int, Byte],
         output: Output,
+        splitter: Union[int, Dword],
     ):
         self.envelope_index = Byte(envelope_index)
         self.order_index = Byte(order_index)
@@ -29,3 +31,4 @@ class Channel:
         self.pitch = Dword(pitch)
         self.output_flag = Byte(output_flag)
         self.output = output
+        self.splitter = Dword(splitter)

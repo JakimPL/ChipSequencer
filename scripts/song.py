@@ -184,11 +184,11 @@ def main():
         output=Output(),
         output_flag=0,
         level=0x7FFF,
+        splitter=0x80,
     )
 
-    effect_gainer = DSPGainer(output=Output(), output_flag=0, volume=0x9FFF)
-
-    effect_filter = DSPFilter(output=Output(), output_flag=0, frequency=0x0150)
+    effect_gainer = DSPGainer(output=Output(), output_flag=0, volume=0x9FFF, splitter=0x80)
+    effect_filter = DSPFilter(output=Output(), output_flag=0, frequency=0x0150, splitter=0x80)
 
     dsps = [effect_distortion, effect_gainer, effect_filter]
 
@@ -199,6 +199,7 @@ def main():
         pitch=0x02000000,
         output=Output(effect_filter),
         output_flag=0,
+        splitter=0,
     )
 
     osc2 = Channel(
@@ -208,6 +209,7 @@ def main():
         pitch=0x02000000,
         output=Output(effect_filter),
         output_flag=0,
+        splitter=0,
     )
 
     osc3 = Channel(
@@ -217,6 +219,7 @@ def main():
         pitch=0x02000000,
         output=Output(effect_gainer),
         output_flag=0,
+        splitter=0,
     )
 
     osc4 = Channel(
@@ -226,6 +229,7 @@ def main():
         pitch=0x02000000,
         output=Output(effect_gainer),
         output_flag=0,
+        splitter=0,
     )
 
     osc5 = Channel(
@@ -235,6 +239,7 @@ def main():
         pitch=0x02000000,
         output=Output(effect_gainer),
         output_flag=0,
+        splitter=0,
     )
 
     osc6 = Channel(
@@ -244,6 +249,7 @@ def main():
         pitch=0x02000000,
         output=Output(effect_gainer),
         output_flag=0,
+        splitter=0,
     )
 
     mod1 = Channel(
@@ -253,6 +259,7 @@ def main():
         pitch=0x5000,
         output=Output(effect_filter.frequency),
         output_flag=0b01010111,
+        splitter=0,
     )
 
     mod2 = Channel(
@@ -262,6 +269,7 @@ def main():
         pitch=0x00080000,
         output=Output(osc1.pitch),
         output_flag=0b01110110,
+        splitter=0,
     )
 
     mod3 = Channel(
@@ -271,6 +279,7 @@ def main():
         pitch=0x00014800,
         output=Output(oscillator_square.duty_cycle),
         output_flag=0b01101000,
+        splitter=0x0,
     )
 
     channels = [osc1, osc2, osc3, osc4, osc5, osc6, mod1, mod2, mod3]

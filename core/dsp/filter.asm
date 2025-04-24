@@ -7,7 +7,7 @@ filter:
     add esi, dsp_buffer
     %else
     movzx ecx, byte [current_dsp]
-    mov esi, [buffer_offsets + 2 * ecx]
+    mov esi, [buffer_offsets + 4 * ecx]
     add esi, dsp_buffer
     %endif
 
@@ -54,8 +54,7 @@ filter:
 
 .apply_filter:
 ; a * y[n] + b * y[n - 1]
-    mov [value], eax
-    fld dword [value]
+    call load_eax_to_fpu
     fld st0
     fmulp st2, st0
     fxch st2
@@ -74,8 +73,7 @@ filter:
 .difference:
     fsub st1, st0
     fxch st1
-    fstp dword [value]
-    mov eax, [value]
+    call save_eax_from_fpu
 
 .done:
     fstp st0

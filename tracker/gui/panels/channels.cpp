@@ -140,9 +140,10 @@ void GUIChannelsPanel::update_channel_name(const int index, const int target_id)
         target = static_cast<Target>(target_id);
     }
 
-    const bool modulator = target != Target::SPLITTER &&
-                           target != Target::OUTPUT_CHANNEL &&
-                           target != Target::DSP_CHANNEL;
+    const bool modulator = target != Target::SPLITTER_OUTPUT &&
+                           target != Target::SPLITTER_DSP &&
+                           target != Target::DIRECT_OUTPUT &&
+                           target != Target::DIRECT_DSP;
 
     const std::string label = modulator ? "Modulator " : "Channel ";
     channel_names[index] = label + std::to_string(index);

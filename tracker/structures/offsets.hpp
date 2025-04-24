@@ -6,6 +6,6 @@
 
 #include "../constants.hpp"
 
-typedef std::array<uint16_t, MAX_CHANNELS> Offsets;
+typedef std::array<uint32_t, MAX_CHANNELS> Offsets;
 
 #endif // STRUCTURES_OFFSETS_HPP
