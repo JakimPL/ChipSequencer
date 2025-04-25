@@ -1,6 +1,7 @@
 #ifndef STRUCTURES_DSP_HPP
 #define STRUCTURES_DSP_HPP
 
+#include <cstddef>
 #include <cstdint>
 #include <fstream>
 #include <vector>
@@ -66,5 +67,19 @@ struct DSPDelay {
 };
 
 typedef std::vector<void *> DSPs;
+
+constexpr size_t DSP_SIZE = offsetof(DSP, dsp_size);
+constexpr size_t DSP_EFFECT_INDEX = offsetof(DSP, effect_index);
+constexpr size_t DSP_OUTPUT_FLAG = offsetof(DSP, output_flag);
+constexpr size_t DSP_OUTPUT = offsetof(DSP, output);
+constexpr size_t DSP_SPLITTER = offsetof(DSP, splitter);
+constexpr size_t DSP_GAINER_VOLUME = offsetof(DSPGainer, volume);
+constexpr size_t DSP_DISTORTION_LEVEL = offsetof(DSPDistortion, level);
+constexpr size_t DSP_FILTER_FREQUENCY = offsetof(DSPFilter, frequency);
+constexpr size_t DSP_FILTER_MODE = offsetof(DSPFilter, mode);
+constexpr size_t DSP_DELAY_DRY = offsetof(DSPDelay, dry);
+constexpr size_t DSP_DELAY_WET = offsetof(DSPDelay, wet);
+constexpr size_t DSP_DELAY_FEEDBACK = offsetof(DSPDelay, feedback);
+constexpr size_t DSP_DELAY_TIME = offsetof(DSPDelay, delay_time);
 
 #endif // STRUCTURES_DSP_HPP

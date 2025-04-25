@@ -7,6 +7,7 @@ from pyconf import (
     CONSTANTS_ASM_FILE,
     CONSTANTS_CPP_FILE,
     LINK_PY_FILE,
+    OFFSETS_ASM_FILE,
     OFFSETS_HPP_FILE,
     TARGET_HPP_FILE,
     TYPE_HPP_FILE,
@@ -19,6 +20,7 @@ class ConstantManager:
         self,
         constants_asm_file: Union[str, os.PathLike] = CONSTANTS_ASM_FILE,
         constants_cpp_file: Union[str, os.PathLike] = CONSTANTS_CPP_FILE,
+        offsets_asm_file: Union[str, os.PathLike] = OFFSETS_ASM_FILE,
         target_hpp_file: Union[str, os.PathLike] = TARGET_HPP_FILE,
         type_hpp_file: Union[str, os.PathLike] = TYPE_HPP_FILE,
         offsets_hpp_file: Union[str, os.PathLike] = OFFSETS_HPP_FILE,
@@ -26,6 +28,7 @@ class ConstantManager:
     ):
         self.constants_asm_file = constants_asm_file
         self.constants_cpp_file = constants_cpp_file
+        self.offsets_asm_file = offsets_asm_file
         self.target_hpp_file = target_hpp_file
         self.type_hpp_file = type_hpp_file
         self.offsets_hpp_file = offsets_hpp_file
@@ -33,7 +36,9 @@ class ConstantManager:
 
     def __call__(self):
         asm_constants = load_text(self.constants_asm_file)
+        asm_offsets = load_text(self.offsets_asm_file)
         cpp_constants = self.convert_asm_to_cpp(asm_constants)
+        cpp_offsets = self.convert_asm_to_cpp(asm_offsets)
         save_text(cpp_constants, self.constants_cpp_file)
 
         target = load_text(self.target_hpp_file)
@@ -42,7 +47,7 @@ class ConstantManager:
         save_text(link_py, self.link_py_file)
 
         groups = self.extract_groups_from_targets(target)
-        x16, x32 = self.parse_cpp_constants(cpp_constants)
+        x16, x32 = self.parse_cpp_constants(cpp_offsets)
         x16_to_x32 = self.get_offset_map(x16, x32, groups)
         x32_to_x16 = self.get_offset_map(x32, x16, groups)
         offsets = self.compose_offset_hpp_file(x16_to_x32, x32_to_x16)

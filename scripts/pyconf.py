@@ -1,5 +1,6 @@
 CONSTANTS_ASM_FILE = "core/common/const.asm"
 CONSTANTS_CPP_FILE = "tracker/constants.hpp"
+OFFSETS_ASM_FILE = "core/common/offsets.asm"
 TARGET_HPP_FILE = "tracker/song/links/target.hpp"
 TYPE_HPP_FILE = "tracker/song/links/type.hpp"
 OFFSETS_HPP_FILE = "tracker/maps/offsets.hpp"

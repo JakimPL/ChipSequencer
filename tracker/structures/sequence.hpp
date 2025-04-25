@@ -2,6 +2,7 @@
 #define STRUCTURES_SEQUENCE_HPP
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <fstream>
 #include <vector>
@@ -23,5 +24,8 @@ struct Sequence {
 };
 
 typedef std::vector<Sequence *> Sequences;
+
+constexpr size_t SEQUENCE_DATA_SIZE = offsetof(Sequence, data_size);
+constexpr size_t SEQUENCE_NOTES = offsetof(Sequence, notes);
 
 #endif // STRUCTURES_SEQUENCE_HPP

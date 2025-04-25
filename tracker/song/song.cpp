@@ -628,14 +628,7 @@ std::string Song::get_element_path(const std::string &directory, const std::stri
 }
 
 void Song::serialize_channel(std::ofstream &file, Channel *channel) const {
-    uint32_t null = 0;
-    write_data(file, &channel->envelope_index, sizeof(channel->envelope_index));
-    write_data(file, &channel->order_index, sizeof(channel->order_index));
-    write_data(file, &channel->oscillator_index, sizeof(channel->oscillator_index));
-    write_data(file, &channel->pitch, sizeof(channel->pitch));
-    write_data(file, &channel->output_flag, sizeof(channel->output_flag));
-    write_data(file, channel->splitter, sizeof(channel->splitter));
-    write_data(file, &null, sizeof(null));
+    write_data(file, &channel, sizeof(channel));
 }
 
 void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
@@ -698,13 +691,7 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
 
 Channel *Song::deserialize_channel(std::ifstream &file) const {
     Channel *channel = new Channel();
-    read_data(file, &channel->envelope_index, sizeof(channel->envelope_index));
-    read_data(file, &channel->order_index, sizeof(channel->order_index));
-    read_data(file, &channel->oscillator_index, sizeof(channel->oscillator_index));
-    read_data(file, &channel->pitch, sizeof(channel->pitch));
-    read_data(file, &channel->output_flag, sizeof(channel->output_flag));
-    read_data(file, &channel->splitter, sizeof(channel->splitter));
-    file.seekg(sizeof(uint32_t), std::ios::cur);
+    read_data(file, &channel, sizeof(channel));
     channel->output = &output;
     return channel;
 }
@@ -839,7 +826,8 @@ void Song::export_channels(const std::string &directory) const {
         const std::string filename = get_element_path(series_dir, "chan", i);
         std::ofstream file(filename, std::ios::binary);
         Channel *channel = channels[i];
-        serialize_channel(file, channel);
+        serialize_channel_output(file, channel);
+        serialize_channel_body(file, channel);
         file.close();
     }
 }

@@ -1,6 +1,7 @@
 #ifndef STRUCTURES_OSCILLATOR_HPP
 #define STRUCTURES_OSCILLATOR_HPP
 
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 
@@ -46,5 +47,12 @@ struct OscillatorNoise {
 };
 
 typedef std::vector<void *> Oscillators;
+
+constexpr size_t OSCILLATOR_SIZE = offsetof(Oscillator, oscillator_size);
+constexpr size_t OSCILLATOR_GENERATOR_INDEX = offsetof(Oscillator, generator_index);
+constexpr size_t OSCILLATOR_SQUARE_DUTY_CYCLE = offsetof(OscillatorSquare, duty_cycle);
+constexpr size_t OSCILLATOR_SAW_REVERSE = offsetof(OscillatorSaw, reverse);
+constexpr size_t OSCILLATOR_WAVETABLE_WAVETABLE_INDEX = offsetof(OscillatorWavetable, wavetable_index);
+constexpr size_t OSCILLATOR_WAVETABLE_INTERPOLATION = offsetof(OscillatorWavetable, interpolation);
 
 #endif // STRUCTURES_OSCILLATOR_HPP

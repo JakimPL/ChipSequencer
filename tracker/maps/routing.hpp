@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "../constants.hpp"
+#include "../structures.hpp"
 #include "../song/links/target.hpp"
 
 typedef std::tuple<std::vector<size_t>, std::vector<std::string>, std::vector<uint16_t>, std::vector<TargetVariableType>> RoutingTuple;
