@@ -479,7 +479,7 @@ std::string Song::generate_header_asm_file() const {
     asm_content << "    \%define SONG_LENGTH " << song_length << "\n";
     asm_content << "    \%define SAMPLE_RATE " << sample_rate << "\n";
     asm_content << "\n";
-    asm_content << "    \%define TUNING_FREQUENCY " << static_cast<uint32_t>(std::round(frequency_table.get_last_frequency() * 65536.0)) << "\n";
+    asm_content << "    \%define TUNING_FREQUENCY " << static_cast<uint64_t>(std::round(frequency_table.get_last_frequency() * 65536.0)) << "\n";
     asm_content << "    \%define TUNING_NOTE_DIVISOR " << std::fixed << std::setprecision(std::numeric_limits<double>::max_digits10) << static_cast<_Float64>(frequency_table.get_note_divisor()) << "\n";
     asm_content << "\n";
     asm_content << "    \%define DSP_BUFFER_SIZE MAX_DSP_BUFFER_SIZE * DSPS" << "\n";

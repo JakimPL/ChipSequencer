@@ -1,4 +1,5 @@
 #include "main.hpp"
+#include <iostream>
 
 snd_pcm_t *handle;
 
@@ -24,7 +25,7 @@ void sound_driver_terminate() {
 int main() {
     initialize();
     sound_driver_initialize();
-    float buffer[buffer_size * output_channels];
+    _Float32 buffer[buffer_size * output_channels];
     while (true) {
         for (int i = 0; i < buffer_size; ++i) {
             mix();

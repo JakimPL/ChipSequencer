@@ -53,7 +53,7 @@ mix:
 
     call save_eax_from_fpu
 
-    %ifndef TRACKER
+    %ifdef BITS_16
     call float_to_integer
     %endif
     mov [output], eax

@@ -32,7 +32,7 @@ reset_channels:
 check_fixed_frequency:
     LOAD_OFFSET ebx, channel_offset
     movzx ebx, byte [CHANNEL_ORDER_INDEX + ebx]
-    cmp bl, -1
+    cmp bl, CONSTANT_PITCH
     ret
 
 reset_channel:
