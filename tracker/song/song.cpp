@@ -455,9 +455,14 @@ void Song::generate_header_channel_vector(std::stringstream &asm_content, const 
 
 void Song::generate_header_dsp_vector(std::stringstream &asm_content, const char separator) const {
     asm_content << "dsps:\n";
-    for (size_t i = 0; i < channels.size(); i++) {
+    for (size_t i = 0; i < dsps.size(); i++) {
+        const DSP *dsp = static_cast<DSP *>(dsps[i]);
         asm_content << "global dsps.dsp_" << i << ":\n";
         asm_content << ".dsp_" << i << ":\n";
+        asm_content << "db " << static_cast<int>(dsp->dsp_size) << "\n";
+        asm_content << "db " << static_cast<int>(dsp->effect_index) << "\n";
+        asm_content << "db " << static_cast<int>(dsp->output_flag) << "\n";
+        asm_content << "db 0\n";
         asm_content << "dd " << link_manager.get_link_reference(ItemType::DSP, i) << "\n";
         asm_content << "incbin \"song" << separator << get_element_path("dsps", "dsp", i, separator) << "\"\n";
     }
@@ -656,7 +661,6 @@ void Song::serialize_dsp_header(std::ofstream &file, void *dsp) const {
     write_data(file, &generic->output_flag, sizeof(generic->output_flag));
     write_data(file, &generic->_unused, sizeof(generic->_unused));
     write_data(file, &generic->output, sizeof(generic->output));
-    write_data(file, &generic->splitter, sizeof(generic->splitter));
 }
 
 void Song::serialize_dsp_body(std::ofstream &file, void *dsp) const {
@@ -664,22 +668,26 @@ void Song::serialize_dsp_body(std::ofstream &file, void *dsp) const {
     switch (effect_index) {
     case EFFECT_DISTORTION: {
         DSPDistortion *distortion = reinterpret_cast<DSPDistortion *>(dsp);
+        write_data(file, &distortion->splitter, sizeof(distortion->splitter));
         write_data(file, &distortion->level, sizeof(distortion->level));
         return;
     }
     case EFFECT_GAINER: {
         DSPGainer *gainer = reinterpret_cast<DSPGainer *>(dsp);
+        write_data(file, &gainer->splitter, sizeof(gainer->splitter));
         write_data(file, &gainer->volume, sizeof(gainer->volume));
         return;
     }
     case EFFECT_FILTER: {
         DSPFilter *filter = reinterpret_cast<DSPFilter *>(dsp);
+        write_data(file, &filter->splitter, sizeof(filter->splitter));
         write_data(file, &filter->frequency, sizeof(filter->frequency));
         write_data(file, &filter->mode, sizeof(filter->mode));
         return;
     }
     case EFFECT_DELAY: {
         DSPDelay *delay = reinterpret_cast<DSPDelay *>(dsp);
+        write_data(file, &delay->splitter, sizeof(delay->splitter));
         write_data(file, &delay->dry, sizeof(delay->dry));
         write_data(file, &delay->wet, sizeof(delay->wet));
         write_data(file, &delay->feedback, sizeof(delay->feedback));
@@ -695,14 +703,12 @@ void Song::serialize_dsp_body(std::ofstream &file, void *dsp) const {
 void *Song::deserialize_dsp(std::ifstream &header_file, std::ifstream &body_file) const {
     uint8_t dsp_size, effect_index, output_flag;
     uint32_t output;
-    uint8_t splitter[MAX_OUTPUT_CHANNELS];
 
     read_data(header_file, &dsp_size, sizeof(dsp_size));
     read_data(header_file, &effect_index, sizeof(effect_index));
     read_data(header_file, &output_flag, sizeof(output_flag));
     header_file.seekg(sizeof(uint8_t), std::ios::cur);
     read_data(header_file, &output, sizeof(output));
-    read_data(header_file, &splitter, sizeof(splitter));
 
     switch (effect_index) {
     case EFFECT_DISTORTION: {
@@ -711,7 +717,7 @@ void *Song::deserialize_dsp(std::ifstream &header_file, std::ifstream &body_file
         distortion->effect_index = effect_index;
         distortion->output_flag = output_flag;
         distortion->output = &output;
-        memccpy(distortion->splitter, splitter, sizeof(splitter), sizeof(splitter));
+        read_data(body_file, &distortion->splitter, sizeof(distortion->splitter));
         read_data(body_file, &distortion->level, sizeof(distortion->level));
         return reinterpret_cast<void *>(distortion);
     }
@@ -721,7 +727,7 @@ void *Song::deserialize_dsp(std::ifstream &header_file, std::ifstream &body_file
         gainer->effect_index = effect_index;
         gainer->output_flag = output_flag;
         gainer->output = &output;
-        memccpy(gainer->splitter, splitter, sizeof(splitter), sizeof(splitter));
+        read_data(body_file, &gainer->splitter, sizeof(gainer->splitter));
         read_data(body_file, &gainer->volume, sizeof(gainer->volume));
         return reinterpret_cast<void *>(gainer);
     }
@@ -731,7 +737,7 @@ void *Song::deserialize_dsp(std::ifstream &header_file, std::ifstream &body_file
         filter->effect_index = effect_index;
         filter->output_flag = output_flag;
         filter->output = &output;
-        memccpy(filter->splitter, splitter, sizeof(splitter), sizeof(splitter));
+        read_data(body_file, &filter->splitter, sizeof(filter->splitter));
         read_data(body_file, &filter->frequency, sizeof(filter->frequency));
         read_data(body_file, &filter->mode, sizeof(filter->mode));
         return reinterpret_cast<void *>(filter);
@@ -742,7 +748,7 @@ void *Song::deserialize_dsp(std::ifstream &header_file, std::ifstream &body_file
         delay->effect_index = effect_index;
         delay->output_flag = output_flag;
         delay->output = &output;
-        memccpy(delay->splitter, splitter, sizeof(splitter), sizeof(splitter));
+        read_data(body_file, &delay->splitter, sizeof(delay->splitter));
         read_data(body_file, &delay->dry, sizeof(delay->dry));
         read_data(body_file, &delay->wet, sizeof(delay->wet));
         read_data(body_file, &delay->feedback, sizeof(delay->feedback));
@@ -844,7 +850,7 @@ void Song::export_dsps(const std::string &directory) const {
     std::filesystem::create_directories(dsps_dir);
 
     for (size_t i = 0; i < dsps.size(); i++) {
-        std::string filename = get_element_path(dsps_dir, "dsp", i);
+        std::string filename = get_element_path(dsps_dir, "dsp_h", i);
         std::ofstream header_file(filename, std::ios::binary);
 
         void *dsp = dsps[i];
