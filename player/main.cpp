@@ -1,5 +1,4 @@
 #include "main.hpp"
-#include <iostream>
 
 snd_pcm_t *handle;
 

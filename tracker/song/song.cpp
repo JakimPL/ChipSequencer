@@ -498,9 +498,15 @@ std::string Song::generate_data_asm_file(const char separator) const {
     asm_content << "bpm:\n";
     asm_content << "dw " << bpm << "\n";
     asm_content << "unit:\n";
-    asm_content << "dd " << unit << "\n";
+    asm_content << "dd "
+                << std::fixed
+                << std::setprecision(std::numeric_limits<float>::max_digits10)
+                << static_cast<float>(unit) << "\n";
     asm_content << "normalizer:\n";
-    asm_content << "dd " << normalizer << "\n\n";
+    asm_content << "dd "
+                << std::fixed
+                << std::setprecision(std::numeric_limits<float>::max_digits10)
+                << static_cast<float>(normalizer) << "\n\n";
     asm_content << "num_channels:\n";
     asm_content << "db " << static_cast<int>(num_channels) << "\n";
     asm_content << "num_dsps:\n";
@@ -640,7 +646,7 @@ void Song::decompress_archive(const std::string &output_file, const std::string 
 }
 
 void Song::compile_sources(const std::string &directory, const std::string &filename, const bool compress) const {
-    std::string compile_command = "python scripts/compile.py \"" + directory + "\" \"" + filename + "\"";
+    std::string compile_command = "python scripts/compile.py linux \"" + directory + "\" \"" + filename + "\"";
     if (!compress) {
         compile_command += " --uncompressed";
     }
