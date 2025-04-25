@@ -115,14 +115,7 @@
     %define SIZE_OSCILLATOR_WAVETABLE 3
     %define SIZE_OSCILLATOR_NOISE 1
 
-    %ifdef TRACKER
-    %define SIZE_DSP_GAINER 20
-    %define SIZE_DSP_DISTORTION 20
-    %define SIZE_DSP_FILTER 20
-    %define SIZE_DSP_DELAY 20
-    %else
     %define SIZE_DSP_GAINER 14
     %define SIZE_DSP_DISTORTION 16
     %define SIZE_DSP_FILTER 16
     %define SIZE_DSP_DELAY 17
-    %endif

@@ -8,8 +8,10 @@
 
 #include "../constants.hpp"
 
+#define SIZE_DSP 20
+
 struct DSP {
-    uint8_t dsp_size;
+    uint8_t dsp_size = SIZE_DSP;
     uint8_t effect_index;
     uint8_t output_flag;
     uint8_t _unused;
@@ -49,7 +51,7 @@ struct DSPFilter {
     uint8_t splitter[MAX_OUTPUT_CHANNELS];
     uint16_t frequency;
     uint8_t mode;
-    uint8_t pad[5];
+    uint8_t pad[4];
 };
 
 struct DSPDelay {
