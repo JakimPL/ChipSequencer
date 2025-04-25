@@ -627,10 +627,6 @@ std::string Song::get_element_path(const std::string &directory, const std::stri
     return directory + separator + prefix + "_" + std::to_string(i) + ".bin";
 }
 
-void Song::serialize_channel(std::ofstream &file, Channel *channel) const {
-    write_data(file, &channel, sizeof(channel));
-}
-
 void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
     const uint8_t effect_index = static_cast<DSP *>(dsp)->effect_index;
     uint32_t null = 0;
@@ -687,13 +683,6 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
         throw std::runtime_error("Unknown DSP type: " + std::to_string(effect_index));
     }
     }
-}
-
-Channel *Song::deserialize_channel(std::ifstream &file) const {
-    Channel *channel = new Channel();
-    read_data(file, &channel, sizeof(channel));
-    channel->output = &output;
-    return channel;
 }
 
 void *Song::deserialize_dsp(std::ifstream &file) const {
@@ -823,12 +812,16 @@ void Song::export_channels(const std::string &directory) const {
     const std::filesystem::path series_dir = directory + "/chans";
     std::filesystem::create_directories(series_dir);
     for (size_t i = 0; i < channels.size(); i++) {
-        const std::string filename = get_element_path(series_dir, "chan", i);
-        std::ofstream file(filename, std::ios::binary);
-        Channel *channel = channels[i];
-        serialize_channel_output(file, channel);
-        serialize_channel_body(file, channel);
-        file.close();
+        const Channel *channel = channels[i];
+        std::string filename = get_element_path(series_dir, "chan_o", i);
+        std::ofstream output_file(filename, std::ios::binary);
+        channel->serialize_output(output_file, channel);
+        output_file.close();
+
+        filename = get_element_path(series_dir, "chan", i);
+        std::ofstream body_file(filename, std::ios::binary);
+        channel->serialize_body(body_file, channel);
+        body_file.close();
     }
 }
 
@@ -949,11 +942,14 @@ void Song::import_dsps(const std::string &song_dir, const nlohmann::json &json) 
 void Song::import_channels(const std::string &song_dir, const nlohmann::json &json) {
     const size_t channel_count = json["data"]["channels"];
     for (size_t i = 0; i < channel_count; i++) {
-        const std::string filename = get_element_path(song_dir + "/chans", "chan", i);
-        std::ifstream file(filename, std::ios::binary);
-        Channel *channel = deserialize_channel(file);
+        std::string filename = get_element_path(song_dir + "/chans", "chan_o", i);
+        std::ifstream output_file(filename, std::ios::binary);
+        filename = get_element_path(song_dir + "/chans", "chan", i);
+        std::ifstream body_file(filename, std::ios::binary);
+        Channel *channel = Channel::deserialize(output_file, body_file);
         channels.push_back(channel);
-        file.close();
+        body_file.close();
+        output_file.close();
     }
 }
 

@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <fstream>
 #include <vector>
 
 #include "../constants.hpp"
@@ -15,6 +16,10 @@ struct Channel {
     uint8_t order_index;
     uint8_t oscillator_index;
     uint32_t pitch;
+
+    void serialize_output(std::ofstream &file, const Channel *channel) const;
+    void serialize_body(std::ofstream &file, const Channel *channel) const;
+    static Channel *deserialize(std::ifstream &output_file, std::ifstream &body_file);
 };
 
 typedef std::vector<Channel *> Channels;

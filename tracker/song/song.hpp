@@ -44,10 +44,8 @@ class Song {
 
     void calculate_song_length();
 
-    void serialize_channel(std::ofstream &file, Channel *channel) const;
     void serialize_dsp(std::ofstream &file, void *dsp) const;
 
-    Channel *deserialize_channel(std::ifstream &file) const;
     void *deserialize_dsp(std::ifstream &file) const;
     void *deserialize_oscillator(std::ifstream &file) const;
 

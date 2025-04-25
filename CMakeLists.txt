@@ -111,6 +111,7 @@ add_executable(main
     tracker/song/output.cpp
     tracker/song/links/link.cpp
     tracker/song/links/manager.cpp
+    tracker/structures/channel.cpp
     tracker/structures/order.cpp
     tracker/structures/sequence.cpp
     tracker/structures/wavetable.cpp
