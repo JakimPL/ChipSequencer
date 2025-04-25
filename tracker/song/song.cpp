@@ -90,9 +90,9 @@ void Song::compile(const std::string &filename, bool compress) const {
     try {
         export_all(song_dir);
         compile_sources(temp_base.string(), filename, compress);
-        std::filesystem::remove_all(temp_base);
+        // std::filesystem::remove_all(temp_base);
     } catch (const std::exception &exception) {
-        std::filesystem::remove_all(temp_base);
+        // std::filesystem::remove_all(temp_base);
         throw;
     }
 }
@@ -435,29 +435,30 @@ void Song::generate_header_vector(
     const size_t size,
     const char separator
 ) const {
-    asm_content << name << "s:\n";
+    asm_content << "\n\n"
+                << name << "s:\n";
     for (size_t i = 0; i < size; i++) {
-        asm_content << "global " << name << "s." << name << "_" << i << ":\n";
+        asm_content << "\nglobal " << name << "s." << name << "_" << i << ":\n";
         asm_content << "." << name << "_" << i << ":\n";
         asm_content << "incbin \"song" << separator << get_element_path(short_name + "s", short_name, i, separator) << "\"\n";
     }
 }
 
 void Song::generate_header_channel_vector(std::stringstream &asm_content, const char separator) const {
-    asm_content << "channels:\n";
+    asm_content << "\n\nchannels:\n";
     for (size_t i = 0; i < channels.size(); i++) {
-        asm_content << "global channels.channel_" << i << ":\n";
+        asm_content << "\nglobal channels.channel_" << i << ":\n";
         asm_content << ".channel_" << i << ":\n";
         asm_content << "dd " << link_manager.get_link_reference(ItemType::CHANNEL, i) << "\n";
-        asm_content << "incbin \"song" << separator << get_element_path("channels", "chan", i, separator) << "\"\n";
+        asm_content << "incbin \"song" << separator << get_element_path("chans", "chan", i, separator) << "\"\n";
     }
 }
 
 void Song::generate_header_dsp_vector(std::stringstream &asm_content, const char separator) const {
-    asm_content << "dsps:\n";
+    asm_content << "\n\ndsps:\n";
     for (size_t i = 0; i < dsps.size(); i++) {
         const DSP *dsp = static_cast<DSP *>(dsps[i]);
-        asm_content << "global dsps.dsp_" << i << ":\n";
+        asm_content << "\nglobal dsps.dsp_" << i << ":\n";
         asm_content << ".dsp_" << i << ":\n";
         asm_content << "db " << static_cast<int>(dsp->dsp_size) << "\n";
         asm_content << "db " << static_cast<int>(dsp->effect_index) << "\n";
