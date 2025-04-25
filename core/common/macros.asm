@@ -1,5 +1,5 @@
     %macro SEGMENT_CODE 0
-    %ifdef TRACKER
+    %ifndef BITS_16
     section .text
     %else
     segment code
@@ -7,7 +7,7 @@
     %endmacro
 
     %macro SEGMENT_DATA 0
-    %ifdef TRACKER
+    %ifndef BITS_16
     section .data
     %else
     segment data
@@ -15,7 +15,7 @@
     %endmacro
 
     %macro SEGMENT_BSS 0
-    %ifdef TRACKER
+    %ifndef BITS_16
     section .bss
     %else
     segment bss

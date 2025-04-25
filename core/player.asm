@@ -73,7 +73,7 @@ calculate:
     dsp_buffer resd DSPS * MAX_DSP_BUFFER_SIZE
     %endif
 
-    %ifndef TRACKER
+    %ifdef BITS_16
     group dgroup bss data
     %endif
 

@@ -28,9 +28,15 @@ class Song {
     uint64_t song_length = 0;
     uint16_t max_rows = 0;
 
-    void generate_header_vector(std::stringstream &asm_content, const std::string &name, const std::string &short_name, const size_t size) const;
+    void generate_header_vector(
+        std::stringstream &asm_content,
+        const std::string &name,
+        const std::string &short_name,
+        const size_t size,
+        const char separator = '/'
+    ) const;
     std::string generate_header_asm_file() const;
-    std::string generate_data_asm_file() const;
+    std::string generate_data_asm_file(const char separator = '/') const;
     nlohmann::json create_header_json() const;
     nlohmann::json import_header(const std::string &directory);
 

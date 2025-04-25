@@ -426,12 +426,18 @@ std::pair<ValidationResult, int> Song::validate() {
     return {ValidationResult::OK, -1};
 }
 
-void Song::generate_header_vector(std::stringstream &asm_content, const std::string &name, const std::string &short_name, const size_t size) const {
+void Song::generate_header_vector(
+    std::stringstream &asm_content,
+    const std::string &name,
+    const std::string &short_name,
+    const size_t size,
+    const char separator
+) const {
     asm_content << name << "s:\n";
     for (size_t i = 0; i < size; i++) {
         asm_content << "global " << name << "s." << name << "_" << i << ":\n";
         asm_content << "." << name << "_" << i << ":\n";
-        asm_content << "incbin \"song\\" << get_element_path(short_name + "s", short_name, i, '\\') << "\"\n";
+        asm_content << "incbin \"song" << separator << get_element_path(short_name + "s", short_name, i, separator) << "\"\n";
     }
 }
 
@@ -446,7 +452,7 @@ std::string Song::generate_header_asm_file() const {
     asm_content << "    \%define SAMPLE_RATE " << sample_rate << "\n";
     asm_content << "\n";
     asm_content << "    \%define TUNING_FREQUENCY " << static_cast<uint32_t>(std::round(frequency_table.get_last_frequency() * 65536.0)) << "\n";
-    asm_content << "    \%define TUNING_NOTE_DIVISOR " << static_cast<_Float64>(frequency_table.get_note_divisor()) << "\n";
+    asm_content << "    \%define TUNING_NOTE_DIVISOR " << std::fixed << std::setprecision(std::numeric_limits<double>::max_digits10) << static_cast<_Float64>(frequency_table.get_note_divisor()) << "\n";
     asm_content << "\n";
     asm_content << "    \%define DSP_BUFFER_SIZE MAX_DSP_BUFFER_SIZE * DSPS" << "\n";
     asm_content << "\n";
@@ -458,7 +464,7 @@ std::string Song::generate_header_asm_file() const {
     return asm_content.str();
 }
 
-std::string Song::generate_data_asm_file() const {
+std::string Song::generate_data_asm_file(const char separator) const {
     std::stringstream asm_content;
     asm_content << "SEGMENT_DATA\n";
     asm_content << "bpm:\n";
@@ -481,7 +487,7 @@ std::string Song::generate_data_asm_file() const {
     generate_header_vector(asm_content, "channel", "chan", channels.size());
 
     asm_content << "buffer_offsets:\n";
-    asm_content << "incbin \"song\\offsets.bin\"\n";
+    asm_content << "incbin \"song" << separator << "offsets.bin\"\n";
 
     return asm_content.str();
 }
@@ -622,7 +628,7 @@ std::string Song::get_element_path(const std::string &directory, const std::stri
 }
 
 void Song::serialize_channel(std::ofstream &file, Channel *channel) const {
-    uint16_t null = 0;
+    uint32_t null = 0;
     write_data(file, &channel->envelope_index, sizeof(channel->envelope_index));
     write_data(file, &channel->order_index, sizeof(channel->order_index));
     write_data(file, &channel->oscillator_index, sizeof(channel->oscillator_index));
@@ -634,7 +640,7 @@ void Song::serialize_channel(std::ofstream &file, Channel *channel) const {
 
 void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
     const uint8_t effect_index = static_cast<DSP *>(dsp)->effect_index;
-    uint16_t null = 0;
+    uint32_t null = 0;
     switch (effect_index) {
     case EFFECT_DISTORTION: {
         DSPDistortion *distortion = reinterpret_cast<DSPDistortion *>(dsp);
@@ -649,7 +655,6 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
     }
     case EFFECT_GAINER: {
         DSPGainer *gainer = reinterpret_cast<DSPGainer *>(dsp);
-        uint16_t null = 0;
         uint8_t size = SIZE_DSP_GAINER;
         write_data(file, &size, sizeof(size));
         write_data(file, &gainer->effect_index, sizeof(gainer->effect_index));
@@ -661,7 +666,6 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
     }
     case EFFECT_FILTER: {
         DSPFilter *filter = reinterpret_cast<DSPFilter *>(dsp);
-        uint16_t null = 0;
         uint8_t size = SIZE_DSP_FILTER;
         write_data(file, &size, sizeof(size));
         write_data(file, &filter->effect_index, sizeof(filter->effect_index));
@@ -700,7 +704,7 @@ Channel *Song::deserialize_channel(std::ifstream &file) const {
     read_data(file, &channel->pitch, sizeof(channel->pitch));
     read_data(file, &channel->output_flag, sizeof(channel->output_flag));
     read_data(file, &channel->splitter, sizeof(channel->splitter));
-    file.seekg(sizeof(uint16_t), std::ios::cur);
+    file.seekg(sizeof(uint32_t), std::ios::cur);
     channel->output = &output;
     return channel;
 }
@@ -716,7 +720,7 @@ void *Song::deserialize_dsp(std::ifstream &file) const {
         distortion->dsp_size = SIZE_DSP_DISTORTION;
         distortion->output = &output;
         read_data(file, &distortion->output_flag, sizeof(distortion->output_flag));
-        file.seekg(sizeof(uint16_t), std::ios::cur);
+        file.seekg(sizeof(uint32_t), std::ios::cur);
         read_data(file, &distortion->splitter, sizeof(distortion->splitter));
         read_data(file, &distortion->level, sizeof(distortion->level));
         return reinterpret_cast<void *>(distortion);
@@ -726,7 +730,7 @@ void *Song::deserialize_dsp(std::ifstream &file) const {
         gainer->dsp_size = SIZE_DSP_GAINER;
         gainer->output = &output;
         read_data(file, &gainer->output_flag, sizeof(gainer->output_flag));
-        file.seekg(sizeof(uint16_t), std::ios::cur);
+        file.seekg(sizeof(uint32_t), std::ios::cur);
         read_data(file, &gainer->splitter, sizeof(gainer->splitter));
         read_data(file, &gainer->volume, sizeof(gainer->volume));
         return reinterpret_cast<void *>(gainer);
@@ -736,7 +740,7 @@ void *Song::deserialize_dsp(std::ifstream &file) const {
         filter->dsp_size = SIZE_DSP_FILTER;
         filter->output = &output;
         read_data(file, &filter->output_flag, sizeof(filter->output_flag));
-        file.seekg(sizeof(uint16_t), std::ios::cur);
+        file.seekg(sizeof(uint32_t), std::ios::cur);
         read_data(file, &filter->splitter, sizeof(filter->splitter));
         read_data(file, &filter->frequency, sizeof(filter->frequency));
         read_data(file, &filter->mode, sizeof(filter->mode));
@@ -747,7 +751,7 @@ void *Song::deserialize_dsp(std::ifstream &file) const {
         delay->dsp_size = SIZE_DSP_DELAY;
         delay->output = &output;
         read_data(file, &delay->output_flag, sizeof(delay->output_flag));
-        file.seekg(sizeof(uint16_t), std::ios::cur);
+        file.seekg(sizeof(uint32_t), std::ios::cur);
         read_data(file, &delay->splitter, sizeof(delay->splitter));
         read_data(file, &delay->dry, sizeof(delay->dry));
         read_data(file, &delay->wet, sizeof(delay->wet));
