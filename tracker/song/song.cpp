@@ -441,6 +441,26 @@ void Song::generate_header_vector(
     }
 }
 
+void Song::generate_header_channel_vector(std::stringstream &asm_content, const char separator) const {
+    asm_content << "channels:\n";
+    for (size_t i = 0; i < channels.size(); i++) {
+        asm_content << "global channels.channel_" << i << ":\n";
+        asm_content << ".channel_" << i << ":\n";
+        asm_content << "dd " << link_manager.get_link_reference(ItemType::CHANNEL, i) << "\n";
+        asm_content << "incbin \"song" << separator << get_element_path("channels", "chan", i, separator) << "\"\n";
+    }
+}
+
+void Song::generate_header_dsp_vector(std::stringstream &asm_content, const char separator) const {
+    asm_content << "dsps:\n";
+    for (size_t i = 0; i < channels.size(); i++) {
+        asm_content << "global dsps.dsp_" << i << ":\n";
+        asm_content << ".dsp_" << i << ":\n";
+        asm_content << "dd " << link_manager.get_link_reference(ItemType::DSP, i) << "\n";
+        asm_content << "incbin \"song" << separator << get_element_path("dsps", "dsp", i, separator) << "\"\n";
+    }
+}
+
 std::string Song::generate_header_asm_file() const {
     std::stringstream asm_content;
     asm_content << "    \%define CHANNELS " << channels.size() << "\n";
@@ -478,13 +498,13 @@ std::string Song::generate_data_asm_file(const char separator) const {
     asm_content << "num_dsps:\n";
     asm_content << "db " << static_cast<int>(num_dsps) << "\n\n";
 
-    generate_header_vector(asm_content, "envelope", "envel", envelopes.size());
-    generate_header_vector(asm_content, "sequence", "seq", sequences.size());
-    generate_header_vector(asm_content, "order", "order", orders.size());
-    generate_header_vector(asm_content, "oscillator", "osc", oscillators.size());
-    generate_header_vector(asm_content, "wavetable", "wave", wavetables.size());
-    generate_header_vector(asm_content, "dsp", "dsp", dsps.size());
-    generate_header_vector(asm_content, "channel", "chan", channels.size());
+    generate_header_vector(asm_content, "envelope", "envel", envelopes.size(), separator);
+    generate_header_vector(asm_content, "sequence", "seq", sequences.size(), separator);
+    generate_header_vector(asm_content, "order", "order", orders.size(), separator);
+    generate_header_vector(asm_content, "oscillator", "osc", oscillators.size(), separator);
+    generate_header_vector(asm_content, "wavetable", "wave", wavetables.size(), separator);
+    generate_header_dsp_vector(asm_content, separator);
+    generate_header_channel_vector(asm_content, separator);
 
     asm_content << "buffer_offsets:\n";
     asm_content << "incbin \"song" << separator << "offsets.bin\"\n";

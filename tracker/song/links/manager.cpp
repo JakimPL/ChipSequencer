@@ -146,6 +146,60 @@ std::vector<Link *> LinkManager::get_links(const LinkKey key) const {
     return {};
 }
 
+std::string LinkManager::get_link_reference(const ItemType type, const size_t index) const {
+    std::string reference;
+    const Link &link = links[static_cast<size_t>(type)][index];
+    switch (link.target) {
+    case Target::SPLITTER_OUTPUT:
+    case Target::DIRECT_OUTPUT: {
+        reference = "output";
+        break;
+    }
+    case Target::SPLITTER_DSP:
+    case Target::DIRECT_DSP: {
+        reference = "dsp_input";
+        break;
+    }
+    case Target::ENVELOPE: {
+        reference = "envelopes.envelope_" + std::to_string(link.index);
+        break;
+    }
+    case Target::SEQUENCE: {
+        reference = "sequences.sequence_" + std::to_string(link.index);
+        break;
+    }
+    case Target::ORDER: {
+        reference = "orders.order_" + std::to_string(link.index);
+        break;
+    }
+    case Target::OSCILLATOR: {
+        reference = "oscillators.oscillator_" + std::to_string(link.index);
+        break;
+    }
+    case Target::WAVETABLE: {
+        reference = "wavetables.wavetable_" + std::to_string(link.index);
+        break;
+    }
+    case Target::DSP: {
+        reference = "dsps.dsp_" + std::to_string(link.index);
+        break;
+    }
+    case Target::CHANNEL: {
+        reference = "channels.channel_" + std::to_string(link.index);
+        break;
+    }
+    case Target::UNUSED: {
+        throw std::runtime_error("Invalid link target");
+    }
+    }
+
+    if (link.offset != 0) {
+        reference += " + " + std::to_string(link.offset);
+    }
+
+    return reference;
+}
+
 void LinkManager::remove_key(Link &link) {
     const auto map_it = map.find(link.key);
     if (map_it != map.end()) {
