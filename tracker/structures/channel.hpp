@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "../constants.hpp"
+#include "../sizes.hpp"
 
 struct Channel {
     void *output;

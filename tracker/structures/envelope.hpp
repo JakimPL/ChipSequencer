@@ -5,6 +5,8 @@
 #include <cstdint>
 #include <vector>
 
+#include "../sizes.hpp"
+
 struct Envelope {
     uint16_t base_volume;
     uint16_t sustain_level;
@@ -25,6 +27,6 @@ constexpr size_t ENVELOPE_DECAY = offsetof(Envelope, decay);
 constexpr size_t ENVELOPE_HOLD = offsetof(Envelope, hold);
 constexpr size_t ENVELOPE_RELEASE = offsetof(Envelope, release);
 
-static_assert(sizeof(Envelope) == 14, "Envelope must be of 14 bytes.");
+static_assert(sizeof(Envelope) == SIZE_ENVELOPE, "Envelope must be of 14 bytes.");
 
 #endif // STRUCTURES_ENVELOPE_HPP
