@@ -8,8 +8,6 @@
 
 #include "../constants.hpp"
 
-#define SIZE_DSP 11
-
 struct DSP {
     uint8_t dsp_size = SIZE_DSP;
     uint8_t effect_index;

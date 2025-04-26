@@ -17,7 +17,7 @@ repos:
         entry: make consts
         language: system
         always_run: true
-        files: "tracker/constants.hpp tracker/maps/offsets.hpp"
+        files: "tracker/constants.hpp tracker/sizes.hpp tracker/maps/offsets.hpp"
       - id: nasmfmt-hook
         name: nasmfmt formatting
         entry: nasmfmt

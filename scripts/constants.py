@@ -1,4 +1,4 @@
-from constant_manager.manager import ConstantManager
+from constant.manager import ConstantManager
 
 if __name__ == "__main__":
     constant_manager = ConstantManager()
