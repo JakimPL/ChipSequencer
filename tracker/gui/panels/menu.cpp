@@ -33,11 +33,23 @@ void GUIMenu::draw() {
                 file_render();
             }
             ImGui::Separator();
-            if (ImGui::MenuItem("Compile")) {
-                file_compile(true);
+            if (ImGui::BeginMenu("Compile")) {
+                if (ImGui::MenuItem("DOS")) {
+                    file_compile(true, "dos");
+                }
+                if (ImGui::MenuItem("Linux")) {
+                    file_compile(true, "linux");
+                }
+                ImGui::EndMenu();
             }
-            if (ImGui::MenuItem("Compile uncompressed")) {
-                file_compile(false);
+            if (ImGui::BeginMenu("Compile uncompressed")) {
+                if (ImGui::MenuItem("DOS")) {
+                    file_compile(false, "dos");
+                }
+                if (ImGui::MenuItem("Linux")) {
+                    file_compile(false, "linux");
+                }
+                ImGui::EndMenu();
             }
             ImGui::Separator();
             if (ImGui::MenuItem("Exit")) {
@@ -158,17 +170,17 @@ void GUIMenu::file_render() {
     }
 }
 
-void GUIMenu::file_compile(const bool compress) {
+void GUIMenu::file_compile(const bool compress, const std::string &platform) {
     file_save();
     nfdchar_t *target_path = nullptr;
-    nfdresult_t result = NFD_SaveDialog("exe", nullptr, &target_path);
+    nfdresult_t result = NFD_SaveDialog(platform == "linux" ? "" : "exe", nullptr, &target_path);
     if (result == NFD_OKAY) {
         std::filesystem::path new_path(target_path);
-        new_path = check_and_correct_path_by_extension(new_path, ".exe");
+        new_path = check_and_correct_path_by_extension(new_path, platform == "linux" ? "" : ".exe");
 
         gui.stop();
         try {
-            song.compile(new_path, compress);
+            song.compile(new_path, compress, platform);
             compilation_status = std::filesystem::exists(new_path);
         } catch (std::runtime_error &exception) {
             compilation_status = false;

@@ -32,4 +32,6 @@ constexpr size_t CHANNEL_ORDER_INDEX = offsetof(Channel, order_index);
 constexpr size_t CHANNEL_OSCILLATOR_INDEX = offsetof(Channel, oscillator_index);
 constexpr size_t CHANNEL_PITCH = offsetof(Channel, pitch);
 
+static_assert(sizeof(Channel) == SIZE_CHANNEL, "Channel must be of 16 bytes.");
+
 #endif // STRUCTURES_CHANNEL_HPP

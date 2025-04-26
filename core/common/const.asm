@@ -104,18 +104,3 @@
 ; Noise
     %define NOISE_SEED 0xACE1
     %define NOISE_GALOIS_GENERATOR 0xB400
-
-; Sizes
-    %define SIZE_CHANNEL 16
-    %define SIZE_ENVELOPE 14
-
-    %define SIZE_OSCILLATOR_SINE 1
-    %define SIZE_OSCILLATOR_SQUARE 2
-    %define SIZE_OSCILLATOR_SAW 2
-    %define SIZE_OSCILLATOR_WAVETABLE 3
-    %define SIZE_OSCILLATOR_NOISE 1
-
-    %define SIZE_DSP_GAINER 14
-    %define SIZE_DSP_DISTORTION 16
-    %define SIZE_DSP_FILTER 16
-    %define SIZE_DSP_DELAY 17

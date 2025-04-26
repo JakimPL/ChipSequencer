@@ -83,16 +83,16 @@ void Song::load_from_file(const std::string &filename) {
     }
 }
 
-void Song::compile(const std::string &filename, bool compress) const {
+void Song::compile(const std::string &filename, bool compress, const std::string platform) const {
     const auto [temp_base, song_path] = prepare_temp_directory();
     const std::string song_dir = song_path.string();
 
     try {
         export_all(song_dir);
-        compile_sources(temp_base.string(), filename, compress);
-        // std::filesystem::remove_all(temp_base);
+        compile_sources(temp_base.string(), filename, compress, platform);
+        std::filesystem::remove_all(temp_base);
     } catch (const std::exception &exception) {
-        // std::filesystem::remove_all(temp_base);
+        std::filesystem::remove_all(temp_base);
         throw;
     }
 }
@@ -645,8 +645,8 @@ void Song::decompress_archive(const std::string &output_file, const std::string 
     }
 }
 
-void Song::compile_sources(const std::string &directory, const std::string &filename, const bool compress) const {
-    std::string compile_command = "python scripts/compile.py linux \"" + directory + "\" \"" + filename + "\"";
+void Song::compile_sources(const std::string &directory, const std::string &filename, const bool compress, const std::string platform) const {
+    std::string compile_command = "python scripts/compile.py " + platform + " \"" + directory + "\" \"" + filename + "\"";
     if (!compress) {
         compile_command += " --uncompressed";
     }
@@ -677,12 +677,14 @@ void Song::serialize_dsp_body(std::ofstream &file, void *dsp) const {
         DSPDistortion *distortion = reinterpret_cast<DSPDistortion *>(dsp);
         write_data(file, &distortion->splitter, sizeof(distortion->splitter));
         write_data(file, &distortion->level, sizeof(distortion->level));
+        write_data(file, &distortion->pad, sizeof(distortion->pad));
         return;
     }
     case EFFECT_GAINER: {
         DSPGainer *gainer = reinterpret_cast<DSPGainer *>(dsp);
         write_data(file, &gainer->splitter, sizeof(gainer->splitter));
         write_data(file, &gainer->volume, sizeof(gainer->volume));
+        write_data(file, &gainer->pad, sizeof(gainer->pad));
         return;
     }
     case EFFECT_FILTER: {
@@ -690,6 +692,7 @@ void Song::serialize_dsp_body(std::ofstream &file, void *dsp) const {
         write_data(file, &filter->splitter, sizeof(filter->splitter));
         write_data(file, &filter->frequency, sizeof(filter->frequency));
         write_data(file, &filter->mode, sizeof(filter->mode));
+        write_data(file, &filter->pad, sizeof(filter->pad));
         return;
     }
     case EFFECT_DELAY: {
@@ -699,6 +702,7 @@ void Song::serialize_dsp_body(std::ofstream &file, void *dsp) const {
         write_data(file, &delay->wet, sizeof(delay->wet));
         write_data(file, &delay->feedback, sizeof(delay->feedback));
         write_data(file, &delay->delay_time, sizeof(delay->delay_time));
+        write_data(file, &delay->pad, sizeof(delay->pad));
         return;
     }
     default: {

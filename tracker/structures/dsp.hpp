@@ -8,7 +8,7 @@
 
 #include "../constants.hpp"
 
-#define SIZE_DSP 20
+#define SIZE_DSP 11
 
 struct DSP {
     uint8_t dsp_size = SIZE_DSP;
@@ -17,7 +17,7 @@ struct DSP {
     uint8_t _unused;
     void *output;
     uint8_t splitter[MAX_OUTPUT_CHANNELS];
-    uint8_t pad[8];
+    uint8_t pad[0];
 };
 
 struct DSPGainer {
@@ -28,7 +28,7 @@ struct DSPGainer {
     void *output;
     uint8_t splitter[MAX_OUTPUT_CHANNELS];
     uint16_t volume;
-    uint8_t pad[6];
+    uint8_t pad[2];
 };
 
 struct DSPDistortion {
@@ -39,7 +39,7 @@ struct DSPDistortion {
     void *output;
     uint8_t splitter[MAX_OUTPUT_CHANNELS];
     uint16_t level;
-    uint8_t pad[6];
+    uint8_t pad[2];
 };
 
 struct DSPFilter {
@@ -51,7 +51,7 @@ struct DSPFilter {
     uint8_t splitter[MAX_OUTPUT_CHANNELS];
     uint16_t frequency;
     uint8_t mode;
-    uint8_t pad[4];
+    uint8_t pad[1];
 };
 
 struct DSPDelay {
@@ -83,5 +83,12 @@ constexpr size_t DSP_DELAY_DRY = offsetof(DSPDelay, dry);
 constexpr size_t DSP_DELAY_WET = offsetof(DSPDelay, wet);
 constexpr size_t DSP_DELAY_FEEDBACK = offsetof(DSPDelay, feedback);
 constexpr size_t DSP_DELAY_TIME = offsetof(DSPDelay, delay_time);
+
+/* padding is necessary for 32-bit systems */
+static_assert(sizeof(DSP) == SIZE_DSP + 1, "DSP must be of 16 bytes.");
+static_assert(sizeof(DSPGainer) == SIZE_DSP_GAINER + 1, "DSPGainer must be of 16 bytes.");
+static_assert(sizeof(DSPDistortion) == SIZE_DSP_DISTORTION + 1, "DSPDistortion must be of 16 bytes.");
+static_assert(sizeof(DSPFilter) == SIZE_DSP_FILTER + 1, "DSPFilter must be of 16 bytes.");
+static_assert(sizeof(DSPDelay) == SIZE_DSP_DELAY + 1, "DSPDelay must be of 20 bytes.");
 
 #endif // STRUCTURES_DSP_HPP

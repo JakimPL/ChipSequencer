@@ -38,6 +38,7 @@ struct OscillatorWavetable {
     uint8_t generator_index = GENERATOR_WAVETABLE;
     uint8_t wavetable_index;
     uint8_t interpolation;
+    uint8_t pad[0];
 };
 
 struct OscillatorNoise {
@@ -54,5 +55,11 @@ constexpr size_t OSCILLATOR_SQUARE_DUTY_CYCLE = offsetof(OscillatorSquare, duty_
 constexpr size_t OSCILLATOR_SAW_REVERSE = offsetof(OscillatorSaw, reverse);
 constexpr size_t OSCILLATOR_WAVETABLE_WAVETABLE_INDEX = offsetof(OscillatorWavetable, wavetable_index);
 constexpr size_t OSCILLATOR_WAVETABLE_INTERPOLATION = offsetof(OscillatorWavetable, interpolation);
+
+static_assert(sizeof(OscillatorSine) == SIZE_OSCILLATOR_SINE + 1 + sizeof(OscillatorSine::pad), "OscillatorSine must be of 1 byte.");
+static_assert(sizeof(OscillatorSquare) == SIZE_OSCILLATOR_SQUARE + 1 + sizeof(OscillatorSquare::pad), "OscillatorSquare must be of 2 bytes.");
+static_assert(sizeof(OscillatorSaw) == SIZE_OSCILLATOR_SAW + 1 + sizeof(OscillatorSaw::pad), "OscillatorSaw must be of 2 bytes.");
+static_assert(sizeof(OscillatorWavetable) == SIZE_OSCILLATOR_WAVETABLE + 1 + sizeof(OscillatorWavetable::pad), "OscillatorWavetable must be of 3 bytes.");
+static_assert(sizeof(OscillatorNoise) == SIZE_OSCILLATOR_NOISE + 1 + sizeof(OscillatorNoise::pad), "OscillatorNoise must be of 1 byte.");
 
 #endif // STRUCTURES_OSCILLATOR_HPP

@@ -25,4 +25,6 @@ constexpr size_t ENVELOPE_DECAY = offsetof(Envelope, decay);
 constexpr size_t ENVELOPE_HOLD = offsetof(Envelope, hold);
 constexpr size_t ENVELOPE_RELEASE = offsetof(Envelope, release);
 
+static_assert(sizeof(Envelope) == 14, "Envelope must be of 14 bytes.");
+
 #endif // STRUCTURES_ENVELOPE_HPP
