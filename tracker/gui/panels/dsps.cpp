@@ -72,6 +72,8 @@ void GUIDSPsPanel::from() {
         current_dsp.delay_time = static_cast<float>(delay->delay_time) / UINT16_MAX * 20;
         break;
     }
+    default:
+        throw std::runtime_error("Unknown DSP type: " + std::to_string(current_dsp.effect_index));
     }
 
     const Link &link = links[static_cast<size_t>(ItemType::DSP)][dsp_index];
@@ -118,6 +120,8 @@ void GUIDSPsPanel::to() const {
         dsp->delay_time = static_cast<uint16_t>(std::round(current_dsp.delay_time * UINT16_MAX / 20));
         break;
     }
+    default:
+        throw std::runtime_error("Unknown DSP type: " + std::to_string(current_dsp.effect_index));
     }
 
     Link &link = links[static_cast<size_t>(ItemType::DSP)][dsp_index];

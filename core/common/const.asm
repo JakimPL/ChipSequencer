@@ -16,6 +16,7 @@
     %define DEFAULT_SAMPLE_RATE 44100
     %define DEFAULT_NORMALIZER 0.5
     %define DEFAULT_OUTPUT_CHANNELS 2
+    %define DEFAULT_OUTPUT_FLAG 0
 
     %define DEFAULT_TITLE "Untitled"
     %define DEFAULT_AUTHOR "Unknown"

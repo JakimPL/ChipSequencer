@@ -255,20 +255,22 @@ Channel *Song::add_channel() {
     }
 
     Channel *channel = new Channel();
+    channels.push_back(channel);
+    num_channels = channels.size();
+    links[static_cast<size_t>(ItemType::CHANNEL)].push_back(Link());
+    link_manager.set_links();
+
     channel->envelope_index = 0;
     channel->order_index = 0;
     channel->oscillator_index = 0;
-    channel->output_flag = 0;
+    channel->output_flag = DEFAULT_OUTPUT_FLAG;
     channel->pitch = DEFAULT_CHANNEL_PITCH;
     channel->output = &output;
     channel->splitter[0] = 0x80;
     channel->splitter[1] = 0x80;
     channel->splitter[2] = 0x00;
     channel->splitter[3] = 0x00;
-    channels.push_back(channel);
-    num_channels = channels.size();
-    links[static_cast<size_t>(ItemType::CHANNEL)].push_back(Link());
-    link_manager.set_links();
+
     return channel;
 }
 
@@ -278,12 +280,20 @@ void *Song::add_dsp() {
     }
 
     DSPGainer *dsp = new DSPGainer();
-    dsp->volume = DEFAULT_GAINER_VOLUME;
-
     dsps.push_back(dsp);
     num_dsps = dsps.size();
     links[static_cast<size_t>(ItemType::DSP)].push_back(Link());
     link_manager.set_links();
+
+    dsp->dsp_size = SIZE_DSP_GAINER;
+    dsp->output_flag = DEFAULT_OUTPUT_FLAG;
+    dsp->splitter[0] = 0x80;
+    dsp->splitter[1] = 0x80;
+    dsp->splitter[2] = 0x00;
+    dsp->splitter[3] = 0x00;
+    dsp->effect_index = EFFECT_GAINER;
+    dsp->volume = DEFAULT_GAINER_VOLUME;
+
     return dsp;
 }
 
