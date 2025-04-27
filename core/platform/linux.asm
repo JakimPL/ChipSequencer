@@ -2,6 +2,7 @@
 
     global output
 
+    %define BIN
     %define FILE_SIZE 0x1000
     %define MEMORY_SIZE 0xD00000
 
