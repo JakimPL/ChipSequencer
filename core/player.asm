@@ -1,5 +1,6 @@
     %include "core/common.asm"
 
+    %ifndef BIN
     global initialize
     global calculate
     global mix
@@ -31,6 +32,7 @@
     SEGMENT_BSS
     align 2
     buffer resb SB_BUFFER_SIZE * (1 + SB_16BIT)
+    %endif
     %endif
 
     SEGMENT_CODE

@@ -1,3 +1,4 @@
+    %ifndef BIN
     global envelope_timer
     global sequence_timer
     global oscillator_timer
@@ -10,6 +11,7 @@
     global dsp_input
     global dsp_timer
     global output
+    %endif
 
     SEGMENT_BSS
     envelope_timer resd MAX_CHANNELS
