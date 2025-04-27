@@ -33,6 +33,7 @@ void Song::new_song() {
     header = {
         DEFAULT_AUTHOR,
         DEFAULT_TITLE,
+        DEFAULT_MESSAGE,
         TRACKER_VERSION
     };
     tuning = {
@@ -90,9 +91,9 @@ void Song::compile(const std::string &filename, bool compress, const std::string
     try {
         export_all(song_dir);
         compile_sources(temp_base.string(), filename, compress, platform);
-        // std::filesystem::remove_all(temp_base);
+        std::filesystem::remove_all(temp_base);
     } catch (const std::exception &exception) {
-        // std::filesystem::remove_all(temp_base);
+        std::filesystem::remove_all(temp_base);
         throw;
     }
 }
@@ -114,6 +115,10 @@ std::string Song::get_author() const {
     return header.author;
 }
 
+std::string Song::get_message() const {
+    return header.message;
+}
+
 void Song::set_title(const std::string &title) {
     if (title.length() >= MAX_STRING_LENGTH) {
         throw std::runtime_error("Song title is too long");
@@ -128,6 +133,14 @@ void Song::set_author(const std::string &author) {
     }
 
     header.author = author;
+}
+
+void Song::set_message(const std::string &message) {
+    if (message.length() >= MAX_STRING_LENGTH) {
+        throw std::runtime_error("Message is too long");
+    }
+
+    header.message = message;
 }
 
 void Song::change_tuning(const uint8_t new_edo, const double base_frequency) {

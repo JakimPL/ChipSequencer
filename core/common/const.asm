@@ -20,7 +20,7 @@
 
     %define DEFAULT_TITLE "Untitled"
     %define DEFAULT_AUTHOR "Unknown"
-    %define DEFAULT_MESSAGE ""
+    %define DEFAULT_MESSAGE "Chip Sequencer by Jakim, 2025"
 
     %define DEFAULT_EDO 12
     %define DEFAULT_A4_FREQUENCY 440.0

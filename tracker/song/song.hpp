@@ -102,8 +102,10 @@ class Song {
 
     std::string get_title() const;
     std::string get_author() const;
+    std::string get_message() const;
     void set_title(const std::string &title);
     void set_author(const std::string &author);
+    void set_message(const std::string &message);
 
     void change_tuning(const uint8_t new_edo, const double base_frequency);
 
