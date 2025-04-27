@@ -21,6 +21,8 @@
     %define DSP_2_BUFFER_SIZE 1
     %define DSP_BUFFER_SIZE 1
 
+    %ifndef BIN
     extern num_channels
     extern num_dsps
     extern unit
+    %endif

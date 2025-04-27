@@ -39,7 +39,6 @@ increment_timer:
 initialize_frequencies:
     mov ecx, NOTES
     lea edi, [frequencies + 4 * ecx]
-
     fild qword [reference_frequency]
     fdiv dword [f_65536]
 
@@ -49,9 +48,7 @@ initialize_frequencies:
     fld dword [f_65536]
     fmulp st1, st0
     fistp dword [edi]
-
     fdiv qword [note_divisor]
-
     loop .loop
     ret
 

@@ -78,4 +78,3 @@ calculate:
     %ifdef BITS_16
     group dgroup bss data
     %endif
-
