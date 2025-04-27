@@ -90,9 +90,9 @@ void Song::compile(const std::string &filename, bool compress, const std::string
     try {
         export_all(song_dir);
         compile_sources(temp_base.string(), filename, compress, platform);
-        std::filesystem::remove_all(temp_base);
+        // std::filesystem::remove_all(temp_base);
     } catch (const std::exception &exception) {
-        std::filesystem::remove_all(temp_base);
+        // std::filesystem::remove_all(temp_base);
         throw;
     }
 }
@@ -488,11 +488,10 @@ std::string Song::generate_header_asm_file() const {
     asm_content << "    \%define OUTPUT_CHANNELS " << static_cast<int>(output_channels) << "\n";
     asm_content << "    \%define SONG_LENGTH " << song_length << "\n";
     asm_content << "    \%define SAMPLE_RATE " << sample_rate << "\n";
+    asm_content << "    \%define MESSAGE " << "\"" << header.message << "\"\n";
     asm_content << "\n";
     asm_content << "    \%define TUNING_FREQUENCY " << static_cast<uint64_t>(std::round(frequency_table.get_last_frequency() * 65536.0)) << "\n";
     asm_content << "    \%define TUNING_NOTE_DIVISOR " << std::fixed << std::setprecision(std::numeric_limits<double>::max_digits10) << static_cast<_Float64>(frequency_table.get_note_divisor()) << "\n";
-    asm_content << "\n";
-    asm_content << "    \%define DSP_BUFFER_SIZE MAX_DSP_BUFFER_SIZE * DSPS" << "\n";
     asm_content << "\n";
     asm_content << "\n";
     asm_content << "    extern num_channels" << "\n";
@@ -551,7 +550,8 @@ nlohmann::json Song::create_header_json() const {
     json["header"] = {
         {"title", header.title},
         {"author", header.author},
-        {"version", header.version}
+        {"message", header.message},
+        {"version", header.version},
     };
 
     json["tuning"] = {
@@ -577,6 +577,7 @@ nlohmann::json Song::import_header(const std::string &filename) {
     const auto &json_header = json["header"];
     header.title = json_header.value("title", DEFAULT_TITLE);
     header.author = json_header.value("author", DEFAULT_AUTHOR);
+    header.message = json_header.value("message", DEFAULT_MESSAGE);
     header.version = json_header["version"];
 
     const auto &json_general = json["general"];

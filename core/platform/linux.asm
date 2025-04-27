@@ -44,16 +44,16 @@ phdr:
     phdr_size equ $ - phdr
 
 message:
-    db "Chip Sequencer by Jakim, 2025", 10
+    db "{message}", 10
     message_len equ $ - message
 cmd_aplay:
     db "/bin/aplay", 0
 cmd_dash_r:
     db "-r", 0
 cmd_sample_rate:
-    db "44100", 0
+    db "{sample_rate}", 0
 cmd_channels:
-    db "1", 0
+    db "{output_channels}", 0
 cmd_dash_c:
     db "-c", 0
 cmd_format:
@@ -95,12 +95,12 @@ entry:
 main_loop:
     pusha
 
-; call mix
+    call mix
 
     mov eax, SYS_WRITE
     mov ebx, [esp + 36]
     mov ecx, output
-    mov edx, 4
+    mov edx, 4 * {output_channels}
     int 0x80
 
     popa

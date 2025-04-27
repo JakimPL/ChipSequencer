@@ -16,6 +16,7 @@ class Song {
     struct Header {
         std::string author = DEFAULT_AUTHOR;
         std::string title = DEFAULT_TITLE;
+        std::string message = DEFAULT_MESSAGE;
         std::string version = TRACKER_VERSION;
     } header;
 

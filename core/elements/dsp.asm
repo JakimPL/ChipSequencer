@@ -34,7 +34,11 @@ clear_dsp:
     ret
 
 initialize_dsp_buffers:
-    mov ebx, DSP_BUFFER_SIZE
+    %ifdef TRACKER
+    mov ebx, MAX_DSPS * MAX_DSP_BUFFER_SIZE
+    %else
+    mov ebx, DSPS * MAX_DSP_BUFFER_SIZE
+    %endif
     mov esi, initialize_dsp_buffer
     call reset
     ret
