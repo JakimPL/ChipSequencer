@@ -38,6 +38,7 @@ class Song {
     ) const;
     void generate_header_channel_vector(std::stringstream &asm_content, const char separator = '/') const;
     void generate_header_dsp_vector(std::stringstream &asm_content, const char separator) const;
+    void set_used_flags(std::stringstream &asm_content) const;
     std::string generate_header_asm_file() const;
     std::string generate_data_asm_file(const char separator = '/') const;
     nlohmann::json create_header_json() const;
@@ -46,6 +47,8 @@ class Song {
     std::string get_element_path(const std::string &directory, const std::string prefix, const size_t i, const char separator = '/') const;
 
     void calculate_song_length();
+    size_t calculate_dsps(const uint8_t effect) const;
+    size_t calculate_oscillators(const uint8_t generator) const;
 
     void serialize_dsp_header(std::ofstream &file, void *dsp) const;
     void serialize_dsp_body(std::ofstream &file, void *dsp) const;

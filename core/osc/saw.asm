@@ -1,6 +1,6 @@
-    %ifdef USED_OSCILLATOR_SAW
     SEGMENT_CODE
 saw:
+    %ifdef USED_OSCILLATOR_SAW
     LOAD_OFFSET ebx, oscillator_offset
     mov dl, [OSCILLATOR_SAW_REVERSE + ebx]
     movzx eax, byte [current_channel]
@@ -20,5 +20,5 @@ saw:
     movzx eax, ax
 
 .done:
-    ret
     %endif
+    ret

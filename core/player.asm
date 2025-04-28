@@ -46,8 +46,12 @@ initialize:
     call reset_channels
     call reset_dsps
 
+    %ifdef USED_OSCILLATOR_SINE
     call generate_sine_table
+    %endif
+    %ifdef USED_OSCILLATOR_NOISE
     call initialize_seeds
+    %endif
 
     %if PRECALCULATE
 .precalculate:

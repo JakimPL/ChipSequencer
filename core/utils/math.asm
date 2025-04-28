@@ -26,8 +26,8 @@ reduce:
     clc
     ret
 
-generate_sine_table:
     %ifdef USED_OSCILLATOR_SINE
+generate_sine_table:
     fninit
     mov dword [angle], __float32__(0.0)
     mov ecx, TABLE_SIZE
@@ -48,8 +48,8 @@ generate_sine_table:
     cmp ecx, 0
     jne .generate
     fstp st0
-    %endif
     ret
+    %endif
 
 load_eax_to_fpu:
     mov [value], eax
@@ -126,8 +126,10 @@ load_eax_to_fpu_and_multiply_by_word_integer:
     SEGMENT_DATA
 pi:
     dd __float32__(3.141592653589793238462)
+    %ifdef USED_OSCILLATOR_SINE
 angle_constant:
     dd ANGLE_CONSTANT
+    %endif
 half_range:
     dd __float32__(32767.5)
 two:
@@ -136,8 +138,6 @@ two:
 sample_rate:
     dd SAMPLE_RATE
     %endif
-y:
-    dd 0
 
     SEGMENT_BSS
     angle resd 1

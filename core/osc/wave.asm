@@ -1,6 +1,6 @@
-    %ifdef USED_OSCILLATOR_WAVETABLE
     SEGMENT_CODE
 wavetable:
+    %ifdef USED_OSCILLATOR_WAVETABLE
 .load_wavetable:
     LOAD_OFFSET ebx, oscillator_offset
     movzx dx, byte [OSCILLATOR_WAVETABLE_INTERPOLATION + ebx]
@@ -17,5 +17,5 @@ wavetable:
     call load_table_8bit_item
     shl eax, 8
     call apply_volume
-    ret
     %endif
+    ret

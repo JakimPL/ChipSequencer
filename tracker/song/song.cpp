@@ -151,11 +151,7 @@ void Song::change_tuning(const uint8_t new_edo, const double base_frequency) {
     std::cout << "Reference frequency: " << static_cast<float>(frequency) << " Hz" << std::endl;
     reference_frequency = static_cast<uint64_t>(std::round(frequency * 65536.0));
     note_divisor = pow(2.0f, 1.0f / new_edo);
-
-    tuning = {
-        new_edo,
-        base_frequency
-    };
+    tuning = {new_edo, base_frequency};
 }
 
 uint16_t Song::get_max_rows() {
@@ -492,8 +488,42 @@ void Song::generate_header_dsp_vector(std::stringstream &asm_content, const char
     }
 }
 
+void Song::set_used_flags(std::stringstream &asm_content) const {
+    if (!dsps.empty()) {
+        asm_content << "    \%define USED_DSP\n";
+        if (calculate_dsps(EFFECT_GAINER) > 0) {
+            asm_content << "    \%define USED_DSP_GAINER\n";
+        }
+        if (calculate_dsps(EFFECT_DISTORTION) > 0) {
+            asm_content << "    \%define USED_DSP_DISTORTION\n";
+        }
+        if (calculate_dsps(EFFECT_FILTER) > 0) {
+            asm_content << "    \%define USED_DSP_FILTER\n";
+        }
+        if (calculate_dsps(EFFECT_DELAY) >= 0) {
+            asm_content << "    \%define USED_DSP_DELAY\n";
+        }
+    }
+
+    if (calculate_oscillators(GENERATOR_SQUARE) > 0) {
+        asm_content << "    \%define USED_OSCILLATOR_SQUARE\n";
+    }
+    if (calculate_oscillators(GENERATOR_SINE) > 0) {
+        asm_content << "    \%define USED_OSCILLATOR_SINE\n";
+    }
+    if (calculate_oscillators(GENERATOR_SAW) >= 0) {
+        asm_content << "    \%define USED_OSCILLATOR_SAW\n";
+    }
+    if (calculate_oscillators(GENERATOR_NOISE) > 0) {
+        asm_content << "    \%define USED_OSCILLATOR_NOISE\n";
+    }
+
+    asm_content << "\n";
+}
+
 std::string Song::generate_header_asm_file() const {
     std::stringstream asm_content;
+    set_used_flags(asm_content);
     asm_content << "    \%define CHANNELS " << channels.size() << "\n";
     asm_content << "    \%define DSPS " << dsps.size() << "\n";
     asm_content << "    \%define WAVETABLES " << wavetables.size() << "\n";
@@ -644,6 +674,26 @@ void Song::calculate_song_length() {
     }
 
     song_length = max_rows * ticks_per_beat;
+}
+
+size_t Song::calculate_dsps(const uint8_t effect) const {
+    size_t count = 0;
+    for (const auto &dsp : dsps) {
+        if (static_cast<DSP *>(dsp)->effect_index == effect) {
+            count++;
+        }
+    }
+    return count;
+}
+
+size_t Song::calculate_oscillators(const uint8_t generator) const {
+    size_t count = 0;
+    for (const auto &oscillator : oscillators) {
+        if (static_cast<Oscillator *>(oscillator)->generator_index == generator) {
+            count++;
+        }
+    }
+    return count;
 }
 
 void Song::set_buffer_offsets() {

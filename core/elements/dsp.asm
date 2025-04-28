@@ -98,31 +98,15 @@ increment_dsp_timer:
     SEGMENT_DATA
 effects:
     %ifndef BITS_16
-    %ifdef USED_DSP_GAINER
     dd gainer
-    %endif
-    %ifdef USED_DSP_DISTORTION
     dd distortion
-    %endif
-    %ifdef USED_DSP_FILTER
     dd filter
-    %endif
-    %ifdef USED_DSP_DELAY
     dd delay
-    %endif
     %else
-    %ifdef USED_DSP_GAINER
     dw gainer
-    %endif
-    %ifdef USED_DSP_DISTORTION
     dw distortion
-    %endif
-    %ifdef USED_DSP_FILTER
     dw filter
-    %endif
-    %ifdef USED_DSP_DELAY
     dw delay
-    %endif
     %endif
 
     SEGMENT_BSS
