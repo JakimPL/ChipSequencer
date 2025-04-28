@@ -1,5 +1,6 @@
     %include "core/common.asm"
 
+    %ifndef BIN
     global initialize
     global calculate
     global mix
@@ -32,6 +33,7 @@
     align 2
     buffer resb SB_BUFFER_SIZE * (1 + SB_16BIT)
     %endif
+    %endif
 
     SEGMENT_CODE
 initialize:
@@ -40,12 +42,20 @@ initialize:
     call initialize_sample_rate
     call calculate_ticks_per_beat
 
-    call initialize_dsp_buffers
     call reset_channels
-    call reset_dsps
 
+    %ifdef USED_DSP
+    call initialize_dsp_buffers
+    call reset_dsps
+    %endif
+
+    %ifdef USED_OSCILLATOR_SINE
     call generate_sine_table
+    %endif
+
+    %ifdef USED_OSCILLATOR_NOISE
     call initialize_seeds
+    %endif
 
     %if PRECALCULATE
 .precalculate:
@@ -67,13 +77,12 @@ calculate:
     SEGMENT_BSS
     dividend resd 1
     output resd MAX_OUTPUT_CHANNELS
-    %ifdef ELF
+    %ifdef TRACKER
     dsp_buffer resd MAX_DSPS * MAX_DSP_BUFFER_SIZE
     %else
     dsp_buffer resd DSPS * MAX_DSP_BUFFER_SIZE
     %endif
 
-    %ifndef ELF
+    %ifdef BITS_16
     group dgroup bss data
     %endif
-

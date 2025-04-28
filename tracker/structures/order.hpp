@@ -2,6 +2,7 @@
 #define STRUCTURES_ORDER_HPP
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <fstream>
 #include <vector>
@@ -17,5 +18,8 @@ struct Order {
 };
 
 typedef std::vector<Order *> Orders;
+
+constexpr size_t ORDER_LENGTH = offsetof(Order, order_length);
+constexpr size_t ORDER_SEQUENCES = offsetof(Order, sequences);
 
 #endif // STRUCTURES_ORDER_HPP

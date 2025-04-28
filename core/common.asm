@@ -1,4 +1,20 @@
+    %ifdef TRACKER
+    %define USED_DSP
+    %define USED_DSP_GAINER
+    %define USED_DSP_DISTORTION
+    %define USED_DSP_FILTER
+    %define USED_DSP_DELAY
+
+    %define USED_OSCILLATOR_SQUARE
+    %define USED_OSCILLATOR_SINE
+    %define USED_OSCILLATOR_SAW
+    %define USED_OSCILLATOR_WAVETABLE
+    %define USED_OSCILLATOR_NOISE
+    %endif
+
     %include "core/common/config.asm"
     %include "core/common/const.asm"
+    %include "core/common/offsets.asm"
+    %include "core/common/sizes.asm"
     %include "core/common/macros.asm"
     %include "core/song/header.asm"

@@ -1,4 +1,4 @@
-    %ifdef ELF
+    %ifdef TRACKER
     extern reference_frequency
     extern note_divisor
     %endif
@@ -39,7 +39,6 @@ increment_timer:
 initialize_frequencies:
     mov ecx, NOTES
     lea edi, [frequencies + 4 * ecx]
-
     fild qword [reference_frequency]
     fdiv dword [f_65536]
 
@@ -49,9 +48,7 @@ initialize_frequencies:
     fld dword [f_65536]
     fmulp st1, st0
     fistp dword [edi]
-
     fdiv qword [note_divisor]
-
     loop .loop
     ret
 
@@ -77,7 +74,7 @@ apply_volume:
     %include "core/osc/noise.asm"
 
     SEGMENT_DATA
-    %ifndef ELF
+    %ifndef TRACKER
 reference_frequency:
     dq TUNING_FREQUENCY
 note_divisor:
@@ -89,7 +86,7 @@ i_255:
     dw 255
 
 oscillators_table:
-    %ifdef ELF
+    %ifndef BITS_16
     dd square
     dd saw
     dd sine

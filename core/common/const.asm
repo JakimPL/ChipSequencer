@@ -16,9 +16,11 @@
     %define DEFAULT_SAMPLE_RATE 44100
     %define DEFAULT_NORMALIZER 0.5
     %define DEFAULT_OUTPUT_CHANNELS 2
+    %define DEFAULT_OUTPUT_FLAG 0
 
     %define DEFAULT_TITLE "Untitled"
     %define DEFAULT_AUTHOR "Unknown"
+    %define DEFAULT_MESSAGE "Chip Sequencer by Jakim, 2025"
 
     %define DEFAULT_EDO 12
     %define DEFAULT_A4_FREQUENCY 440.0
@@ -80,140 +82,27 @@
     %define PHASE_RELEASE 3
     %define PHASE_NOTE_CUT 4
 
-; Envelope
-    %define ENVELOPE_BASE_VOLUME 0
-    %define ENVELOPE_SUSTAIN_LEVEL 2
-    %define ENVELOPE_BIAS 4
-    %define ENVELOPE_ATTACK 6
-    %define ENVELOPE_DECAY 8
-    %define ENVELOPE_HOLD 10
-    %define ENVELOPE_RELEASE 12
-    %define SIZE_ENVELOPE 14
-
-; Sequence
-    %define SEQUENCE_NOTES 1
-
-; Order
-    %define ORDER_SEQUENCES 1
-
-; Wavetable
-    %define WAVETABLE_START 1
-
-; Channel
-    %ifdef ELF
-    %define CHANNEL_ENVELOPE_INDEX 0
-    %define CHANNEL_ORDER_INDEX 1
-    %define CHANNEL_OSCILLATOR_INDEX 2
-    %define CHANNEL_PITCH 3
-    %define CHANNEL_OUTPUT_FLAG 7
-    %define CHANNEL_OUTPUT 8
-    %define CHANNEL_SPLITTER 12
-    %define SIZE_CHANNEL 16
-    %else
-    %define CHANNEL_ENVELOPE_INDEX 0
-    %define CHANNEL_ORDER_INDEX 1
-    %define CHANNEL_OSCILLATOR_INDEX 2
-    %define CHANNEL_PITCH 3
-    %define CHANNEL_OUTPUT_FLAG 7
-    %define CHANNEL_OUTPUT 8
-    %define CHANNEL_SPLITTER 10
-    %define SIZE_CHANNEL 14
-    %endif
-
 ; Channel output masks
     %define MASK_OPERATION 0b11000000
     %define MASK_VARIABLE_TYPE 0b00110000
     %define MASK_SHIFT 0b00001111
 
+; Generators
+    %define GENERATOR_SQUARE 0
+    %define GENERATOR_SAW 1
+    %define GENERATOR_SINE 2
+    %define GENERATOR_WAVETABLE 3
+    %define GENERATOR_NOISE 4
+
+; Effects
+    %define EFFECT_GAINER 0
+    %define EFFECT_DISTORTION 1
+    %define EFFECT_FILTER 2
+    %define EFFECT_DELAY 3
+
 ; Oscillators
     %define BASE_VOLUME 0x8000
-    %define OSCILLATOR_INDEX 1
-
-; Square wave
-    %define GENERATOR_SQUARE 0
-    %define OSCILLATOR_SQUARE_DUTY_CYCLE 2
-    %define SIZE_OSCILLATOR_SQUARE 2
-
-; Saw wave
-    %define GENERATOR_SAW 1
-    %define OSCILLATOR_SAW_REVERSE 2
-    %define SIZE_OSCILLATOR_SAW 2
-
-; Sine wave
-    %define GENERATOR_SINE 2
-    %define SIZE_OSCILLATOR_SINE 1
-
-; Wavetable
-    %define GENERATOR_WAVETABLE 3
-    %define OSCILLATOR_WAVETABLE_WAVETABLE_INDEX 2
-    %define OSCILLATOR_WAVETABLE_INTERPOLATION 3
-    %define SIZE_OSCILLATOR_WAVETABLE 3
 
 ; Noise
-    %define GENERATOR_NOISE 4
-    %define SIZE_OSCILLATOR_NOISE 1
     %define NOISE_SEED 0xACE1
     %define NOISE_GALOIS_GENERATOR 0xB400
-
-    %ifdef ELF
-; DSP
-    %define DSP_EFFECT_INDEX 1
-    %define DSP_OUTPUT_FLAG 2
-    %define DSP_OUTPUT 4
-    %define DSP_SPLITTER 8
-
-; Gainer
-    %define EFFECT_GAINER 0
-    %define DSP_GAINER_VOLUME 12
-    %define SIZE_DSP_GAINER 20
-
-; Distortion
-    %define EFFECT_DISTORTION 1
-    %define DSP_DISTORTION_LEVEL 12
-    %define SIZE_DSP_DISTORTION 20
-
-; Filter
-    %define EFFECT_FILTER 2
-    %define DSP_FILTER_FREQUENCY 12
-    %define DSP_FILTER_MODE 14
-    %define SIZE_DSP_FILTER 20
-
-; Delay
-    %define EFFECT_DELAY 3
-    %define DSP_DELAY_DRY 12
-    %define DSP_DELAY_WET 13
-    %define DSP_DELAY_FEEDBACK 14
-    %define DSP_DELAY_TIME 15
-    %define SIZE_DSP_DELAY 20
-
-    %else
-; DSP
-    %define DSP_EFFECT_INDEX 1
-    %define DSP_OUTPUT_FLAG 2
-    %define DSP_OUTPUT 3
-    %define DSP_SPLITTER 5
-
-; Gainer
-    %define EFFECT_GAINER 0
-    %define DSP_GAINER_VOLUME 9
-    %define SIZE_DSP_GAINER 11
-
-; Distortion
-    %define EFFECT_DISTORTION 1
-    %define DSP_DISTORTION_LEVEL 9
-    %define SIZE_DSP_DISTORTION 11
-
-; Filter
-    %define EFFECT_FILTER 2
-    %define DSP_FILTER_FREQUENCY 9
-    %define DSP_FILTER_MODE 11
-    %define SIZE_DSP_FILTER 12
-
-; Delay
-    %define EFFECT_DELAY 3
-    %define DSP_DELAY_DRY 9
-    %define DSP_DELAY_WET 10
-    %define DSP_DELAY_FEEDBACK 11
-    %define DSP_DELAY_TIME 12
-    %define SIZE_DSP_DELAY 14
-    %endif

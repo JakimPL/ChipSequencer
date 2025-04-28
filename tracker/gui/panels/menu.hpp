@@ -17,7 +17,7 @@ class GUIMenu : public GUIPanel {
     void file_save_as();
     void file_open();
     void file_render();
-    void file_compile(const bool compress = true);
+    void file_compile(const bool compress = true, const std::string &platform = "linux");
     void file_exit();
 
     void from() override {};

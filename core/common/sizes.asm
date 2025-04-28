@@ -1,0 +1,14 @@
+    %define SIZE_CHANNEL 16
+    %define SIZE_ENVELOPE 14
+
+    %define SIZE_OSCILLATOR_SINE 1
+    %define SIZE_OSCILLATOR_SQUARE 2
+    %define SIZE_OSCILLATOR_SAW 2
+    %define SIZE_OSCILLATOR_WAVETABLE 3
+    %define SIZE_OSCILLATOR_NOISE 1
+
+    %define SIZE_DSP 11
+    %define SIZE_DSP_GAINER 15
+    %define SIZE_DSP_DISTORTION 15
+    %define SIZE_DSP_FILTER 15
+    %define SIZE_DSP_DELAY 19

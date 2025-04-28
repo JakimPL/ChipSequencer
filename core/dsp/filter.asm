@@ -1,7 +1,8 @@
     SEGMENT_CODE
 filter:
+    %ifdef USED_DSP_FILTER
 .load_buffer:
-    %ifdef ELF
+    %ifdef TRACKER
     movzx esi, byte [current_dsp]
     shl esi, 8
     add esi, dsp_buffer
@@ -77,7 +78,10 @@ filter:
 
 .done:
     fstp st0
+    %endif
     ret
 
+    %ifdef USED_DSP_FILTER
     SEGMENT_BSS
     cutoff_frequency resw 1
+    %endif

@@ -1,5 +1,6 @@
     SEGMENT_CODE
 square:
+    %ifdef USED_OSCILLATOR_SQUARE
     call load_timer
 .duty_cycle:
     LOAD_OFFSET ebx, oscillator_offset
@@ -23,4 +24,5 @@ square:
     sub ax, bx
 
 .done:
+    %endif
     ret

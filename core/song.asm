@@ -1,3 +1,4 @@
+    %ifndef BIN
     global bpm
     global normalizer
 
@@ -15,6 +16,7 @@
 
     extern dsp_input
     extern output
+    %endif
 
     %include "core/common.asm"
     %include "core/song/data.asm"

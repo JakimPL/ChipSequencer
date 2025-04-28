@@ -1,5 +1,5 @@
     %macro SEGMENT_CODE 0
-    %ifdef ELF
+    %ifndef BITS_16
     section .text
     %else
     segment code
@@ -7,7 +7,7 @@
     %endmacro
 
     %macro SEGMENT_DATA 0
-    %ifdef ELF
+    %ifndef BITS_16
     section .data
     %else
     segment data
@@ -15,7 +15,7 @@
     %endmacro
 
     %macro SEGMENT_BSS 0
-    %ifdef ELF
+    %ifndef BITS_16
     section .bss
     %else
     segment bss
@@ -23,7 +23,7 @@
     %endmacro
 
     %macro LOAD_FUNCTION 2
-    %ifdef ELF
+    %ifndef BITS_16
     call [ds:%1 + 4 * %2]
     %else
     call [ds:%1 + 2 * %2]
@@ -37,7 +37,7 @@
     %endmacro
 
     %macro LOAD_ARRAY_ITEM 3
-    %ifdef ELF
+    %ifdef TRACKER
     LOAD_ITEM %1, %2
     %else
     imul ebx, %3
@@ -47,7 +47,7 @@
     %endmacro
 
     %macro LOAD_VECTOR_ITEM 2
-    %ifdef ELF
+    %ifdef TRACKER
     LOAD_ITEM %1, %2
     %else
     lea ecx, [%1]
@@ -62,7 +62,7 @@
     %endmacro
 
     %macro LOAD_OFFSET 2
-    %ifdef ELF
+    %ifndef BITS_16
     mov %1, [%2]
     %else
     movzx %1, word [%2]
@@ -70,7 +70,7 @@
     %endmacro
 
     %macro MOV_FROM_DI 1
-    %ifdef ELF
+    %ifndef BITS_16
     mov %1, [edi]
     %else
     mov %1, [di]
@@ -78,7 +78,7 @@
     %endmacro
 
     %macro MOV_TO_DI 1
-    %ifdef ELF
+    %ifndef BITS_16
     mov [edi], %1
     %else
     mov [di], %1
@@ -86,7 +86,7 @@
     %endmacro
 
     %macro ADD_TO_DI 1
-    %ifdef ELF
+    %ifndef BITS_16
     add [edi], %1
     %else
     add [di], %1
@@ -94,7 +94,7 @@
     %endmacro
 
     %macro MOV_FROM_SI 1
-    %ifdef ELF
+    %ifndef BITS_16
     mov %1, [esi]
     %else
     mov %1, [si]
@@ -102,7 +102,7 @@
     %endmacro
 
     %macro MOV_TO_SI 1
-    %ifdef ELF
+    %ifndef BITS_16
     mov [esi], %1
     %else
     mov [si], %1
@@ -110,7 +110,7 @@
     %endmacro
 
     %macro ADD_TO_SI 1
-    %ifdef ELF
+    %ifndef BITS_16
     add [esi], %1
     %else
     add [si], %1

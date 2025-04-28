@@ -27,17 +27,7 @@ void Link::serialize(std::ofstream &file) const {
     write_data(file, &id, sizeof(id));
     write_data(file, &target, sizeof(target));
     write_data(file, &index, sizeof(index));
-    if (group >= static_cast<size_t>(OutputTarget::Parameter)) {
-        uint16_t _offset = 0;
-        try {
-            _offset = x32_to_x16[group].at(offset);
-        } catch (const std::out_of_range &exception) {
-            std::cerr << "Error: " << exception.what() << std::endl;
-        }
-        write_data(file, &_offset, sizeof(_offset));
-    } else {
-        write_data(file, &offset, sizeof(offset));
-    }
+    write_data(file, &offset, sizeof(offset));
 }
 
 void Link::deserialize(std::ifstream &file) {
@@ -46,13 +36,4 @@ void Link::deserialize(std::ifstream &file) {
     read_data(file, &target, sizeof(target));
     read_data(file, &index, sizeof(index));
     read_data(file, &offset, sizeof(offset));
-    const size_t group = static_cast<size_t>(target);
-    if (group >= static_cast<size_t>(OutputTarget::Parameter)) {
-        try {
-            offset = x16_to_x32[group].at(offset);
-        } catch (const std::out_of_range &exception) {
-            std::cerr << "Error: " << exception.what() << std::endl;
-            offset = 0;
-        }
-    }
 }

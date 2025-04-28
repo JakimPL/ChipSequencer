@@ -15,6 +15,7 @@ class GUIGeneralPanel : public GUIPanel {
     struct CurrentSong {
         char title[GUI_MAX_STRING_LENGTH] = "";
         char author[GUI_MAX_STRING_LENGTH] = "";
+        char message[GUI_MAX_STRING_LENGTH] = DEFAULT_MESSAGE;
 
         int bpm = DEFAULT_BPM;
         int division = DEFAULT_DIVISION;

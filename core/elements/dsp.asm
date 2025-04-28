@@ -1,3 +1,4 @@
+    %ifdef USED_DSP
     SEGMENT_CODE
 load_dsp:
 .load_dsp:
@@ -34,7 +35,11 @@ clear_dsp:
     ret
 
 initialize_dsp_buffers:
-    mov ebx, DSP_BUFFER_SIZE
+    %ifdef TRACKER
+    mov ebx, MAX_DSPS * MAX_DSP_BUFFER_SIZE
+    %else
+    mov ebx, DSPS * MAX_DSP_BUFFER_SIZE
+    %endif
     mov esi, initialize_dsp_buffer
     call reset
     ret
@@ -93,7 +98,7 @@ increment_dsp_timer:
 
     SEGMENT_DATA
 effects:
-    %ifdef ELF
+    %ifndef BITS_16
     dd gainer
     dd distortion
     dd filter
@@ -108,8 +113,10 @@ effects:
     SEGMENT_BSS
     current_dsp resb 1
     current_effect resb 1
-    %ifdef ELF
+    %ifndef BITS_16
     dsp_offset resd 1
     %else
     dsp_offset resw 1
+    %endif
+
     %endif

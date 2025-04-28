@@ -32,7 +32,7 @@ reset_channels:
 check_fixed_frequency:
     LOAD_OFFSET ebx, channel_offset
     movzx ebx, byte [CHANNEL_ORDER_INDEX + ebx]
-    cmp bl, -1
+    cmp bl, CONSTANT_PITCH
     ret
 
 reset_channel:
@@ -61,7 +61,7 @@ load_channel_target:
 
     SEGMENT_BSS
     current_channel resb 1
-    %ifdef ELF
+    %ifndef BITS_16
     channel_offset resd 1
     envelope_offset resd 1
     order_offset resd 1

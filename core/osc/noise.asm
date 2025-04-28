@@ -1,5 +1,6 @@
     SEGMENT_CODE
 noise:
+    %ifdef USED_OSCILLATOR_NOISE
     movzx ebx, byte [current_channel]
     lea esi, [oscillator_timer + 4 * ebx]
     mov ax, [noise_seed + 2 * ebx]
@@ -20,12 +21,15 @@ initialize_seeds:
     mov edi, noise_seed
     mov ax, NOISE_SEED
     rep stosw
+    %endif
     ret
 
+    %ifdef USED_OSCILLATOR_NOISE
     SEGMENT_BSS
 noise_seed:
-    %ifdef ELF
+    %ifdef TRACKER
     resw MAX_CHANNELS
     %else
     resw CHANNELS
+    %endif
     %endif

@@ -56,6 +56,7 @@ void GUIGeneralPanel::draw() {
 void GUIGeneralPanel::from() {
     string_copy_to_buffer(song.get_title(), current_song.title, GUI_MAX_STRING_LENGTH);
     string_copy_to_buffer(song.get_author(), current_song.author, GUI_MAX_STRING_LENGTH);
+    string_copy_to_buffer(song.get_message(), current_song.message, GUI_MAX_STRING_LENGTH);
 
     current_song.bpm = bpm;
     current_song.division = 240.0f / unit;
@@ -67,6 +68,7 @@ void GUIGeneralPanel::from() {
 void GUIGeneralPanel::to() const {
     song.set_title(current_song.title);
     song.set_author(current_song.author);
+    song.set_message(current_song.message);
 
     sample_rate = 4 * std::round(static_cast<float>(current_song.sample_rate) / 4);
     unit = 240.0f / current_song.division;
@@ -202,6 +204,7 @@ void GUIGeneralPanel::draw_song_info() {
     ImGui::Text("Song Details");
     ImGui::InputText("Title", current_song.title, IM_ARRAYSIZE(current_song.title));
     ImGui::InputText("Author", current_song.author, IM_ARRAYSIZE(current_song.author));
+    ImGui::InputText("Message", current_song.message, IM_ARRAYSIZE(current_song.message));
 }
 
 void GUIGeneralPanel::draw_tempo() {

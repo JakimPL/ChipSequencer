@@ -95,7 +95,7 @@ set_release:
 
     SEGMENT_DATA
 phases:
-    %ifdef ELF
+    %ifndef BITS_16
     dd attack
     dd decay
     dd hold

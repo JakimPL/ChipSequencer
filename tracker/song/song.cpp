@@ -33,12 +33,18 @@ void Song::new_song() {
     header = {
         DEFAULT_AUTHOR,
         DEFAULT_TITLE,
+        DEFAULT_MESSAGE,
         TRACKER_VERSION
     };
     tuning = {
         DEFAULT_EDO,
         DEFAULT_A4_FREQUENCY
     };
+
+    output_channels = DEFAULT_OUTPUT_CHANNELS;
+    song_length = 0;
+    max_rows = 0;
+
     change_tuning(tuning.edo, tuning.a4_frequency);
     link_manager.set_links();
 }
@@ -83,13 +89,13 @@ void Song::load_from_file(const std::string &filename) {
     }
 }
 
-void Song::compile(const std::string &filename, bool compress) const {
+void Song::compile(const std::string &filename, bool compress, const std::string platform) const {
     const auto [temp_base, song_path] = prepare_temp_directory();
     const std::string song_dir = song_path.string();
 
     try {
         export_all(song_dir);
-        compile_sources(temp_base.string(), filename, compress);
+        compile_sources(temp_base.string(), filename, compress, platform);
         std::filesystem::remove_all(temp_base);
     } catch (const std::exception &exception) {
         std::filesystem::remove_all(temp_base);
@@ -114,6 +120,10 @@ std::string Song::get_author() const {
     return header.author;
 }
 
+std::string Song::get_message() const {
+    return header.message;
+}
+
 void Song::set_title(const std::string &title) {
     if (title.length() >= MAX_STRING_LENGTH) {
         throw std::runtime_error("Song title is too long");
@@ -130,6 +140,14 @@ void Song::set_author(const std::string &author) {
     header.author = author;
 }
 
+void Song::set_message(const std::string &message) {
+    if (message.length() >= MAX_STRING_LENGTH) {
+        throw std::runtime_error("Message is too long");
+    }
+
+    header.message = message;
+}
+
 void Song::change_tuning(const uint8_t new_edo, const double base_frequency) {
     scale_composer.compose(new_edo);
     frequency_table.calculate(base_frequency);
@@ -138,11 +156,7 @@ void Song::change_tuning(const uint8_t new_edo, const double base_frequency) {
     std::cout << "Reference frequency: " << static_cast<float>(frequency) << " Hz" << std::endl;
     reference_frequency = static_cast<uint64_t>(std::round(frequency * 65536.0));
     note_divisor = pow(2.0f, 1.0f / new_edo);
-
-    tuning = {
-        new_edo,
-        base_frequency
-    };
+    tuning = {new_edo, base_frequency};
 }
 
 uint16_t Song::get_max_rows() {
@@ -255,18 +269,22 @@ Channel *Song::add_channel() {
     }
 
     Channel *channel = new Channel();
-    channel->envelope_index = 0;
-    channel->order_index = 0;
-    channel->oscillator_index = 0;
-    channel->output_flag = 0;
-    channel->pitch = DEFAULT_CHANNEL_PITCH;
-    channel->output = &output;
-    channel->splitter[0] = 0x80;
-    channel->splitter[1] = 0x80;
     channels.push_back(channel);
     num_channels = channels.size();
     links[static_cast<size_t>(ItemType::CHANNEL)].push_back(Link());
     link_manager.set_links();
+
+    channel->envelope_index = 0;
+    channel->order_index = 0;
+    channel->oscillator_index = 0;
+    channel->output_flag = DEFAULT_OUTPUT_FLAG;
+    channel->pitch = DEFAULT_CHANNEL_PITCH;
+    channel->output = &output;
+    channel->splitter[0] = 0x80;
+    channel->splitter[1] = 0x80;
+    channel->splitter[2] = 0x00;
+    channel->splitter[3] = 0x00;
+
     return channel;
 }
 
@@ -276,12 +294,20 @@ void *Song::add_dsp() {
     }
 
     DSPGainer *dsp = new DSPGainer();
-    dsp->volume = DEFAULT_GAINER_VOLUME;
-
     dsps.push_back(dsp);
     num_dsps = dsps.size();
     links[static_cast<size_t>(ItemType::DSP)].push_back(Link());
     link_manager.set_links();
+
+    dsp->dsp_size = SIZE_DSP_GAINER;
+    dsp->output_flag = DEFAULT_OUTPUT_FLAG;
+    dsp->splitter[0] = 0x80;
+    dsp->splitter[1] = 0x80;
+    dsp->splitter[2] = 0x00;
+    dsp->splitter[3] = 0x00;
+    dsp->effect_index = EFFECT_GAINER;
+    dsp->volume = DEFAULT_GAINER_VOLUME;
+
     return dsp;
 }
 
@@ -426,17 +452,83 @@ std::pair<ValidationResult, int> Song::validate() {
     return {ValidationResult::OK, -1};
 }
 
-void Song::generate_header_vector(std::stringstream &asm_content, const std::string &name, const std::string &short_name, const size_t size) const {
-    asm_content << name << "s:\n";
+void Song::generate_header_vector(
+    std::stringstream &asm_content,
+    const std::string &name,
+    const std::string &short_name,
+    const size_t size,
+    const char separator
+) const {
+    asm_content << "\n\n"
+                << name << "s:\n";
     for (size_t i = 0; i < size; i++) {
-        asm_content << "global " << name << "s." << name << "_" << i << ":\n";
+        asm_content << "\nglobal " << name << "s." << name << "_" << i << ":\n";
         asm_content << "." << name << "_" << i << ":\n";
-        asm_content << "incbin \"song\\" << get_element_path(short_name + "s", short_name, i, '\\') << "\"\n";
+        asm_content << "incbin \"song" << separator << get_element_path(short_name + "s", short_name, i, separator) << "\"\n";
     }
+}
+
+void Song::generate_header_channel_vector(std::stringstream &asm_content, const char separator) const {
+    asm_content << "\n\nchannels:\n";
+    for (size_t i = 0; i < channels.size(); i++) {
+        asm_content << "\nglobal channels.channel_" << i << ":\n";
+        asm_content << ".channel_" << i << ":\n";
+        asm_content << "dd " << link_manager.get_link_reference(ItemType::CHANNEL, i) << "\n";
+        asm_content << "incbin \"song" << separator << get_element_path("chans", "chan", i, separator) << "\"\n";
+    }
+}
+
+void Song::generate_header_dsp_vector(std::stringstream &asm_content, const char separator) const {
+    asm_content << "\n\ndsps:\n";
+    for (size_t i = 0; i < dsps.size(); i++) {
+        const DSP *dsp = static_cast<DSP *>(dsps[i]);
+        asm_content << "\nglobal dsps.dsp_" << i << ":\n";
+        asm_content << ".dsp_" << i << ":\n";
+        asm_content << "db " << static_cast<int>(dsp->dsp_size) << "\n";
+        asm_content << "db " << static_cast<int>(dsp->effect_index) << "\n";
+        asm_content << "db " << static_cast<int>(dsp->output_flag) << "\n";
+        asm_content << "db 0\n";
+        asm_content << "dd " << link_manager.get_link_reference(ItemType::DSP, i) << "\n";
+        asm_content << "incbin \"song" << separator << get_element_path("dsps", "dsp", i, separator) << "\"\n";
+    }
+}
+
+void Song::set_used_flags(std::stringstream &asm_content) const {
+    if (!dsps.empty()) {
+        asm_content << "    \%define USED_DSP\n";
+        if (calculate_dsps(EFFECT_GAINER) > 0) {
+            asm_content << "    \%define USED_DSP_GAINER\n";
+        }
+        if (calculate_dsps(EFFECT_DISTORTION) > 0) {
+            asm_content << "    \%define USED_DSP_DISTORTION\n";
+        }
+        if (calculate_dsps(EFFECT_FILTER) > 0) {
+            asm_content << "    \%define USED_DSP_FILTER\n";
+        }
+        if (calculate_dsps(EFFECT_DELAY) >= 0) {
+            asm_content << "    \%define USED_DSP_DELAY\n";
+        }
+    }
+
+    if (calculate_oscillators(GENERATOR_SQUARE) > 0) {
+        asm_content << "    \%define USED_OSCILLATOR_SQUARE\n";
+    }
+    if (calculate_oscillators(GENERATOR_SINE) > 0) {
+        asm_content << "    \%define USED_OSCILLATOR_SINE\n";
+    }
+    if (calculate_oscillators(GENERATOR_SAW) >= 0) {
+        asm_content << "    \%define USED_OSCILLATOR_SAW\n";
+    }
+    if (calculate_oscillators(GENERATOR_NOISE) > 0) {
+        asm_content << "    \%define USED_OSCILLATOR_NOISE\n";
+    }
+
+    asm_content << "\n";
 }
 
 std::string Song::generate_header_asm_file() const {
     std::stringstream asm_content;
+    set_used_flags(asm_content);
     asm_content << "    \%define CHANNELS " << channels.size() << "\n";
     asm_content << "    \%define DSPS " << dsps.size() << "\n";
     asm_content << "    \%define WAVETABLES " << wavetables.size() << "\n";
@@ -444,11 +536,10 @@ std::string Song::generate_header_asm_file() const {
     asm_content << "    \%define OUTPUT_CHANNELS " << static_cast<int>(output_channels) << "\n";
     asm_content << "    \%define SONG_LENGTH " << song_length << "\n";
     asm_content << "    \%define SAMPLE_RATE " << sample_rate << "\n";
+    asm_content << "    \%define MESSAGE " << "\"" << header.message << "\"\n";
     asm_content << "\n";
-    asm_content << "    \%define TUNING_FREQUENCY " << static_cast<uint32_t>(std::round(frequency_table.get_last_frequency() * 65536.0)) << "\n";
-    asm_content << "    \%define TUNING_NOTE_DIVISOR " << static_cast<_Float64>(frequency_table.get_note_divisor()) << "\n";
-    asm_content << "\n";
-    asm_content << "    \%define DSP_BUFFER_SIZE MAX_DSP_BUFFER_SIZE * DSPS" << "\n";
+    asm_content << "    \%define TUNING_FREQUENCY " << static_cast<uint64_t>(std::round(frequency_table.get_last_frequency() * 65536.0)) << "\n";
+    asm_content << "    \%define TUNING_NOTE_DIVISOR " << std::fixed << std::setprecision(std::numeric_limits<double>::max_digits10) << static_cast<_Float64>(frequency_table.get_note_divisor()) << "\n";
     asm_content << "\n";
     asm_content << "\n";
     asm_content << "    extern num_channels" << "\n";
@@ -458,30 +549,36 @@ std::string Song::generate_header_asm_file() const {
     return asm_content.str();
 }
 
-std::string Song::generate_data_asm_file() const {
+std::string Song::generate_data_asm_file(const char separator) const {
     std::stringstream asm_content;
     asm_content << "SEGMENT_DATA\n";
     asm_content << "bpm:\n";
     asm_content << "dw " << bpm << "\n";
     asm_content << "unit:\n";
-    asm_content << "dd " << unit << "\n";
+    asm_content << "dd "
+                << std::fixed
+                << std::setprecision(std::numeric_limits<float>::max_digits10)
+                << static_cast<float>(unit) << "\n";
     asm_content << "normalizer:\n";
-    asm_content << "dd " << normalizer << "\n\n";
+    asm_content << "dd "
+                << std::fixed
+                << std::setprecision(std::numeric_limits<float>::max_digits10)
+                << static_cast<float>(normalizer) << "\n\n";
     asm_content << "num_channels:\n";
     asm_content << "db " << static_cast<int>(num_channels) << "\n";
     asm_content << "num_dsps:\n";
     asm_content << "db " << static_cast<int>(num_dsps) << "\n\n";
 
-    generate_header_vector(asm_content, "envelope", "envel", envelopes.size());
-    generate_header_vector(asm_content, "sequence", "seq", sequences.size());
-    generate_header_vector(asm_content, "order", "order", orders.size());
-    generate_header_vector(asm_content, "oscillator", "osc", oscillators.size());
-    generate_header_vector(asm_content, "wavetable", "wave", wavetables.size());
-    generate_header_vector(asm_content, "dsp", "dsp", dsps.size());
-    generate_header_vector(asm_content, "channel", "chan", channels.size());
+    generate_header_vector(asm_content, "envelope", "envel", envelopes.size(), separator);
+    generate_header_vector(asm_content, "sequence", "seq", sequences.size(), separator);
+    generate_header_vector(asm_content, "order", "order", orders.size(), separator);
+    generate_header_vector(asm_content, "oscillator", "osc", oscillators.size(), separator);
+    generate_header_vector(asm_content, "wavetable", "wave", wavetables.size(), separator);
+    generate_header_dsp_vector(asm_content, separator);
+    generate_header_channel_vector(asm_content, separator);
 
     asm_content << "buffer_offsets:\n";
-    asm_content << "incbin \"song\\offsets.bin\"\n";
+    asm_content << "incbin \"song" << separator << "offsets.bin\"\n";
 
     return asm_content.str();
 }
@@ -501,7 +598,8 @@ nlohmann::json Song::create_header_json() const {
     json["header"] = {
         {"title", header.title},
         {"author", header.author},
-        {"version", header.version}
+        {"message", header.message},
+        {"version", header.version},
     };
 
     json["tuning"] = {
@@ -527,6 +625,7 @@ nlohmann::json Song::import_header(const std::string &filename) {
     const auto &json_header = json["header"];
     header.title = json_header.value("title", DEFAULT_TITLE);
     header.author = json_header.value("author", DEFAULT_AUTHOR);
+    header.message = json_header.value("message", DEFAULT_MESSAGE);
     header.version = json_header["version"];
 
     const auto &json_general = json["general"];
@@ -582,6 +681,26 @@ void Song::calculate_song_length() {
     song_length = max_rows * ticks_per_beat;
 }
 
+size_t Song::calculate_dsps(const uint8_t effect) const {
+    size_t count = 0;
+    for (const auto &dsp : dsps) {
+        if (static_cast<DSP *>(dsp)->effect_index == effect) {
+            count++;
+        }
+    }
+    return count;
+}
+
+size_t Song::calculate_oscillators(const uint8_t generator) const {
+    size_t count = 0;
+    for (const auto &oscillator : oscillators) {
+        if (static_cast<Oscillator *>(oscillator)->generator_index == generator) {
+            count++;
+        }
+    }
+    return count;
+}
+
 void Song::set_buffer_offsets() {
     for (size_t i = 0; i < MAX_DSPS; i++) {
         buffer_offsets[i] = i * MAX_DSP_BUFFER_SIZE;
@@ -605,8 +724,8 @@ void Song::decompress_archive(const std::string &output_file, const std::string 
     }
 }
 
-void Song::compile_sources(const std::string &directory, const std::string &filename, const bool compress) const {
-    std::string compile_command = "python scripts/compile.py \"" + directory + "\" \"" + filename + "\"";
+void Song::compile_sources(const std::string &directory, const std::string &filename, const bool compress, const std::string platform) const {
+    std::string compile_command = "python scripts/compile.py " + platform + " \"" + directory + "\" \"" + filename + "\"";
     if (!compress) {
         compile_command += " --uncompressed";
     }
@@ -621,69 +740,48 @@ std::string Song::get_element_path(const std::string &directory, const std::stri
     return directory + separator + prefix + "_" + std::to_string(i) + ".bin";
 }
 
-void Song::serialize_channel(std::ofstream &file, Channel *channel) const {
-    uint16_t null = 0;
-    write_data(file, &channel->envelope_index, sizeof(channel->envelope_index));
-    write_data(file, &channel->order_index, sizeof(channel->order_index));
-    write_data(file, &channel->oscillator_index, sizeof(channel->oscillator_index));
-    write_data(file, &channel->pitch, sizeof(channel->pitch));
-    write_data(file, &channel->output_flag, sizeof(channel->output_flag));
-    write_data(file, channel->splitter, sizeof(channel->splitter));
-    write_data(file, &null, sizeof(null));
+void Song::serialize_dsp_header(std::ofstream &file, void *dsp) const {
+    const DSP *generic = static_cast<DSP *>(dsp);
+    write_data(file, &generic->dsp_size, sizeof(generic->dsp_size));
+    write_data(file, &generic->effect_index, sizeof(generic->effect_index));
+    write_data(file, &generic->output_flag, sizeof(generic->output_flag));
+    write_data(file, &generic->_unused, sizeof(generic->_unused));
+    write_data(file, &generic->output, sizeof(generic->output));
 }
 
-void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
+void Song::serialize_dsp_body(std::ofstream &file, void *dsp) const {
     const uint8_t effect_index = static_cast<DSP *>(dsp)->effect_index;
-    uint16_t null = 0;
     switch (effect_index) {
     case EFFECT_DISTORTION: {
         DSPDistortion *distortion = reinterpret_cast<DSPDistortion *>(dsp);
-        uint8_t size = SIZE_DSP_DISTORTION;
-        write_data(file, &size, sizeof(size));
-        write_data(file, &distortion->effect_index, sizeof(distortion->effect_index));
-        write_data(file, &distortion->output_flag, sizeof(distortion->output_flag));
-        write_data(file, &null, sizeof(null));
         write_data(file, &distortion->splitter, sizeof(distortion->splitter));
         write_data(file, &distortion->level, sizeof(distortion->level));
+        write_data(file, &distortion->pad, sizeof(distortion->pad));
         return;
     }
     case EFFECT_GAINER: {
         DSPGainer *gainer = reinterpret_cast<DSPGainer *>(dsp);
-        uint16_t null = 0;
-        uint8_t size = SIZE_DSP_GAINER;
-        write_data(file, &size, sizeof(size));
-        write_data(file, &gainer->effect_index, sizeof(gainer->effect_index));
-        write_data(file, &gainer->output_flag, sizeof(gainer->output_flag));
-        write_data(file, &null, sizeof(null));
         write_data(file, &gainer->splitter, sizeof(gainer->splitter));
         write_data(file, &gainer->volume, sizeof(gainer->volume));
+        write_data(file, &gainer->pad, sizeof(gainer->pad));
         return;
     }
     case EFFECT_FILTER: {
         DSPFilter *filter = reinterpret_cast<DSPFilter *>(dsp);
-        uint16_t null = 0;
-        uint8_t size = SIZE_DSP_FILTER;
-        write_data(file, &size, sizeof(size));
-        write_data(file, &filter->effect_index, sizeof(filter->effect_index));
-        write_data(file, &filter->output_flag, sizeof(filter->output_flag));
-        write_data(file, &null, sizeof(null));
         write_data(file, &filter->splitter, sizeof(filter->splitter));
         write_data(file, &filter->frequency, sizeof(filter->frequency));
         write_data(file, &filter->mode, sizeof(filter->mode));
+        write_data(file, &filter->pad, sizeof(filter->pad));
         return;
     }
     case EFFECT_DELAY: {
         DSPDelay *delay = reinterpret_cast<DSPDelay *>(dsp);
-        uint8_t size = SIZE_DSP_DELAY;
-        write_data(file, &size, sizeof(size));
-        write_data(file, &delay->effect_index, sizeof(delay->effect_index));
-        write_data(file, &delay->output_flag, sizeof(delay->output_flag));
-        write_data(file, &null, sizeof(null));
         write_data(file, &delay->splitter, sizeof(delay->splitter));
         write_data(file, &delay->dry, sizeof(delay->dry));
         write_data(file, &delay->wet, sizeof(delay->wet));
         write_data(file, &delay->feedback, sizeof(delay->feedback));
         write_data(file, &delay->delay_time, sizeof(delay->delay_time));
+        write_data(file, &delay->pad, sizeof(delay->pad));
         return;
     }
     default: {
@@ -692,67 +790,59 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
     }
 }
 
-Channel *Song::deserialize_channel(std::ifstream &file) const {
-    Channel *channel = new Channel();
-    read_data(file, &channel->envelope_index, sizeof(channel->envelope_index));
-    read_data(file, &channel->order_index, sizeof(channel->order_index));
-    read_data(file, &channel->oscillator_index, sizeof(channel->oscillator_index));
-    read_data(file, &channel->pitch, sizeof(channel->pitch));
-    read_data(file, &channel->output_flag, sizeof(channel->output_flag));
-    read_data(file, &channel->splitter, sizeof(channel->splitter));
-    file.seekg(sizeof(uint16_t), std::ios::cur);
-    channel->output = &output;
-    return channel;
-}
+void *Song::deserialize_dsp(std::ifstream &header_file, std::ifstream &body_file) const {
+    uint8_t dsp_size, effect_index, output_flag;
+    uint32_t output;
 
-void *Song::deserialize_dsp(std::ifstream &file) const {
-    uint8_t size, effect_index;
-    read_data(file, &size, sizeof(size));
-    read_data(file, &effect_index, sizeof(effect_index));
+    read_data(header_file, &dsp_size, sizeof(dsp_size));
+    read_data(header_file, &effect_index, sizeof(effect_index));
+    read_data(header_file, &output_flag, sizeof(output_flag));
+    header_file.seekg(sizeof(uint8_t), std::ios::cur);
+    read_data(header_file, &output, sizeof(output));
 
     switch (effect_index) {
     case EFFECT_DISTORTION: {
         DSPDistortion *distortion = new DSPDistortion();
-        distortion->dsp_size = SIZE_DSP_DISTORTION;
+        distortion->dsp_size = dsp_size;
+        distortion->effect_index = effect_index;
+        distortion->output_flag = output_flag;
         distortion->output = &output;
-        read_data(file, &distortion->output_flag, sizeof(distortion->output_flag));
-        file.seekg(sizeof(uint16_t), std::ios::cur);
-        read_data(file, &distortion->splitter, sizeof(distortion->splitter));
-        read_data(file, &distortion->level, sizeof(distortion->level));
+        read_data(body_file, &distortion->splitter, sizeof(distortion->splitter));
+        read_data(body_file, &distortion->level, sizeof(distortion->level));
         return reinterpret_cast<void *>(distortion);
     }
     case EFFECT_GAINER: {
         DSPGainer *gainer = new DSPGainer();
-        gainer->dsp_size = SIZE_DSP_GAINER;
+        gainer->dsp_size = dsp_size;
+        gainer->effect_index = effect_index;
+        gainer->output_flag = output_flag;
         gainer->output = &output;
-        read_data(file, &gainer->output_flag, sizeof(gainer->output_flag));
-        file.seekg(sizeof(uint16_t), std::ios::cur);
-        read_data(file, &gainer->splitter, sizeof(gainer->splitter));
-        read_data(file, &gainer->volume, sizeof(gainer->volume));
+        read_data(body_file, &gainer->splitter, sizeof(gainer->splitter));
+        read_data(body_file, &gainer->volume, sizeof(gainer->volume));
         return reinterpret_cast<void *>(gainer);
     }
     case EFFECT_FILTER: {
         DSPFilter *filter = new DSPFilter();
-        filter->dsp_size = SIZE_DSP_FILTER;
+        filter->dsp_size = dsp_size;
+        filter->effect_index = effect_index;
+        filter->output_flag = output_flag;
         filter->output = &output;
-        read_data(file, &filter->output_flag, sizeof(filter->output_flag));
-        file.seekg(sizeof(uint16_t), std::ios::cur);
-        read_data(file, &filter->splitter, sizeof(filter->splitter));
-        read_data(file, &filter->frequency, sizeof(filter->frequency));
-        read_data(file, &filter->mode, sizeof(filter->mode));
+        read_data(body_file, &filter->splitter, sizeof(filter->splitter));
+        read_data(body_file, &filter->frequency, sizeof(filter->frequency));
+        read_data(body_file, &filter->mode, sizeof(filter->mode));
         return reinterpret_cast<void *>(filter);
     }
     case EFFECT_DELAY: {
         DSPDelay *delay = new DSPDelay();
-        delay->dsp_size = SIZE_DSP_DELAY;
+        delay->dsp_size = dsp_size;
+        delay->effect_index = effect_index;
+        delay->output_flag = output_flag;
         delay->output = &output;
-        read_data(file, &delay->output_flag, sizeof(delay->output_flag));
-        file.seekg(sizeof(uint16_t), std::ios::cur);
-        read_data(file, &delay->splitter, sizeof(delay->splitter));
-        read_data(file, &delay->dry, sizeof(delay->dry));
-        read_data(file, &delay->wet, sizeof(delay->wet));
-        read_data(file, &delay->feedback, sizeof(delay->feedback));
-        read_data(file, &delay->delay_time, sizeof(delay->delay_time));
+        read_data(body_file, &delay->splitter, sizeof(delay->splitter));
+        read_data(body_file, &delay->dry, sizeof(delay->dry));
+        read_data(body_file, &delay->wet, sizeof(delay->wet));
+        read_data(body_file, &delay->feedback, sizeof(delay->feedback));
+        read_data(body_file, &delay->delay_time, sizeof(delay->delay_time));
         return reinterpret_cast<void *>(delay);
     }
     default: {
@@ -832,11 +922,16 @@ void Song::export_channels(const std::string &directory) const {
     const std::filesystem::path series_dir = directory + "/chans";
     std::filesystem::create_directories(series_dir);
     for (size_t i = 0; i < channels.size(); i++) {
-        const std::string filename = get_element_path(series_dir, "chan", i);
-        std::ofstream file(filename, std::ios::binary);
-        Channel *channel = channels[i];
-        serialize_channel(file, channel);
-        file.close();
+        const Channel *channel = channels[i];
+        std::string filename = get_element_path(series_dir, "chan_o", i);
+        std::ofstream output_file(filename, std::ios::binary);
+        channel->serialize_output(output_file, channel);
+        output_file.close();
+
+        filename = get_element_path(series_dir, "chan", i);
+        std::ofstream body_file(filename, std::ios::binary);
+        channel->serialize_body(body_file, channel);
+        body_file.close();
     }
 }
 
@@ -845,12 +940,17 @@ void Song::export_dsps(const std::string &directory) const {
     std::filesystem::create_directories(dsps_dir);
 
     for (size_t i = 0; i < dsps.size(); i++) {
-        const std::string filename = get_element_path(dsps_dir, "dsp", i);
-        std::ofstream file(filename, std::ios::binary);
+        std::string filename = get_element_path(dsps_dir, "dsp_h", i);
+        std::ofstream header_file(filename, std::ios::binary);
 
         void *dsp = dsps[i];
-        serialize_dsp(file, dsp);
-        file.close();
+        serialize_dsp_header(header_file, dsp);
+        header_file.close();
+
+        filename = get_element_path(dsps_dir, "dsp", i);
+        std::ofstream body_file(filename, std::ios::binary);
+        serialize_dsp_body(body_file, dsp);
+        body_file.close();
     }
 }
 
@@ -946,22 +1046,28 @@ void Song::import_oscillators(const std::string &song_dir, const nlohmann::json 
 void Song::import_dsps(const std::string &song_dir, const nlohmann::json &json) {
     const size_t dsp_count = json["data"]["dsps"];
     for (size_t i = 0; i < dsp_count; i++) {
-        const std::string filename = get_element_path(song_dir + "/dsps", "dsp", i);
-        std::ifstream file(filename, std::ios::binary);
-        void *dsp = deserialize_dsp(file);
+        std::string filename = get_element_path(song_dir + "/dsps", "dsp_h", i);
+        std::ifstream header_file(filename, std::ios::binary);
+        filename = get_element_path(song_dir + "/dsps", "dsp", i);
+        std::ifstream body_file(filename, std::ios::binary);
+        void *dsp = deserialize_dsp(header_file, body_file);
         dsps.push_back(dsp);
-        file.close();
+        header_file.close();
+        body_file.close();
     }
 }
 
 void Song::import_channels(const std::string &song_dir, const nlohmann::json &json) {
     const size_t channel_count = json["data"]["channels"];
     for (size_t i = 0; i < channel_count; i++) {
-        const std::string filename = get_element_path(song_dir + "/chans", "chan", i);
-        std::ifstream file(filename, std::ios::binary);
-        Channel *channel = deserialize_channel(file);
+        std::string filename = get_element_path(song_dir + "/chans", "chan_o", i);
+        std::ifstream output_file(filename, std::ios::binary);
+        filename = get_element_path(song_dir + "/chans", "chan", i);
+        std::ifstream body_file(filename, std::ios::binary);
+        Channel *channel = Channel::deserialize(output_file, body_file);
         channels.push_back(channel);
-        file.close();
+        output_file.close();
+        body_file.close();
     }
 }
 

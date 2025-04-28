@@ -16,6 +16,7 @@ class Song {
     struct Header {
         std::string author = DEFAULT_AUTHOR;
         std::string title = DEFAULT_TITLE;
+        std::string message = DEFAULT_MESSAGE;
         std::string version = TRACKER_VERSION;
     } header;
 
@@ -28,21 +29,30 @@ class Song {
     uint64_t song_length = 0;
     uint16_t max_rows = 0;
 
-    void generate_header_vector(std::stringstream &asm_content, const std::string &name, const std::string &short_name, const size_t size) const;
+    void generate_header_vector(
+        std::stringstream &asm_content,
+        const std::string &name,
+        const std::string &short_name,
+        const size_t size,
+        const char separator = '/'
+    ) const;
+    void generate_header_channel_vector(std::stringstream &asm_content, const char separator = '/') const;
+    void generate_header_dsp_vector(std::stringstream &asm_content, const char separator) const;
+    void set_used_flags(std::stringstream &asm_content) const;
     std::string generate_header_asm_file() const;
-    std::string generate_data_asm_file() const;
+    std::string generate_data_asm_file(const char separator = '/') const;
     nlohmann::json create_header_json() const;
     nlohmann::json import_header(const std::string &directory);
 
     std::string get_element_path(const std::string &directory, const std::string prefix, const size_t i, const char separator = '/') const;
 
     void calculate_song_length();
+    size_t calculate_dsps(const uint8_t effect) const;
+    size_t calculate_oscillators(const uint8_t generator) const;
 
-    void serialize_channel(std::ofstream &file, Channel *channel) const;
-    void serialize_dsp(std::ofstream &file, void *dsp) const;
-
-    Channel *deserialize_channel(std::ifstream &file) const;
-    void *deserialize_dsp(std::ifstream &file) const;
+    void serialize_dsp_header(std::ofstream &file, void *dsp) const;
+    void serialize_dsp_body(std::ofstream &file, void *dsp) const;
+    void *deserialize_dsp(std::ifstream &header_file, std::ifstream &body_file) const;
     void *deserialize_oscillator(std::ifstream &file) const;
 
     void export_all(const std::string &directory) const;
@@ -74,7 +84,7 @@ class Song {
     void import_oscillators(const std::string &song_dir, const nlohmann::json &json);
 
     int run_command(const std::string &command) const;
-    void compile_sources(const std::string &directory, const std::string &filename, const bool compress) const;
+    void compile_sources(const std::string &directory, const std::string &filename, const bool compress, const std::string platform = "linux") const;
     void compress_directory(const std::string &directory, const std::string &output_file) const;
     void decompress_archive(const std::string &output_file, const std::string &directory);
 
@@ -90,13 +100,15 @@ class Song {
     void new_song();
     void load_from_file(const std::string &filename);
     void save_to_file(const std::string &filename);
-    void compile(const std::string &filename, bool compress = true) const;
+    void compile(const std::string &filename, bool compress = true, const std::string platform = "linux") const;
     void render(const std::string &filename);
 
     std::string get_title() const;
     std::string get_author() const;
+    std::string get_message() const;
     void set_title(const std::string &title);
     void set_author(const std::string &author);
+    void set_message(const std::string &message);
 
     void change_tuning(const uint8_t new_edo, const double base_frequency);
 

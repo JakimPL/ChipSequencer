@@ -35,6 +35,7 @@ class LinkManager {
 
     bool is_linked(const LinkKey key) const;
     std::vector<Link *> get_links(const LinkKey key) const;
+    std::string get_link_reference(const ItemType type, const size_t index) const;
 
     void capture_parameters();
     void restore_parameters() const;

@@ -1,5 +1,6 @@
     SEGMENT_CODE
 distortion:
+    %ifdef USED_DSP_DISTORTION
     mov [value], eax
     fld1
 
@@ -30,4 +31,5 @@ distortion:
 ; arctan(x * p) / arctan(p)
     fdivp st1, st0
     call save_eax_from_fpu
+    %endif
     ret
