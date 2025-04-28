@@ -27,6 +27,7 @@ reduce:
     ret
 
 generate_sine_table:
+    %ifdef USED_OSCILLATOR_SINE
     fninit
     mov dword [angle], __float32__(0.0)
     mov ecx, TABLE_SIZE
@@ -47,6 +48,7 @@ generate_sine_table:
     cmp ecx, 0
     jne .generate
     fstp st0
+    %endif
     ret
 
 load_eax_to_fpu:

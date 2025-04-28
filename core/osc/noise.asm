@@ -1,3 +1,4 @@
+    %ifdef USED_OSCILLATOR_NOISE
     SEGMENT_CODE
 noise:
     movzx ebx, byte [current_channel]
@@ -28,4 +29,6 @@ noise_seed:
     resw MAX_CHANNELS
     %else
     resw CHANNELS
+    %endif
+
     %endif

@@ -1,3 +1,4 @@
+    %ifdef USED_OSCILLATOR_WAVETABLE
     SEGMENT_CODE
 wavetable:
 .load_wavetable:
@@ -17,3 +18,4 @@ wavetable:
     shl eax, 8
     call apply_volume
     ret
+    %endif

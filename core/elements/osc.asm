@@ -87,17 +87,37 @@ i_255:
 
 oscillators_table:
     %ifndef BITS_16
+    %ifdef USED_OSCILLATOR_SQUARE
     dd square
+    %endif
+    %ifdef USED_OSCILLATOR_SAW
     dd saw
+    %endif
+    %ifdef USED_OSCILLATOR_SINE
     dd sine
+    %endif
+    %ifdef USED_OSCILLATOR_WAVETABLE
     dd wavetable
+    %endif
+    %ifdef USED_OSCILLATOR_NOISE
     dd noise
+    %endif
     %else
+    %ifdef USED_OSCILLATOR_SQUARE
     dw square
+    %endif
+    %ifdef USED_OSCILLATOR_SAW
     dw saw
+    %endif
+    %ifdef USED_OSCILLATOR_SINE
     dw sine
+    %endif
+    %ifdef USED_OSCILLATOR_WAVETABLE
     dw wavetable
+    %endif
+    %ifdef USED_OSCILLATOR_NOISE
     dw noise
+    %endif
     %endif
 
     SEGMENT_BSS

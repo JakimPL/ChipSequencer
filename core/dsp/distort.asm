@@ -1,3 +1,4 @@
+    %ifdef USED_DSP_DISTORTION
     SEGMENT_CODE
 distortion:
     mov [value], eax
@@ -31,3 +32,4 @@ distortion:
     fdivp st1, st0
     call save_eax_from_fpu
     ret
+    %endif

@@ -1,3 +1,4 @@
+    %ifdef USED_OSCILLATOR_SQUARE
     SEGMENT_CODE
 square:
     call load_timer
@@ -24,3 +25,4 @@ square:
 
 .done:
     ret
+    %endif

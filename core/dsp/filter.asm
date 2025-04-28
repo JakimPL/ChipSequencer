@@ -1,3 +1,4 @@
+    %ifdef USED_DSP_FILTER
     SEGMENT_CODE
 filter:
 .load_buffer:
@@ -81,3 +82,4 @@ filter:
 
     SEGMENT_BSS
     cutoff_frequency resw 1
+    %endif

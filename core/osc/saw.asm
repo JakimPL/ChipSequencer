@@ -1,3 +1,4 @@
+    %ifdef USED_OSCILLATOR_SAW
     SEGMENT_CODE
 saw:
     LOAD_OFFSET ebx, oscillator_offset
@@ -20,3 +21,4 @@ saw:
 
 .done:
     ret
+    %endif

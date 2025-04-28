@@ -1,3 +1,4 @@
+    %ifdef USED_DSP_DELAY
     SEGMENT_CODE
 delay:
     call load_dsp_buffer
@@ -30,3 +31,4 @@ delay:
 .done:
     call save_eax_from_fpu
     ret
+    %endif
