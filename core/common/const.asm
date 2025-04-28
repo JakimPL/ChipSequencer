@@ -58,7 +58,7 @@
     %define MAX_OSCILLATORS 32
     %define MAX_WAVETABLES 16
     %define MAX_CHANNELS 32
-    %define MAX_DSPS 16
+    %define MAX_DSPS 32
 
     %define MAX_WAVETABLE_SIZE 4096
     %define MAX_DSP_BUFFER_SIZE 1048576 ; 10 s
