@@ -1,7 +1,9 @@
     SEGMENT_CODE
 mix:
     pusha
+    %ifdef USED_DSP
     call clear_dsps
+    %endif
     mov edi, output
     xor ecx, ecx
     mov cl, MAX_OUTPUT_CHANNELS
@@ -11,7 +13,11 @@ mix:
     xor cl, cl
 .mix_loop:
     cmp cl, [num_channels]
+    %ifdef USED_DSP
     je .dsp
+    %else
+    je .normalize
+    %endif
 
     mov [current_channel], cl
 
@@ -28,6 +34,7 @@ mix:
     inc cl
     jmp .mix_loop
 
+    %ifdef USED_DSP
 .dsp:
     xor eax, eax
     xor cl, cl
@@ -45,6 +52,7 @@ mix:
     mov cl, [current_dsp]
     inc cl
     jmp .dsp_loop
+    %endif
 
 .normalize:
     fld dword [output]

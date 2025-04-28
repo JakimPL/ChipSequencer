@@ -1,4 +1,5 @@
     %ifdef TRACKER
+    %define USED_DSP
     %define USED_DSP_GAINER
     %define USED_DSP_DISTORTION
     %define USED_DSP_FILTER

@@ -40,6 +40,11 @@ void Song::new_song() {
         DEFAULT_EDO,
         DEFAULT_A4_FREQUENCY
     };
+
+    output_channels = DEFAULT_OUTPUT_CHANNELS;
+    song_length = 0;
+    max_rows = 0;
+
     change_tuning(tuning.edo, tuning.a4_frequency);
     link_manager.set_links();
 }

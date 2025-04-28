@@ -171,7 +171,6 @@ void GUIMenu::file_render() {
 }
 
 void GUIMenu::file_compile(const bool compress, const std::string &platform) {
-    file_save();
     nfdchar_t *target_path = nullptr;
     nfdresult_t result = NFD_SaveDialog(platform == "linux" ? "" : "exe", nullptr, &target_path);
     if (result == NFD_OKAY) {

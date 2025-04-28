@@ -1,3 +1,4 @@
+    %ifdef USED_DSP
     SEGMENT_CODE
 load_dsp:
 .load_dsp:
@@ -116,4 +117,6 @@ effects:
     dsp_offset resd 1
     %else
     dsp_offset resw 1
+    %endif
+
     %endif

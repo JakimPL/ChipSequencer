@@ -42,13 +42,17 @@ initialize:
     call initialize_sample_rate
     call calculate_ticks_per_beat
 
-    call initialize_dsp_buffers
     call reset_channels
+
+    %ifdef USED_DSP
+    call initialize_dsp_buffers
     call reset_dsps
+    %endif
 
     %ifdef USED_OSCILLATOR_SINE
     call generate_sine_table
     %endif
+
     %ifdef USED_OSCILLATOR_NOISE
     call initialize_seeds
     %endif
