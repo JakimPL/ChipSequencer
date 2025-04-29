@@ -3,6 +3,7 @@
 .PHONY: jwlink
 .PHONY: nasm
 .PHONY: nasmfmt
+.PHONY: onekpaq
 .PHONY: pre-commit
 
 define copy-executables
@@ -45,6 +46,7 @@ install:
 	make jwlink
 	make nasm
 	make nasmfmt
+	make onekpaq
 	make pre-commit
 
 config:
@@ -106,6 +108,17 @@ nasmfmt:
 	else \
 		echo "nasmfmt is already installed."; \
 	fi
+
+onekpaq:
+	@mkdir -p tools
+	@echo "Downloading oneKpaq..."
+	@git clone git@github.com:temisu/oneKpaq.git
+	@echo "Compiling from sources..."
+	@cd oneKpaq && make
+	@cp oneKpaq/onekpaq_encode $(TOOLS_DIR)
+	@cp oneKpaq/onekpaq.py $(TOOLS_DIR)
+	@rm -rf oneKpaq
+	@echo "oneKpaq is installed."
 
 pre-commit:
 	make config

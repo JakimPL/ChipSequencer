@@ -93,4 +93,9 @@ static_assert(sizeof(DSPDistortion) == SIZE_DSP_DISTORTION + 1 + sizeof(uint32_t
 static_assert(sizeof(DSPFilter) == SIZE_DSP_FILTER + 1 + sizeof(uint32_t), "DSPFilter must be of 16 bytes.");
 static_assert(sizeof(DSPDelay) == SIZE_DSP_DELAY + 1, "DSPDelay must be of 20 bytes.");
 
+static_assert(sizeof(DSP) == sizeof(DSPGainer), "DSP and DSPGainer must be of the same size.");
+static_assert(sizeof(DSP) == sizeof(DSPDistortion), "DSP and DSPDistortion must be of the same size.");
+static_assert(sizeof(DSP) == sizeof(DSPFilter), "DSP and DSPFilter must be of the same size.");
+static_assert(sizeof(DSP) == sizeof(DSPDelay), "DSP and DSPDelay must be of the same size.");
+
 #endif // STRUCTURES_DSP_HPP
