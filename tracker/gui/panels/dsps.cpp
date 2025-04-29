@@ -140,6 +140,16 @@ void GUIDSPsPanel::add() {
     update();
 }
 
+void GUIDSPsPanel::duplicate() {
+    void *new_dsp = song.duplicate_dsp(dsp_index);
+    if (new_dsp == nullptr) {
+        return;
+    }
+
+    dsp_index = dsps.size() - 1;
+    update();
+}
+
 void GUIDSPsPanel::remove() {
     if (is_index_valid()) {
         song.remove_dsp(dsp_index);

@@ -99,6 +99,16 @@ void GUIChannelsPanel::add() {
     update();
 }
 
+void GUIChannelsPanel::duplicate() {
+    Channel *new_channel = song.duplicate_channel(channel_index);
+    if (new_channel == nullptr) {
+        return;
+    }
+
+    channel_index = channels.size() - 1;
+    update();
+}
+
 void GUIChannelsPanel::remove() {
     if (is_index_valid()) {
         song.remove_channel(channel_index);

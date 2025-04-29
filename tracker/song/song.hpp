@@ -125,6 +125,14 @@ class Song {
     Channel *add_channel();
     void *add_dsp();
 
+    Envelope *duplicate_envelope(const size_t index);
+    Sequence *duplicate_sequence(const size_t index);
+    Order *duplicate_order(const size_t index);
+    Wavetable *duplicate_wavetable(const size_t index);
+    void *duplicate_oscillator(const size_t index);
+    Channel *duplicate_channel(const size_t index);
+    void *duplicate_dsp(const size_t index);
+
     void set_buffer_offsets();
 
     void remove_envelope(const size_t index);

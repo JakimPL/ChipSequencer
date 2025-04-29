@@ -43,6 +43,7 @@ class GUIRoutingPanel : public GUIPanel {
     void add_output_node(size_t index, std::vector<RoutingNode> &next_nodes, std::map<float, float> &column_next_y);
 
     void add() override {};
+    void duplicate() override {};
     void remove() override {};
     void from() override;
     void to() const override;

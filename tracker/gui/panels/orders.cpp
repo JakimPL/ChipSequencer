@@ -77,6 +77,16 @@ void GUIOrdersPanel::add() {
     update();
 }
 
+void GUIOrdersPanel::duplicate() {
+    Order *new_order = song.duplicate_order(order_index);
+    if (new_order == nullptr) {
+        return;
+    }
+
+    order_index = orders.size() - 1;
+    update();
+}
+
 void GUIOrdersPanel::remove() {
     if (is_index_valid()) {
         song.remove_order(order_index);

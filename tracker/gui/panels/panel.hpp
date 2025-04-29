@@ -18,6 +18,7 @@ class GUIPanel {
     void draw_add_or_remove();
 
     virtual void add() = 0;
+    virtual void duplicate() = 0;
     virtual void remove() = 0;
     virtual void from() = 0;
     virtual void to() const = 0;

@@ -99,6 +99,16 @@ void GUIWavetablesPanel::add() {
     update();
 }
 
+void GUIWavetablesPanel::duplicate() {
+    Wavetable *new_wavetable = song.duplicate_wavetable(wavetable_index);
+    if (new_wavetable == nullptr) {
+        return;
+    }
+
+    wavetable_index = wavetables.size() - 1;
+    update();
+}
+
 void GUIWavetablesPanel::remove() {
     if (is_index_valid()) {
         song.remove_wavetable(wavetable_index);

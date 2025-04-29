@@ -133,6 +133,16 @@ void GUIOscillatorsPanel::add() {
     update();
 }
 
+void GUIOscillatorsPanel::duplicate() {
+    void *new_oscillator = song.duplicate_oscillator(oscillator_index);
+    if (new_oscillator == nullptr) {
+        return;
+    }
+
+    oscillator_index = oscillators.size() - 1;
+    update();
+}
+
 void GUIOscillatorsPanel::remove() {
     if (is_index_valid()) {
         song.remove_oscillator(oscillator_index);

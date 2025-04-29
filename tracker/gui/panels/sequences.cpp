@@ -66,6 +66,16 @@ void GUISequencesPanel::add() {
     update();
 }
 
+void GUISequencesPanel::duplicate() {
+    Sequence *new_sequence = song.duplicate_sequence(sequence_index);
+    if (new_sequence == nullptr) {
+        return;
+    }
+
+    sequence_index = sequences.size() - 1;
+    update();
+}
+
 void GUISequencesPanel::remove() {
     if (is_index_valid()) {
         song.remove_sequence(sequence_index);

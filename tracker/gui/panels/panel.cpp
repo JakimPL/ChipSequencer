@@ -9,6 +9,10 @@ void GUIPanel::draw_add_or_remove() {
         ImGui::OpenPopup("Confirm item removal");
     }
     ImGui::SameLine();
+    if (ImGui::Button("D")) {
+        duplicate();
+    }
+    ImGui::SameLine();
     if (ImGui::Button("+")) {
         add();
     }

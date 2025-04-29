@@ -219,6 +219,16 @@ Envelope *Song::add_envelope() {
     return envelope;
 }
 
+Envelope *Song::duplicate_envelope(const size_t index) {
+    Envelope *envelope = add_envelope();
+    if (envelope == nullptr) {
+        return nullptr;
+    }
+
+    *envelope = *envelopes[index];
+    return envelope;
+}
+
 Sequence *Song::add_sequence() {
     if (sequences.size() >= MAX_SEQUENCES) {
         return nullptr;
@@ -227,6 +237,16 @@ Sequence *Song::add_sequence() {
     Sequence *sequence = new Sequence();
     sequence->data_size = 0;
     sequences.push_back(sequence);
+    return sequence;
+}
+
+Sequence *Song::duplicate_sequence(const size_t index) {
+    Sequence *sequence = add_sequence();
+    if (sequence == nullptr) {
+        return nullptr;
+    }
+
+    *sequence = *sequences[index];
     return sequence;
 }
 
@@ -241,6 +261,16 @@ Order *Song::add_order() {
     return order;
 }
 
+Order *Song::duplicate_order(const size_t index) {
+    Order *order = add_order();
+    if (order == nullptr) {
+        return nullptr;
+    }
+
+    *order = *orders[index];
+    return order;
+}
+
 Wavetable *Song::add_wavetable() {
     if (wavetables.size() >= MAX_WAVETABLES) {
         return nullptr;
@@ -252,6 +282,16 @@ Wavetable *Song::add_wavetable() {
     return wavetable;
 }
 
+Wavetable *Song::duplicate_wavetable(const size_t index) {
+    Wavetable *wavetable = add_wavetable();
+    if (wavetable == nullptr) {
+        return nullptr;
+    }
+
+    *wavetable = *wavetables[index];
+    return wavetable;
+}
+
 void *Song::add_oscillator() {
     if (oscillators.size() >= MAX_OSCILLATORS) {
         return nullptr;
@@ -260,6 +300,17 @@ void *Song::add_oscillator() {
     OscillatorSquare *oscillator = new OscillatorSquare();
     oscillator->duty_cycle = DEFAULT_OSCILLATOR_DUTY_CYCLE;
     oscillators.push_back(oscillator);
+    return oscillator;
+}
+
+void *Song::duplicate_oscillator(const size_t index) {
+    void *oscillator = add_oscillator();
+    if (oscillator == nullptr) {
+        return nullptr;
+    }
+
+    Oscillator *generic = static_cast<Oscillator *>(oscillator);
+    *generic = *static_cast<Oscillator *>(oscillators[index]);
     return oscillator;
 }
 
@@ -288,6 +339,16 @@ Channel *Song::add_channel() {
     return channel;
 }
 
+Channel *Song::duplicate_channel(const size_t index) {
+    Channel *channel = add_channel();
+    if (channel == nullptr) {
+        return nullptr;
+    }
+
+    *channel = *channels[index];
+    return channel;
+}
+
 void *Song::add_dsp() {
     if (dsps.size() >= MAX_DSPS) {
         return nullptr;
@@ -308,6 +369,17 @@ void *Song::add_dsp() {
     dsp->effect_index = EFFECT_GAINER;
     dsp->volume = DEFAULT_GAINER_VOLUME;
 
+    return dsp;
+}
+
+void *Song::duplicate_dsp(const size_t index) {
+    void *dsp = add_dsp();
+    if (dsp == nullptr) {
+        return nullptr;
+    }
+
+    DSPGainer *generic = static_cast<DSPGainer *>(dsp);
+    *generic = *static_cast<DSPGainer *>(dsps[index]);
     return dsp;
 }
 

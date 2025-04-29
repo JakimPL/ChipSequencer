@@ -122,6 +122,16 @@ void GUIEnvelopesPanel::add() {
     update();
 }
 
+void GUIEnvelopesPanel::duplicate() {
+    Envelope *new_envelope = song.duplicate_envelope(envelope_index);
+    if (new_envelope == nullptr) {
+        return;
+    }
+
+    envelope_index = envelopes.size() - 1;
+    update();
+}
+
 void GUIEnvelopesPanel::remove() {
     if (is_index_valid()) {
         song.remove_envelope(envelope_index);
