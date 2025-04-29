@@ -89,7 +89,7 @@ Pos=726,471
 Size=18,19
 Collapsed=0
 
-[Window][Routing Editor]
+[Window][Routings]
 Pos=236,509
 Size=1323,571
 Collapsed=0
