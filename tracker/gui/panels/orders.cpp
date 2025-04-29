@@ -58,9 +58,11 @@ void GUIOrdersPanel::to() const {
     order->order_length = length;
     for (size_t i = 0; i < length; ++i) {
         if (i < current_order.sequences.size()) {
-            order->sequences[i] = current_order.sequences[i];
+            const uint8_t sequence = current_order.sequences[i];
+            order->sequences[i] = sequence;
+            gui.orders_buffer[order_index][i] = sequence;
         } else {
-            order->sequences[i] = 0;
+            order->sequences[i] = gui.orders_buffer[order_index][i];
         }
     }
 }
@@ -89,7 +91,17 @@ void GUIOrdersPanel::update() {
 }
 
 void GUIOrdersPanel::draw_order_length() {
-    draw_number_of_items("Sequences", "##SequenceLength", current_order.length, 1, max_items);
+    const size_t old_size = current_order.length;
+    draw_number_of_items("Sequences", "##SequenceLength", current_order.length, 1, GUI_MAX_ORDER_ITEMS);
+
+    if (old_size != current_order.length) {
+        current_order.sequences.resize(current_order.length);
+        if (current_order.length > old_size) {
+            for (size_t i = old_size; i < current_order.length; i++) {
+                current_order.sequences[i] = gui.orders_buffer[order_index][i];
+            }
+        }
+    }
 }
 
 void GUIOrdersPanel::draw_order() {

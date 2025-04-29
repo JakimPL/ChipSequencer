@@ -19,7 +19,6 @@ class GUIOrdersPanel : public GUIPanel {
 
     int order_index = 0;
     int selected_sequence = 0;
-    const int max_items = GUI_MAX_ITEMS;
     std::string digit_buffer;
 
     bool is_index_valid() const;
