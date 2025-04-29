@@ -31,6 +31,8 @@
 #define GUI_MIN_UNIT 1
 #define GUI_MAX_UNIT 64
 
+#define GUI_MAX_WAVETABLE_POINTS 255
+
 #define GUI_ENVELOPE_MAX_TIMER 10.0f
 
 #define GUI_ERROR_COLOR ImVec4(1.0f, 0.2f, 0.2f, 1.0f)

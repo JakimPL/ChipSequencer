@@ -18,7 +18,9 @@ class GUIWavetablesPanel : public GUIPanel {
     } current_wavetable;
 
     int wavetable_index = 0;
-    const int max_points = 128;
+
+    float cast_to_float(uint8_t value) const;
+    uint8_t cast_to_int(float value) const;
 
     bool is_index_valid() const;
     void draw_wavetable_length();

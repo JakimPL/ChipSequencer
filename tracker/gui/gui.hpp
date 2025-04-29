@@ -53,6 +53,9 @@ class GUI {
 
     void deselect_all_rows();
 
+    std::array<std::array<Note, GUI_MAX_STEPS>, MAX_SEQUENCES> sequences_buffer;
+    std::array<std::array<uint8_t, GUI_MAX_WAVETABLE_POINTS>, MAX_WAVETABLES> wavetables_buffer;
+
   private:
     AudioEngine *audio_engine;
 
