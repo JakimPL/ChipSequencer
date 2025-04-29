@@ -11,7 +11,7 @@ GUIOrdersPanel::GUIOrdersPanel(const bool visible)
 }
 
 void GUIOrdersPanel::draw() {
-    ImGui::Begin("Order Editor");
+    ImGui::Begin("Orders");
     ImGui::Columns(1, "order_columns");
 
     push_tertiary_style();

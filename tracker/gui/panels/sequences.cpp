@@ -14,7 +14,7 @@ GUISequencesPanel::GUISequencesPanel(const bool visible)
 }
 
 void GUISequencesPanel::draw() {
-    ImGui::Begin("Sequence Editor");
+    ImGui::Begin("Sequences");
     ImGui::Columns(1, "sequence_columns");
 
     push_tertiary_style();

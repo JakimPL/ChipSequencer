@@ -26,49 +26,49 @@ Size=804,171
 Collapsed=0
 DockId=0x00000004,0
 
-[Window][Channel Editor]
+[Window][Channels]
 Pos=1561,192
 Size=359,439
 Collapsed=0
 DockId=0x00000011,0
 
-[Window][DSP Editor]
+[Window][DSPs]
 Pos=1561,633
 Size=359,447
 Collapsed=0
 DockId=0x00000012,0
 
-[Window][Envelope Editor]
+[Window][Envelopes]
 Pos=0,192
 Size=670,315
 Collapsed=0
 DockId=0x00000006,0
 
-[Window][Order Editor]
+[Window][Orders]
 Pos=0,509
 Size=234,251
 Collapsed=0
 DockId=0x0000000C,0
 
-[Window][Oscillator Editor]
+[Window][Oscillators]
 Pos=672,192
 Size=464,315
 Collapsed=0
 DockId=0x00000008,0
 
-[Window][Sequence Editor]
+[Window][Sequences]
 Pos=0,762
 Size=234,318
 Collapsed=0
 DockId=0x0000000D,0
 
-[Window][Wavetable Editor]
+[Window][Wavetables]
 Pos=1138,192
 Size=421,315
 Collapsed=0
 DockId=0x00000009,0
 
-[Window][Pattern Editor]
+[Window][Patterns]
 Pos=236,509
 Size=1323,571
 Collapsed=0

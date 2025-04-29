@@ -11,7 +11,7 @@ GUIWavetablesPanel::GUIWavetablesPanel(const bool visible)
 }
 
 void GUIWavetablesPanel::draw() {
-    ImGui::Begin("Wavetable Editor");
+    ImGui::Begin("Wavetables");
 
     push_tertiary_style();
     draw_add_or_remove();

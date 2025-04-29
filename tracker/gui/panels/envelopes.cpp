@@ -11,7 +11,7 @@ GUIEnvelopesPanel::GUIEnvelopesPanel(const bool visible)
 }
 
 void GUIEnvelopesPanel::draw() {
-    ImGui::Begin("Envelope Editor");
+    ImGui::Begin("Envelopes");
 
     push_tertiary_style();
     draw_add_or_remove();

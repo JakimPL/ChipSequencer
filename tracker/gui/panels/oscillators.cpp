@@ -13,7 +13,7 @@ GUIOscillatorsPanel::GUIOscillatorsPanel(const bool visible)
 }
 
 void GUIOscillatorsPanel::draw() {
-    ImGui::Begin("Oscillator Editor");
+    ImGui::Begin("Oscillators");
     ImGui::Columns(1, "oscillator_columns");
 
     push_tertiary_style();

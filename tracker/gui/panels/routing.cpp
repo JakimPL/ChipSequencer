@@ -26,6 +26,20 @@ GUIRoutingPanel::GUIRoutingPanel(const bool visible)
 void GUIRoutingPanel::update() {
 }
 
+void GUIRoutingPanel::draw() {
+    ImGui::Begin("Routings");
+    ImGui::BeginChild("RoutingCanvas", ImVec2(0, 0), false, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+    from();
+    draw_nodes();
+    draw_all_links();
+    check_keyboard_input();
+    to();
+
+    ImGui::EndChild();
+    ImGui::End();
+}
+
 void GUIRoutingPanel::from() {
     collect_nodes();
     collect_links();
@@ -449,20 +463,6 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
     }
 
     ImGui::PopID();
-}
-
-void GUIRoutingPanel::draw() {
-    ImGui::Begin("Routing Editor");
-    ImGui::BeginChild("RoutingCanvas", ImVec2(0, 0), false, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-
-    from();
-    draw_nodes();
-    draw_all_links();
-    check_keyboard_input();
-    to();
-
-    ImGui::EndChild();
-    ImGui::End();
 }
 
 RoutingNode *GUIRoutingPanel::handle_node_dragging(const ImVec2 &canvas_origin) {

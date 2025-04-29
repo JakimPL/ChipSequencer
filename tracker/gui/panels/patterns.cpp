@@ -13,7 +13,7 @@ void GUIPatternsPanel::update() {
 }
 
 void GUIPatternsPanel::draw() {
-    ImGui::Begin("Pattern Editor");
+    ImGui::Begin("Patterns");
     ImGui::Separator();
 
     from();
