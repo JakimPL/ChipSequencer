@@ -51,6 +51,7 @@ void GUISequencesPanel::to() const {
     }
 
     Sequence *sequence = sequences[sequence_index];
+    current_sequence.pattern.to_buffer(sequence_index);
     const std::vector<Note> note_vector = current_sequence.pattern.to_note_vector();
     sequence->from_note_vector(note_vector);
 }
@@ -79,7 +80,17 @@ void GUISequencesPanel::update() {
 }
 
 void GUISequencesPanel::draw_sequence_length() {
+    const size_t old_size = current_sequence.pattern.steps;
     draw_number_of_items("Steps", "##SequenceLength", current_sequence.pattern.steps, 1, GUI_MAX_STEPS);
+
+    if (old_size != current_sequence.pattern.steps) {
+        current_sequence.pattern.notes.resize(current_sequence.pattern.steps);
+        if (current_sequence.pattern.steps > old_size) {
+            for (size_t i = old_size; i < current_sequence.pattern.steps; i++) {
+                current_sequence.pattern.notes[i] = gui.sequences_buffer[sequence_index][i];
+            }
+        }
+    }
 }
 
 void GUISequencesPanel::draw_sequence() {

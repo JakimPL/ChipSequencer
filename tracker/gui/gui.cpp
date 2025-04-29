@@ -9,6 +9,7 @@
 
 GUI::GUI()
     : window(nullptr), gl_context(nullptr) {
+    initialize_buffers();
 }
 
 GUI::~GUI() {
@@ -150,6 +151,16 @@ bool GUI::is_done() {
 
 void GUI::set_audio_engine(AudioEngine *engine) {
     audio_engine = engine;
+}
+
+void GUI::initialize_buffers() {
+    for (size_t i = 0; i < MAX_SEQUENCES; ++i) {
+        sequences_buffer[i].fill(NOTE_REST);
+    }
+
+    for (size_t i = 0; i < MAX_WAVETABLES; ++i) {
+        wavetables_buffer[i].fill(0x80);
+    }
 }
 
 void GUI::set_index(const GUIElement element, const int index) {
