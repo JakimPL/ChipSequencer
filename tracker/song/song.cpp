@@ -335,7 +335,6 @@ Channel *Song::add_channel() {
     channel->splitter[1] = 0x80;
     channel->splitter[2] = 0x00;
     channel->splitter[3] = 0x00;
-
     return channel;
 }
 
@@ -346,6 +345,9 @@ Channel *Song::duplicate_channel(const size_t index) {
     }
 
     *channel = *channels[index];
+    const Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][index];
+    links[static_cast<size_t>(ItemType::CHANNEL)][channels.size() - 1] = link;
+    link_manager.set_links();
     return channel;
 }
 
@@ -380,6 +382,16 @@ void *Song::duplicate_dsp(const size_t index) {
 
     DSPGainer *generic = static_cast<DSPGainer *>(dsp);
     *generic = *static_cast<DSPGainer *>(dsps[index]);
+
+    Link link = links[static_cast<size_t>(ItemType::DSP)][index];
+    if (link.type == ItemType::DSP) {
+        if (link.target == Target::DIRECT_DSP || link.target == Target::SPLITTER_DSP) {
+            link.target = Target::DIRECT_OUTPUT;
+        }
+    }
+
+    links[static_cast<size_t>(ItemType::DSP)][dsps.size() - 1] = link;
+    link_manager.set_links();
     return dsp;
 }
 
