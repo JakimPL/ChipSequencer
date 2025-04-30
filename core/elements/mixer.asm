@@ -69,8 +69,8 @@ mix:
     ret
 
 store_output:
-    cmp edx, 0
-    je .store_single_output
+    test ch, FLAG_SPLITTER
+    jz .store_single_output
     mov bl, 0
 .store_multiple_outputs:
     push eax

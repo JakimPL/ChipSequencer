@@ -47,7 +47,7 @@ void GUIChannelsPanel::from() {
     current_channel.envelope_index = channel->envelope_index;
     current_channel.order_index = std::max(0, static_cast<int>(channel->order_index));
     current_channel.oscillator_index = channel->oscillator_index;
-    current_channel.output_type.from_output_flag(channel->output_flag);
+    current_channel.output_type.from_flags(channel->output_flag, channel->flag);
 
     current_channel.constant_pitch = channel->flag & FLAG_CONSTANT_PITCH;
     if (current_channel.constant_pitch) {
@@ -70,10 +70,10 @@ void GUIChannelsPanel::to() const {
     channel->envelope_index = current_channel.envelope_index;
     channel->oscillator_index = current_channel.oscillator_index;
 
+    current_channel.output_type.set_item_flag(channel->flag);
     channel->output_flag = current_channel.output_type.calculate_output_flag();
     channel->order_index = current_channel.order_index;
 
-    channel->flag = 0;
     if (current_channel.constant_pitch) {
         channel->flag |= FLAG_CONSTANT_PITCH;
     }

@@ -124,9 +124,11 @@ void GUIDSPsPanel::to() const {
         throw std::runtime_error("Unknown DSP type: " + std::to_string(current_dsp.effect_index));
     }
 
+    DSP *dsp = static_cast<DSP *>(buffer);
     Link &link = links[static_cast<size_t>(ItemType::DSP)][dsp_index];
     current_dsp.output_type.set_link(link, ItemType::DSP, dsp_index);
-    current_dsp.output_type.set_splitter(static_cast<DSP *>(buffer)->splitter);
+    current_dsp.output_type.set_splitter(dsp->splitter);
+    current_dsp.output_type.set_item_flag(dsp->flag);
     link_manager.set_link(link, buffer, dsp_index);
 }
 

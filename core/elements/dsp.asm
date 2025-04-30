@@ -55,10 +55,11 @@ process_dsp:
     ret
 
 load_dsp_target:
-    LOAD_OFFSET ecx, dsp_offset
-    mov edi, [DSP_OUTPUT + ecx]
-    mov edx, [DSP_SPLITTER + ecx]
-    mov cl, [DSP_OUTPUT_FLAG + ecx]
+    LOAD_OFFSET edi, dsp_offset
+    mov edx, [DSP_SPLITTER + edi]
+    mov cl, [DSP_OUTPUT_FLAG + edi]
+    mov ch, [DSP_FLAG + edi]
+    mov edi, [DSP_OUTPUT + edi]
     ret
 
 load_dsp_buffer:
