@@ -393,7 +393,7 @@ void draw_output_parameter_dsp(OutputType &output_type) {
 }
 
 void show_dependency_tooltip(const std::string &label, std::vector<size_t> &dependencies) {
-    if (!dependencies.empty()) {
+    if (ImGui::IsItemHovered() && !dependencies.empty()) {
         std::string tooltip = "Used by " + label + ": ";
         for (size_t i = 0; i < dependencies.size(); ++i) {
             tooltip += std::to_string(dependencies[i]);

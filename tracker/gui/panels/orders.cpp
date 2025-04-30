@@ -14,13 +14,11 @@ void GUIOrdersPanel::draw() {
     ImGui::Begin("Orders");
     ImGui::Columns(1, "order_columns");
 
+    std::vector<size_t> dependencies = song.find_order_dependencies(order_index);
     push_tertiary_style();
-    draw_add_or_remove();
+    draw_add_or_remove("channels", dependencies);
     prepare_combo(order_names, "##OrderCombo", order_index);
-    if (ImGui::IsItemHovered()) {
-        std::vector<size_t> dependencies = song.find_order_dependencies(order_index);
-        show_dependency_tooltip("channels", dependencies);
-    }
+    show_dependency_tooltip("channels", dependencies);
     pop_tertiary_style();
 
     ImGui::Separator();

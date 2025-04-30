@@ -15,7 +15,7 @@ class GUIPanel {
     void frame();
 
   protected:
-    void draw_add_or_remove();
+    void draw_add_or_remove(const std::string label = "", std::vector<size_t> dependencies = {});
 
     virtual void add() = 0;
     virtual void duplicate() = 0;

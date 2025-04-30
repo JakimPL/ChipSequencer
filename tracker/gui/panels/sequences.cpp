@@ -17,14 +17,11 @@ void GUISequencesPanel::draw() {
     ImGui::Begin("Sequences");
     ImGui::Columns(1, "sequence_columns");
 
+    std::vector<size_t> dependencies = song.find_sequence_dependencies(sequence_index);
     push_tertiary_style();
-    draw_add_or_remove();
+    draw_add_or_remove("orders", dependencies);
     prepare_combo(sequence_names, "##SequenceCombo", sequence_index);
-    if (ImGui::IsItemHovered()) {
-        std::vector<size_t> dependencies = song.find_sequence_dependencies(sequence_index);
-        show_dependency_tooltip("orders", dependencies);
-    }
-
+    show_dependency_tooltip("orders", dependencies);
     pop_tertiary_style();
 
     ImGui::Separator();

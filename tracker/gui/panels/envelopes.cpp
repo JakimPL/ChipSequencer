@@ -13,13 +13,11 @@ GUIEnvelopesPanel::GUIEnvelopesPanel(const bool visible)
 void GUIEnvelopesPanel::draw() {
     ImGui::Begin("Envelopes");
 
+    std::vector<size_t> dependencies = song.find_envelope_dependencies(envelope_index);
     push_tertiary_style();
-    draw_add_or_remove();
+    draw_add_or_remove("channels", dependencies);
     prepare_combo(envelope_names, "##EnvelopeCombo", envelope_index);
-    if (ImGui::IsItemHovered()) {
-        std::vector<size_t> dependencies = song.find_envelope_dependencies(envelope_index);
-        show_dependency_tooltip("channels", dependencies);
-    }
+    show_dependency_tooltip("channels", dependencies);
 
     pop_tertiary_style();
 

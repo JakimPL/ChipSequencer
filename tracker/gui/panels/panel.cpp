@@ -4,9 +4,13 @@ GUIPanel::GUIPanel(const bool visible)
     : visible(visible) {
 }
 
-void GUIPanel::draw_add_or_remove() {
+void GUIPanel::draw_add_or_remove(const std::string label, std::vector<size_t> dependencies) {
     if (ImGui::Button("-")) {
-        ImGui::OpenPopup("Confirm item removal");
+        if (dependencies.empty()) {
+            remove();
+        } else {
+            ImGui::OpenPopup("Confirm item removal");
+        }
     }
     ImGui::SameLine();
     if (ImGui::Button("D")) {
@@ -20,6 +24,13 @@ void GUIPanel::draw_add_or_remove() {
 
     if (ImGui::BeginPopupModal("Confirm item removal", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
         ImGui::Text("Are you sure you want to remove this item?\nThis action cannot be undone.\n\n");
+        ImGui::Text("This item is used by the following %s:", label.c_str());
+        for (size_t i = 0; i < dependencies.size(); ++i) {
+            ImGui::Text("%zu", dependencies[i]);
+            if (i < dependencies.size() - 1) {
+                ImGui::SameLine();
+            }
+        }
         ImGui::Separator();
 
         const float button_width = 120.0f;

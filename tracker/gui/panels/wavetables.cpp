@@ -13,13 +13,11 @@ GUIWavetablesPanel::GUIWavetablesPanel(const bool visible)
 void GUIWavetablesPanel::draw() {
     ImGui::Begin("Wavetables");
 
+    std::vector<size_t> dependencies = song.find_wavetable_dependencies(wavetable_index);
     push_tertiary_style();
-    draw_add_or_remove();
+    draw_add_or_remove("oscillators", dependencies);
     prepare_combo(wavetable_names, "##WavetableCombo", wavetable_index);
-    if (ImGui::IsItemHovered()) {
-        std::vector<size_t> dependencies = song.find_wavetable_dependencies(wavetable_index);
-        show_dependency_tooltip("oscillators", dependencies);
-    }
+    show_dependency_tooltip("oscillators", dependencies);
     pop_tertiary_style();
 
     ImGui::Separator();
