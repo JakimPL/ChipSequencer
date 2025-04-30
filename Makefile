@@ -112,12 +112,9 @@ nasmfmt:
 onekpaq:
 	@mkdir -p tools
 	@echo "Downloading oneKpaq..."
-	@git clone git@github.com:temisu/oneKpaq.git
+	@cd tools && git clone git@github.com:temisu/oneKpaq.git
 	@echo "Compiling from sources..."
-	@cd oneKpaq && make
-	@cp oneKpaq/onekpaq_encode $(TOOLS_DIR)
-	@cp oneKpaq/onekpaq.py $(TOOLS_DIR)
-	@rm -rf oneKpaq
+	@cd tools/oneKpaq && make
 	@echo "oneKpaq is installed."
 
 pre-commit:

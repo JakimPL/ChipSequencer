@@ -49,7 +49,7 @@ class LinuxCompiler(Compiler):
                 self.bin_dir / "player",
             ]
 
-            subprocess.run(args, cwd=self.temp_dir / "tools")
+            subprocess.run(args, cwd=self.temp_dir / "tools" / "oneKpaq")
 
     def copy_executable(self):
         source = "player" if self.compress else "main"
