@@ -17,6 +17,7 @@
 #include "panels/patterns.hpp"
 #include "panels/routing.hpp"
 #include "panels/sequences.hpp"
+#include "panels/summary.hpp"
 #include "panels/wavetables.hpp"
 
 class GUI {
@@ -68,6 +69,7 @@ class GUI {
     GUIWavetablesPanel wavetables_panel;
     GUIPatternsPanel patterns_panel;
     GUIRoutingPanel routing_panel;
+    GUISummaryPanel summary_panel;
 
     SDL_Window *window;
     SDL_GLContext gl_context;
