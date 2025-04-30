@@ -16,6 +16,11 @@ void GUIEnvelopesPanel::draw() {
     push_tertiary_style();
     draw_add_or_remove();
     prepare_combo(envelope_names, "##EnvelopeCombo", envelope_index);
+    if (ImGui::IsItemHovered()) {
+        std::vector<size_t> dependencies = song.find_envelope_dependencies(envelope_index);
+        show_dependency_tooltip("channels", dependencies);
+    }
+
     pop_tertiary_style();
 
     ImGui::Separator();

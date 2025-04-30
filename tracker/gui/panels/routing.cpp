@@ -231,7 +231,7 @@ void GUIRoutingPanel::add_dsp_node(size_t index, std::vector<RoutingNode> &next_
 
 void GUIRoutingPanel::update_output_node(size_t index, size_t existing_index, std::vector<RoutingNode> &next_nodes) {
     RoutingNode &node_to_update = nodes[existing_index];
-    node_to_update.name = "Output Channel " + std::to_string(index);
+    node_to_update.name = "Output channel " + std::to_string(index);
     node_to_update.parameters.clear();
     node_to_update.lines = 1;
     next_nodes.push_back(node_to_update);

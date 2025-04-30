@@ -17,6 +17,10 @@ void GUIOrdersPanel::draw() {
     push_tertiary_style();
     draw_add_or_remove();
     prepare_combo(order_names, "##OrderCombo", order_index);
+    if (ImGui::IsItemHovered()) {
+        std::vector<size_t> dependencies = song.find_order_dependencies(order_index);
+        show_dependency_tooltip("channels", dependencies);
+    }
     pop_tertiary_style();
 
     ImGui::Separator();

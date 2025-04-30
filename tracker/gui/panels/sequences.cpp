@@ -20,6 +20,11 @@ void GUISequencesPanel::draw() {
     push_tertiary_style();
     draw_add_or_remove();
     prepare_combo(sequence_names, "##SequenceCombo", sequence_index);
+    if (ImGui::IsItemHovered()) {
+        std::vector<size_t> dependencies = song.find_sequence_dependencies(sequence_index);
+        show_dependency_tooltip("orders", dependencies);
+    }
+
     pop_tertiary_style();
 
     ImGui::Separator();

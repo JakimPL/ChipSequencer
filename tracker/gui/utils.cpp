@@ -392,6 +392,19 @@ void draw_output_parameter_dsp(OutputType &output_type) {
     }
 }
 
+void show_dependency_tooltip(const std::string &label, std::vector<size_t> &dependencies) {
+    if (!dependencies.empty()) {
+        std::string tooltip = "Used by " + label + ": ";
+        for (size_t i = 0; i < dependencies.size(); ++i) {
+            tooltip += std::to_string(dependencies[i]);
+            if (i < dependencies.size() - 1) {
+                tooltip += ", ";
+            }
+        }
+        ImGui::SetTooltip("%s", tooltip.c_str());
+    }
+}
+
 GUIState prepare_combo(const std::vector<std::string> &names, std::string label, int &index, const bool error_if_empty) {
     std::vector<const char *> names_cstr;
     for (const auto &name : names) {
