@@ -1,11 +1,9 @@
     SEGMENT_CODE
 step:
-; If channel does not use orders, skip
     LOAD_OFFSET ecx, channel_offset
-    cmp byte [CHANNEL_ORDER_INDEX + ecx], CONSTANT_PITCH
+    cmp byte [CHANNEL_ORDER_INDEX + ecx], -1
     jz .done
 
-; Handle timing for sequencer
     movzx ecx, byte [current_channel]
     cmp dword [sequence_timer + 4 * ecx], 0
     jnz .done
@@ -14,7 +12,7 @@ step:
     movzx ebx, byte [current_channel]
     movzx eax, byte [sequence_current_note + ebx]
     LOAD_OFFSET ecx, sequence_offset
-; Check if the sequence has ended (divided by 2 because each note is 2 bytes)
+; divided by 2 because each note is 2 bytes
     mov cl, byte [ecx]
     shr cl, 1
     cmp al, cl
@@ -26,7 +24,6 @@ step:
     pop ax
 
 .next_note:
-; Load the note and calculate the remaining ticks
     LOAD_OFFSET ecx, sequence_offset
     lea esi, [ecx + SEQUENCE_NOTES + eax * 2]
     mov al, [esi]

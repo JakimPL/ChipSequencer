@@ -497,7 +497,7 @@ std::pair<ValidationResult, int> Song::validate() {
     calculate_song_length();
     for (size_t index = 0; index < channels.size(); index++) {
         const Channel *channel = channels[index];
-        if (channel->order_index >= orders.size() && channel->order_index != CONSTANT_PITCH) {
+        if (channel->order_index >= orders.size()) {
             return {ValidationResult::ChannelMissingOrder, index};
         }
         if (channel->oscillator_index >= oscillators.size()) {
@@ -731,7 +731,7 @@ void Song::calculate_song_length() {
     max_rows = 0;
     for (size_t channel_index = 0; channel_index < channels.size(); channel_index++) {
         Channel *channel = channels[channel_index];
-        const bool constant_pitch = channel->order_index == CONSTANT_PITCH;
+        const bool constant_pitch = channel->flag & FLAG_CONSTANT_PITCH;
         if (constant_pitch || channel->order_index >= orders.size()) {
             continue;
         }

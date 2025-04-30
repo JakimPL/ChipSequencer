@@ -23,6 +23,8 @@ enum class OutputOperation {
 };
 
 struct OutputType {
+    bool bypass = false;
+
     int operation = static_cast<int>(OutputOperation::Add);
     int shift = 0;
     int variable_type;

@@ -6,6 +6,7 @@
     %define CHANNEL_ORDER_INDEX 10
     %define CHANNEL_OSCILLATOR_INDEX 11
     %define CHANNEL_PITCH 12
+    %define CHANNEL_FLAG 16
 
 ; Envelope
     %define ENVELOPE_BASE_VOLUME 0
@@ -43,6 +44,7 @@
 ; DSP
     %define DSP_EFFECT_INDEX 1
     %define DSP_OUTPUT_FLAG 2
+    %define DSP_FLAG 3
     %define DSP_OUTPUT 4
     %define DSP_SPLITTER 8
 

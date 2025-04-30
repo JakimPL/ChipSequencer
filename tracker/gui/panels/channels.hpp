@@ -13,11 +13,14 @@ class GUIChannelsPanel : public GUIPanel {
   private:
     struct CurrentChannel {
         int envelope_index = 0;
-        bool constant_pitch = false;
         int order_index = -1;
         int oscillator_index = -1;
         float pitch = 1.0f;
         OutputType output_type;
+
+        // flag
+        bool sync = false;
+        bool constant_pitch = false;
     } current_channel;
 
     int channel_index = 0;
