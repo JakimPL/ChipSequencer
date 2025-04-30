@@ -12,13 +12,22 @@ void GUIPanel::draw_add_or_remove(const std::string label, std::vector<size_t> d
             ImGui::OpenPopup("Confirm item removal");
         }
     }
+    if (ImGui::IsItemHovered()) {
+        ImGui::SetTooltip("Remove");
+    }
     ImGui::SameLine();
     if (ImGui::Button("D")) {
         duplicate();
     }
+    if (ImGui::IsItemHovered()) {
+        ImGui::SetTooltip("Duplicate");
+    }
     ImGui::SameLine();
     if (ImGui::Button("+")) {
         add();
+    }
+    if (ImGui::IsItemHovered()) {
+        ImGui::SetTooltip("Add");
     }
     ImGui::SameLine();
 
