@@ -12,7 +12,7 @@ struct DSP {
     uint8_t dsp_size = SIZE_DSP;
     uint8_t effect_index;
     uint8_t output_flag;
-    uint8_t _unused;
+    uint8_t flag;
     void *output;
     uint8_t splitter[MAX_OUTPUT_CHANNELS];
     uint8_t pad[0];
@@ -23,7 +23,7 @@ struct DSPGainer {
     uint8_t dsp_size = SIZE_DSP_GAINER;
     uint8_t effect_index = EFFECT_GAINER;
     uint8_t output_flag;
-    uint8_t _unused;
+    uint8_t flag;
     void *output;
     uint8_t splitter[MAX_OUTPUT_CHANNELS];
     uint16_t volume;
@@ -35,7 +35,7 @@ struct DSPDistortion {
     uint8_t dsp_size = SIZE_DSP_DISTORTION;
     uint8_t effect_index = EFFECT_DISTORTION;
     uint8_t output_flag;
-    uint8_t _unused;
+    uint8_t flag;
     void *output;
     uint8_t splitter[MAX_OUTPUT_CHANNELS];
     uint16_t level;
@@ -47,7 +47,7 @@ struct DSPFilter {
     uint8_t dsp_size = SIZE_DSP_FILTER;
     uint8_t effect_index = EFFECT_FILTER;
     uint8_t output_flag;
-    uint8_t _unused;
+    uint8_t flag;
     void *output;
     uint8_t splitter[MAX_OUTPUT_CHANNELS];
     uint16_t frequency;
@@ -60,7 +60,7 @@ struct DSPDelay {
     uint8_t dsp_size = SIZE_DSP_DELAY;
     uint8_t effect_index = EFFECT_DELAY;
     uint8_t output_flag;
-    uint8_t _unused;
+    uint8_t flag;
     void *output;
     uint8_t splitter[MAX_OUTPUT_CHANNELS];
     uint8_t dry;

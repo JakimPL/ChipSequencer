@@ -829,7 +829,7 @@ void Song::serialize_dsp_header(std::ofstream &file, void *dsp) const {
     write_data(file, &generic->dsp_size, sizeof(generic->dsp_size));
     write_data(file, &generic->effect_index, sizeof(generic->effect_index));
     write_data(file, &generic->output_flag, sizeof(generic->output_flag));
-    write_data(file, &generic->_unused, sizeof(generic->_unused));
+    write_data(file, &generic->flag, sizeof(generic->flag));
     write_data(file, &generic->output, sizeof(generic->output));
 }
 

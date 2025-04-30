@@ -12,6 +12,7 @@ void Channel::serialize_body(std::ofstream &file, const Channel *channel) const 
     write_data(file, &channel->order_index, sizeof(channel->order_index));
     write_data(file, &channel->oscillator_index, sizeof(channel->oscillator_index));
     write_data(file, &channel->pitch, sizeof(channel->pitch));
+    write_data(file, &channel->flag, sizeof(channel->flag));
 }
 
 Channel *Channel::deserialize(std::ifstream &output_file, std::ifstream &body_file) {
@@ -24,6 +25,7 @@ Channel *Channel::deserialize(std::ifstream &output_file, std::ifstream &body_fi
     read_data(body_file, &channel->order_index, sizeof(channel->order_index));
     read_data(body_file, &channel->oscillator_index, sizeof(channel->oscillator_index));
     read_data(body_file, &channel->pitch, sizeof(channel->pitch));
+    read_data(body_file, &channel->flag, sizeof(channel->flag));
 
     return channel;
 }
