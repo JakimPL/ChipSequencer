@@ -58,11 +58,11 @@ void GUIWavetablesPanel::from() {
 
     if (current_wavetable.wave.size() < current_wavetable.size) {
         for (size_t i = current_wavetable.wave.size(); i < current_wavetable.size; ++i) {
-            const float buffer_value = cast_to_float(gui.wavetables_buffer[wavetable_index][i]);
+            const float buffer_value = cast_to_float(buffers.wavetables[wavetable_index][i]);
             current_wavetable.wave.push_back(buffer_value);
         }
     } else if (current_wavetable.wave.size() > current_wavetable.size) {
-        current_wavetable.wave.resize(std::min(current_wavetable.size, GUI_MAX_WAVETABLE_POINTS));
+        current_wavetable.wave.resize(std::min(current_wavetable.size, MAX_WAVETABLE_POINTS));
     }
 
     for (size_t i = 0; i < current_wavetable.wave.size(); ++i) {
@@ -81,12 +81,12 @@ void GUIWavetablesPanel::to() const {
     for (size_t i = 0; i < size; ++i) {
         const uint8_t value = cast_to_int(current_wavetable.wave[i]);
         wavetable->data[i] = value;
-        gui.wavetables_buffer[wavetable_index][i] = value;
+        buffers.wavetables[wavetable_index][i] = value;
     }
 
     if (wavetable->wavetable_size > wavetable->wavetable_size) {
         for (size_t i = wavetable->wavetable_size; i < wavetable->wavetable_size; ++i) {
-            wavetable->data[i] = gui.wavetables_buffer[wavetable_index][i];
+            wavetable->data[i] = buffers.wavetables[wavetable_index][i];
         }
     }
 }
@@ -121,13 +121,13 @@ void GUIWavetablesPanel::remove() {
 
 void GUIWavetablesPanel::draw_wavetable_length() {
     const size_t old_size = current_wavetable.size;
-    draw_number_of_items("Points", "##WavetableLength", current_wavetable.size, 1, GUI_MAX_WAVETABLE_POINTS);
+    draw_number_of_items("Points", "##WavetableLength", current_wavetable.size, 1, MAX_WAVETABLE_POINTS);
 
     if (old_size != current_wavetable.size) {
         current_wavetable.wave.resize(current_wavetable.size);
         if (current_wavetable.size > old_size) {
             for (int i = old_size; i < current_wavetable.size; i++) {
-                current_wavetable.wave[i] = cast_to_float(gui.wavetables_buffer[wavetable_index][i]);
+                current_wavetable.wave[i] = cast_to_float(buffers.wavetables[wavetable_index][i]);
             }
         }
     }

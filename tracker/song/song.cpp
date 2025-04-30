@@ -1257,6 +1257,7 @@ void Song::clear_data() {
     link_manager.reset();
     num_channels = 0;
     num_dsps = 0;
+    buffers.clear();
 }
 
 void Song::delete_oscillator(void *oscillator) {

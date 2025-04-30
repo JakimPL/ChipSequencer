@@ -47,7 +47,7 @@ void Pattern::to_buffer(const size_t sequence_index) const {
         if (pitch == NOTE_OFF) {
             continue;
         }
-        gui.sequences_buffer[sequence_index][i] = pitch;
+        buffers.sequences[sequence_index][i] = pitch;
     }
 }
 
@@ -155,7 +155,7 @@ void Pattern::handle_input(const int min_row, const int max_row) {
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_KeypadAdd)) {
-        steps = std::min(steps, GUI_MAX_STEPS);
+        steps = std::min(steps, MAX_STEPS);
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_KeypadSubtract)) {
