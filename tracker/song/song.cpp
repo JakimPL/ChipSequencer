@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <set>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -537,65 +538,66 @@ std::pair<ValidationResult, int> Song::validate() {
 }
 
 std::vector<size_t> Song::find_envelope_dependencies(const size_t envelope_index) const {
-    std::vector<size_t> dependencies;
+    std::set<size_t> unique_dependencies;
     for (size_t i = 0; i < channels.size(); i++) {
         if (channels[i]->envelope_index == envelope_index) {
-            dependencies.push_back(i);
+            unique_dependencies.insert(i);
         }
     }
 
-    return dependencies;
+    return std::vector<size_t>(unique_dependencies.begin(), unique_dependencies.end());
 }
 
 std::vector<size_t> Song::find_sequence_dependencies(const size_t sequence_index) const {
-    std::vector<size_t> dependencies;
+    std::set<size_t> unique_dependencies;
     for (size_t i = 0; i < orders.size(); i++) {
         const Order *order = orders[i];
         for (size_t j = 0; j < order->order_length; j++) {
             if (order->sequences[j] == sequence_index) {
-                dependencies.push_back(i);
+                unique_dependencies.insert(i);
+                // No need to break here, set handles duplicates
             }
         }
     }
 
-    return dependencies;
+    return std::vector<size_t>(unique_dependencies.begin(), unique_dependencies.end());
 }
 
 std::vector<size_t> Song::find_order_dependencies(const size_t order_index) const {
-    std::vector<size_t> dependencies;
+    std::set<size_t> unique_dependencies;
     for (size_t i = 0; i < channels.size(); i++) {
         if (channels[i]->order_index == order_index) {
-            dependencies.push_back(i);
+            unique_dependencies.insert(i);
         }
     }
 
-    return dependencies;
+    return std::vector<size_t>(unique_dependencies.begin(), unique_dependencies.end());
 }
 
 std::vector<size_t> Song::find_wavetable_dependencies(const size_t wavetable_index) const {
-    std::vector<size_t> dependencies;
+    std::set<size_t> unique_dependencies;
     for (size_t i = 0; i < oscillators.size(); i++) {
         const Oscillator *oscillator = static_cast<const Oscillator *>(oscillators[i]);
         if (oscillator->generator_index == GENERATOR_WAVETABLE) {
             const OscillatorWavetable *wavetable = static_cast<const OscillatorWavetable *>(oscillators[i]);
             if (wavetable->wavetable_index == wavetable_index) {
-                dependencies.push_back(i);
+                unique_dependencies.insert(i);
             }
         }
     }
 
-    return dependencies;
+    return std::vector<size_t>(unique_dependencies.begin(), unique_dependencies.end());
 }
 
 std::vector<size_t> Song::find_oscillator_dependencies(const size_t oscillator_index) const {
-    std::vector<size_t> dependencies;
+    std::set<size_t> unique_dependencies;
     for (size_t i = 0; i < channels.size(); i++) {
         if (channels[i]->oscillator_index == oscillator_index) {
-            dependencies.push_back(i);
+            unique_dependencies.insert(i);
         }
     }
 
-    return dependencies;
+    return std::vector<size_t>(unique_dependencies.begin(), unique_dependencies.end());
 }
 
 void Song::generate_header_vector(
