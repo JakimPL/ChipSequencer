@@ -27,9 +27,13 @@ mix:
     call increment_timer
     call play_channel
     call load_channel_target
+.test_channel_bypass:
+    test ch, FLAG_BYPASS
+    jnz .channel_done
+
     call integer_to_float
     call store_output
-
+.channel_done:
     mov cl, [current_channel]
     inc cl
     jmp .mix_loop
@@ -45,10 +49,18 @@ mix:
     mov [current_dsp], cl
 .process_dsp:
     call load_dsp
+.check_dsp_bypass:
+    LOAD_OFFSET edi, dsp_offset
+    mov ch, [DSP_FLAG + edi]
+    test ch, FLAG_BYPASS
+    jnz .load_dsp_target
+
     call process_dsp
+.load_dsp_target:
     call load_dsp_target
     call store_output
 
+.dsp_done:
     mov cl, [current_dsp]
     inc cl
     jmp .dsp_loop
@@ -69,9 +81,6 @@ mix:
     ret
 
 store_output:
-    test ch, FLAG_BYPASS
-    jnz .done
-
 .splitter:
     test ch, FLAG_SPLITTER
     jz .store_single_output
