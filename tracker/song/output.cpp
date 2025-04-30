@@ -4,8 +4,8 @@
 #include "../constants.hpp"
 #include "output.hpp"
 
-uint8_t OutputType::calculate_output_flag() const {
-    uint8_t output_flag = 0;
+uint8_t OutputType::set_output_flag(uint8_t &output_flag) const {
+    output_flag = 0;
     output_flag = operation << 6;
     output_flag |= (variable_type << 4);
     output_flag |= shift;

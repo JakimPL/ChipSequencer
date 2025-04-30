@@ -69,10 +69,10 @@ void GUIChannelsPanel::to() const {
     Channel *channel = channels[channel_index];
     channel->envelope_index = current_channel.envelope_index;
     channel->oscillator_index = current_channel.oscillator_index;
+    channel->order_index = current_channel.order_index;
 
     current_channel.output_type.set_item_flag(channel->flag);
-    channel->output_flag = current_channel.output_type.calculate_output_flag();
-    channel->order_index = current_channel.order_index;
+    current_channel.output_type.set_output_flag(channel->output_flag);
 
     if (current_channel.constant_pitch) {
         channel->flag |= FLAG_CONSTANT_PITCH;
@@ -170,6 +170,9 @@ void GUIChannelsPanel::draw_channel() {
         return;
     }
 
+    ImGui::Checkbox("Bypass", &current_channel.output_type.bypass);
+    ImGui::Separator();
+
     ImGui::Text("Envelope:");
     if (prepare_combo(envelope_names, "##EnvelopeCombo", current_channel.envelope_index, true).right_clicked) {
         gui.set_index(GUIElement::Envelopes, current_channel.envelope_index);
@@ -180,7 +183,7 @@ void GUIChannelsPanel::draw_channel() {
         gui.set_index(GUIElement::Oscillators, current_channel.oscillator_index);
     }
 
-    if (ImGui::Checkbox("Constant Pitch", &current_channel.constant_pitch)) {
+    if (ImGui::Checkbox("Constant pitch", &current_channel.constant_pitch)) {
         current_channel.order_index = 0;
     }
 
@@ -189,7 +192,6 @@ void GUIChannelsPanel::draw_channel() {
     if (prepare_combo(order_names, "##OrderCombo", current_channel.order_index, !current_channel.constant_pitch).right_clicked) {
         gui.set_index(GUIElement::Orders, current_channel.order_index);
     }
-
     ImGui::EndDisabled();
 
     const LinkKey key = {Target::CHANNEL, channel_index, CHANNEL_PITCH};

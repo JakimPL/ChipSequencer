@@ -42,6 +42,7 @@ void GUIDSPsPanel::from() {
 
     const void *dsp = dsps[dsp_index];
     const DSP *generic = static_cast<const DSP *>(dsp);
+    current_dsp.output_type.from_flags(generic->output_flag, generic->flag);
     current_dsp.effect_index = generic->effect_index;
     switch (current_dsp.effect_index) {
     case EFFECT_GAINER: {
@@ -128,6 +129,7 @@ void GUIDSPsPanel::to() const {
     Link &link = links[static_cast<size_t>(ItemType::DSP)][dsp_index];
     current_dsp.output_type.set_link(link, ItemType::DSP, dsp_index);
     current_dsp.output_type.set_splitter(dsp->splitter);
+    current_dsp.output_type.set_output_flag(dsp->output_flag);
     current_dsp.output_type.set_item_flag(dsp->flag);
     link_manager.set_link(link, buffer, dsp_index);
 }
@@ -213,6 +215,9 @@ void GUIDSPsPanel::draw_dsp() {
 }
 
 void GUIDSPsPanel::draw_effect() {
+    ImGui::Checkbox("Bypass", &current_dsp.output_type.bypass);
+    ImGui::Separator();
+
     switch (current_dsp.effect_index) {
     case EFFECT_GAINER: {
         draw_knob("Gain", current_dsp.gainer_gain, {Target::DSP, dsp_index, DSP_GAINER_VOLUME}, 0.0f, 1.0f);

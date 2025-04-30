@@ -69,6 +69,10 @@ mix:
     ret
 
 store_output:
+    test ch, FLAG_BYPASS
+    jnz .done
+
+.splitter:
     test ch, FLAG_SPLITTER
     jz .store_single_output
     mov bl, 0
@@ -93,6 +97,8 @@ store_output:
     ret
 .store_single_output:
     call store_single_output
+
+.done:
     ret
 
 store_single_output:

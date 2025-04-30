@@ -39,6 +39,7 @@ struct RoutingNode {
     ImVec2 position;
     ImVec2 size;
     int lines = 1;
+    bool bypass = false;
 };
 
 #endif // GUI_NODE_HPP

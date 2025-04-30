@@ -43,7 +43,7 @@ struct OutputType {
     bool splitter_on = true;
     std::array<float, MAX_OUTPUT_CHANNELS> splitter = {0.5f, 0.5f, 0.0f, 0.0f};
 
-    uint8_t calculate_output_flag() const;
+    uint8_t set_output_flag(uint8_t &output_flag) const;
     uint8_t set_item_flag(uint8_t &item_flag) const;
     void from_flags(const uint8_t output_flag, const uint8_t item_flag);
     void from_link(const Link &link);
