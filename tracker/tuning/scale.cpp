@@ -72,8 +72,10 @@ std::array<std::string, MAX_EDO> ScaleComposer::get_scale() const {
 
 std::string ScaleComposer::render(const std::string &name, int offset) const {
     // 12-edo correction
-    if (edo == 12 && name == "C" && offset == 1) {
-        return "Db";
+    if (edo == 12 && name == "E" && offset == -1) {
+        return "D#";
+    } else if (edo == 12 && name == "B" && offset == -1) {
+        return "A#";
     }
 
     std::string symbol;
