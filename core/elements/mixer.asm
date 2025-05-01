@@ -27,7 +27,7 @@ mix:
     call increment_timer
     call play_channel
     call load_channel_target
-.test_channel_bypass:
+.check_channel_bypass:
     test ch, FLAG_BYPASS
     jnz .channel_done
 
