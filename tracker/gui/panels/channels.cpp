@@ -53,7 +53,7 @@ void GUIChannelsPanel::from() {
     if (current_channel.constant_pitch) {
         current_channel.pitch = static_cast<float>(channel->pitch) / 0x10000;
     } else {
-        current_channel.pitch = 12 * log2(static_cast<float>(channel->pitch) / DEFAULT_CHANNEL_PITCH);
+        current_channel.transpose = 12 * log2(static_cast<float>(channel->pitch) / DEFAULT_CHANNEL_PITCH);
     }
 
     const Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][channel_index];
@@ -79,7 +79,7 @@ void GUIChannelsPanel::to() const {
         channel->pitch = static_cast<uint32_t>(std::round(current_channel.pitch * 0x10000));
         channel->flag |= FLAG_CONSTANT_PITCH;
     } else {
-        channel->pitch = static_cast<uint32_t>(std::round(DEFAULT_CHANNEL_PITCH * pow(2, current_channel.pitch / 12)));
+        channel->pitch = static_cast<uint32_t>(std::round(DEFAULT_CHANNEL_PITCH * pow(2, current_channel.transpose / 12)));
     }
 
     Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][channel_index];
@@ -181,17 +181,23 @@ void GUIChannelsPanel::draw_channel() {
         gui.set_index(GUIElement::Oscillators, current_channel.oscillator_index);
     }
 
-    ImGui::Checkbox("Constant pitch", &current_channel.constant_pitch);
-    ImGui::SameLine();
+    ImGui::Text("Order:");
     if (prepare_combo(order_names, "##OrderCombo", current_channel.order_index, !current_channel.constant_pitch).right_clicked) {
         gui.set_index(GUIElement::Orders, current_channel.order_index);
     }
 
+    ImGui::Separator();
+    ImGui::Text("Pitch/transpose:");
+    ImGui::Checkbox("Constant pitch", &current_channel.constant_pitch);
+    ImGui::BeginDisabled(!current_channel.constant_pitch);
+    ImGui::Checkbox("Synchronize", &current_channel.sync);
+    ImGui::EndDisabled();
+
     const LinkKey key = {Target::CHANNEL, channel_index, CHANNEL_PITCH};
     if (current_channel.constant_pitch) {
-        draw_float_slider("Pitch", current_channel.pitch, key, 0.0002f, 65535.0f, GUIScale::Logarithmic);
+        draw_float_slider("Pitch (Hz)", current_channel.pitch, key, 0.0002f, 65535.0f, GUIScale::Logarithmic);
     } else {
-        draw_float_slider("Transpose", current_channel.pitch, key, GUI_MIN_TRANSPOSE, GUI_MAX_TRANSPOSE);
+        draw_float_slider("Transpose", current_channel.transpose, key, GUI_MIN_TRANSPOSE, GUI_MAX_TRANSPOSE);
     }
 
     if (draw_output(current_channel.output_type)) {

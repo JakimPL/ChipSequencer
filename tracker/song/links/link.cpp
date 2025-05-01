@@ -5,8 +5,6 @@
 #include "../output.hpp"
 #include "link.hpp"
 
-#include <iostream>
-
 void Link::assign_output() {
     Channel *channel = reinterpret_cast<Channel *>(item);
     void **dsp_output = reinterpret_cast<void **>(item + DSP_OUTPUT);

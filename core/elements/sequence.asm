@@ -43,7 +43,7 @@ step:
 .progress_sequence:
     mov al, [esi + 1]
     movzx ax, al
-    movzx ebx, word [ticks_per_beat]
+    mov ebx, [ticks_per_beat]
     imul eax, ebx
     movzx ecx, byte [current_channel]
     mov [sequence_timer + 4 * ecx], eax
@@ -65,8 +65,8 @@ calculate_ticks_per_beat:
     fmul dword [unit]
     fild word [bpm]
     fdivp st1, st0
-    fistp word [ticks_per_beat]
+    fistp dword [ticks_per_beat]
     ret
 
     SEGMENT_BSS
-    ticks_per_beat resw 1
+    ticks_per_beat resd 1

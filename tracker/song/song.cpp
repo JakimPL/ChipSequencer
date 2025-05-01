@@ -599,6 +599,10 @@ std::vector<size_t> Song::find_oscillator_dependencies(const size_t oscillator_i
     return std::vector<size_t>(dependencies.begin(), dependencies.end());
 }
 
+float Song::calculate_real_bpm() const {
+    return unit * static_cast<float>(sample_rate) / static_cast<float>(ticks_per_beat);
+}
+
 void Song::generate_header_vector(
     std::stringstream &asm_content,
     const std::string &name,

@@ -149,6 +149,7 @@ class Song {
 
     size_t calculate_dsps(const uint8_t effect) const;
     size_t calculate_oscillators(const uint8_t generator) const;
+    float calculate_real_bpm() const;
 };
 
 #endif // SONG_SONG_HPP
