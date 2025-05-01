@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "../constants.hpp"
+#include "../sizes.hpp"
 
 struct DSP {
     uint8_t dsp_size = SIZE_DSP;

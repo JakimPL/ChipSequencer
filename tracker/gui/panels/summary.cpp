@@ -39,21 +39,22 @@ void GUISummaryPanel::draw() {
         for (const auto *dsp : dsps) {
             const DSP *generic = static_cast<const DSP *>(dsp);
             const size_t effect = generic->effect_index;
+            dsps_size += 1 + sizeof(uint32_t);
             switch (effect) {
             case EFFECT_GAINER: {
-                dsps_size += SIZE_DSP_GAINER + 1;
+                dsps_size += SIZE_DSP_GAINER;
                 break;
             }
             case EFFECT_DISTORTION: {
-                dsps_size += SIZE_DSP_DISTORTION + 1;
+                dsps_size += SIZE_DSP_DISTORTION;
                 break;
             }
             case EFFECT_FILTER: {
-                dsps_size += SIZE_DSP_FILTER + 1;
+                dsps_size += SIZE_DSP_FILTER;
                 break;
             }
             case EFFECT_DELAY: {
-                dsps_size += SIZE_DSP_DELAY + 1;
+                dsps_size += SIZE_DSP_DELAY;
                 break;
             }
             }
@@ -118,25 +119,26 @@ void GUISummaryPanel::draw() {
         size_t oscillators_size = 0;
         for (const void *oscillator : oscillators) {
             const Oscillator *generic = static_cast<const Oscillator *>(oscillator);
+            oscillators_size += 1;
             switch (generic->generator_index) {
             case GENERATOR_SQUARE: {
-                oscillators_size += SIZE_OSCILLATOR_SQUARE + 1;
+                oscillators_size += SIZE_OSCILLATOR_SQUARE;
                 break;
             }
             case GENERATOR_SAW: {
-                oscillators_size += SIZE_OSCILLATOR_SAW + 1;
+                oscillators_size += SIZE_OSCILLATOR_SAW;
                 break;
             }
             case GENERATOR_SINE: {
-                oscillators_size += SIZE_OSCILLATOR_SINE + 1;
+                oscillators_size += SIZE_OSCILLATOR_SINE;
                 break;
             }
             case GENERATOR_WAVETABLE: {
-                oscillators_size += SIZE_OSCILLATOR_WAVETABLE + 1;
+                oscillators_size += SIZE_OSCILLATOR_WAVETABLE;
                 break;
             }
             case GENERATOR_NOISE: {
-                oscillators_size += SIZE_OSCILLATOR_NOISE + 1;
+                oscillators_size += SIZE_OSCILLATOR_NOISE;
                 break;
             }
             }
