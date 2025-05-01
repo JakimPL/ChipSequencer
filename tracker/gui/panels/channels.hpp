@@ -20,9 +20,8 @@ class GUIChannelsPanel : public GUIPanel {
         OutputType output_type;
 
         // flag
-        bool sync = false;
         bool constant_pitch = false;
-
+        bool sync = false;
         int sync_numerator = 1;
         int sync_denominator = 1;
     } current_channel;

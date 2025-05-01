@@ -53,6 +53,7 @@ const std::vector<std::map<uint16_t, uint16_t>> x16_to_x32 = {
         {11, 11},
         {12, 12},
         {16, 16},
+        {17, 17},
     },
     {},
 };
@@ -104,6 +105,7 @@ const std::vector<std::map<uint16_t, uint16_t>> x32_to_x16 = {
         {11, 11},
         {12, 12},
         {16, 16},
+        {17, 17},
     },
     {},
 };

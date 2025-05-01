@@ -51,7 +51,16 @@ void GUIChannelsPanel::from() {
 
     current_channel.constant_pitch = channel->flag & FLAG_CONSTANT_PITCH;
     if (current_channel.constant_pitch) {
-        current_channel.pitch = static_cast<float>(channel->pitch) / 0x10000;
+        current_channel.sync = channel->flag & FLAG_SYNC;
+        if (current_channel.sync) {
+            current_channel.sync_numerator = channel->fraction & 0x0F;
+            current_channel.sync_denominator = (channel->fraction >> 4) & 0x0F;
+
+            const float fraction = static_cast<float>(current_channel.sync_denominator) / current_channel.sync_numerator;
+            current_channel.pitch = song.calculate_real_bpm() / unit * fraction;
+        } else {
+            current_channel.pitch = static_cast<float>(channel->pitch) / 0x10000;
+        }
     } else {
         current_channel.transpose = 12 * log2(static_cast<float>(channel->pitch) / DEFAULT_CHANNEL_PITCH);
     }
@@ -78,12 +87,12 @@ void GUIChannelsPanel::to() const {
     if (current_channel.constant_pitch) {
         channel->flag |= FLAG_CONSTANT_PITCH;
         if (current_channel.sync) {
-            const float fraction = static_cast<float>(current_channel.sync_denominator) / current_channel.sync_numerator;
             channel->flag |= FLAG_SYNC;
-            channel->pitch = static_cast<uint32_t>(std::round(song.calculate_real_bpm() / unit * fraction * 0x10000));
-        } else {
-            channel->pitch = static_cast<uint32_t>(std::round(current_channel.pitch * 0x10000));
+            channel->fraction = (current_channel.sync_numerator & 0x0F);
+            channel->fraction |= ((current_channel.sync_denominator & 0x0F) << 4);
         }
+
+        channel->pitch = static_cast<uint32_t>(std::round(current_channel.pitch * 0x10000));
     } else {
         channel->pitch = static_cast<uint32_t>(std::round(DEFAULT_CHANNEL_PITCH * pow(2, current_channel.transpose / 12)));
     }

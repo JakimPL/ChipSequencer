@@ -7,6 +7,7 @@
     %define CHANNEL_OSCILLATOR_INDEX 11
     %define CHANNEL_PITCH 12
     %define CHANNEL_FLAG 16
+    %define CHANNEL_FRACTION 17
 
 ; Envelope
     %define ENVELOPE_BASE_VOLUME 0
