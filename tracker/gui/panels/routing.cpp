@@ -46,6 +46,10 @@ void GUIRoutingPanel::from() {
 }
 
 void GUIRoutingPanel::to() const {
+    if (gui.is_playing()) {
+        return;
+    }
+
     for (const auto &[source_key, target_key] : nodes_links) {
         const ItemType type = source_key.first;
         const size_t id = source_key.second;
