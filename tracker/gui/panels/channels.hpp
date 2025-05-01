@@ -22,6 +22,9 @@ class GUIChannelsPanel : public GUIPanel {
         // flag
         bool sync = false;
         bool constant_pitch = false;
+
+        int sync_numerator = 1;
+        int sync_denominator = 1;
     } current_channel;
 
     int channel_index = 0;

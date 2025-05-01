@@ -76,8 +76,14 @@ void GUIChannelsPanel::to() const {
     current_channel.output_type.set_output_flag(channel->output_flag);
 
     if (current_channel.constant_pitch) {
-        channel->pitch = static_cast<uint32_t>(std::round(current_channel.pitch * 0x10000));
         channel->flag |= FLAG_CONSTANT_PITCH;
+        if (current_channel.sync) {
+            const float fraction = static_cast<float>(current_channel.sync_denominator) / current_channel.sync_numerator;
+            channel->flag |= FLAG_SYNC;
+            channel->pitch = static_cast<uint32_t>(std::round(song.calculate_real_bpm() / unit * fraction * 0x10000));
+        } else {
+            channel->pitch = static_cast<uint32_t>(std::round(current_channel.pitch * 0x10000));
+        }
     } else {
         channel->pitch = static_cast<uint32_t>(std::round(DEFAULT_CHANNEL_PITCH * pow(2, current_channel.transpose / 12)));
     }
@@ -195,7 +201,21 @@ void GUIChannelsPanel::draw_channel() {
 
     const LinkKey key = {Target::CHANNEL, channel_index, CHANNEL_PITCH};
     if (current_channel.constant_pitch) {
-        draw_float_slider("Pitch (Hz)", current_channel.pitch, key, 0.0002f, 65535.0f, GUIScale::Logarithmic);
+        if (current_channel.sync) {
+            ImGui::Text("Ratio:");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(50);
+            ImGui::InputInt("##Numerator", &current_channel.sync_numerator, 0, 0);
+            ImGui::SameLine();
+            ImGui::TextUnformatted("/");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(50);
+            ImGui::InputInt("##Denominator", &current_channel.sync_denominator, 0, 0);
+            current_channel.sync_numerator = std::clamp(current_channel.sync_numerator, 1, 16);
+            current_channel.sync_denominator = std::clamp(current_channel.sync_denominator, 1, 16);
+        } else {
+            draw_float_slider("Pitch (Hz)", current_channel.pitch, key, 0.0002f, 65535.0f, GUIScale::Logarithmic);
+        }
     } else {
         draw_float_slider("Transpose", current_channel.transpose, key, GUI_MIN_TRANSPOSE, GUI_MAX_TRANSPOSE);
     }

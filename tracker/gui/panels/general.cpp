@@ -4,8 +4,6 @@
 #include "../utils.hpp"
 #include "general.hpp"
 
-#include <iostream>
-
 GUIGeneralPanel::GUIGeneralPanel(const bool visible)
     : GUIPanel(visible) {
 }
@@ -211,11 +209,11 @@ void GUIGeneralPanel::draw_song_info() {
 
 void GUIGeneralPanel::draw_tempo() {
     ImGui::Text("Tempo");
+    ImGui::BeginDisabled(gui.is_playing());
     draw_int_slider("BPM", current_song.bpm, {}, GUI_MIN_BPM, GUI_MAX_BPM);
     if (ImGui::IsItemHovered()) {
         ImGui::SetTooltip("Real BPM: %s", std::to_string(song.calculate_real_bpm()).c_str());
     }
-    ImGui::BeginDisabled(gui.is_playing());
     draw_int_slider("Division", current_song.division, {}, GUI_MIN_UNIT, GUI_MAX_UNIT);
     ImGui::EndDisabled();
 }
