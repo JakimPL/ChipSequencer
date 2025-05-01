@@ -4,7 +4,10 @@
 #include "panel.hpp"
 
 class GUISummaryPanel : public GUIPanel {
-  protected:
+  private:
+    void draw_summary();
+    void draw_optimizations();
+
     void add() override {};
     void duplicate() override {};
     void remove() override {};

@@ -13,6 +13,13 @@ GUISummaryPanel::GUISummaryPanel(const bool visible)
 void GUISummaryPanel::draw() {
     ImGui::Begin("Summary");
 
+    draw_summary();
+    draw_optimizations();
+
+    ImGui::End();
+}
+
+void GUISummaryPanel::draw_summary() {
     if (ImGui::BeginTable("SummaryTable", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
         ImGui::TableSetupColumn("Element");
         ImGui::TableSetupColumn("Count");
@@ -180,6 +187,39 @@ void GUISummaryPanel::draw() {
 
         ImGui::EndTable();
     }
+}
 
-    ImGui::End();
+void GUISummaryPanel::draw_optimizations() {
+    ImGui::Separator();
+    ImGui::Text("Optimizations:");
+
+    if (dsps.empty()) {
+        ImGui::BulletText("Disabled all DSPs");
+    } else {
+        if (song.calculate_dsps(EFFECT_GAINER) == 0) {
+            ImGui::BulletText("Disabled gainer effect");
+        }
+        if (song.calculate_dsps(EFFECT_DISTORTION) == 0) {
+            ImGui::BulletText("Disabled distortion effect");
+        }
+        if (song.calculate_dsps(EFFECT_FILTER) == 0) {
+            ImGui::BulletText("Disabled filter effect");
+        }
+        if (song.calculate_dsps(EFFECT_DELAY) == 0) {
+            ImGui::BulletText("Disabled delay effect");
+        }
+    }
+
+    if (song.calculate_oscillators(GENERATOR_SQUARE) == 0) {
+        ImGui::BulletText("Disabled square oscillator");
+    }
+    if (song.calculate_oscillators(GENERATOR_SINE) == 0) {
+        ImGui::BulletText("Disabled sine oscillator");
+    }
+    if (song.calculate_oscillators(GENERATOR_SAW) == 0) {
+        ImGui::BulletText("Disabled saw oscillator");
+    }
+    if (song.calculate_oscillators(GENERATOR_NOISE) == 0) {
+        ImGui::BulletText("Disabled noise oscillator");
+    }
 }

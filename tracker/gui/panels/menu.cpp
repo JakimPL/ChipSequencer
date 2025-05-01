@@ -21,7 +21,7 @@ void GUIMenu::draw() {
             if (ImGui::MenuItem("Save")) {
                 file_save();
             }
-            if (ImGui::MenuItem("Save As")) {
+            if (ImGui::MenuItem("Save as")) {
                 file_save_as();
             }
             ImGui::Separator();

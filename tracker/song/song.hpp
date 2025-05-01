@@ -45,10 +45,7 @@ class Song {
     nlohmann::json import_header(const std::string &directory);
 
     std::string get_element_path(const std::string &directory, const std::string prefix, const size_t i, const char separator = '/') const;
-
     void calculate_song_length();
-    size_t calculate_dsps(const uint8_t effect) const;
-    size_t calculate_oscillators(const uint8_t generator) const;
 
     void serialize_dsp_header(std::ofstream &file, void *dsp) const;
     void serialize_dsp_body(std::ofstream &file, void *dsp) const;
@@ -149,6 +146,9 @@ class Song {
     std::vector<size_t> find_order_dependencies(const size_t order_index) const;
     std::vector<size_t> find_wavetable_dependencies(const size_t wavetable_index) const;
     std::vector<size_t> find_oscillator_dependencies(const size_t oscillator_index) const;
+
+    size_t calculate_dsps(const uint8_t effect) const;
+    size_t calculate_oscillators(const uint8_t generator) const;
 };
 
 #endif // SONG_SONG_HPP
