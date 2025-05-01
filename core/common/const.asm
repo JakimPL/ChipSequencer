@@ -83,6 +83,9 @@
     %define PHASE_RELEASE 3
     %define PHASE_NOTE_CUT 4
 
+; Special order values
+    %define CONSTANT_ORDER 255
+
 ; Channel output masks
     %define MASK_OPERATION 0b11000000
     %define MASK_VARIABLE_TYPE 0b00110000

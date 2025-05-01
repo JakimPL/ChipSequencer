@@ -794,8 +794,7 @@ void Song::calculate_song_length() {
     max_rows = 0;
     for (size_t channel_index = 0; channel_index < channels.size(); channel_index++) {
         Channel *channel = channels[channel_index];
-        const bool constant_pitch = channel->flag & FLAG_CONSTANT_PITCH;
-        if (constant_pitch || channel->order_index >= orders.size()) {
+        if (channel->order_index >= orders.size()) {
             continue;
         }
 

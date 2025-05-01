@@ -45,7 +45,7 @@ void GUIChannelsPanel::from() {
 
     const Channel *channel = channels[channel_index];
     current_channel.envelope_index = channel->envelope_index;
-    current_channel.order_index = std::max(0, static_cast<int>(channel->order_index));
+    current_channel.order_index = channel->order_index;
     current_channel.oscillator_index = channel->oscillator_index;
     current_channel.output_type.from_flags(channel->output_flag, channel->flag);
 
@@ -71,15 +71,13 @@ void GUIChannelsPanel::to() const {
     channel->oscillator_index = current_channel.oscillator_index;
     channel->order_index = current_channel.order_index;
 
+    channel->flag = 0;
     current_channel.output_type.set_item_flag(channel->flag);
     current_channel.output_type.set_output_flag(channel->output_flag);
 
     if (current_channel.constant_pitch) {
-        channel->flag |= FLAG_CONSTANT_PITCH;
-    }
-
-    if (current_channel.constant_pitch) {
         channel->pitch = static_cast<uint32_t>(std::round(current_channel.pitch * 0x10000));
+        channel->flag |= FLAG_CONSTANT_PITCH;
     } else {
         channel->pitch = static_cast<uint32_t>(std::round(DEFAULT_CHANNEL_PITCH * pow(2, current_channel.pitch / 12)));
     }
@@ -183,16 +181,11 @@ void GUIChannelsPanel::draw_channel() {
         gui.set_index(GUIElement::Oscillators, current_channel.oscillator_index);
     }
 
-    if (ImGui::Checkbox("Constant pitch", &current_channel.constant_pitch)) {
-        current_channel.order_index = 0;
-    }
-
+    ImGui::Checkbox("Constant pitch", &current_channel.constant_pitch);
     ImGui::SameLine();
-    ImGui::BeginDisabled(current_channel.constant_pitch);
     if (prepare_combo(order_names, "##OrderCombo", current_channel.order_index, !current_channel.constant_pitch).right_clicked) {
         gui.set_index(GUIElement::Orders, current_channel.order_index);
     }
-    ImGui::EndDisabled();
 
     const LinkKey key = {Target::CHANNEL, channel_index, CHANNEL_PITCH};
     if (current_channel.constant_pitch) {

@@ -11,7 +11,7 @@ mix:
     rep stosd
 .mix:
     xor cl, cl
-.mix_loop:
+.channel_loop:
     cmp cl, [num_channels]
     %ifdef USED_DSP
     je .dsp
@@ -36,7 +36,7 @@ mix:
 .channel_done:
     mov cl, [current_channel]
     inc cl
-    jmp .mix_loop
+    jmp .channel_loop
 
     %ifdef USED_DSP
 .dsp:

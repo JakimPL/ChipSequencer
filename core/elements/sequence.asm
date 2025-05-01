@@ -1,7 +1,7 @@
     SEGMENT_CODE
 step:
     LOAD_OFFSET ecx, channel_offset
-    cmp byte [CHANNEL_ORDER_INDEX + ecx], -1
+    cmp byte [CHANNEL_ORDER_INDEX + ecx], CONSTANT_ORDER
     jz .done
 
     movzx ecx, byte [current_channel]

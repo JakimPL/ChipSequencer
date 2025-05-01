@@ -8,7 +8,6 @@ load_offsets:
     LOAD_ARRAY_ITEM envelopes, envelope_offset, SIZE_ENVELOPE
 .load_order:
     call load_order_and_check_constant_pitch
-    jnz .load_oscillator
     LOAD_VECTOR_ITEM orders, order_offset
 .load_sequence:
     LOAD_OFFSET ebx, order_offset
