@@ -108,7 +108,8 @@ void GUIRoutingPanel::collect_nodes() {
 
         if (it != existing_node_indices.end()) {
             RoutingNode &node = nodes[it->second];
-            update_channel_node(i, node, next_nodes);
+            update_channel_node(i, node);
+            next_nodes.push_back(node);
             existing_node_indices.erase(it);
         } else {
             add_channel_node(i, next_nodes, column_next_y);
@@ -121,7 +122,8 @@ void GUIRoutingPanel::collect_nodes() {
 
         if (it != existing_node_indices.end()) {
             RoutingNode &node = nodes[it->second];
-            update_dsp_node(i, node, next_nodes);
+            update_dsp_node(i, node);
+            next_nodes.push_back(node);
             existing_node_indices.erase(it);
         } else {
             add_dsp_node(i, next_nodes, column_next_y);
@@ -135,7 +137,8 @@ void GUIRoutingPanel::collect_nodes() {
 
         if (it != existing_node_indices.end()) {
             RoutingNode &node = nodes[it->second];
-            update_output_node(i, node, next_nodes);
+            update_output_node(i, node);
+            next_nodes.push_back(node);
             existing_node_indices.erase(it);
         } else {
             add_output_node(i, next_nodes, column_next_y);
@@ -145,7 +148,7 @@ void GUIRoutingPanel::collect_nodes() {
     nodes = std::move(next_nodes);
 }
 
-void GUIRoutingPanel::update_channel_node(size_t index, RoutingNode &channel_node, std::vector<RoutingNode> &next_nodes) {
+void GUIRoutingPanel::update_channel_node(size_t index, RoutingNode &channel_node) {
     channel_node.name = channel_names[index];
     channel_node.parameters.clear();
     channel_node.lines = 1;
@@ -153,13 +156,12 @@ void GUIRoutingPanel::update_channel_node(size_t index, RoutingNode &channel_nod
     const Channel *channel = channels[index];
     const Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][index];
     const auto &channel_routing = routing_variables.at(Target::CHANNEL);
-    const bool splitter = channel->flag & FLAG_SPLITTER;
     channel_node.bypass = channel->flag & FLAG_BYPASS;
 
     for (size_t j = 0; j < channel_routing.labels.size(); ++j) {
-        if (channel_routing.offsets[j] / 4 == CHANNEL_SPLITTER / 4) {
+        if (channel_routing.offsets[j] >= CHANNEL_SPLITTER && channel_routing.offsets[j] < CHANNEL_SPLITTER + 4) {
             const int splitter_id = channel_routing.offsets[j] - CHANNEL_SPLITTER;
-            if (!splitter || get_splitter_bounds(splitter_id, link)) {
+            if (get_splitter_bounds(splitter_id, index, link)) {
                 continue;
             }
         }
@@ -168,8 +170,6 @@ void GUIRoutingPanel::update_channel_node(size_t index, RoutingNode &channel_nod
         channel_node.parameters.push_back({key, channel_routing.labels[j]});
         channel_node.lines += 1;
     }
-
-    next_nodes.push_back(channel_node);
 }
 
 void GUIRoutingPanel::add_channel_node(size_t index, std::vector<RoutingNode> &next_nodes, std::map<float, float> &column_next_y) {
@@ -180,14 +180,16 @@ void GUIRoutingPanel::add_channel_node(size_t index, std::vector<RoutingNode> &n
     NodeIdentifier current_id = {Target::CHANNEL, index};
     channel_node.identifier = current_id;
     channel_node.key = {ItemType::CHANNEL, static_cast<int>(index)};
-    update_channel_node(index, channel_node, next_nodes);
+    update_channel_node(index, channel_node);
 
     const float estimated_height = channel_node.lines * ImGui::GetTextLineHeight();
     channel_node.position = {channel_x, column_next_y[channel_x]};
     column_next_y[channel_x] += estimated_height + vertical_padding;
+
+    next_nodes.push_back(channel_node);
 }
 
-void GUIRoutingPanel::update_dsp_node(size_t index, RoutingNode &dsp_node, std::vector<RoutingNode> &next_nodes) {
+void GUIRoutingPanel::update_dsp_node(size_t index, RoutingNode &dsp_node) {
     dsp_node.name = dsp_names[index];
     dsp_node.parameters.clear();
     dsp_node.lines = 1;
@@ -198,12 +200,12 @@ void GUIRoutingPanel::update_dsp_node(size_t index, RoutingNode &dsp_node, std::
     const auto filtered_items = dsp_routing.filter_items(dsp->effect_index);
     const auto labels = std::get<1>(filtered_items);
     const auto offsets = std::get<2>(filtered_items);
-    const bool splitter = dsp->flag & FLAG_SPLITTER;
     dsp_node.bypass = dsp->flag & FLAG_BYPASS;
+
     for (size_t j = 0; j < labels.size(); ++j) {
-        if (dsp_routing.offsets[j] / 4 == DSP_SPLITTER / 4) {
-            const int splitter_id = dsp_routing.offsets[j] - DSP_SPLITTER;
-            if (!splitter || get_splitter_bounds(splitter_id, link)) {
+        if (offsets[j] >= DSP_SPLITTER && offsets[j] < DSP_SPLITTER + 4) {
+            const int splitter_id = offsets[j] - DSP_SPLITTER;
+            if (get_splitter_bounds(splitter_id, index, link)) {
                 continue;
             }
         }
@@ -212,8 +214,6 @@ void GUIRoutingPanel::update_dsp_node(size_t index, RoutingNode &dsp_node, std::
         dsp_node.parameters.push_back({key, labels[j]});
         dsp_node.lines += 1;
     }
-
-    next_nodes.push_back(dsp_node);
 }
 
 void GUIRoutingPanel::add_dsp_node(size_t index, std::vector<RoutingNode> &next_nodes, std::map<float, float> &column_next_y) {
@@ -225,18 +225,19 @@ void GUIRoutingPanel::add_dsp_node(size_t index, std::vector<RoutingNode> &next_
     NodeIdentifier current_id = {Target::DSP, index};
     dsp_node.identifier = current_id;
     dsp_node.key = {ItemType::DSP, static_cast<int>(index)};
-    update_dsp_node(index, dsp_node, next_nodes);
+    update_dsp_node(index, dsp_node);
 
     const float estimated_height = dsp_node.lines * ImGui::GetTextLineHeight();
     dsp_node.position = {dsp_x, column_next_y[dsp_x]};
     column_next_y[dsp_x] += estimated_height + vertical_padding;
+
+    next_nodes.push_back(dsp_node);
 }
 
-void GUIRoutingPanel::update_output_node(size_t index, RoutingNode &output_node, std::vector<RoutingNode> &next_nodes) {
+void GUIRoutingPanel::update_output_node(size_t index, RoutingNode &output_node) {
     output_node.name = "Output " + std::to_string(index);
     output_node.parameters.clear();
     output_node.lines = 1;
-    next_nodes.push_back(output_node);
 }
 
 void GUIRoutingPanel::add_output_node(size_t index, std::vector<RoutingNode> &next_nodes, std::map<float, float> &column_next_y) {
@@ -248,7 +249,7 @@ void GUIRoutingPanel::add_output_node(size_t index, std::vector<RoutingNode> &ne
     RoutingNode output_node;
     NodeIdentifier current_id = {Target::DIRECT_OUTPUT, index};
     output_node.identifier = current_id;
-    update_output_node(index, output_node, next_nodes);
+    update_output_node(index, output_node);
 
     const float estimated_height = output_node.lines * ImGui::GetTextLineHeight();
     output_node.position = {output_x, column_next_y[output_x]};
@@ -535,12 +536,21 @@ bool GUIRoutingPanel::is_linking_possible(const InputKey &source_key, const Outp
 void GUIRoutingPanel::check_keyboard_input() {
 }
 
-bool GUIRoutingPanel::get_splitter_bounds(const size_t j, const Link &link) const {
-    if (
-        (j >= song.get_output_channels() && link.target == Target::SPLITTER_OUTPUT) ||
-        (j >= dsps.size() - link.offset / sizeof(uint32_t) && link.target == Target::SPLITTER_DSP)
-    ) {
+bool GUIRoutingPanel::get_splitter_bounds(const size_t j, size_t index, const Link &link) const {
+    if (link.target != Target::SPLITTER_OUTPUT && link.target != Target::SPLITTER_DSP) {
         return true;
+    }
+
+    if (link.target == Target::SPLITTER_OUTPUT) {
+        if (j >= song.get_output_channels()) {
+            return true;
+        }
+    } else if (link.target == Target::SPLITTER_DSP) {
+        const size_t link_offset = link.offset / sizeof(uint32_t);
+        const size_t offset = link.type == ItemType::DSP ? std::max(index + 1, link_offset) : link_offset;
+        if (j + offset >= dsps.size()) {
+            return true;
+        }
     }
 
     return false;

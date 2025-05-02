@@ -35,14 +35,14 @@ class GUIRoutingPanel : public GUIPanel {
     void set_dragging_source_key(const ImVec2 pin_position, const InputKey &key);
     void set_dragging_target_key(const ImVec2 pin_position, const OutputKey &key);
 
-    void update_channel_node(size_t index, RoutingNode &channel_node, std::vector<RoutingNode> &nodes);
+    void update_channel_node(size_t index, RoutingNode &channel_node);
+    void update_dsp_node(size_t index, RoutingNode &dsp_nodes);
+    void update_output_node(size_t index, RoutingNode &output_node);
     void add_channel_node(size_t index, std::vector<RoutingNode> &nodes, std::map<float, float> &column_next_y);
-    void update_dsp_node(size_t index, RoutingNode &dsp_node, std::vector<RoutingNode> &nodes);
     void add_dsp_node(size_t index, std::vector<RoutingNode> &nodes, std::map<float, float> &column_next_y);
-    void update_output_node(size_t index, RoutingNode &output_node, std::vector<RoutingNode> &nodes);
     void add_output_node(size_t index, std::vector<RoutingNode> &nodes, std::map<float, float> &column_next_y);
 
-    bool get_splitter_bounds(const size_t j, const Link &link) const;
+    bool get_splitter_bounds(const size_t j, size_t index, const Link &link) const;
 
     void add() override {};
     void duplicate() override {};

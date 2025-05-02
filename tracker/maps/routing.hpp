@@ -85,7 +85,7 @@ const std::map<Target, RoutingItems> routing_variables = {
             {"Splitter 0", CHANNEL_SPLITTER, TargetVariableType::Int8},
             {"Splitter 1", CHANNEL_SPLITTER + 1, TargetVariableType::Int8},
             {"Splitter 2", CHANNEL_SPLITTER + 2, TargetVariableType::Int8},
-            {"Splitter 3s", CHANNEL_SPLITTER + 3, TargetVariableType::Int8},
+            {"Splitter 3", CHANNEL_SPLITTER + 3, TargetVariableType::Int8},
         }),
     },
 };
