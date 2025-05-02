@@ -116,6 +116,7 @@ class Song {
 
     Envelope *add_envelope();
     Sequence *add_sequence();
+    CommandsSequence *add_commands_sequence();
     Order *add_order();
     Wavetable *add_wavetable();
     void *add_oscillator();
@@ -124,6 +125,7 @@ class Song {
 
     Envelope *duplicate_envelope(const size_t index);
     Sequence *duplicate_sequence(const size_t index);
+    CommandsSequence *duplicate_commands_sequence(const size_t index);
     Order *duplicate_order(const size_t index);
     Wavetable *duplicate_wavetable(const size_t index);
     void *duplicate_oscillator(const size_t index);
@@ -134,6 +136,7 @@ class Song {
 
     void remove_envelope(const size_t index);
     void remove_sequence(const size_t index);
+    void remove_commands_sequence(const size_t index);
     void remove_order(const size_t index);
     void remove_wavetable(const size_t index);
     void remove_oscillator(const size_t index);

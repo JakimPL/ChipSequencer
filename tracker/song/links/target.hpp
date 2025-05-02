@@ -10,6 +10,7 @@ enum class Target : uint8_t {
     DIRECT_DSP,
     ENVELOPE,
     SEQUENCE,
+    COMMANDS,
     ORDER,
     OSCILLATOR,
     WAVETABLE,

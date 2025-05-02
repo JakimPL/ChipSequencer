@@ -251,6 +251,27 @@ Sequence *Song::duplicate_sequence(const size_t index) {
     return sequence;
 }
 
+CommandsSequence *Song::add_commands_sequence() {
+    if (commands_sequences.size() >= MAX_COMMANDS) {
+        return nullptr;
+    }
+
+    CommandsSequence *sequence = new CommandsSequence();
+    sequence->size = 0;
+    commands_sequences.push_back(sequence);
+    return sequence;
+}
+
+CommandsSequence *Song::duplicate_commands_sequence(const size_t index) {
+    CommandsSequence *sequence = add_commands_sequence();
+    if (sequence == nullptr) {
+        return nullptr;
+    }
+
+    *sequence = *commands_sequences[index];
+    return sequence;
+}
+
 Order *Song::add_order() {
     if (orders.size() >= MAX_ORDERS) {
         return nullptr;
@@ -424,6 +445,21 @@ void Song::remove_sequence(const size_t index) {
     }
 }
 
+void Song::remove_commands_sequence(const size_t index) {
+    if (index < commands_sequences.size()) {
+        delete commands_sequences[index];
+        commands_sequences.erase(commands_sequences.begin() + index);
+        link_manager.realign_links(index, Target::COMMANDS);
+        for (auto &order : orders) {
+            for (size_t i = 0; i < order->order_length; i++) {
+                if (order->sequences[i] >= index) {
+                    order->sequences[i] = std::max(0, order->sequences[i] - 1);
+                }
+            }
+        }
+    }
+}
+
 void Song::remove_order(const size_t index) {
     if (index < orders.size()) {
         delete orders[index];
@@ -538,7 +574,7 @@ std::pair<ValidationResult, int> Song::validate() {
 }
 
 std::vector<size_t> Song::find_commands_dependencies(const size_t commands_index) const {
-    return {};
+    return find_sequence_dependencies(commands_index);
 }
 
 std::vector<size_t> Song::find_envelope_dependencies(const size_t envelope_index) const {

@@ -35,7 +35,7 @@ extern _Float64 note_divisor;
 
 extern Envelopes envelopes;
 extern Sequences sequences;
-extern Commands commands;
+extern CommandsSequences commands_sequences;
 extern Orders orders;
 extern Oscillators oscillators;
 extern Wavetables wavetables;

@@ -31,6 +31,7 @@ const std::map<Target, std::string> target_names = {
     {Target::DIRECT_DSP, "DSP"},
     {Target::ENVELOPE, "Envelope"},
     {Target::SEQUENCE, "Sequence"},
+    {Target::COMMANDS, "Commands"},
     {Target::ORDER, "Order"},
     {Target::OSCILLATOR, "Oscillator"},
     {Target::WAVETABLE, "Wavetable"},

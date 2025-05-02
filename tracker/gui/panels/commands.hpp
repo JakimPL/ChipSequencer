@@ -1,15 +1,16 @@
 #ifndef GUI_PANELS_COMMANDS_HPP
 #define GUI_PANELS_COMMANDS_HPP
 
+#include "../constants.hpp"
 #include "../init.hpp"
 #include "panel.hpp"
 
-class GUICommandsPanel : public GUIPanel {
+class GUICommandsSequencesPanel : public GUIPanel {
   private:
-    struct CurrentSequence {
+    struct CurrentCommandsSequence {
     } current_sequence;
 
-    int commands_index = 0;
+    int sequence_index = 0;
 
     bool is_index_valid() const;
     void draw_sequence();
@@ -23,7 +24,7 @@ class GUICommandsPanel : public GUIPanel {
     void check_keyboard_input() override;
 
   public:
-    GUICommandsPanel(const bool visible = true);
+    GUICommandsSequencesPanel(const bool visible = true);
     void update() override;
     void set_index(const int index) override;
 };

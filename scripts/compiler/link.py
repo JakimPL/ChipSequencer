@@ -17,6 +17,7 @@ class LinkTarget(Enum):
     DIRECT_DSP = "direct_dsp"
     ENVELOPE = "envelope"
     SEQUENCE = "sequence"
+    COMMANDS = "commands"
     ORDER = "order"
     OSCILLATOR = "oscillator"
     WAVETABLE = "wavetable"
@@ -33,12 +34,13 @@ class LinkTarget(Enum):
             3: LinkTarget.DIRECT_DSP,
             4: LinkTarget.ENVELOPE,
             5: LinkTarget.SEQUENCE,
-            6: LinkTarget.ORDER,
-            7: LinkTarget.OSCILLATOR,
-            8: LinkTarget.WAVETABLE,
-            9: LinkTarget.DSP,
-            10: LinkTarget.CHANNEL,
-            11: LinkTarget.UNUSED,
+            6: LinkTarget.COMMANDS,
+            7: LinkTarget.ORDER,
+            8: LinkTarget.OSCILLATOR,
+            9: LinkTarget.WAVETABLE,
+            10: LinkTarget.DSP,
+            11: LinkTarget.CHANNEL,
+            12: LinkTarget.UNUSED,
         }
 
         return dictionary[integer]

@@ -3,20 +3,20 @@
 #include "../utils.hpp"
 #include "commands.hpp"
 
-GUICommandsPanel::GUICommandsPanel(const bool visible)
+GUICommandsSequencesPanel::GUICommandsSequencesPanel(const bool visible)
     : GUIPanel(visible) {
     from();
     update();
 }
 
-void GUICommandsPanel::draw() {
+void GUICommandsSequencesPanel::draw() {
     ImGui::Begin("Commands");
     ImGui::Columns(1, "commands_columns");
 
-    std::vector<size_t> dependencies = song.find_commands_dependencies(commands_index);
+    std::vector<size_t> dependencies = song.find_commands_dependencies(sequence_index);
     push_tertiary_style();
     draw_add_or_remove("orders", dependencies);
-    prepare_combo(commands_names, "##SequenceCombo", commands_index);
+    prepare_combo(commands_names, "##CommandsCombo", sequence_index);
     show_dependency_tooltip("orders", dependencies);
     pop_tertiary_style();
 
@@ -31,60 +31,59 @@ void GUICommandsPanel::draw() {
     ImGui::End();
 }
 
-bool GUICommandsPanel::is_index_valid() const {
-    // return commands_index >= 0 && commands_index < commands.size();
-    return true;
+bool GUICommandsSequencesPanel::is_index_valid() const {
+    return sequence_index >= 0 && sequence_index < commands_sequences.size();
 }
 
-void GUICommandsPanel::from() {
+void GUICommandsSequencesPanel::from() {
     if (!is_index_valid()) {
         return;
     }
 }
 
-void GUICommandsPanel::to() const {
+void GUICommandsSequencesPanel::to() const {
     if (!ImGui::IsWindowFocused() || !is_index_valid()) {
         return;
     }
 }
 
-void GUICommandsPanel::add() {
-    // Commands *new_commands = song.add_commands();
-    // if (new_commands == nullptr) {
-    //     return;
-    // }
+void GUICommandsSequencesPanel::add() {
+    CommandsSequence *new_sequence = song.add_commands_sequence();
+    if (new_sequence == nullptr) {
+        return;
+    }
 
-    // commands_index = commands.size() - 1;
-    // update();
+    sequence_index = commands_sequences.size() - 1;
+    update();
 }
 
-void GUICommandsPanel::duplicate() {
-    // Commands *new_commands = song.duplicate_commands(commands_index);
-    // if (new_commands == nullptr) {
-    //     return;
-    // }
+void GUICommandsSequencesPanel::duplicate() {
+    CommandsSequence *new_sequence = song.duplicate_commands_sequence(sequence_index);
+    if (new_sequence == nullptr) {
+        return;
+    }
 
-    // commands_index = commands.size() - 1;
-    // update();
+    sequence_index = commands_sequences.size() - 1;
+    update();
 }
 
-void GUICommandsPanel::remove() {
+void GUICommandsSequencesPanel::remove() {
     if (is_index_valid()) {
-        // song.remove_commands(commands_index);
-        // commands_index = std::max(0, commands_index - 1);
-        // update();
+        song.remove_commands_sequence(sequence_index);
+        sequence_index = std::max(0, sequence_index - 1);
+        update();
     }
 }
 
-void GUICommandsPanel::update() {
-    // update_items(commands_names, commands.size(), "Commands ", commands_index);
-    // gui.update(GUIElement::Orders);
+void GUICommandsSequencesPanel::update() {
+    update_items(commands_names, commands_sequences.size(), "Commands ", sequence_index);
+    gui.update(GUIElement::Orders);
 }
 
-void GUICommandsPanel::draw_sequence() {
+void GUICommandsSequencesPanel::draw_sequence() {
 }
 
-void GUICommandsPanel::check_keyboard_input() {
+void GUICommandsSequencesPanel::check_keyboard_input() {
     if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
@@ -94,6 +93,6 @@ void GUICommandsPanel::check_keyboard_input() {
     }
 }
 
-void GUICommandsPanel::set_index(const int index) {
-    // commands_index = clamp_index(index, commands.size());
+void GUICommandsSequencesPanel::set_index(const int index) {
+    sequence_index = clamp_index(index, commands_sequences.size());
 }

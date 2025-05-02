@@ -188,6 +188,9 @@ std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t
     return {index + pattern.notes.size(), select};
 }
 
+void draw_commands_pattern() {
+}
+
 bool draw_output(OutputType &output_type, const LinkKey key) {
     push_secondary_style();
     ImGui::Separator();
@@ -267,20 +270,15 @@ bool draw_output(OutputType &output_type, const LinkKey key) {
             draw_output_parameter(output_type, envelope_names, "Envelope");
             break;
         }
-        case Target::SEQUENCE: {
-            ImGui::Text("Not implemented yet.");
-            break;
-        }
-        case Target::ORDER: {
+        case Target::SEQUENCE:
+        case Target::COMMANDS:
+        case Target::ORDER:
+        case Target::WAVETABLE: {
             ImGui::Text("Not implemented yet.");
             break;
         }
         case Target::OSCILLATOR: {
             draw_output_parameter_oscillator(output_type);
-            break;
-        }
-        case Target::WAVETABLE: {
-            ImGui::Text("Not implemented yet.");
             break;
         }
         case Target::DSP: {

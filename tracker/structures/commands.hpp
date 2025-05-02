@@ -14,7 +14,7 @@ struct CommandsSequence {
     CommandsArray commands;
 };
 
-typedef std::vector<CommandsSequence *> Commands;
+typedef std::vector<CommandsSequence *> CommandsSequences;
 
 constexpr size_t COMMANDS_SIZE = offsetof(CommandsSequence, size);
 constexpr size_t COMMANDS_DATA = offsetof(CommandsSequence, commands);

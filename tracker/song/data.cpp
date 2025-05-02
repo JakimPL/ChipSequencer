@@ -13,6 +13,7 @@ _Float64 note_divisor = DEFAULT_NOTE_DIVISOR;
 
 Envelopes envelopes;
 Sequences sequences;
+CommandsSequences commands_sequences;
 Orders orders;
 Oscillators oscillators;
 Wavetables wavetables;

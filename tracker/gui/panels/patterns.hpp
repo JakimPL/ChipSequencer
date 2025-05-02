@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "../constants.hpp"
-#include "../pattern.hpp"
+#include "../patterns/pattern.hpp"
 #include "panel.hpp"
 
 class GUIPatternsPanel : public GUIPanel {

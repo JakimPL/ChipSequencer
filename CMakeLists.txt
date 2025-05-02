@@ -90,7 +90,6 @@ add_executable(main
     tracker/driver/port.cpp
     tracker/gui/gui.cpp
     tracker/gui/names.cpp
-    tracker/gui/pattern.cpp
     tracker/gui/utils.cpp
     tracker/gui/panels/channels.cpp
     tracker/gui/panels/commands.cpp
@@ -107,6 +106,8 @@ add_executable(main
     tracker/gui/panels/sequences.cpp
     tracker/gui/panels/summary.cpp
     tracker/gui/panels/wavetables.cpp
+    tracker/gui/patterns/commands.cpp
+    tracker/gui/patterns/pattern.cpp
     tracker/maps/routing.cpp
     tracker/song/buffers.cpp
     tracker/song/data.cpp

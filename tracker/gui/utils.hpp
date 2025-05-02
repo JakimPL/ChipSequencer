@@ -7,7 +7,7 @@
 #include "../song/links/key.hpp"
 #include "enums.hpp"
 #include "init.hpp"
-#include "pattern.hpp"
+#include "patterns/pattern.hpp"
 
 struct GUIState {
     bool value_changed;

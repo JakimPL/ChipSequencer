@@ -1,9 +1,9 @@
 #include <algorithm>
 
-#include "../constants.hpp"
-#include "../general.hpp"
-#include "../song/data.hpp"
-#include "mapping.hpp"
+#include "../../constants.hpp"
+#include "../../general.hpp"
+#include "../../song/data.hpp"
+#include "../mapping.hpp"
 #include "pattern.hpp"
 
 Pattern::Pattern() {
