@@ -14,7 +14,8 @@ enum class GUIElement {
     Patterns,
     Routing,
     Sequences,
-    Wavetables
+    Wavetables,
+    Summary,
 };
 
 enum class GUIScale {

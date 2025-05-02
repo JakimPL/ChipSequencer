@@ -12,8 +12,8 @@ oscillator:
 
 increment_timer:
     movzx ecx, byte [current_channel]
-    call check_fixed_frequency
-    jne .load_pitch
+    call load_order_and_check_constant_pitch
+    jz .load_pitch
     LOAD_OFFSET eax, channel_offset
     mov eax, [CHANNEL_PITCH + eax]
     jmp .increment_timer

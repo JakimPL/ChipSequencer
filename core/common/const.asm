@@ -40,9 +40,6 @@
 
     %define DEFAULT_GAINER_VOLUME 0x8000
 
-; General
-    %define CONSTANT_PITCH 0xFF
-
 ; Notes
     %define NOTES 250
     %define NOTE_REST 254
@@ -58,12 +55,16 @@
     %define MAX_OSCILLATORS 32
     %define MAX_WAVETABLES 16
     %define MAX_CHANNELS 32
-    %define MAX_DSPS 16
+    %define MAX_DSPS 32
 
     %define MAX_WAVETABLE_SIZE 4096
     %define MAX_DSP_BUFFER_SIZE 1048576 ; 10 s
 
     %define MAX_ENVELOPE_TIMER_LENGTH 10
+
+    %define MAX_ORDER_ITEMS 64
+    %define MAX_STEPS 64
+    %define MAX_WAVETABLE_POINTS 255
 
 ; Let C = magic_constant. Each frame, an envelope timer increases by C / v.
 ; where v is proportional to time t belonging to the range [0, MAX_ENVELOPE_TIMER_LENGTH].
@@ -82,10 +83,19 @@
     %define PHASE_RELEASE 3
     %define PHASE_NOTE_CUT 4
 
+; Special order values
+    %define CONSTANT_ORDER 255
+
 ; Channel output masks
     %define MASK_OPERATION 0b11000000
     %define MASK_VARIABLE_TYPE 0b00110000
     %define MASK_SHIFT 0b00001111
+
+; Channel/DSP flags
+    %define FLAG_BYPASS 0b00000001
+    %define FLAG_SPLITTER 0b00000010
+    %define FLAG_SYNC 0b00000100
+    %define FLAG_CONSTANT_PITCH 0b00001000
 
 ; Generators
     %define GENERATOR_SQUARE 0

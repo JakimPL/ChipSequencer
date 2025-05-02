@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <set>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -219,6 +220,16 @@ Envelope *Song::add_envelope() {
     return envelope;
 }
 
+Envelope *Song::duplicate_envelope(const size_t index) {
+    Envelope *envelope = add_envelope();
+    if (envelope == nullptr) {
+        return nullptr;
+    }
+
+    *envelope = *envelopes[index];
+    return envelope;
+}
+
 Sequence *Song::add_sequence() {
     if (sequences.size() >= MAX_SEQUENCES) {
         return nullptr;
@@ -227,6 +238,16 @@ Sequence *Song::add_sequence() {
     Sequence *sequence = new Sequence();
     sequence->data_size = 0;
     sequences.push_back(sequence);
+    return sequence;
+}
+
+Sequence *Song::duplicate_sequence(const size_t index) {
+    Sequence *sequence = add_sequence();
+    if (sequence == nullptr) {
+        return nullptr;
+    }
+
+    *sequence = *sequences[index];
     return sequence;
 }
 
@@ -241,6 +262,16 @@ Order *Song::add_order() {
     return order;
 }
 
+Order *Song::duplicate_order(const size_t index) {
+    Order *order = add_order();
+    if (order == nullptr) {
+        return nullptr;
+    }
+
+    *order = *orders[index];
+    return order;
+}
+
 Wavetable *Song::add_wavetable() {
     if (wavetables.size() >= MAX_WAVETABLES) {
         return nullptr;
@@ -252,6 +283,16 @@ Wavetable *Song::add_wavetable() {
     return wavetable;
 }
 
+Wavetable *Song::duplicate_wavetable(const size_t index) {
+    Wavetable *wavetable = add_wavetable();
+    if (wavetable == nullptr) {
+        return nullptr;
+    }
+
+    *wavetable = *wavetables[index];
+    return wavetable;
+}
+
 void *Song::add_oscillator() {
     if (oscillators.size() >= MAX_OSCILLATORS) {
         return nullptr;
@@ -260,6 +301,17 @@ void *Song::add_oscillator() {
     OscillatorSquare *oscillator = new OscillatorSquare();
     oscillator->duty_cycle = DEFAULT_OSCILLATOR_DUTY_CYCLE;
     oscillators.push_back(oscillator);
+    return oscillator;
+}
+
+void *Song::duplicate_oscillator(const size_t index) {
+    void *oscillator = add_oscillator();
+    if (oscillator == nullptr) {
+        return nullptr;
+    }
+
+    Oscillator *generic = static_cast<Oscillator *>(oscillator);
+    *generic = *static_cast<Oscillator *>(oscillators[index]);
     return oscillator;
 }
 
@@ -284,7 +336,19 @@ Channel *Song::add_channel() {
     channel->splitter[1] = 0x80;
     channel->splitter[2] = 0x00;
     channel->splitter[3] = 0x00;
+    return channel;
+}
 
+Channel *Song::duplicate_channel(const size_t index) {
+    Channel *channel = add_channel();
+    if (channel == nullptr) {
+        return nullptr;
+    }
+
+    *channel = *channels[index];
+    const Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][index];
+    links[static_cast<size_t>(ItemType::CHANNEL)][channels.size() - 1] = link;
+    link_manager.set_links();
     return channel;
 }
 
@@ -308,6 +372,27 @@ void *Song::add_dsp() {
     dsp->effect_index = EFFECT_GAINER;
     dsp->volume = DEFAULT_GAINER_VOLUME;
 
+    return dsp;
+}
+
+void *Song::duplicate_dsp(const size_t index) {
+    void *dsp = add_dsp();
+    if (dsp == nullptr) {
+        return nullptr;
+    }
+
+    DSPGainer *generic = static_cast<DSPGainer *>(dsp);
+    *generic = *static_cast<DSPGainer *>(dsps[index]);
+
+    Link link = links[static_cast<size_t>(ItemType::DSP)][index];
+    if (link.type == ItemType::DSP) {
+        if (link.target == Target::DIRECT_DSP || link.target == Target::SPLITTER_DSP) {
+            link.target = Target::DIRECT_OUTPUT;
+        }
+    }
+
+    links[static_cast<size_t>(ItemType::DSP)][dsps.size() - 1] = link;
+    link_manager.set_links();
     return dsp;
 }
 
@@ -413,7 +498,7 @@ std::pair<ValidationResult, int> Song::validate() {
     calculate_song_length();
     for (size_t index = 0; index < channels.size(); index++) {
         const Channel *channel = channels[index];
-        if (channel->order_index >= orders.size() && channel->order_index != CONSTANT_PITCH) {
+        if (channel->order_index >= orders.size()) {
             return {ValidationResult::ChannelMissingOrder, index};
         }
         if (channel->oscillator_index >= oscillators.size()) {
@@ -450,6 +535,72 @@ std::pair<ValidationResult, int> Song::validate() {
     }
 
     return {ValidationResult::OK, -1};
+}
+
+std::vector<size_t> Song::find_envelope_dependencies(const size_t envelope_index) const {
+    std::set<size_t> dependencies;
+    for (size_t i = 0; i < channels.size(); i++) {
+        if (channels[i]->envelope_index == envelope_index) {
+            dependencies.insert(i);
+        }
+    }
+
+    return std::vector<size_t>(dependencies.begin(), dependencies.end());
+}
+
+std::vector<size_t> Song::find_sequence_dependencies(const size_t sequence_index) const {
+    std::set<size_t> dependencies;
+    for (size_t i = 0; i < orders.size(); i++) {
+        const Order *order = orders[i];
+        for (size_t j = 0; j < order->order_length; j++) {
+            if (order->sequences[j] == sequence_index) {
+                dependencies.insert(i);
+            }
+        }
+    }
+
+    return std::vector<size_t>(dependencies.begin(), dependencies.end());
+}
+
+std::vector<size_t> Song::find_order_dependencies(const size_t order_index) const {
+    std::set<size_t> dependencies;
+    for (size_t i = 0; i < channels.size(); i++) {
+        if (channels[i]->order_index == order_index) {
+            dependencies.insert(i);
+        }
+    }
+
+    return std::vector<size_t>(dependencies.begin(), dependencies.end());
+}
+
+std::vector<size_t> Song::find_wavetable_dependencies(const size_t wavetable_index) const {
+    std::set<size_t> dependencies;
+    for (size_t i = 0; i < oscillators.size(); i++) {
+        const Oscillator *oscillator = static_cast<const Oscillator *>(oscillators[i]);
+        if (oscillator->generator_index == GENERATOR_WAVETABLE) {
+            const OscillatorWavetable *wavetable = static_cast<const OscillatorWavetable *>(oscillators[i]);
+            if (wavetable->wavetable_index == wavetable_index) {
+                dependencies.insert(i);
+            }
+        }
+    }
+
+    return std::vector<size_t>(dependencies.begin(), dependencies.end());
+}
+
+std::vector<size_t> Song::find_oscillator_dependencies(const size_t oscillator_index) const {
+    std::set<size_t> dependencies;
+    for (size_t i = 0; i < channels.size(); i++) {
+        if (channels[i]->oscillator_index == oscillator_index) {
+            dependencies.insert(i);
+        }
+    }
+
+    return std::vector<size_t>(dependencies.begin(), dependencies.end());
+}
+
+float Song::calculate_real_bpm() const {
+    return unit * static_cast<float>(sample_rate) / static_cast<float>(ticks_per_beat);
 }
 
 void Song::generate_header_vector(
@@ -647,8 +798,7 @@ void Song::calculate_song_length() {
     max_rows = 0;
     for (size_t channel_index = 0; channel_index < channels.size(); channel_index++) {
         Channel *channel = channels[channel_index];
-        const bool constant_pitch = channel->order_index == CONSTANT_PITCH;
-        if (constant_pitch || channel->order_index >= orders.size()) {
+        if (channel->order_index >= orders.size()) {
             continue;
         }
 
@@ -745,7 +895,7 @@ void Song::serialize_dsp_header(std::ofstream &file, void *dsp) const {
     write_data(file, &generic->dsp_size, sizeof(generic->dsp_size));
     write_data(file, &generic->effect_index, sizeof(generic->effect_index));
     write_data(file, &generic->output_flag, sizeof(generic->output_flag));
-    write_data(file, &generic->_unused, sizeof(generic->_unused));
+    write_data(file, &generic->flag, sizeof(generic->flag));
     write_data(file, &generic->output, sizeof(generic->output));
 }
 
@@ -791,13 +941,13 @@ void Song::serialize_dsp_body(std::ofstream &file, void *dsp) const {
 }
 
 void *Song::deserialize_dsp(std::ifstream &header_file, std::ifstream &body_file) const {
-    uint8_t dsp_size, effect_index, output_flag;
+    uint8_t dsp_size, effect_index, output_flag, flag;
     uint32_t output;
 
     read_data(header_file, &dsp_size, sizeof(dsp_size));
     read_data(header_file, &effect_index, sizeof(effect_index));
     read_data(header_file, &output_flag, sizeof(output_flag));
-    header_file.seekg(sizeof(uint8_t), std::ios::cur);
+    read_data(header_file, &flag, sizeof(flag));
     read_data(header_file, &output, sizeof(output));
 
     switch (effect_index) {
@@ -806,6 +956,7 @@ void *Song::deserialize_dsp(std::ifstream &header_file, std::ifstream &body_file
         distortion->dsp_size = dsp_size;
         distortion->effect_index = effect_index;
         distortion->output_flag = output_flag;
+        distortion->flag = flag;
         distortion->output = &output;
         read_data(body_file, &distortion->splitter, sizeof(distortion->splitter));
         read_data(body_file, &distortion->level, sizeof(distortion->level));
@@ -816,6 +967,7 @@ void *Song::deserialize_dsp(std::ifstream &header_file, std::ifstream &body_file
         gainer->dsp_size = dsp_size;
         gainer->effect_index = effect_index;
         gainer->output_flag = output_flag;
+        gainer->flag = flag;
         gainer->output = &output;
         read_data(body_file, &gainer->splitter, sizeof(gainer->splitter));
         read_data(body_file, &gainer->volume, sizeof(gainer->volume));
@@ -826,6 +978,7 @@ void *Song::deserialize_dsp(std::ifstream &header_file, std::ifstream &body_file
         filter->dsp_size = dsp_size;
         filter->effect_index = effect_index;
         filter->output_flag = output_flag;
+        filter->flag = flag;
         filter->output = &output;
         read_data(body_file, &filter->splitter, sizeof(filter->splitter));
         read_data(body_file, &filter->frequency, sizeof(filter->frequency));
@@ -837,6 +990,7 @@ void *Song::deserialize_dsp(std::ifstream &header_file, std::ifstream &body_file
         delay->dsp_size = dsp_size;
         delay->effect_index = effect_index;
         delay->output_flag = output_flag;
+        delay->flag = flag;
         delay->output = &output;
         read_data(body_file, &delay->splitter, sizeof(delay->splitter));
         read_data(body_file, &delay->dry, sizeof(delay->dry));
@@ -970,7 +1124,7 @@ void Song::export_arrays(const std::string &directory, const std::string &prefix
 void Song::export_offsets(const std::string &filename) const {
     std::ofstream file(filename, std::ios::binary);
     for (size_t i = 0; i < dsps.size(); i++) {
-        const uint16_t offset = buffer_offsets[i];
+        const uint32_t offset = buffer_offsets[i];
         write_data(file, &offset, sizeof(offset));
     }
     file.close();
@@ -1111,6 +1265,7 @@ void Song::clear_data() {
     link_manager.reset();
     num_channels = 0;
     num_dsps = 0;
+    buffers.clear();
 }
 
 void Song::delete_oscillator(void *oscillator) {

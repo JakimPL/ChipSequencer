@@ -26,12 +26,30 @@ GUIRoutingPanel::GUIRoutingPanel(const bool visible)
 void GUIRoutingPanel::update() {
 }
 
+void GUIRoutingPanel::draw() {
+    ImGui::Begin("Routings");
+    ImGui::BeginChild("RoutingCanvas", ImVec2(0, 0), false, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+    from();
+    draw_nodes();
+    draw_all_links();
+    check_keyboard_input();
+    to();
+
+    ImGui::EndChild();
+    ImGui::End();
+}
+
 void GUIRoutingPanel::from() {
     collect_nodes();
     collect_links();
 }
 
 void GUIRoutingPanel::to() const {
+    if (gui.is_playing()) {
+        return;
+    }
+
     for (const auto &[source_key, target_key] : nodes_links) {
         const ItemType type = source_key.first;
         const size_t id = source_key.second;
@@ -125,18 +143,20 @@ void GUIRoutingPanel::collect_nodes() {
 }
 
 void GUIRoutingPanel::update_channel_node(size_t index, size_t existing_index, std::vector<RoutingNode> &next_nodes) {
-    RoutingNode &node_to_update = nodes[existing_index];
+    RoutingNode &channel_node = nodes[existing_index];
     const auto &channel_routing = routing_variables.at(Target::CHANNEL);
 
-    node_to_update.name = channel_names[index];
-    node_to_update.parameters.clear();
-    node_to_update.lines = 1;
+    channel_node.name = channel_names[index];
+    channel_node.bypass = channels[index]->flag & FLAG_BYPASS;
+    channel_node.parameters.clear();
+    channel_node.lines = 1;
     for (size_t j = 0; j < channel_routing.labels.size(); ++j) {
         const OutputKey key = {Target::CHANNEL, static_cast<int>(index), channel_routing.offsets[j]};
-        node_to_update.parameters.push_back({key, channel_routing.labels[j]});
-        node_to_update.lines += 1;
+        channel_node.parameters.push_back({key, channel_routing.labels[j]});
+        channel_node.lines += 1;
     }
-    next_nodes.push_back(node_to_update);
+
+    next_nodes.push_back(channel_node);
 }
 
 void GUIRoutingPanel::add_channel_node(size_t index, std::vector<RoutingNode> &next_nodes, std::map<float, float> &column_next_y) {
@@ -149,6 +169,7 @@ void GUIRoutingPanel::add_channel_node(size_t index, std::vector<RoutingNode> &n
     channel_node.identifier = current_id;
     channel_node.key = {ItemType::CHANNEL, static_cast<int>(index)};
     channel_node.name = channel_names[index];
+    channel_node.bypass = channels[index]->flag & FLAG_BYPASS;
     for (size_t j = 0; j < channel_routing.labels.size(); ++j) {
         const OutputKey key = {Target::CHANNEL, static_cast<int>(index), channel_routing.offsets[j]};
         channel_node.parameters.push_back({key, channel_routing.labels[j]});
@@ -163,22 +184,24 @@ void GUIRoutingPanel::add_channel_node(size_t index, std::vector<RoutingNode> &n
 }
 
 void GUIRoutingPanel::update_dsp_node(size_t index, size_t existing_index, std::vector<RoutingNode> &next_nodes) {
-    RoutingNode &node_to_update = nodes[existing_index];
+    RoutingNode &dsp_node = nodes[existing_index];
     const auto &dsp_routing = routing_variables.at(Target::DSP);
 
-    node_to_update.name = dsp_names[index];
-    node_to_update.parameters.clear();
-    node_to_update.lines = 1;
+    dsp_node.name = dsp_names[index];
+    dsp_node.parameters.clear();
+    dsp_node.lines = 1;
     const DSP *dsp = static_cast<DSP *>(dsps[index]);
     const auto filtered_items = dsp_routing.filter_items(dsp->effect_index);
     const auto labels = std::get<1>(filtered_items);
     const auto offsets = std::get<2>(filtered_items);
+    dsp_node.bypass = dsp->flag & FLAG_BYPASS;
     for (size_t j = 0; j < labels.size(); ++j) {
         const OutputKey key = {Target::DSP, static_cast<int>(index), offsets[j]};
-        node_to_update.parameters.push_back({key, labels[j]});
-        node_to_update.lines += 1;
+        dsp_node.parameters.push_back({key, labels[j]});
+        dsp_node.lines += 1;
     }
-    next_nodes.push_back(node_to_update);
+
+    next_nodes.push_back(dsp_node);
 }
 
 void GUIRoutingPanel::add_dsp_node(size_t index, std::vector<RoutingNode> &next_nodes, std::map<float, float> &column_next_y) {
@@ -196,6 +219,7 @@ void GUIRoutingPanel::add_dsp_node(size_t index, std::vector<RoutingNode> &next_
     const auto filtered_items = dsp_routing.filter_items(dsp->effect_index);
     const auto labels = std::get<1>(filtered_items);
     const auto offsets = std::get<2>(filtered_items);
+    dsp_node.bypass = dsp->flag & FLAG_BYPASS;
     for (size_t j = 0; j < labels.size(); ++j) {
         const OutputKey key = {Target::DSP, static_cast<int>(index), offsets[j]};
         dsp_node.parameters.push_back({key, labels[j]});
@@ -211,7 +235,7 @@ void GUIRoutingPanel::add_dsp_node(size_t index, std::vector<RoutingNode> &next_
 
 void GUIRoutingPanel::update_output_node(size_t index, size_t existing_index, std::vector<RoutingNode> &next_nodes) {
     RoutingNode &node_to_update = nodes[existing_index];
-    node_to_update.name = "Output Channel " + std::to_string(index);
+    node_to_update.name = "Output channel " + std::to_string(index);
     node_to_update.parameters.clear();
     node_to_update.lines = 1;
     next_nodes.push_back(node_to_update);
@@ -226,7 +250,7 @@ void GUIRoutingPanel::add_output_node(size_t index, std::vector<RoutingNode> &ne
 
     RoutingNode output_node;
     output_node.identifier = current_id;
-    output_node.name = "Output Channel " + std::to_string(index);
+    output_node.name = "Output channel " + std::to_string(index);
 
     output_node.position = {output_x, column_next_y[output_x]};
     float estimated_height = output_node.lines * ImGui::GetTextLineHeight();
@@ -367,6 +391,7 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
     const float node_padding_y = style.WindowPadding.y / 2.0f;
     const float line_height = ImGui::GetTextLineHeight();
 
+    const uint8_t node_alpha = routing_node.bypass ? 128 : 255;
     const float node_content_height = routing_node.lines * line_height + (routing_node.lines > 1 ? (routing_node.lines - 1) * style.ItemSpacing.y : 0);
     const float node_actual_height = node_content_height + node_padding_y * 2.0f;
 
@@ -395,9 +420,10 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
         }
     }
 
-    ImU32 node_bg_color = is_hovered ? IM_COL32(70, 70, 70, 200) : IM_COL32(50, 50, 50, 200);
+    const uint8_t bg_alpha = routing_node.bypass ? 100 : 200;
+    ImU32 node_bg_color = is_hovered ? IM_COL32(70, 70, 70, bg_alpha) : IM_COL32(50, 50, 50, bg_alpha);
     draw_list->AddRectFilled(node_rect_min, node_rect_max, node_bg_color, 4.0f);
-    draw_list->AddRect(node_rect_min, node_rect_max, IM_COL32(100, 100, 100, 255), 4.0f);
+    draw_list->AddRect(node_rect_min, node_rect_max, IM_COL32(100, 100, 100, node_alpha), 4.0f);
 
     const uint8_t alpha = link_dragging_source_key.has_value() ? 100 : 255;
     const ImU32 pin_color_main = IM_COL32(255, 255, 255, alpha);
@@ -433,7 +459,9 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
         set_dragging_target_key(pin_position, key);
     }
 
-    draw_list->AddText(current_text_pos, ImGui::GetColorU32(ImGuiCol_Text), routing_node.name.c_str());
+    ImVec4 text_color_vector = routing_node.bypass ? ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled) : ImGui::GetStyleColorVec4(ImGuiCol_Text);
+    ImU32 text_color = ImGui::ColorConvertFloat4ToU32(text_color_vector);
+    draw_list->AddText(current_text_pos, text_color, routing_node.name.c_str());
     current_text_pos.y += line_height + style.ItemSpacing.y;
 
     for (const auto &parameter : routing_node.parameters) {
@@ -442,27 +470,13 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
         const ImVec2 pin_position = ImVec2(node_rect_min.x - GUI_ROUTING_PIN_RADIUS, pin_y);
         const ImU32 color = link_dragging_source_key.has_value() ? pin_color_available : pin_color_parameter;
         draw_list->AddCircleFilled(pin_position, GUI_ROUTING_PIN_RADIUS, color);
-        draw_list->AddText(current_text_pos, color, parameter_label.c_str());
+        draw_list->AddText(current_text_pos, routing_node.bypass ? text_color : color, parameter_label.c_str());
         current_text_pos.y += line_height + style.ItemSpacing.y;
         input_pins[parameter_key] = pin_position;
         set_dragging_target_key(pin_position, parameter_key);
     }
 
     ImGui::PopID();
-}
-
-void GUIRoutingPanel::draw() {
-    ImGui::Begin("Routing Editor");
-    ImGui::BeginChild("RoutingCanvas", ImVec2(0, 0), false, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-
-    from();
-    draw_nodes();
-    draw_all_links();
-    check_keyboard_input();
-    to();
-
-    ImGui::EndChild();
-    ImGui::End();
 }
 
 RoutingNode *GUIRoutingPanel::handle_node_dragging(const ImVec2 &canvas_origin) {

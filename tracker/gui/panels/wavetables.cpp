@@ -11,11 +11,13 @@ GUIWavetablesPanel::GUIWavetablesPanel(const bool visible)
 }
 
 void GUIWavetablesPanel::draw() {
-    ImGui::Begin("Wavetable Editor");
+    ImGui::Begin("Wavetables");
 
+    std::vector<size_t> dependencies = song.find_wavetable_dependencies(wavetable_index);
     push_tertiary_style();
-    draw_add_or_remove();
+    draw_add_or_remove("oscillators", dependencies);
     prepare_combo(wavetable_names, "##WavetableCombo", wavetable_index);
+    show_dependency_tooltip("oscillators", dependencies);
     pop_tertiary_style();
 
     ImGui::Separator();
@@ -38,6 +40,14 @@ bool GUIWavetablesPanel::is_index_valid() const {
     return wavetable_index >= 0 && wavetable_index < wavetables.size();
 }
 
+float GUIWavetablesPanel::cast_to_float(uint8_t value) const {
+    return (2.0f * value) / UINT8_MAX - 1.0f;
+}
+
+uint8_t GUIWavetablesPanel::cast_to_int(float value) const {
+    return static_cast<uint8_t>(std::round((value + 1.0f) * UINT8_MAX / 2.0f));
+}
+
 void GUIWavetablesPanel::from() {
     if (!is_index_valid()) {
         return;
@@ -45,12 +55,18 @@ void GUIWavetablesPanel::from() {
 
     const Wavetable *wavetable = wavetables[wavetable_index];
     current_wavetable.size = wavetable->wavetable_size;
-    if (current_wavetable.wave.size() != current_wavetable.size) {
-        current_wavetable.wave.resize(std::min(current_wavetable.size, max_points));
+
+    if (current_wavetable.wave.size() < current_wavetable.size) {
+        for (size_t i = current_wavetable.wave.size(); i < current_wavetable.size; ++i) {
+            const float buffer_value = cast_to_float(buffers.wavetables[wavetable_index][i]);
+            current_wavetable.wave.push_back(buffer_value);
+        }
+    } else if (current_wavetable.wave.size() > current_wavetable.size) {
+        current_wavetable.wave.resize(std::min(current_wavetable.size, MAX_WAVETABLE_POINTS));
     }
 
     for (size_t i = 0; i < current_wavetable.wave.size(); ++i) {
-        current_wavetable.wave[i] = (2.0f * wavetable->data[i]) / UINT8_MAX - 1.0f;
+        current_wavetable.wave[i] = cast_to_float(wavetable->data[i]);
     }
 }
 
@@ -63,19 +79,30 @@ void GUIWavetablesPanel::to() const {
     const size_t size = current_wavetable.size;
     wavetable->wavetable_size = size;
     for (size_t i = 0; i < size; ++i) {
-        const uint8_t value = std::round((current_wavetable.wave[i] + 1.0f) * UINT8_MAX / 2.0f);
+        const uint8_t value = cast_to_int(current_wavetable.wave[i]);
         wavetable->data[i] = value;
+        buffers.wavetables[wavetable_index][i] = value;
     }
 
     if (wavetable->wavetable_size > wavetable->wavetable_size) {
         for (size_t i = wavetable->wavetable_size; i < wavetable->wavetable_size; ++i) {
-            wavetable->data[i] = 0x80;
+            wavetable->data[i] = buffers.wavetables[wavetable_index][i];
         }
     }
 }
 
 void GUIWavetablesPanel::add() {
     Wavetable *new_wavetable = song.add_wavetable();
+    if (new_wavetable == nullptr) {
+        return;
+    }
+
+    wavetable_index = wavetables.size() - 1;
+    update();
+}
+
+void GUIWavetablesPanel::duplicate() {
+    Wavetable *new_wavetable = song.duplicate_wavetable(wavetable_index);
     if (new_wavetable == nullptr) {
         return;
     }
@@ -93,14 +120,14 @@ void GUIWavetablesPanel::remove() {
 }
 
 void GUIWavetablesPanel::draw_wavetable_length() {
-    int old_size = current_wavetable.size;
-    draw_number_of_items("Points", "##WavetableLength", current_wavetable.size, 1, max_points);
+    const size_t old_size = current_wavetable.size;
+    draw_number_of_items("Points", "##WavetableLength", current_wavetable.size, 1, MAX_WAVETABLE_POINTS);
 
     if (old_size != current_wavetable.size) {
         current_wavetable.wave.resize(current_wavetable.size);
         if (current_wavetable.size > old_size) {
             for (int i = old_size; i < current_wavetable.size; i++) {
-                current_wavetable.wave[i] = 0.0f;
+                current_wavetable.wave[i] = cast_to_float(buffers.wavetables[wavetable_index][i]);
             }
         }
     }

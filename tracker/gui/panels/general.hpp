@@ -43,6 +43,7 @@ class GUIGeneralPanel : public GUIPanel {
     void from() override;
     void to() const override;
     void add() override {};
+    void duplicate() override {};
     void remove() override {};
     void draw() override;
     void check_keyboard_input() override {};

@@ -87,7 +87,6 @@ void LinkManager::set_link(Link &link, void *item, const uint8_t i) {
     link.item = item;
     link.pointer = link.base + link.offset;
     link.assign_output();
-
     assign_key(link);
 }
 

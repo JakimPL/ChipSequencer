@@ -65,7 +65,7 @@ bool GUI::initialize() {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
-    window = SDL_CreateWindow(APPLICATION_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, GUI_WINDOW_WIDTH, GUI_WINDOW_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
+    window = SDL_CreateWindow(APPLICATION_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, GUI_WINDOW_WIDTH, GUI_WINDOW_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED);
     if (!window) {
         printf("Failed to create SDL window: %s\n", SDL_GetError());
         return false;
@@ -158,6 +158,7 @@ void GUI::set_index(const GUIElement element, const int index) {
     case GUIElement::Menu:
     case GUIElement::Editor:
     case GUIElement::General:
+    case GUIElement::Summary:
         break;
     case GUIElement::Channels:
         channels_panel.set_index(index);
@@ -215,6 +216,8 @@ void GUI::update(GUIElement element) {
         return routing_panel.update();
     case GUIElement::Sequences:
         return sequences_panel.update();
+    case GUIElement::Summary:
+        return summary_panel.update();
     case GUIElement::Wavetables:
         return wavetables_panel.update();
     }
@@ -232,6 +235,7 @@ void GUI::update_all() {
     patterns_panel.update();
     routing_panel.update();
     sequences_panel.update();
+    summary_panel.update();
     wavetables_panel.update();
 }
 
@@ -276,6 +280,7 @@ void GUI::frame_all() {
     patterns_panel.frame();
     routing_panel.frame();
     sequences_panel.frame();
+    summary_panel.frame();
     wavetables_panel.frame();
 }
 
@@ -291,6 +296,7 @@ void GUI::set_visibility_all(const bool visible) {
     patterns_panel.visible = visible;
     routing_panel.visible = visible;
     sequences_panel.visible = visible;
+    summary_panel.visible = visible;
     wavetables_panel.visible = visible;
 }
 
@@ -368,6 +374,9 @@ void GUI::set_visibility(const GUIElement element, const bool visible) {
     case GUIElement::Sequences:
         sequences_panel.visible = visible;
         break;
+    case GUIElement::Summary:
+        summary_panel.visible = visible;
+        break;
     case GUIElement::Wavetables:
         wavetables_panel.visible = visible;
         break;
@@ -400,6 +409,8 @@ bool GUI::get_visibility(const GUIElement element) const {
         return routing_panel.visible;
     case GUIElement::Sequences:
         return sequences_panel.visible;
+    case GUIElement::Summary:
+        return summary_panel.visible;
     case GUIElement::Wavetables:
         return wavetables_panel.visible;
     }

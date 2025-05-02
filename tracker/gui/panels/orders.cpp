@@ -11,12 +11,14 @@ GUIOrdersPanel::GUIOrdersPanel(const bool visible)
 }
 
 void GUIOrdersPanel::draw() {
-    ImGui::Begin("Order Editor");
+    ImGui::Begin("Orders");
     ImGui::Columns(1, "order_columns");
 
+    std::vector<size_t> dependencies = song.find_order_dependencies(order_index);
     push_tertiary_style();
-    draw_add_or_remove();
+    draw_add_or_remove("channels", dependencies);
     prepare_combo(order_names, "##OrderCombo", order_index);
+    show_dependency_tooltip("channels", dependencies);
     pop_tertiary_style();
 
     ImGui::Separator();
@@ -58,15 +60,27 @@ void GUIOrdersPanel::to() const {
     order->order_length = length;
     for (size_t i = 0; i < length; ++i) {
         if (i < current_order.sequences.size()) {
-            order->sequences[i] = current_order.sequences[i];
+            const uint8_t sequence = current_order.sequences[i];
+            order->sequences[i] = sequence;
+            buffers.orders[order_index][i] = sequence;
         } else {
-            order->sequences[i] = 0;
+            order->sequences[i] = buffers.orders[order_index][i];
         }
     }
 }
 
 void GUIOrdersPanel::add() {
     Order *new_order = song.add_order();
+    if (new_order == nullptr) {
+        return;
+    }
+
+    order_index = orders.size() - 1;
+    update();
+}
+
+void GUIOrdersPanel::duplicate() {
+    Order *new_order = song.duplicate_order(order_index);
     if (new_order == nullptr) {
         return;
     }
@@ -89,7 +103,17 @@ void GUIOrdersPanel::update() {
 }
 
 void GUIOrdersPanel::draw_order_length() {
-    draw_number_of_items("Sequences", "##SequenceLength", current_order.length, 1, max_items);
+    const size_t old_size = current_order.length;
+    draw_number_of_items("Sequences", "##SequenceLength", current_order.length, 1, MAX_ORDER_ITEMS);
+
+    if (old_size != current_order.length) {
+        current_order.sequences.resize(current_order.length);
+        if (current_order.length > old_size) {
+            for (size_t i = old_size; i < current_order.length; i++) {
+                current_order.sequences[i] = buffers.orders[order_index][i];
+            }
+        }
+    }
 }
 
 void GUIOrdersPanel::draw_order() {

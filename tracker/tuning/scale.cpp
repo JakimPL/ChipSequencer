@@ -1,55 +1,60 @@
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 
+#include "../utils/math.hpp"
 #include "scale.hpp"
 
 ScaleComposer::ScaleComposer()
     : symbols(std::begin(scale_symbols), std::end(scale_symbols)) {
-    calculate_note_centers_and_limits();
+}
+
+ptrdiff_t ScaleComposer::get_ordered_index(const std::string &note_name) {
+    const auto *begin = std::begin(scale_names_ordered);
+    const auto *end = std::end(scale_names_ordered);
+    const auto *it = std::find(begin, end, note_name);
+    if (it != end) {
+        return std::distance(begin, it);
+    }
+    return -1;
 }
 
 void ScaleComposer::compose(const int new_edo) {
     edo = std::clamp(new_edo, MIN_EDO, MAX_EDO);
+    a_index = -1;
 
-    double start = limits.back() - 1.0;
-    for (size_t note = 0; note < limits.size(); ++note) {
-        const double center_val = centers[note];
-        const double end = limits[note];
-        const double x = start * edo;
-        const double y = end * edo;
-        const int center_index = static_cast<int>(std::round(center_val * edo));
-        const int lower = static_cast<int>(std::ceil(x));
-        const int upper = static_cast<int>(std::floor(y));
-        std::vector<int> indices;
-        for (int i = lower; i <= upper; ++i) {
-            indices.push_back(i);
+    const int scale_names_count = static_cast<int>(std::size(scale_names));
+    const int start = static_cast<int>(std::floor(-static_cast<double>(edo) / 2.0)) + 4;
+    const int end = static_cast<int>(std::floor(static_cast<double>(edo) / 2.0)) + 4;
+
+    std::vector<std::pair<uint16_t, std::string>> notes;
+    notes.reserve(end - start);
+
+    for (int i = start; i < end; ++i) {
+        const int offset = std::floor(static_cast<float>(i) / scale_names_count);
+        const int name_index = mod(i, scale_names_count);
+        const std::string name = scale_names[name_index];
+        const ptrdiff_t ordered_index = get_ordered_index(name);
+        const uint16_t rank = static_cast<int>(ordered_index) * 5000 + offset;
+
+        const std::string note_name = render(name, offset);
+        const std::pair<int, std::string> note(rank, note_name);
+        notes.emplace_back(note);
+    }
+
+    if (notes.size() != static_cast<size_t>(edo)) {
+        throw std::runtime_error("Scale creation algorithm failed.");
+    }
+
+    std::sort(notes.begin(), notes.end(), [](const auto &a, const auto &b) {
+        return a.first < b.first;
+    });
+
+    for (size_t i = 0; i < notes.size(); ++i) {
+        const auto &note = notes[i];
+        scale[i] = note.second;
+        if (note.second == "A") {
+            a_index = static_cast<int>(i);
         }
-
-        int index_pos = 0;
-        bool found = false;
-        for (size_t j = 0; j < indices.size(); ++j) {
-            if (indices[j] == center_index) {
-                index_pos = static_cast<int>(j);
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
-            break;
-        }
-
-        for (size_t j = 0; j < indices.size(); ++j) {
-            const int pos = indices[j] % edo;
-            std::string note_name = render(scale_names[note], static_cast<int>(j) - index_pos);
-            scale[pos] = note_name;
-            if (note_name == "A") {
-                a_index = pos;
-            }
-        }
-
-        start = end;
     }
 }
 
@@ -67,8 +72,12 @@ std::array<std::string, MAX_EDO> ScaleComposer::get_scale() const {
 
 std::string ScaleComposer::render(const std::string &name, int offset) const {
     // 12-edo correction
-    if (edo == 12 && name == "C" && offset == 1) {
-        return "Db";
+    if (edo == 12 && offset == -1) {
+        if (name == "E") {
+            return "D#";
+        } else if (name == "B") {
+            return "A#";
+        }
     }
 
     std::string symbol;
@@ -87,16 +96,4 @@ std::string ScaleComposer::render(const std::string &name, int offset) const {
     }
 
     return name + repeated;
-}
-
-void ScaleComposer::calculate_note_centers_and_limits() {
-    centers.clear();
-    limits.clear();
-    for (size_t i = 0; i + 1 < scale_intervals_count; ++i) {
-        const double x = std::log2(scale_intervals[i]);
-        const double y = std::log2(scale_intervals[i + 1]);
-        const double limit = 0.5 * (x + y);
-        centers.push_back(x);
-        limits.push_back(limit);
-    }
 }

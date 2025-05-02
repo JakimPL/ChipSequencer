@@ -18,15 +18,13 @@ class ScaleComposer {
     std::array<std::string, MAX_EDO> get_scale() const;
 
   private:
-    std::string render(const std::string &name, int offset) const;
-    void calculate_note_centers_and_limits();
-
     int edo = 0;
     int a_index = -1;
-    std::vector<double> centers;
-    std::vector<double> limits;
     std::array<std::string, MAX_EDO> scale;
     const std::map<int, std::string> symbols;
+
+    ptrdiff_t get_ordered_index(const std::string &note_name);
+    std::string render(const std::string &name, int offset) const;
 };
 
 #endif // TUNING_SCALE_HPP

@@ -9,6 +9,16 @@
 constexpr double range_mean = 632.4555320336759; // sqrt(20 * 20_000)
 
 inline static const char *scale_names[] = {
+    "F",
+    "C",
+    "G",
+    "D",
+    "A",
+    "E",
+    "B",
+};
+
+inline static const char *scale_names_ordered[] = {
     "C",
     "D",
     "E",
@@ -16,18 +26,6 @@ inline static const char *scale_names[] = {
     "G",
     "A",
     "B",
-};
-
-static constexpr int scale_intervals_count = 8;
-inline static const double scale_intervals[] = {
-    1.0,
-    9.0 / 8.0,
-    5.0 / 4.0,
-    4.0 / 3.0,
-    3.0 / 2.0,
-    5.0 / 3.0,
-    15.0 / 8.0,
-    2.0,
 };
 
 inline static const std::pair<int, const char *> scale_symbols[] = {

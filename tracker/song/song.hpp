@@ -45,10 +45,7 @@ class Song {
     nlohmann::json import_header(const std::string &directory);
 
     std::string get_element_path(const std::string &directory, const std::string prefix, const size_t i, const char separator = '/') const;
-
     void calculate_song_length();
-    size_t calculate_dsps(const uint8_t effect) const;
-    size_t calculate_oscillators(const uint8_t generator) const;
 
     void serialize_dsp_header(std::ofstream &file, void *dsp) const;
     void serialize_dsp_body(std::ofstream &file, void *dsp) const;
@@ -125,6 +122,14 @@ class Song {
     Channel *add_channel();
     void *add_dsp();
 
+    Envelope *duplicate_envelope(const size_t index);
+    Sequence *duplicate_sequence(const size_t index);
+    Order *duplicate_order(const size_t index);
+    Wavetable *duplicate_wavetable(const size_t index);
+    void *duplicate_oscillator(const size_t index);
+    Channel *duplicate_channel(const size_t index);
+    void *duplicate_dsp(const size_t index);
+
     void set_buffer_offsets();
 
     void remove_envelope(const size_t index);
@@ -136,6 +141,15 @@ class Song {
     void remove_dsp(const size_t index);
 
     std::pair<ValidationResult, int> validate();
+    std::vector<size_t> find_envelope_dependencies(const size_t envelope_index) const;
+    std::vector<size_t> find_sequence_dependencies(const size_t sequence_index) const;
+    std::vector<size_t> find_order_dependencies(const size_t order_index) const;
+    std::vector<size_t> find_wavetable_dependencies(const size_t wavetable_index) const;
+    std::vector<size_t> find_oscillator_dependencies(const size_t oscillator_index) const;
+
+    size_t calculate_dsps(const uint8_t effect) const;
+    size_t calculate_oscillators(const uint8_t generator) const;
+    float calculate_real_bpm() const;
 };
 
 #endif // SONG_SONG_HPP

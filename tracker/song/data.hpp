@@ -18,7 +18,7 @@ extern "C" std::array<uint8_t, MAX_CHANNELS> envelope_mode;
 extern "C" std::array<uint8_t, MAX_CHANNELS> current_sequence;
 extern "C" std::array<uint8_t, MAX_CHANNELS> sequence_current_note;
 
-extern "C" uint16_t ticks_per_beat;
+extern "C" uint32_t ticks_per_beat;
 
 /* Modifiable song data */
 extern uint16_t bpm;

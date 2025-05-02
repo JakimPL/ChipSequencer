@@ -35,6 +35,22 @@ void Pattern::from_sequence(const uint8_t index) {
     steps = total_length;
 }
 
+void Pattern::to_buffer(const size_t sequence_index) const {
+    if (sequence_index == -1) {
+        return;
+    }
+
+    const Sequence *sequence = sequences[sequence_index];
+    const size_t sequence_length = sequence->data_size / 2;
+    for (size_t i = 0; i < sequence_length; ++i) {
+        const uint8_t pitch = notes[i];
+        if (pitch == NOTE_OFF) {
+            continue;
+        }
+        buffers.sequences[sequence_index][i] = pitch;
+    }
+}
+
 std::vector<Note> Pattern::to_note_vector() const {
     std::vector<Note> note_vector;
 
@@ -139,7 +155,7 @@ void Pattern::handle_input(const int min_row, const int max_row) {
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_KeypadAdd)) {
-        steps = std::min(steps, GUI_MAX_STEPS);
+        steps = std::min(steps, MAX_STEPS);
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_KeypadSubtract)) {

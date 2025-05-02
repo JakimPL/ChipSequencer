@@ -17,6 +17,9 @@ struct Channel {
     uint8_t order_index;
     uint8_t oscillator_index;
     uint32_t pitch;
+    uint8_t flag;
+    uint8_t fraction;
+    uint8_t pad[2];
 
     void serialize_output(std::ofstream &file, const Channel *channel) const;
     void serialize_body(std::ofstream &file, const Channel *channel) const;
@@ -32,7 +35,9 @@ constexpr size_t CHANNEL_ENVELOPE_INDEX = offsetof(Channel, envelope_index);
 constexpr size_t CHANNEL_ORDER_INDEX = offsetof(Channel, order_index);
 constexpr size_t CHANNEL_OSCILLATOR_INDEX = offsetof(Channel, oscillator_index);
 constexpr size_t CHANNEL_PITCH = offsetof(Channel, pitch);
+constexpr size_t CHANNEL_FLAG = offsetof(Channel, flag);
+constexpr size_t CHANNEL_FRACTION = offsetof(Channel, fraction);
 
-static_assert(sizeof(Channel) == SIZE_CHANNEL, "Channel must be of 16 bytes.");
+static_assert(sizeof(Channel) == SIZE_CHANNEL, "Channel must be of 20 bytes.");
 
 #endif // STRUCTURES_CHANNEL_HPP

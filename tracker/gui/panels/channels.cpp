@@ -13,7 +13,7 @@ GUIChannelsPanel::GUIChannelsPanel(const bool visible)
 }
 
 void GUIChannelsPanel::draw() {
-    ImGui::Begin("Channel Editor");
+    ImGui::Begin("Channels");
     ImGui::Columns(1, "channel_columns");
 
     ImGui::BeginDisabled(gui.is_playing());
@@ -45,15 +45,24 @@ void GUIChannelsPanel::from() {
 
     const Channel *channel = channels[channel_index];
     current_channel.envelope_index = channel->envelope_index;
-    current_channel.constant_pitch = channel->order_index == CONSTANT_PITCH;
-    current_channel.order_index = std::max(0, static_cast<int>(channel->order_index));
+    current_channel.order_index = channel->order_index;
     current_channel.oscillator_index = channel->oscillator_index;
-    current_channel.output_type.from_output_flag(channel->output_flag);
+    current_channel.output_type.from_flags(channel->output_flag, channel->flag);
 
+    current_channel.constant_pitch = channel->flag & FLAG_CONSTANT_PITCH;
     if (current_channel.constant_pitch) {
-        current_channel.pitch = static_cast<float>(channel->pitch) / 0x10000;
+        current_channel.sync = channel->flag & FLAG_SYNC;
+        if (current_channel.sync) {
+            current_channel.sync_numerator = channel->fraction & 0x0F;
+            current_channel.sync_denominator = (channel->fraction >> 4) & 0x0F;
+
+            const float fraction = static_cast<float>(current_channel.sync_denominator) / current_channel.sync_numerator;
+            current_channel.pitch = song.calculate_real_bpm() / unit * fraction;
+        } else {
+            current_channel.pitch = static_cast<float>(channel->pitch) / 0x10000;
+        }
     } else {
-        current_channel.pitch = 12 * log2(static_cast<float>(channel->pitch) / DEFAULT_CHANNEL_PITCH);
+        current_channel.transpose = 12 * log2(static_cast<float>(channel->pitch) / DEFAULT_CHANNEL_PITCH);
     }
 
     const Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][channel_index];
@@ -62,21 +71,30 @@ void GUIChannelsPanel::from() {
 }
 
 void GUIChannelsPanel::to() const {
-    if (!is_index_valid()) {
+    if (!is_index_valid() || gui.is_playing()) {
         return;
     }
 
     Channel *channel = channels[channel_index];
     channel->envelope_index = current_channel.envelope_index;
     channel->oscillator_index = current_channel.oscillator_index;
+    channel->order_index = current_channel.order_index;
 
-    channel->output_flag = current_channel.output_type.calculate_output_flag();
-    channel->order_index = current_channel.constant_pitch ? CONSTANT_PITCH : current_channel.order_index;
+    channel->flag = 0;
+    current_channel.output_type.set_item_flag(channel->flag);
+    current_channel.output_type.set_output_flag(channel->output_flag);
 
     if (current_channel.constant_pitch) {
+        channel->flag |= FLAG_CONSTANT_PITCH;
+        if (current_channel.sync) {
+            channel->flag |= FLAG_SYNC;
+            channel->fraction = (current_channel.sync_numerator & 0x0F);
+            channel->fraction |= ((current_channel.sync_denominator & 0x0F) << 4);
+        }
+
         channel->pitch = static_cast<uint32_t>(std::round(current_channel.pitch * 0x10000));
     } else {
-        channel->pitch = static_cast<uint32_t>(std::round(DEFAULT_CHANNEL_PITCH * pow(2, current_channel.pitch / 12)));
+        channel->pitch = static_cast<uint32_t>(std::round(DEFAULT_CHANNEL_PITCH * pow(2, current_channel.transpose / 12)));
     }
 
     Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][channel_index];
@@ -91,6 +109,16 @@ void GUIChannelsPanel::to() const {
 
 void GUIChannelsPanel::add() {
     Channel *new_channel = song.add_channel();
+    if (new_channel == nullptr) {
+        return;
+    }
+
+    channel_index = channels.size() - 1;
+    update();
+}
+
+void GUIChannelsPanel::duplicate() {
+    Channel *new_channel = song.duplicate_channel(channel_index);
     if (new_channel == nullptr) {
         return;
     }
@@ -155,6 +183,9 @@ void GUIChannelsPanel::draw_channel() {
         return;
     }
 
+    ImGui::Checkbox("Bypass", &current_channel.output_type.bypass);
+    ImGui::Separator();
+
     ImGui::Text("Envelope:");
     if (prepare_combo(envelope_names, "##EnvelopeCombo", current_channel.envelope_index, true).right_clicked) {
         gui.set_index(GUIElement::Envelopes, current_channel.envelope_index);
@@ -165,23 +196,37 @@ void GUIChannelsPanel::draw_channel() {
         gui.set_index(GUIElement::Oscillators, current_channel.oscillator_index);
     }
 
-    if (ImGui::Checkbox("Constant Pitch", &current_channel.constant_pitch)) {
-        current_channel.order_index = 0;
-    }
-
-    ImGui::SameLine();
-    ImGui::BeginDisabled(current_channel.constant_pitch);
+    ImGui::Text("Order:");
     if (prepare_combo(order_names, "##OrderCombo", current_channel.order_index, !current_channel.constant_pitch).right_clicked) {
         gui.set_index(GUIElement::Orders, current_channel.order_index);
     }
 
+    ImGui::Separator();
+    ImGui::Text("Pitch/transpose:");
+    ImGui::Checkbox("Constant pitch", &current_channel.constant_pitch);
+    ImGui::BeginDisabled(!current_channel.constant_pitch);
+    ImGui::Checkbox("Synchronize", &current_channel.sync);
     ImGui::EndDisabled();
 
     const LinkKey key = {Target::CHANNEL, channel_index, CHANNEL_PITCH};
     if (current_channel.constant_pitch) {
-        draw_float_slider("Pitch", current_channel.pitch, key, 0.0002f, 65535.0f, GUIScale::Logarithmic);
+        if (current_channel.sync) {
+            ImGui::Text("Ratio:");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(50);
+            ImGui::InputInt("##Numerator", &current_channel.sync_numerator, 0, 0);
+            ImGui::SameLine();
+            ImGui::TextUnformatted("/");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(50);
+            ImGui::InputInt("##Denominator", &current_channel.sync_denominator, 0, 0);
+            current_channel.sync_numerator = std::clamp(current_channel.sync_numerator, 1, 16);
+            current_channel.sync_denominator = std::clamp(current_channel.sync_denominator, 1, 16);
+        } else {
+            draw_float_slider("Pitch (Hz)", current_channel.pitch, key, 0.0002f, 65535.0f, GUIScale::Logarithmic);
+        }
     } else {
-        draw_float_slider("Transpose", current_channel.pitch, key, GUI_MIN_TRANSPOSE, GUI_MAX_TRANSPOSE);
+        draw_float_slider("Transpose", current_channel.transpose, key, GUI_MIN_TRANSPOSE, GUI_MAX_TRANSPOSE);
     }
 
     if (draw_output(current_channel.output_type)) {

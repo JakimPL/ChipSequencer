@@ -24,9 +24,7 @@ CMakeFiles/
 build/
 bin/
 temp/
-
-apack/
-APACK/
+tools/
 
 **/*.idea
 **/*.vscode/**

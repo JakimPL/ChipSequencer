@@ -14,12 +14,14 @@ GUISequencesPanel::GUISequencesPanel(const bool visible)
 }
 
 void GUISequencesPanel::draw() {
-    ImGui::Begin("Sequence Editor");
+    ImGui::Begin("Sequences");
     ImGui::Columns(1, "sequence_columns");
 
+    std::vector<size_t> dependencies = song.find_sequence_dependencies(sequence_index);
     push_tertiary_style();
-    draw_add_or_remove();
+    draw_add_or_remove("orders", dependencies);
     prepare_combo(sequence_names, "##SequenceCombo", sequence_index);
+    show_dependency_tooltip("orders", dependencies);
     pop_tertiary_style();
 
     ImGui::Separator();
@@ -51,12 +53,23 @@ void GUISequencesPanel::to() const {
     }
 
     Sequence *sequence = sequences[sequence_index];
+    current_sequence.pattern.to_buffer(sequence_index);
     const std::vector<Note> note_vector = current_sequence.pattern.to_note_vector();
     sequence->from_note_vector(note_vector);
 }
 
 void GUISequencesPanel::add() {
     Sequence *new_sequence = song.add_sequence();
+    if (new_sequence == nullptr) {
+        return;
+    }
+
+    sequence_index = sequences.size() - 1;
+    update();
+}
+
+void GUISequencesPanel::duplicate() {
+    Sequence *new_sequence = song.duplicate_sequence(sequence_index);
     if (new_sequence == nullptr) {
         return;
     }
@@ -79,7 +92,17 @@ void GUISequencesPanel::update() {
 }
 
 void GUISequencesPanel::draw_sequence_length() {
-    draw_number_of_items("Steps", "##SequenceLength", current_sequence.pattern.steps, 1, GUI_MAX_STEPS);
+    const size_t old_size = current_sequence.pattern.steps;
+    draw_number_of_items("Steps", "##SequenceLength", current_sequence.pattern.steps, 1, MAX_STEPS);
+
+    if (old_size != current_sequence.pattern.steps) {
+        current_sequence.pattern.notes.resize(current_sequence.pattern.steps);
+        if (current_sequence.pattern.steps > old_size) {
+            for (size_t i = old_size; i < current_sequence.pattern.steps; i++) {
+                current_sequence.pattern.notes[i] = buffers.sequences[sequence_index][i];
+            }
+        }
+    }
 }
 
 void GUISequencesPanel::draw_sequence() {

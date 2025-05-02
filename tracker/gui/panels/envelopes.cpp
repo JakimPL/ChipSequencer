@@ -11,11 +11,14 @@ GUIEnvelopesPanel::GUIEnvelopesPanel(const bool visible)
 }
 
 void GUIEnvelopesPanel::draw() {
-    ImGui::Begin("Envelope Editor");
+    ImGui::Begin("Envelopes");
 
+    std::vector<size_t> dependencies = song.find_envelope_dependencies(envelope_index);
     push_tertiary_style();
-    draw_add_or_remove();
+    draw_add_or_remove("channels", dependencies);
     prepare_combo(envelope_names, "##EnvelopeCombo", envelope_index);
+    show_dependency_tooltip("channels", dependencies);
+
     pop_tertiary_style();
 
     ImGui::Separator();
@@ -114,6 +117,16 @@ void GUIEnvelopesPanel::to() const {
 
 void GUIEnvelopesPanel::add() {
     Envelope *new_envelope = song.add_envelope();
+    if (new_envelope == nullptr) {
+        return;
+    }
+
+    envelope_index = envelopes.size() - 1;
+    update();
+}
+
+void GUIEnvelopesPanel::duplicate() {
+    Envelope *new_envelope = song.duplicate_envelope(envelope_index);
     if (new_envelope == nullptr) {
         return;
     }

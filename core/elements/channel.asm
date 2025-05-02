@@ -7,8 +7,7 @@ load_offsets:
     movzx ebx, byte [CHANNEL_ENVELOPE_INDEX + ecx]
     LOAD_ARRAY_ITEM envelopes, envelope_offset, SIZE_ENVELOPE
 .load_order:
-    call check_fixed_frequency
-    je .load_oscillator
+    call load_order_and_check_constant_pitch
     LOAD_VECTOR_ITEM orders, order_offset
 .load_sequence:
     LOAD_OFFSET ebx, order_offset
@@ -29,10 +28,10 @@ reset_channels:
     call reset
     ret
 
-check_fixed_frequency:
+load_order_and_check_constant_pitch:
     LOAD_OFFSET ebx, channel_offset
+    test byte [CHANNEL_FLAG + ebx], FLAG_CONSTANT_PITCH
     movzx ebx, byte [CHANNEL_ORDER_INDEX + ebx]
-    cmp bl, CONSTANT_PITCH
     ret
 
 reset_channel:
@@ -53,10 +52,11 @@ play_channel:
     ret
 
 load_channel_target:
-    LOAD_OFFSET ecx, channel_offset
-    mov edi, [CHANNEL_OUTPUT + ecx]
-    mov edx, [CHANNEL_SPLITTER + ecx]
-    mov cl, [CHANNEL_OUTPUT_FLAG + ecx]
+    LOAD_OFFSET edi, channel_offset
+    mov edx, [CHANNEL_SPLITTER + edi]
+    mov cl, [CHANNEL_OUTPUT_FLAG + edi]
+    mov ch, [CHANNEL_FLAG + edi]
+    mov edi, [CHANNEL_OUTPUT + edi]
     ret
 
     SEGMENT_BSS

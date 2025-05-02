@@ -4,15 +4,33 @@
 #include "../constants.hpp"
 #include "output.hpp"
 
-uint8_t OutputType::calculate_output_flag() const {
-    uint8_t output_flag = 0;
+uint8_t OutputType::set_output_flag(uint8_t &output_flag) const {
     output_flag = operation << 6;
     output_flag |= (variable_type << 4);
     output_flag |= shift;
     return output_flag;
 }
 
-void OutputType::from_output_flag(const uint8_t output_flag) {
+uint8_t OutputType::set_item_flag(uint8_t &item_flag) const {
+    if (splitter_on) {
+        item_flag |= FLAG_SPLITTER;
+    } else {
+        item_flag &= ~FLAG_SPLITTER;
+    }
+
+    if (bypass) {
+        item_flag |= FLAG_BYPASS;
+    } else {
+        item_flag &= ~FLAG_BYPASS;
+    }
+
+    return item_flag;
+}
+
+void OutputType::from_flags(const uint8_t output_flag, const uint8_t item_flag) {
+    splitter_on = item_flag & FLAG_SPLITTER;
+    bypass = item_flag & FLAG_BYPASS;
+
     operation = (output_flag & MASK_OPERATION) >> 6;
     variable_type = (output_flag & MASK_VARIABLE_TYPE) >> 4;
     shift = variable_type == 0 ? 0 : output_flag & MASK_SHIFT;
@@ -25,12 +43,15 @@ void OutputType::from_link(const Link &link) {
 
     output_channel = 0;
     dsp_channel = 0;
+    splitter_on = false;
     switch (output_target) {
     case OutputTarget::OutputSplitter:
         output_channel = link.offset / sizeof(_Float32);
+        splitter_on = true;
         break;
     case OutputTarget::DSPSplitter:
         dsp_channel = link.offset / sizeof(_Float32);
+        splitter_on = true;
         break;
     case OutputTarget::DirectOutput:
         output_channel = link.index;
@@ -97,15 +118,14 @@ void OutputType::set_link(Link &link, const ItemType type, const uint8_t id) con
 }
 
 void OutputType::load_splitter(const uint8_t target[], const Link &link) {
-    splitter_on = link.target == Target::SPLITTER_OUTPUT || link.target == Target::SPLITTER_DSP;
     for (size_t i = 0; i < MAX_OUTPUT_CHANNELS; ++i) {
-        splitter[i] = splitter_on ? static_cast<float>(target[i]) / UINT8_MAX : 0.0f;
+        splitter[i] = static_cast<float>(target[i]) / UINT8_MAX;
     }
 }
 
 void OutputType::set_splitter(uint8_t target[]) const {
     for (size_t i = 0; i < MAX_OUTPUT_CHANNELS; ++i) {
-        target[i] = splitter_on ? static_cast<uint8_t>(std::round(splitter[i] * UINT8_MAX)) : 0;
+        target[i] = static_cast<uint8_t>(std::round(splitter[i] * UINT8_MAX));
     }
 }
 

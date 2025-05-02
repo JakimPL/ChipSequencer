@@ -19,6 +19,7 @@ struct Pattern {
 
     void from_sequence(const uint8_t sequence_index);
     std::vector<Note> to_note_vector() const;
+    void to_buffer(const size_t sequence_index) const;
     int calculate_playing_row(size_t channel_index);
 
     void jump(const int max_row = -1);

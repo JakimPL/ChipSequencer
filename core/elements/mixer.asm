@@ -11,7 +11,7 @@ mix:
     rep stosd
 .mix:
     xor cl, cl
-.mix_loop:
+.channel_loop:
     cmp cl, [num_channels]
     %ifdef USED_DSP
     je .dsp
@@ -27,12 +27,16 @@ mix:
     call increment_timer
     call play_channel
     call load_channel_target
+.check_channel_bypass:
+    test ch, FLAG_BYPASS
+    jnz .channel_done
+
     call integer_to_float
     call store_output
-
+.channel_done:
     mov cl, [current_channel]
     inc cl
-    jmp .mix_loop
+    jmp .channel_loop
 
     %ifdef USED_DSP
 .dsp:
@@ -45,10 +49,18 @@ mix:
     mov [current_dsp], cl
 .process_dsp:
     call load_dsp
+.check_dsp_bypass:
+    LOAD_OFFSET edi, dsp_offset
+    mov ch, [DSP_FLAG + edi]
+    test ch, FLAG_BYPASS
+    jnz .load_dsp_target
+
     call process_dsp
+.load_dsp_target:
     call load_dsp_target
     call store_output
 
+.dsp_done:
     mov cl, [current_dsp]
     inc cl
     jmp .dsp_loop
@@ -69,8 +81,9 @@ mix:
     ret
 
 store_output:
-    cmp edx, 0
-    je .store_single_output
+.splitter:
+    test ch, FLAG_SPLITTER
+    jz .store_single_output
     mov bl, 0
 .store_multiple_outputs:
     push eax
@@ -93,6 +106,8 @@ store_output:
     ret
 .store_single_output:
     call store_single_output
+
+.done:
     ret
 
 store_single_output:
