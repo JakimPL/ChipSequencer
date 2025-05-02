@@ -67,7 +67,7 @@ void GUIOscillatorsPanel::from() {
         current_oscillator.type = "Wavetable";
         const OscillatorWavetable *wavetable = static_cast<OscillatorWavetable *>(oscillator);
         current_oscillator.wavetable_index = wavetable->wavetable_index;
-        current_oscillator.wavetable_interpolation = wavetable->interpolation;
+        current_oscillator.wavetable_interpolation = wavetable->interpolation >= 0x80;
         break;
     }
     case GENERATOR_NOISE: {
@@ -109,7 +109,7 @@ void GUIOscillatorsPanel::to() const {
         wavetable->generator_index = GENERATOR_WAVETABLE;
         wavetable->oscillator_size = SIZE_OSCILLATOR_WAVETABLE;
         wavetable->wavetable_index = current_oscillator.wavetable_index;
-        wavetable->interpolation = current_oscillator.wavetable_interpolation;
+        wavetable->interpolation = current_oscillator.wavetable_interpolation ? 0xFF : 0x00;
         break;
     }
     case GENERATOR_NOISE: {

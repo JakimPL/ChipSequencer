@@ -61,7 +61,7 @@ void GUIDSPsPanel::from() {
         current_dsp.type = "Filter";
         const DSPFilter *filter = static_cast<const DSPFilter *>(dsp);
         current_dsp.filter_cutoff = static_cast<float>(filter->frequency) / UINT16_MAX;
-        current_dsp.filter_mode = filter->mode;
+        current_dsp.filter_mode = filter->mode >= 0x80;
         break;
     }
     case EFFECT_DELAY: {
@@ -108,7 +108,7 @@ void GUIDSPsPanel::to() const {
         DSPFilter *dsp = new (buffer) DSPFilter();
         dsp->effect_index = EFFECT_FILTER;
         dsp->frequency = static_cast<uint16_t>(std::round(current_dsp.filter_cutoff * UINT16_MAX));
-        dsp->mode = current_dsp.filter_mode;
+        dsp->mode = current_dsp.filter_mode ? 0xFF : 0x00;
         break;
     }
     case EFFECT_DELAY: {

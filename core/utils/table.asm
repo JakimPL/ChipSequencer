@@ -54,8 +54,8 @@ load_table_8bit_item:
 ; ECX - divisor
 ; SI  - table address
 ; AX  - input timer/output
-    cmp dl, 0
-    je .no_interpolation
+    cmp dl, 0x80
+    jc .no_interpolation
 .interpolation:
     call load_table_item
     call sample_interpolation_set

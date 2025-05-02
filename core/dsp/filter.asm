@@ -68,8 +68,8 @@ filter:
     MOV_TO_SI eax
 
 .apply_mode:
-    cmp dl, 0
-    je .done
+    cmp dl, 0x80
+    jc .done
 
 .difference:
     fsub st1, st0
