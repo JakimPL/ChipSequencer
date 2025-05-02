@@ -236,7 +236,7 @@ Sequence *Song::add_sequence() {
     }
 
     Sequence *sequence = new Sequence();
-    sequence->data_size = 0;
+    sequence->size = 0;
     sequences.push_back(sequence);
     return sequence;
 }
@@ -537,6 +537,10 @@ std::pair<ValidationResult, int> Song::validate() {
     return {ValidationResult::OK, -1};
 }
 
+std::vector<size_t> Song::find_commands_dependencies(const size_t commands_index) const {
+    return {};
+}
+
 std::vector<size_t> Song::find_envelope_dependencies(const size_t envelope_index) const {
     std::set<size_t> dependencies;
     for (size_t i = 0; i < channels.size(); i++) {
@@ -813,7 +817,7 @@ void Song::calculate_song_length() {
             }
 
             const Sequence *sequence = sequences[sequence_index];
-            const size_t sequence_length = sequence->data_size / 2;
+            const size_t sequence_length = sequence->size / 2;
             for (size_t j = 0; j < sequence_length; j++) {
                 const uint8_t duration = sequence->notes[j].duration;
                 rows += duration;

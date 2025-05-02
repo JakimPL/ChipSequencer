@@ -163,6 +163,9 @@ void GUI::set_index(const GUIElement element, const int index) {
     case GUIElement::Channels:
         channels_panel.set_index(index);
         break;
+    case GUIElement::Commands:
+        commands_panel.set_index(index);
+        break;
     case GUIElement::DSPs:
         dsps_panel.set_index(index);
         break;
@@ -202,6 +205,8 @@ void GUI::update(GUIElement element) {
         return general_panel.update();
     case GUIElement::Channels:
         return channels_panel.update();
+    case GUIElement::Commands:
+        return commands_panel.update();
     case GUIElement::DSPs:
         return dsps_panel.update();
     case GUIElement::Envelopes:
@@ -228,6 +233,7 @@ void GUI::update_all() {
     editor.update();
     general_panel.update();
     channels_panel.update();
+    commands_panel.update();
     dsps_panel.update();
     envelopes_panel.update();
     orders_panel.update();
@@ -273,6 +279,7 @@ void GUI::frame_all() {
     editor.frame();
     general_panel.frame();
     channels_panel.frame();
+    commands_panel.frame();
     dsps_panel.frame();
     envelopes_panel.frame();
     orders_panel.frame();
@@ -289,6 +296,7 @@ void GUI::set_visibility_all(const bool visible) {
     editor.visible = visible;
     general_panel.visible = visible;
     channels_panel.visible = visible;
+    commands_panel.visible = visible;
     dsps_panel.visible = visible;
     envelopes_panel.visible = visible;
     orders_panel.visible = visible;
@@ -353,6 +361,9 @@ void GUI::set_visibility(const GUIElement element, const bool visible) {
     case GUIElement::Channels:
         channels_panel.visible = visible;
         break;
+    case GUIElement::Commands:
+        commands_panel.visible = visible;
+        break;
     case GUIElement::DSPs:
         dsps_panel.visible = visible;
         break;
@@ -395,6 +406,8 @@ bool GUI::get_visibility(const GUIElement element) const {
         return general_panel.visible;
     case GUIElement::Channels:
         return channels_panel.visible;
+    case GUIElement::Commands:
+        return commands_panel.visible;
     case GUIElement::DSPs:
         return dsps_panel.visible;
     case GUIElement::Envelopes:

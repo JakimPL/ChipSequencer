@@ -91,7 +91,7 @@ void GUISummaryPanel::draw_summary() {
         size_t sequences_size = 0;
         size_t sequences_count = sequences.size();
         for (const Sequence *sequence : sequences) {
-            const size_t sequence_size = sequence->data_size + 1;
+            const size_t sequence_size = sequence->size + 1;
             total_size += sequence_size;
             sequences_size += sequence_size;
         }

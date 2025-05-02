@@ -93,6 +93,7 @@ add_executable(main
     tracker/gui/pattern.cpp
     tracker/gui/utils.cpp
     tracker/gui/panels/channels.cpp
+    tracker/gui/panels/commands.cpp
     tracker/gui/panels/dsps.cpp
     tracker/gui/panels/editor.cpp
     tracker/gui/panels/envelopes.cpp

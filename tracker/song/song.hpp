@@ -141,6 +141,7 @@ class Song {
     void remove_dsp(const size_t index);
 
     std::pair<ValidationResult, int> validate();
+    std::vector<size_t> find_commands_dependencies(const size_t commands_index) const;
     std::vector<size_t> find_envelope_dependencies(const size_t envelope_index) const;
     std::vector<size_t> find_sequence_dependencies(const size_t sequence_index) const;
     std::vector<size_t> find_order_dependencies(const size_t order_index) const;

@@ -10,6 +10,7 @@
 #include "enums.hpp"
 
 extern std::vector<std::string> channel_names;
+extern std::vector<std::string> commands_names;
 extern std::vector<std::string> dsp_names;
 extern std::vector<std::string> envelope_names;
 extern std::vector<std::string> oscillator_names;
@@ -45,6 +46,7 @@ const std::vector<std::pair<GUIElement, const char *>> menu_items = {
     {GUIElement::Editor, "Editor"},
     {GUIElement::General, "General"},
     {GUIElement::Channels, "Channels"},
+    {GUIElement::Commands, "Commands"},
     {GUIElement::DSPs, "DSPs"},
     {GUIElement::Envelopes, "Envelopes"},
     {GUIElement::Orders, "Orders"},

@@ -20,12 +20,14 @@
 
 ; Sequence
     %define SEQUENCE_NOTES 1
+    %define SEQUENCE_SIZE 2
 
 ; Order
     %define ORDER_SEQUENCES 1
 
 ; Wavetable
-    %define WAVETABLE_START 1
+    %define WAVETABLE_SIZE 1
+    %define WAVETABLE_DATA 2
 
 ; Oscillators
     %define OSCILLATOR_INDEX 1
