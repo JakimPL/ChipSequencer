@@ -28,7 +28,7 @@ uint8_t OutputType::set_item_flag(uint8_t &item_flag) const {
 }
 
 void OutputType::from_flags(const uint8_t output_flag, const uint8_t item_flag) {
-    // splitter is handled by the link
+    splitter_on = item_flag & FLAG_SPLITTER;
     bypass = item_flag & FLAG_BYPASS;
 
     operation = (output_flag & MASK_OPERATION) >> 6;

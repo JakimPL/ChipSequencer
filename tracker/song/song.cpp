@@ -941,13 +941,13 @@ void Song::serialize_dsp_body(std::ofstream &file, void *dsp) const {
 }
 
 void *Song::deserialize_dsp(std::ifstream &header_file, std::ifstream &body_file) const {
-    uint8_t dsp_size, effect_index, output_flag;
+    uint8_t dsp_size, effect_index, output_flag, flag;
     uint32_t output;
 
     read_data(header_file, &dsp_size, sizeof(dsp_size));
     read_data(header_file, &effect_index, sizeof(effect_index));
     read_data(header_file, &output_flag, sizeof(output_flag));
-    header_file.seekg(sizeof(uint8_t), std::ios::cur);
+    read_data(header_file, &flag, sizeof(flag));
     read_data(header_file, &output, sizeof(output));
 
     switch (effect_index) {
@@ -956,6 +956,7 @@ void *Song::deserialize_dsp(std::ifstream &header_file, std::ifstream &body_file
         distortion->dsp_size = dsp_size;
         distortion->effect_index = effect_index;
         distortion->output_flag = output_flag;
+        distortion->flag = flag;
         distortion->output = &output;
         read_data(body_file, &distortion->splitter, sizeof(distortion->splitter));
         read_data(body_file, &distortion->level, sizeof(distortion->level));
@@ -966,6 +967,7 @@ void *Song::deserialize_dsp(std::ifstream &header_file, std::ifstream &body_file
         gainer->dsp_size = dsp_size;
         gainer->effect_index = effect_index;
         gainer->output_flag = output_flag;
+        gainer->flag = flag;
         gainer->output = &output;
         read_data(body_file, &gainer->splitter, sizeof(gainer->splitter));
         read_data(body_file, &gainer->volume, sizeof(gainer->volume));
@@ -976,6 +978,7 @@ void *Song::deserialize_dsp(std::ifstream &header_file, std::ifstream &body_file
         filter->dsp_size = dsp_size;
         filter->effect_index = effect_index;
         filter->output_flag = output_flag;
+        filter->flag = flag;
         filter->output = &output;
         read_data(body_file, &filter->splitter, sizeof(filter->splitter));
         read_data(body_file, &filter->frequency, sizeof(filter->frequency));
@@ -987,6 +990,7 @@ void *Song::deserialize_dsp(std::ifstream &header_file, std::ifstream &body_file
         delay->dsp_size = dsp_size;
         delay->effect_index = effect_index;
         delay->output_flag = output_flag;
+        delay->flag = flag;
         delay->output = &output;
         read_data(body_file, &delay->splitter, sizeof(delay->splitter));
         read_data(body_file, &delay->dry, sizeof(delay->dry));

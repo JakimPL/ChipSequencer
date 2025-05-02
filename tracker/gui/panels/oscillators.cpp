@@ -85,42 +85,37 @@ void GUIOscillatorsPanel::to() const {
     void *buffer = oscillators[oscillator_index];
     switch (current_oscillator.generator_index) {
     case GENERATOR_SQUARE: {
-        static_cast<OscillatorSquare *>(buffer)->~OscillatorSquare();
-        OscillatorSquare *osc = new (buffer) OscillatorSquare();
-        osc->generator_index = GENERATOR_SQUARE;
-        osc->oscillator_size = SIZE_OSCILLATOR_SQUARE;
-        osc->duty_cycle = static_cast<uint8_t>(std::round(current_oscillator.square_duty_cycle * UINT8_MAX));
+        OscillatorSquare *square = reinterpret_cast<OscillatorSquare *>(buffer);
+        square->generator_index = GENERATOR_SQUARE;
+        square->oscillator_size = SIZE_OSCILLATOR_SQUARE;
+        square->duty_cycle = static_cast<uint8_t>(std::round(current_oscillator.square_duty_cycle * UINT8_MAX));
         break;
     }
     case GENERATOR_SAW: {
-        static_cast<OscillatorSaw *>(buffer)->~OscillatorSaw();
-        OscillatorSaw *osc = new (buffer) OscillatorSaw();
-        osc->generator_index = GENERATOR_SAW;
-        osc->oscillator_size = SIZE_OSCILLATOR_SAW;
-        osc->reverse = current_oscillator.saw_reverse;
+        OscillatorSaw *saw = reinterpret_cast<OscillatorSaw *>(buffer);
+        saw->generator_index = GENERATOR_SAW;
+        saw->oscillator_size = SIZE_OSCILLATOR_SAW;
+        saw->reverse = current_oscillator.saw_reverse;
         break;
     }
     case GENERATOR_SINE: {
-        static_cast<OscillatorSine *>(buffer)->~OscillatorSine();
-        OscillatorSine *osc = new (buffer) OscillatorSine();
-        osc->generator_index = GENERATOR_SINE;
-        osc->oscillator_size = SIZE_OSCILLATOR_SINE;
+        OscillatorSine *sine = reinterpret_cast<OscillatorSine *>(buffer);
+        sine->generator_index = GENERATOR_SINE;
+        sine->oscillator_size = SIZE_OSCILLATOR_SINE;
         break;
     }
     case GENERATOR_WAVETABLE: {
-        static_cast<OscillatorWavetable *>(buffer)->~OscillatorWavetable();
-        OscillatorWavetable *osc = new (buffer) OscillatorWavetable();
-        osc->generator_index = GENERATOR_WAVETABLE;
-        osc->oscillator_size = SIZE_OSCILLATOR_WAVETABLE;
-        osc->wavetable_index = current_oscillator.wavetable_index;
-        osc->interpolation = current_oscillator.wavetable_interpolation;
+        OscillatorWavetable *wavetable = reinterpret_cast<OscillatorWavetable *>(buffer);
+        wavetable->generator_index = GENERATOR_WAVETABLE;
+        wavetable->oscillator_size = SIZE_OSCILLATOR_WAVETABLE;
+        wavetable->wavetable_index = current_oscillator.wavetable_index;
+        wavetable->interpolation = current_oscillator.wavetable_interpolation;
         break;
     }
     case GENERATOR_NOISE: {
-        static_cast<OscillatorNoise *>(buffer)->~OscillatorNoise();
-        OscillatorNoise *osc = new (buffer) OscillatorNoise();
-        osc->generator_index = GENERATOR_NOISE;
-        osc->oscillator_size = SIZE_OSCILLATOR_NOISE;
+        OscillatorNoise *noise = reinterpret_cast<OscillatorNoise *>(buffer);
+        noise->generator_index = GENERATOR_NOISE;
+        noise->oscillator_size = SIZE_OSCILLATOR_NOISE;
         break;
     }
     }
