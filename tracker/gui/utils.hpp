@@ -25,7 +25,7 @@ void draw_link_tooltip(const LinkKey &key);
 void draw_popup(const std::string &message);
 bool draw_button(const char *label, const float button_padding = 0.0f);
 
-bool draw_output(OutputType &output_type, const int dsp_index = -1);
+bool draw_output(OutputType &output_type, const LinkKey key);
 void draw_output_parameter(OutputType &output_type, const std::vector<std::string> &names, const std::string label);
 void draw_output_parameter_oscillator(OutputType &output_type);
 void draw_output_parameter_dsp(OutputType &output_type);

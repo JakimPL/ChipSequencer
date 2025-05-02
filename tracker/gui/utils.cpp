@@ -188,22 +188,25 @@ std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t
     return {index + pattern.notes.size(), select};
 }
 
-bool draw_output(OutputType &output_type, const int dsp_index) {
+bool draw_output(OutputType &output_type, const LinkKey key) {
     push_secondary_style();
     ImGui::Separator();
     ImGui::Text("Output:");
-    const bool value_changed = prepare_combo(target_types, "##OutputTargetCombo", output_type.target).value_changed;
+    bool value_changed = prepare_combo(target_types, "##OutputTargetCombo", output_type.target).value_changed;
     const size_t output_channels = song.get_output_channels();
+    const int dsp_index = key.target == Target::DSP ? key.index : -1;
 
     switch (static_cast<OutputTarget>(output_type.target)) {
     case OutputTarget::OutputSplitter: {
-        if (value_changed) {
-            output_type.operation = static_cast<int>(OutputOperation::Add);
-        }
         ImGui::Text("Splitter:");
         for (size_t i = 0; i < output_channels; ++i) {
+            const LinkKey splitter_key = {key.target, key.index, static_cast<uint16_t>(key.offset + i)};
             const std::string label = "Channel " + std::to_string(i);
-            draw_float_slider(label.c_str(), output_type.splitter[i], {}, 0.0f, 1.0f);
+            draw_float_slider(label.c_str(), output_type.splitter[i], splitter_key, 0.0f, 1.0f);
+        }
+
+        if (value_changed) {
+            output_type.operation = static_cast<int>(OutputOperation::Add);
         }
 
         break;
@@ -214,10 +217,6 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
             break;
         }
 
-        if (value_changed) {
-            output_type.operation = static_cast<int>(OutputOperation::Add);
-        }
-
         ImGui::Text("Initial DSP:");
         draw_int_slider("DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
         ImGui::Text("Splitter:");
@@ -226,17 +225,23 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
         for (int i = output_type.dsp_channel; i < end; ++i) {
             const size_t j = i - output_type.dsp_channel;
             const std::string label = dsp_names[i];
-            draw_float_slider(label.c_str(), output_type.splitter[j], {}, 0.0f, 1.0f);
+            const LinkKey splitter_key = {key.target, key.index, static_cast<uint16_t>(key.offset + j)};
+            draw_float_slider(label.c_str(), output_type.splitter[j], splitter_key, 0.0f, 1.0f);
+        }
+
+        if (value_changed) {
+            output_type.operation = static_cast<int>(OutputOperation::Add);
         }
 
         break;
     }
     case OutputTarget::DirectOutput: {
+        draw_int_slider("Channel", output_type.output_channel, {}, 0, output_channels - 1);
+
         if (value_changed) {
             output_type.operation = static_cast<int>(OutputOperation::Add);
         }
 
-        draw_int_slider("Channel", output_type.output_channel, {}, 0, output_channels - 1);
         break;
     }
     case OutputTarget::DirectDSP: {
@@ -245,20 +250,17 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
             break;
         }
 
+        draw_int_slider("DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
+
         if (value_changed) {
             output_type.operation = static_cast<int>(OutputOperation::Add);
         }
 
-        draw_int_slider("DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
         break;
     }
     case OutputTarget::Parameter: {
-        if (value_changed) {
-            output_type.operation = static_cast<int>(OutputOperation::Set);
-        }
-
         ImGui::Separator();
-        prepare_combo(parameter_types, "##OutputParameterCombo", output_type.parameter_type);
+        value_changed |= prepare_combo(parameter_types, "##OutputParameterCombo", output_type.parameter_type).value_changed;
         const Target target = static_cast<Target>(output_type.parameter_type + static_cast<int>(OutputTarget::Parameter));
         switch (target) {
         case Target::ENVELOPE: {
@@ -297,6 +299,12 @@ bool draw_output(OutputType &output_type, const int dsp_index) {
             throw std::runtime_error("Invalid target type");
         }
         }
+
+        if (value_changed) {
+            output_type.operation = static_cast<int>(OutputOperation::Set);
+        }
+
+        break;
     }
     }
 

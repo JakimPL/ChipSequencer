@@ -211,7 +211,7 @@ void GUIDSPsPanel::draw_dsp() {
     draw_effect();
     ImGui::NewLine();
 
-    draw_output(current_dsp.output_type, dsp_index);
+    draw_output(current_dsp.output_type, {Target::DSP, dsp_index, DSP_SPLITTER});
 }
 
 void GUIDSPsPanel::draw_effect() {

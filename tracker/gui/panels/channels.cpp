@@ -229,7 +229,7 @@ void GUIChannelsPanel::draw_channel() {
         draw_float_slider("Transpose", current_channel.transpose, key, GUI_MIN_TRANSPOSE, GUI_MAX_TRANSPOSE);
     }
 
-    if (draw_output(current_channel.output_type)) {
+    if (draw_output(current_channel.output_type, {Target::CHANNEL, channel_index, CHANNEL_SPLITTER})) {
         update_channel_name(channel_index, current_channel.output_type.target);
     }
 }
