@@ -65,10 +65,6 @@ const std::map<Target, RoutingItems> routing_variables = {
     {
         Target::DSP,
         RoutingItems({
-            {"Splitter 1", DSP_SPLITTER, TargetVariableType::Int8},
-            {"Splitter 2", DSP_SPLITTER + 1, TargetVariableType::Int8},
-            {"Splitter 3", DSP_SPLITTER + 2, TargetVariableType::Int8},
-            {"Splitter 4", DSP_SPLITTER + 3, TargetVariableType::Int8},
             {"Gain", DSP_GAINER_VOLUME, TargetVariableType::Int16, EFFECT_GAINER},
             {"Level", DSP_DISTORTION_LEVEL, TargetVariableType::Int16, EFFECT_DISTORTION},
             {"Cutoff frequency", DSP_FILTER_FREQUENCY, TargetVariableType::Int16, EFFECT_FILTER},
@@ -76,16 +72,20 @@ const std::map<Target, RoutingItems> routing_variables = {
             {"Wet", DSP_DELAY_WET, TargetVariableType::Int8, EFFECT_DELAY},
             {"Feedback", DSP_DELAY_FEEDBACK, TargetVariableType::Int8, EFFECT_DELAY},
             {"Delay time", DSP_DELAY_TIME, TargetVariableType::Int16, EFFECT_DELAY},
+            {"Splitter 0", DSP_SPLITTER, TargetVariableType::Int8},
+            {"Splitter 1", DSP_SPLITTER + 1, TargetVariableType::Int8},
+            {"Splitter 2", DSP_SPLITTER + 2, TargetVariableType::Int8},
+            {"Splitter 3", DSP_SPLITTER + 3, TargetVariableType::Int8},
         }),
     },
     {
         Target::CHANNEL,
         RoutingItems({
             {"Pitch", CHANNEL_PITCH, TargetVariableType::Int32},
-            {"Splitter 1", CHANNEL_SPLITTER, TargetVariableType::Int8},
-            {"Splitter 2", CHANNEL_SPLITTER + 1, TargetVariableType::Int8},
-            {"Splitter 3", CHANNEL_SPLITTER + 2, TargetVariableType::Int8},
-            {"Splitter 4", CHANNEL_SPLITTER + 3, TargetVariableType::Int8},
+            {"Splitter 0", CHANNEL_SPLITTER, TargetVariableType::Int8},
+            {"Splitter 1", CHANNEL_SPLITTER + 1, TargetVariableType::Int8},
+            {"Splitter 2", CHANNEL_SPLITTER + 2, TargetVariableType::Int8},
+            {"Splitter 3s", CHANNEL_SPLITTER + 3, TargetVariableType::Int8},
         }),
     },
 };
