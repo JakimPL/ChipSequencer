@@ -71,7 +71,7 @@ void GUIChannelsPanel::from() {
 }
 
 void GUIChannelsPanel::to() const {
-    if (!is_index_valid() || gui.is_playing()) {
+    if (!ImGui::IsWindowFocused() || !is_index_valid() || gui.is_playing()) {
         return;
     }
 

@@ -123,6 +123,10 @@ void GUIPatternsPanel::from() {
 }
 
 void GUIPatternsPanel::to() const {
+    if (!ImGui::IsWindowFocused()) {
+        return;
+    }
+
     Pattern *pattern = find_pattern_by_current_row().first;
     if (pattern != nullptr) {
         size_t sequence_index = pattern->sequence_index;

@@ -32,8 +32,8 @@ class GUIRoutingPanel : public GUIPanel {
 
     bool is_linking_possible(const InputKey &source_key, const OutputKey &target_key) const;
     RoutingNode *handle_node_dragging(const ImVec2 &canvas_origin);
-    void set_dragging_source_key(const ImVec2 pin_position, const InputKey &key);
-    void set_dragging_target_key(const ImVec2 pin_position, const OutputKey &key);
+    void set_source_key(const ImVec2 pin_position, const InputKey &key);
+    void set_target_key(const ImVec2 pin_position, const OutputKey &key);
 
     void update_channel_node(size_t index, RoutingNode &channel_node);
     void update_dsp_node(size_t index, RoutingNode &dsp_nodes);

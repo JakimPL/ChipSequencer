@@ -102,7 +102,7 @@ void GUIEnvelopesPanel::gather_envelope_positions() {
 }
 
 void GUIEnvelopesPanel::to() const {
-    if (!is_index_valid()) {
+    if (!ImGui::IsWindowFocused() || !is_index_valid()) {
         return;
     }
 
