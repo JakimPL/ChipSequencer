@@ -188,6 +188,11 @@ void GUIOscillatorsPanel::draw_oscillator_type() {
 
     if (prepare_combo(generator_names, "##GeneratorCombo", current_oscillator.generator_index).value_changed) {
         update_oscillator_name(oscillator_index, current_oscillator.generator_index);
+        if (current_oscillator.generator_index == GENERATOR_WAVETABLE && wavetables.empty()) {
+            song.add_wavetable();
+            gui.update(GUIElement::Wavetables);
+            current_oscillator.wavetable_index = wavetable_names.size() - 1;
+        }
     }
 
     ImGui::NextColumn();
