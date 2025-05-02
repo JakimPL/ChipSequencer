@@ -3,17 +3,20 @@
 
 #include "../constants.hpp"
 #include "../init.hpp"
+#include "../patterns/commands.hpp"
 #include "panel.hpp"
 
 class GUICommandsSequencesPanel : public GUIPanel {
   private:
     struct CurrentCommandsSequence {
+        CommandsPattern pattern;
     } current_sequence;
 
     int sequence_index = 0;
 
     bool is_index_valid() const;
     void draw_sequence();
+    void draw_sequence_length();
 
     void from() override;
     void to() const override;

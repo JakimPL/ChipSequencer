@@ -188,7 +188,67 @@ std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t
     return {index + pattern.notes.size(), select};
 }
 
-void draw_commands_pattern() {
+std::pair<size_t, bool> draw_commands_pattern(CommandsPattern &pattern, const bool header, const size_t index, const int playing_row, const uint16_t start, const uint16_t end) {
+    bool select = false;
+    const int min = std::max(static_cast<int>(start) - static_cast<int>(index), 0);
+    const int max = std::min(static_cast<int>(end) - static_cast<int>(index), static_cast<int>(pattern.commands.size()));
+    if (max <= 0 || min >= pattern.commands.size()) {
+        return {index + pattern.commands.size(), false};
+    }
+
+    if (ImGui::BeginTable("CommandsPatternTable", 3, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg)) {
+        ImGui::TableSetupColumn("Index", ImGuiTableColumnFlags_WidthFixed, 50.0f);
+        ImGui::TableSetupColumn("Command");
+        ImGui::TableSetupColumn("Value");
+        if (header) {
+            ImGui::TableHeadersRow();
+        }
+
+        for (int i = min; i < max; i++) {
+            const int j = i + index;
+            const bool is_selected = (pattern.current_row == i);
+            ImGui::TableNextRow();
+            if (playing_row == j) {
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, IM_COL32(128, 255, 128, 64));
+            }
+
+            if (is_selected) {
+                ImGui::PushStyleColor(ImGuiCol_Text, GUI_HIGHLIGHT_COLOR);
+            }
+
+            ImGui::TableSetColumnIndex(0);
+            const std::string index_string = std::to_string(j);
+            ImGui::Text("%s", index_string.c_str());
+
+            ImGui::PushID(i);
+            ImGui::TableSetColumnIndex(1);
+            if (ImGui::Selectable("", is_selected)) {
+                pattern.current_row = i;
+                select = true;
+            }
+
+            ImGui::PopID();
+
+            ImGui::TableSetColumnIndex(2);
+            ImGui::PushID(MAX_STEPS + i);
+            if (ImGui::Selectable("", is_selected)) {
+                pattern.current_row = i;
+                select = true;
+            }
+            ImGui::PopID();
+
+            if (is_selected) {
+                ImGui::PopStyleColor();
+            }
+        }
+
+        ImGui::EndTable();
+    }
+
+    // realignment
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 4.0f);
+
+    return {index + pattern.commands.size(), select};
 }
 
 bool draw_output(OutputType &output_type, const LinkKey key) {

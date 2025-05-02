@@ -80,7 +80,37 @@ void GUICommandsSequencesPanel::update() {
     gui.update(GUIElement::Orders);
 }
 
+void GUICommandsSequencesPanel::draw_sequence_length() {
+    const size_t old_size = current_sequence.pattern.steps;
+    draw_number_of_items("Steps", "##SequenceLength", current_sequence.pattern.steps, 1, MAX_STEPS);
+
+    if (old_size != current_sequence.pattern.steps) {
+        current_sequence.pattern.commands.resize(current_sequence.pattern.steps);
+        if (current_sequence.pattern.steps > old_size) {
+            for (size_t i = old_size; i < current_sequence.pattern.steps; i++) {
+                current_sequence.pattern.commands[i] = buffers.commands_sequences[sequence_index][i];
+            }
+        }
+    }
+}
+
 void GUICommandsSequencesPanel::draw_sequence() {
+    if (current_sequence.pattern.commands.size() < static_cast<size_t>(current_sequence.pattern.steps)) {
+        current_sequence.pattern.commands.resize(current_sequence.pattern.steps, UINT8_MAX);
+    } else if (current_sequence.pattern.commands.size() > static_cast<size_t>(current_sequence.pattern.steps)) {
+        current_sequence.pattern.commands.resize(current_sequence.pattern.steps);
+    }
+
+    ImGui::Text("Pattern:");
+
+    if (!is_index_valid()) {
+        ImGui::Text("No sequence available.");
+        ImGui::Columns(1);
+        return;
+    }
+
+    draw_sequence_length();
+    draw_commands_pattern(current_sequence.pattern);
 }
 
 void GUICommandsSequencesPanel::check_keyboard_input() {
