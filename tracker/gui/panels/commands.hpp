@@ -3,6 +3,7 @@
 
 #include "../constants.hpp"
 #include "../init.hpp"
+#include "../input.hpp"
 #include "../patterns/commands.hpp"
 #include "panel.hpp"
 

@@ -222,7 +222,7 @@ std::pair<size_t, bool> draw_commands_pattern(CommandsPattern &pattern, const bo
 
             ImGui::PushID(i);
             ImGui::TableSetColumnIndex(1);
-            if (ImGui::Selectable("", is_selected)) {
+            if (ImGui::Selectable(pattern.commands[j].c_str(), is_selected)) {
                 pattern.current_row = i;
                 select = true;
             }
@@ -231,7 +231,7 @@ std::pair<size_t, bool> draw_commands_pattern(CommandsPattern &pattern, const bo
 
             ImGui::TableSetColumnIndex(2);
             ImGui::PushID(MAX_STEPS + i);
-            if (ImGui::Selectable("", is_selected)) {
+            if (ImGui::Selectable("......", is_selected)) {
                 pattern.current_row = i;
                 select = true;
             }

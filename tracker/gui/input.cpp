@@ -1,7 +1,13 @@
 #include "input.hpp"
 
 InputHandler::InputHandler(std::vector<int> &vector, int &index)
-    : vector(vector), index(index) {
+    : vector(vector), index(index), strings(svector) {
+    numeric = true;
+}
+
+InputHandler::InputHandler(std::vector<std::string> &characters, int &index, const std::vector<ImGuiKey> keys)
+    : strings(strings), index(index), vector(dvector), keys(keys) {
+    numeric = false;
 }
 
 void InputHandler::handle_input() {
@@ -21,7 +27,7 @@ void InputHandler::handle_input() {
 
     if (numeric) {
         for (int key = ImGuiKey_0; key <= ImGuiKey_9; key++) {
-            if (ImGui::IsKeyPressed((ImGuiKey) key)) {
+            if (ImGui::IsKeyPressed(static_cast<ImGuiKey>(key))) {
                 buffer.push_back('0' + (key - ImGuiKey_0));
             }
         }
@@ -34,6 +40,19 @@ void InputHandler::handle_input() {
             } catch (std::out_of_range &) {
                 buffer.clear();
             }
+        }
+    } else {
+        for (const int key : keys) {
+            if (ImGui::IsKeyPressed(static_cast<ImGuiKey>(key))) {
+                if (buffer.size() >= limit) {
+                    buffer.pop_back();
+                }
+                buffer.push_back(key);
+            }
+        }
+
+        if (ImGui::IsKeyPressed(ImGuiKey_Space)) {
+            buffer.clear();
         }
     }
 

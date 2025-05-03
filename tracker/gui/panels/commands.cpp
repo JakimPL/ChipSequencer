@@ -96,7 +96,7 @@ void GUICommandsSequencesPanel::draw_sequence_length() {
 
 void GUICommandsSequencesPanel::draw_sequence() {
     if (current_sequence.pattern.commands.size() < static_cast<size_t>(current_sequence.pattern.steps)) {
-        current_sequence.pattern.commands.resize(current_sequence.pattern.steps, UINT8_MAX);
+        current_sequence.pattern.commands.resize(current_sequence.pattern.steps, "");
     } else if (current_sequence.pattern.commands.size() > static_cast<size_t>(current_sequence.pattern.steps)) {
         current_sequence.pattern.commands.resize(current_sequence.pattern.steps);
     }
