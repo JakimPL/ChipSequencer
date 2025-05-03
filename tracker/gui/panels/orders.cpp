@@ -145,7 +145,7 @@ void GUIOrdersPanel::draw_order() {
 
         if (ImGui::Selectable("##selectable", is_selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)) {
             selected_sequence = i;
-            digit_buffer.clear();
+            input_handler.clear();
         }
 
         ImGui::SameLine();
@@ -178,41 +178,8 @@ void GUIOrdersPanel::check_keyboard_input() {
         return;
     }
 
-    for (int key = ImGuiKey_0; key <= ImGuiKey_9; key++) {
-        if (ImGui::IsKeyPressed((ImGuiKey) key)) {
-            digit_buffer.push_back('0' + (key - ImGuiKey_0));
-        }
-    }
-
-    if (ImGui::IsKeyPressed(ImGuiKey_Backspace)) {
-        if (!digit_buffer.empty()) {
-            digit_buffer.pop_back();
-        }
-    }
-
-    if (!digit_buffer.empty()) {
-        try {
-            int value = std::stoi(digit_buffer);
-            value = std::max(std::min(value, static_cast<int>(sequences.size()) - 1), 0);
-            current_order.sequences[selected_sequence] = value;
-        } catch (std::out_of_range &) {
-            digit_buffer.clear();
-        }
-    }
-
-    if (ImGui::IsKeyPressed(ImGuiKey_Enter)) {
-        digit_buffer = std::to_string(current_order.sequences[selected_sequence]);
-    }
-
-    if (ImGui::IsKeyPressed(ImGuiKey_UpArrow)) {
-        selected_sequence = std::max(0, selected_sequence - 1);
-        digit_buffer.clear();
-    }
-
-    if (ImGui::IsKeyPressed(ImGuiKey_DownArrow)) {
-        selected_sequence = std::min((int) current_order.sequences.size() - 1, selected_sequence + 1);
-        digit_buffer.clear();
-    }
+    input_handler.set_limit(static_cast<int>(sequences.size()) - 1);
+    input_handler.handle_input();
 }
 
 void GUIOrdersPanel::set_index(const int index) {
