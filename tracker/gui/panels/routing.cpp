@@ -46,7 +46,7 @@ void GUIRoutingPanel::from() {
 }
 
 void GUIRoutingPanel::to() const {
-    if (!ImGui::IsWindowFocused() || gui.is_playing()) {
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || gui.is_playing()) {
         return;
     }
 

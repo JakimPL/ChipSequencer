@@ -83,7 +83,7 @@ void GUIDSPsPanel::from() {
 }
 
 void GUIDSPsPanel::to() const {
-    if (!ImGui::IsWindowFocused() || !is_index_valid() || gui.is_playing()) {
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || !is_index_valid() || gui.is_playing()) {
         return;
     }
 

@@ -123,7 +123,7 @@ void GUIPatternsPanel::from() {
 }
 
 void GUIPatternsPanel::to() const {
-    if (!ImGui::IsWindowFocused()) {
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
 

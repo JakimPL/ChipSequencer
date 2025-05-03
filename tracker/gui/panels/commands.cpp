@@ -42,7 +42,7 @@ void GUICommandsSequencesPanel::from() {
 }
 
 void GUICommandsSequencesPanel::to() const {
-    if (!ImGui::IsWindowFocused() || !is_index_valid()) {
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || !is_index_valid()) {
         return;
     }
 }

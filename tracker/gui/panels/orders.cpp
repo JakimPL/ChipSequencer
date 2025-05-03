@@ -51,7 +51,7 @@ void GUIOrdersPanel::from() {
 }
 
 void GUIOrdersPanel::to() const {
-    if (!ImGui::IsWindowFocused() || !is_index_valid()) {
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || !is_index_valid()) {
         return;
     }
 
@@ -174,12 +174,14 @@ void GUIOrdersPanel::check_keyboard_input() {
         return;
     }
 
-    if (selected_sequence < 0 || selected_sequence >= current_order.sequences.size())
+    if (selected_sequence < 0 || selected_sequence >= current_order.sequences.size()) {
         return;
+    }
 
     for (int key = ImGuiKey_0; key <= ImGuiKey_9; key++) {
-        if (ImGui::IsKeyPressed((ImGuiKey) key))
+        if (ImGui::IsKeyPressed((ImGuiKey) key)) {
             digit_buffer.push_back('0' + (key - ImGuiKey_0));
+        }
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_Backspace)) {
