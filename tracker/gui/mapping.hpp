@@ -86,4 +86,27 @@ static KeyNoteMapping key_note_linear_mapping[] = {
     {ImGuiKey_RightBracket, 22} // G-6
 };
 
+static ImGuiKey commands_keys[] = {
+    ImGuiKey_U,
+    ImGuiKey_D,
+    ImGuiKey_M,
+    ImGuiKey_B,
+    ImGuiKey_S,
+    ImGuiKey_G,
+};
+
+static ImGuiKey values_keys[] = {
+    ImGuiKey_0,
+    ImGuiKey_1,
+    ImGuiKey_2,
+    ImGuiKey_3,
+    ImGuiKey_4,
+    ImGuiKey_5,
+    ImGuiKey_6,
+    ImGuiKey_7,
+    ImGuiKey_8,
+    ImGuiKey_9,
+    ImGuiKey_Period,
+};
+
 #endif // GUI_MAPPING_HPP

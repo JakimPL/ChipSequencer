@@ -30,6 +30,8 @@ bool StringInputHandler::handle_input() {
                 input_character = 'A' + (key - ImGuiKey_A);
             } else if (key >= ImGuiKey_0 && key <= ImGuiKey_9) {
                 input_character = '0' + (key - ImGuiKey_0);
+            } else if (key == ImGuiKey_Period) {
+                input_character = '.';
             }
 
             if (buffer.size() >= limit) {

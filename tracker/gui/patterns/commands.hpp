@@ -8,15 +8,6 @@
 #include "../init.hpp"
 #include "../inputs/string.hpp"
 
-inline static ImGuiKey commands_keys[] = {
-    ImGuiKey_U,
-    ImGuiKey_D,
-    ImGuiKey_M,
-    ImGuiKey_B,
-    ImGuiKey_S,
-    ImGuiKey_G,
-};
-
 enum class CommandSelection {
     None,
     Command,
