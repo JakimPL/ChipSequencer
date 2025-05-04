@@ -89,9 +89,11 @@ add_executable(main
     tracker/driver/file.cpp
     tracker/driver/port.cpp
     tracker/gui/gui.cpp
-    tracker/gui/input.cpp
     tracker/gui/names.cpp
     tracker/gui/utils.cpp
+    tracker/gui/inputs/input.cpp
+    tracker/gui/inputs/numeric.cpp
+    tracker/gui/inputs/string.cpp
     tracker/gui/panels/channels.cpp
     tracker/gui/panels/commands.cpp
     tracker/gui/panels/dsps.cpp

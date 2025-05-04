@@ -69,6 +69,9 @@
 #define MAX_STEPS 64
 #define MAX_WAVETABLE_POINTS 255
 
+#define MAX_COMMAND_COMMAND_SIZE 1
+#define MAX_COMMAND_VALUE_SIZE 8
+
 // Let C = magic_constant. Each frame, an envelope timer increases by C / v.
 // where v is proportional to time t belonging to the range [0, MAX_ENVELOPE_TIMER_LENGTH].
 // v is 16-bit, so 0xFFFF corresponds to MAX_ENVELOPE_TIMER_LENGTH (10 s by default):

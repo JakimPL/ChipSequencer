@@ -95,9 +95,7 @@ void GUICommandsSequencesPanel::draw_sequence_length() {
 }
 
 void GUICommandsSequencesPanel::draw_sequence() {
-    if (current_sequence.pattern.commands.size() < static_cast<size_t>(current_sequence.pattern.steps)) {
-        current_sequence.pattern.commands.resize(current_sequence.pattern.steps, "");
-    } else if (current_sequence.pattern.commands.size() > static_cast<size_t>(current_sequence.pattern.steps)) {
+    if (current_sequence.pattern.commands.size() != static_cast<size_t>(current_sequence.pattern.steps)) {
         current_sequence.pattern.commands.resize(current_sequence.pattern.steps);
     }
 
@@ -121,6 +119,8 @@ void GUICommandsSequencesPanel::check_keyboard_input() {
     if (ImGui::GetIO().WantCaptureKeyboard) {
         return;
     }
+
+    current_sequence.pattern.handle_input();
 }
 
 void GUICommandsSequencesPanel::set_index(const int index) {

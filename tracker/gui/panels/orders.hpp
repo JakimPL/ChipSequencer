@@ -8,7 +8,7 @@
 
 #include "../constants.hpp"
 #include "../init.hpp"
-#include "../input.hpp"
+#include "../inputs/numeric.hpp"
 #include "panel.hpp"
 
 class GUIOrdersPanel : public GUIPanel {
@@ -20,7 +20,7 @@ class GUIOrdersPanel : public GUIPanel {
 
     int order_index = 0;
     int selected_sequence = 0;
-    InputHandler input_handler = InputHandler(current_order.sequences, selected_sequence);
+    NumericInputHandler input_handler = NumericInputHandler(current_order.sequences, selected_sequence);
 
     bool is_index_valid() const;
     void draw_order_length();

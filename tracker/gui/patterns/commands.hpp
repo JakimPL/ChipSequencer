@@ -6,9 +6,9 @@
 
 #include "../../structures/commands.hpp"
 #include "../init.hpp"
-#include "../input.hpp"
+#include "../inputs/string.hpp"
 
-static std::vector<ImGuiKey> commands_keys = {
+inline static ImGuiKey commands_keys[] = {
     ImGuiKey_U,
     ImGuiKey_D,
     ImGuiKey_M,
@@ -22,9 +22,10 @@ struct CommandsPattern {
     int current_row = -1;
     int steps = 0;
     std::vector<std::string> commands = {};
+    std::vector<std::string> command_values = {};
     std::vector<uint8_t> durations = {};
 
-    InputHandler input_handler = InputHandler(commands, current_row, commands_keys);
+    StringInputHandler input_handler;
 
     CommandsPattern();
     void handle_input(const int min_row = 0, const int max_row = -1);

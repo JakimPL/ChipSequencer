@@ -1,7 +1,12 @@
 #include "commands.hpp"
 
-CommandsPattern::CommandsPattern() {
-    input_handler.set_limit(1);
+CommandsPattern::CommandsPattern()
+    : input_handler(
+          commands,
+          current_row,
+          std::vector<ImGuiKey>(std::begin(commands_keys), std::end(commands_keys))
+      ) {
+    input_handler.set_limit(MAX_COMMAND_COMMAND_SIZE);
 }
 
 void CommandsPattern::handle_input(const int min_row, const int max_row) {
