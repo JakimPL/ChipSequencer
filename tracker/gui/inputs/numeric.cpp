@@ -4,13 +4,13 @@ NumericInputHandler::NumericInputHandler(std::vector<int> &vector, int &index)
     : InputHandler(index), vector(vector) {
 }
 
-void NumericInputHandler::handle_input() {
+bool NumericInputHandler::handle_input() {
     if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
-        return;
+        return false;
     }
 
     if (ImGui::GetIO().WantCaptureKeyboard) {
-        return;
+        return false;
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_Backspace)) {
@@ -19,10 +19,13 @@ void NumericInputHandler::handle_input() {
         }
     }
 
+    bool value_inserted = false;
     for (int key = ImGuiKey_0; key <= ImGuiKey_9; key++) {
         if (ImGui::IsKeyPressed(static_cast<ImGuiKey>(key))) {
             buffer.push_back('0' + (key - ImGuiKey_0));
         }
+
+        value_inserted = true;
     }
 
     if (!buffer.empty()) {
@@ -48,4 +51,6 @@ void NumericInputHandler::handle_input() {
         index = std::min(static_cast<int>(vector.size()) - 1, index + 1);
         buffer.clear();
     }
+
+    return value_inserted;
 }

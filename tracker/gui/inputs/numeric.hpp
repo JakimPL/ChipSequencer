@@ -10,7 +10,7 @@ class NumericInputHandler : public InputHandler {
 
   public:
     NumericInputHandler(std::vector<int> &vector, int &index);
-    void handle_input() override;
+    bool handle_input() override;
 };
 
 #endif // GUI_INPUTS_NUMERIC_HPP

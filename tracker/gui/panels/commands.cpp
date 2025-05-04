@@ -86,9 +86,12 @@ void GUICommandsSequencesPanel::draw_sequence_length() {
 
     if (old_size != current_sequence.pattern.steps) {
         current_sequence.pattern.commands.resize(current_sequence.pattern.steps);
+        current_sequence.pattern.values.resize(current_sequence.pattern.steps);
         if (current_sequence.pattern.steps > old_size) {
             for (size_t i = old_size; i < current_sequence.pattern.steps; i++) {
-                current_sequence.pattern.commands[i] = buffers.commands_sequences[sequence_index][i];
+                const auto &[command, value] = buffers.commands_sequences[sequence_index][i];
+                current_sequence.pattern.commands[i] = command;
+                current_sequence.pattern.values[i] = value;
             }
         }
     }
@@ -97,6 +100,7 @@ void GUICommandsSequencesPanel::draw_sequence_length() {
 void GUICommandsSequencesPanel::draw_sequence() {
     if (current_sequence.pattern.commands.size() != static_cast<size_t>(current_sequence.pattern.steps)) {
         current_sequence.pattern.commands.resize(current_sequence.pattern.steps);
+        current_sequence.pattern.values.resize(current_sequence.pattern.steps);
     }
 
     ImGui::Text("Pattern:");

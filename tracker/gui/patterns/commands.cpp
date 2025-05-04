@@ -1,12 +1,18 @@
 #include "commands.hpp"
 
 CommandsPattern::CommandsPattern()
-    : input_handler(
+    : commands_handler(
           commands,
           current_row,
           std::vector<ImGuiKey>(std::begin(commands_keys), std::end(commands_keys))
+      ),
+      values_handler(
+          values,
+          current_row,
+          std::vector<ImGuiKey>(std::begin(commands_keys), std::end(commands_keys))
       ) {
-    input_handler.set_limit(MAX_COMMAND_COMMAND_SIZE);
+    commands_handler.set_limit(MAX_COMMAND_COMMAND_SIZE);
+    values_handler.set_limit(MAX_COMMAND_VALUE_SIZE);
 }
 
 void CommandsPattern::handle_input(const int min_row, const int max_row) {
@@ -15,5 +21,16 @@ void CommandsPattern::handle_input(const int min_row, const int max_row) {
         return;
     }
 
-    input_handler.handle_input();
+    if (selection == CommandSelection::Command) {
+        if (commands_handler.handle_input()) {
+            selection = CommandSelection::Value;
+        }
+    } else if (selection == CommandSelection::Value) {
+        values_handler.handle_input();
+    }
+}
+
+void CommandsPattern::set_selection(const int row, const CommandSelection item) {
+    current_row = row;
+    selection = item;
 }

@@ -206,13 +206,14 @@ std::pair<size_t, bool> draw_commands_pattern(CommandsPattern &pattern, const bo
 
         for (int i = min; i < max; i++) {
             const int j = i + index;
-            const bool is_selected = (pattern.current_row == i);
+            const bool is_command_selected = (pattern.current_row == i && pattern.selection == CommandSelection::Command);
+            const bool is_value_selected = (pattern.current_row == i && pattern.selection == CommandSelection::Value);
             ImGui::TableNextRow();
             if (playing_row == j) {
                 ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, IM_COL32(128, 255, 128, 64));
             }
 
-            if (is_selected) {
+            if (is_command_selected) {
                 ImGui::PushStyleColor(ImGuiCol_Text, GUI_HIGHLIGHT_COLOR);
             }
 
@@ -222,23 +223,32 @@ std::pair<size_t, bool> draw_commands_pattern(CommandsPattern &pattern, const bo
 
             ImGui::PushID(i);
             ImGui::TableSetColumnIndex(1);
-            std::string command = pattern.commands[i].empty() ? "." : pattern.commands[i];
-            if (ImGui::Selectable(command.c_str(), is_selected)) {
-                pattern.current_row = i;
+            const std::string command = pattern.commands[i].empty() ? "." : pattern.commands[i];
+            if (ImGui::Selectable(command.c_str(), is_command_selected)) {
+                pattern.set_selection(i, CommandSelection::Command);
                 select = true;
             }
 
             ImGui::PopID();
+
+            if (is_command_selected) {
+                ImGui::PopStyleColor();
+            }
+
+            if (is_value_selected) {
+                ImGui::PushStyleColor(ImGuiCol_Text, GUI_HIGHLIGHT_COLOR);
+            }
 
             ImGui::TableSetColumnIndex(2);
             ImGui::PushID(MAX_STEPS + i);
-            if (ImGui::Selectable("......", is_selected)) {
-                pattern.current_row = i;
+            const std::string value = pattern.values[i].empty() ? "......" : pattern.values[i];
+            if (ImGui::Selectable(value.c_str(), is_value_selected)) {
+                pattern.set_selection(i, CommandSelection::Value);
                 select = true;
             }
             ImGui::PopID();
 
-            if (is_selected) {
+            if (is_value_selected) {
                 ImGui::PopStyleColor();
             }
         }

@@ -4,19 +4,23 @@ StringInputHandler::StringInputHandler(std::vector<std::string> &strings, int &i
     : strings(strings), InputHandler(index), keys(keys) {
 }
 
-void StringInputHandler::handle_input() {
+bool StringInputHandler::handle_input() {
     if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
-        return;
+        return false;
     }
 
     if (ImGui::GetIO().WantCaptureKeyboard) {
-        return;
+        return false;
     }
 
+    bool value_inserted = false;
+    buffer = strings[index];
     if (ImGui::IsKeyPressed(ImGuiKey_Backspace)) {
         if (!buffer.empty()) {
             buffer.pop_back();
         }
+    } else if (ImGui::IsKeyPressed(ImGuiKey_Backspace)) {
+        buffer.clear();
     }
 
     for (const int key : keys) {
@@ -31,29 +35,27 @@ void StringInputHandler::handle_input() {
             if (buffer.size() >= limit) {
                 buffer.pop_back();
             }
+
             buffer.push_back(input_character);
+            value_inserted = true;
         }
     }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_Space) || !buffer.empty()) {
-        try {
-            strings[index] = buffer;
-        } catch (std::out_of_range &) {
-            buffer.clear();
-        }
-    }
-
-    if (ImGui::IsKeyPressed(ImGuiKey_Enter)) {
-        buffer = strings[index];
+    try {
+        strings[index] = buffer;
+    } catch (std::out_of_range &) {
+        buffer.clear();
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_UpArrow)) {
         index = std::max(0, index - 1);
-        buffer.clear();
+        buffer = strings[index];
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_DownArrow)) {
         index = std::min(static_cast<int>(strings.size()) - 1, index + 1);
-        buffer.clear();
+        buffer = strings[index];
     }
+
+    return value_inserted;
 }

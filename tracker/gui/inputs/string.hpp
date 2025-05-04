@@ -10,7 +10,7 @@ class StringInputHandler : public InputHandler {
 
   public:
     StringInputHandler(std::vector<std::string> &strings, int &index, const std::vector<ImGuiKey> keys);
-    void handle_input() override;
+    bool handle_input() override;
 };
 
 #endif // GUI_INPUTS_STRING_HPP
