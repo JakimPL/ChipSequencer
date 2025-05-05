@@ -27,6 +27,7 @@ struct CommandsPattern {
     StringInputHandler values_handler;
 
     void from_sequence(const uint8_t sequence_index);
+    std::vector<CommandVariant> to_command_vector() const;
     void to_buffer(const size_t sequence_index) const;
 
     CommandsPattern();

@@ -9,14 +9,27 @@
 
 #include "../constants.hpp"
 
+enum class Instruction : uint8_t {
+    Empty = INSTRUCTION_EMPTY,
+    PortamentoUp = INSTRUCTION_PORTAMENTO_UP,
+    PortamentoDown = INSTRUCTION_PORTAMENTO_DOWN,
+    SetMasterGainer = INSTRUCTION_SET_MASTER_GAINER,
+    SetBPM = INSTRUCTION_SET_BPM,
+    SetDivision = INSTRUCTION_SET_DIVISION,
+    ChangeByteValue = INSTRUCTION_CHANGE_BYTE_VALUE,
+    ChangeWordValue = INSTRUCTION_CHANGE_WORD_VALUE,
+    ChangeDwordValue = INSTRUCTION_CHANGE_DWORD_VALUE,
+    ChangeFloatValue = INSTRUCTION_CHANGE_FLOAT_VALUE,
+};
+
 struct Command {
-    uint8_t type = COMMAND_EMPTY;
+    uint8_t instruction = INSTRUCTION_EMPTY;
     uint8_t duration;
     uint8_t pad[6];
 };
 
 struct CommandPortamentoUp {
-    uint8_t type = COMMAND_PORTAMENTO_UP;
+    uint8_t instruction = INSTRUCTION_PORTAMENTO_UP;
     uint8_t duration;
     uint8_t channel;
     uint16_t value;
@@ -24,7 +37,7 @@ struct CommandPortamentoUp {
 };
 
 struct CommandPortamentoDown {
-    uint8_t type = COMMAND_PORTAMENTO_DOWN;
+    uint8_t instruction = INSTRUCTION_PORTAMENTO_DOWN;
     uint8_t duration;
     uint8_t channel;
     uint16_t value;
@@ -32,28 +45,28 @@ struct CommandPortamentoDown {
 };
 
 struct CommandSetMasterGainer {
-    uint8_t type = COMMAND_SET_MASTER_GAINER;
+    uint8_t instruction = INSTRUCTION_SET_MASTER_GAINER;
     uint8_t duration;
     uint16_t gain;
     uint8_t pad[4];
 };
 
 struct CommandSetBPM {
-    uint8_t type = COMMAND_SET_BPM;
+    uint8_t instruction = INSTRUCTION_SET_BPM;
     uint8_t duration;
     uint16_t bpm;
     uint8_t pad[4];
 };
 
 struct CommandSetDivision {
-    uint8_t type = COMMAND_SET_DIVISION;
+    uint8_t instruction = INSTRUCTION_SET_DIVISION;
     uint8_t duration;
     uint8_t division;
     uint8_t pad[5];
 };
 
 struct CommandChangeByteValue {
-    uint8_t type = COMMAND_CHANGE_BYTE_VALUE;
+    uint8_t instruction = INSTRUCTION_CHANGE_BYTE_VALUE;
     uint8_t duration;
     uint16_t pointer;
     uint8_t value;
@@ -61,7 +74,7 @@ struct CommandChangeByteValue {
 };
 
 struct CommandChangeWordValue {
-    uint8_t type = COMMAND_CHANGE_WORD_VALUE;
+    uint8_t instruction = INSTRUCTION_CHANGE_WORD_VALUE;
     uint8_t duration;
     uint16_t pointer;
     uint16_t value;
@@ -69,20 +82,21 @@ struct CommandChangeWordValue {
 };
 
 struct CommandChangeDwordValue {
-    uint8_t type = COMMAND_CHANGE_DWORD_VALUE;
+    uint8_t instruction = INSTRUCTION_CHANGE_DWORD_VALUE;
     uint8_t duration;
     uint16_t pointer;
     uint32_t value;
 };
 
 struct CommandChangeFloatValue {
-    uint8_t type = COMMAND_CHANGE_FLOAT_VALUE;
+    uint8_t instruction = INSTRUCTION_CHANGE_FLOAT_VALUE;
     uint8_t duration;
     uint16_t pointer;
     _Float32 value;
 };
 
 using CommandVariant = std::variant<
+    Command,
     CommandPortamentoUp,
     CommandPortamentoDown,
     CommandSetMasterGainer,
@@ -103,7 +117,7 @@ struct CommandsSequence {
 
 typedef std::vector<CommandsSequence *> CommandsSequences;
 
-constexpr size_t COMMAND_TYPE = offsetof(Command, type);
+constexpr size_t COMMAND_TYPE = offsetof(Command, instruction);
 constexpr size_t COMMAND_DURATION = offsetof(Command, duration);
 constexpr size_t COMMAND_PORTAMENTO_UP_CHANNEL = offsetof(CommandPortamentoUp, channel);
 constexpr size_t COMMAND_PORTAMENTO_UP_VALUE = offsetof(CommandPortamentoUp, value);
@@ -123,5 +137,16 @@ constexpr size_t COMMAND_CHANGE_FLOAT_VALUE_VALUE = offsetof(CommandChangeFloatV
 
 constexpr size_t COMMANDS_SIZE = offsetof(CommandsSequence, size);
 constexpr size_t COMMANDS_DATA = offsetof(CommandsSequence, commands);
+
+static_assert(sizeof(Command) == SIZE_COMMAND + sizeof(Command::pad), "Command size mismatch");
+static_assert(sizeof(CommandPortamentoUp) == SIZE_COMMAND_PORTAMENTO_UP + sizeof(CommandPortamentoUp::pad), "CommandPortamentoUp size mismatch");
+static_assert(sizeof(CommandPortamentoDown) == SIZE_COMMAND_PORTAMENTO_DOWN + sizeof(CommandPortamentoDown::pad), "CommandPortamentoDown size mismatch");
+static_assert(sizeof(CommandSetMasterGainer) == SIZE_COMMAND_SET_MASTER_GAINER + sizeof(CommandSetMasterGainer::pad), "CommandSetMasterGainer size mismatch");
+static_assert(sizeof(CommandSetBPM) == SIZE_COMMAND_SET_BPM + sizeof(CommandSetBPM::pad), "CommandSetBPM size mismatch");
+static_assert(sizeof(CommandSetDivision) == SIZE_COMMAND_SET_DIVISION + sizeof(CommandSetDivision::pad), "CommandSetDivision size mismatch");
+static_assert(sizeof(CommandChangeByteValue) == SIZE_COMMAND_CHANGE_BYTE_VALUE + sizeof(CommandChangeByteValue::pad), "CommandChangeByteValue size mismatch");
+static_assert(sizeof(CommandChangeWordValue) == SIZE_COMMAND_CHANGE_WORD_VALUE + sizeof(CommandChangeWordValue::pad), "CommandChangeWordValue size mismatch");
+static_assert(sizeof(CommandChangeDwordValue) == SIZE_COMMAND_CHANGE_DWORD_VALUE, "CommandChangeDwordValue size mismatch");
+static_assert(sizeof(CommandChangeFloatValue) == SIZE_COMMAND_CHANGE_FLOAT_VALUE, "CommandChangeFloatValue size mismatch");
 
 #endif // STRUCTURES_COMMANDS_HPP
