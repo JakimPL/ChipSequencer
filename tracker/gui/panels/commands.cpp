@@ -39,12 +39,17 @@ void GUICommandsSequencesPanel::from() {
     if (!is_index_valid()) {
         return;
     }
+
+    current_sequence.pattern.from_sequence(sequence_index);
 }
 
 void GUICommandsSequencesPanel::to() const {
     if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || !is_index_valid()) {
         return;
     }
+
+    CommandsSequence *sequence = commands_sequences[sequence_index];
+    current_sequence.pattern.to_buffer(sequence_index);
 }
 
 void GUICommandsSequencesPanel::add() {

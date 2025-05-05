@@ -1,3 +1,4 @@
+#include "../../general.hpp"
 #include "../mapping.hpp"
 #include "commands.hpp"
 
@@ -14,6 +15,35 @@ CommandsPattern::CommandsPattern()
       ) {
     commands_handler.set_limit(MAX_COMMAND_COMMAND_SIZE);
     values_handler.set_limit(MAX_COMMAND_VALUE_SIZE);
+}
+
+void CommandsPattern::from_sequence(const uint8_t sequence_index) {
+    const CommandsSequence *sequence = commands_sequences[sequence_index];
+    uint16_t total_length = 0;
+
+    commands.clear();
+    values.clear();
+    durations.clear();
+    for (size_t i = 0; i < sequence->length; ++i) {
+        // const CommandVariant &command = sequence->commands[i];
+
+        // durations.push_back(duration);
+        // total_length += duration;
+    }
+
+    steps = total_length;
+}
+
+void CommandsPattern::to_buffer(const size_t sequence_index) const {
+    if (sequence_index == -1) {
+        return;
+    }
+
+    const CommandsSequence *sequence = commands_sequences[sequence_index];
+    const size_t sequence_length = sequence->length;
+    for (size_t i = 0; i < sequence_length; ++i) {
+        // buffers.sequences[sequence_index][i] = {command, value};
+    }
 }
 
 void CommandsPattern::handle_input(const int min_row, const int max_row) {

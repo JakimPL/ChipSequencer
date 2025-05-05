@@ -3,6 +3,7 @@
 
 #include <array>
 #include <cstdint>
+#include <string>
 #include <utility>
 
 #include "../constants.hpp"

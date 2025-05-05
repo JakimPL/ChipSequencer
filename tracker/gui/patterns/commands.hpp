@@ -26,6 +26,9 @@ struct CommandsPattern {
     StringInputHandler commands_handler;
     StringInputHandler values_handler;
 
+    void from_sequence(const uint8_t sequence_index);
+    void to_buffer(const size_t sequence_index) const;
+
     CommandsPattern();
     void handle_input(const int min_row = 0, const int max_row = -1);
     void set_selection(const int row, const CommandSelection item);
