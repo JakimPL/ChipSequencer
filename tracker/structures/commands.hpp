@@ -7,79 +7,76 @@
 #include <variant>
 #include <vector>
 
-enum class CommandType : uint8_t {
-    Empty,
-    PortamentoUp,
-    PortamentoDown,
-    SetMasterGainer,
-    SetBPM,
-    SetDivision,
-    ChangeByteValue,
-    ChangeWordValue,
-    ChangeDwordValue,
-    ChangeFloatValue,
-};
+#include "../constants.hpp"
 
 struct Command {
-    uint8_t type = static_cast<uint8_t>(CommandType::Empty);
+    uint8_t type = COMMAND_EMPTY;
     uint8_t duration;
+    uint8_t pad[6];
 };
 
 struct CommandPortamentoUp {
-    uint8_t type = static_cast<uint8_t>(CommandType::PortamentoUp);
+    uint8_t type = COMMAND_PORTAMENTO_UP;
     uint8_t duration;
     uint8_t channel;
     uint16_t value;
+    uint8_t pad[3];
 };
 
 struct CommandPortamentoDown {
-    uint8_t type = static_cast<uint8_t>(CommandType::PortamentoDown);
+    uint8_t type = COMMAND_PORTAMENTO_DOWN;
     uint8_t duration;
     uint8_t channel;
     uint16_t value;
+    uint8_t pad[3];
 };
 
 struct CommandSetMasterGainer {
-    uint8_t type = static_cast<uint8_t>(CommandType::SetMasterGainer);
+    uint8_t type = COMMAND_SET_MASTER_GAINER;
     uint8_t duration;
     uint16_t gain;
+    uint8_t pad[4];
 };
 
 struct CommandSetBPM {
-    uint8_t type = static_cast<uint8_t>(CommandType::SetBPM);
+    uint8_t type = COMMAND_SET_BPM;
     uint8_t duration;
     uint16_t bpm;
+    uint8_t pad[4];
 };
 
 struct CommandSetDivision {
-    uint8_t type = static_cast<uint8_t>(CommandType::SetDivision);
+    uint8_t type = COMMAND_SET_DIVISION;
     uint8_t duration;
     uint8_t division;
+    uint8_t pad[5];
 };
 
 struct CommandChangeByteValue {
-    uint8_t type = static_cast<uint8_t>(CommandType::ChangeByteValue);
+    uint8_t type = COMMAND_CHANGE_BYTE_VALUE;
     uint8_t duration;
     uint16_t pointer;
     uint8_t value;
+    uint8_t pad[3];
 };
 
 struct CommandChangeWordValue {
-    uint8_t type = static_cast<uint8_t>(CommandType::ChangeWordValue);
+    uint8_t type = COMMAND_CHANGE_WORD_VALUE;
     uint8_t duration;
     uint16_t pointer;
     uint16_t value;
+    uint8_t pad[2];
 };
 
 struct CommandChangeDwordValue {
-    uint8_t type = static_cast<uint8_t>(CommandType::ChangeDwordValue);
+    uint8_t type = COMMAND_CHANGE_DWORD_VALUE;
     uint8_t duration;
     uint16_t pointer;
     uint32_t value;
 };
 
 struct CommandChangeFloatValue {
-    uint8_t type = static_cast<uint8_t>(CommandType::ChangeFloatValue);
+    uint8_t type = COMMAND_CHANGE_FLOAT_VALUE;
     uint8_t duration;
     uint16_t pointer;
     _Float32 value;
