@@ -1050,28 +1050,28 @@ void *Song::deserialize_oscillator(std::ifstream &file) const {
     read_data(file, &size, sizeof(size));
     read_data(file, &oscillator_type, sizeof(oscillator_type));
 
-    switch (oscillator_type) {
-    case GENERATOR_SQUARE: {
+    switch (static_cast<Generator>(oscillator_type)) {
+    case Generator::Square: {
         OscillatorSquare *oscillator = new OscillatorSquare();
         read_data(file, &oscillator->duty_cycle, sizeof(oscillator->duty_cycle));
         return reinterpret_cast<void *>(oscillator);
     }
-    case GENERATOR_SAW: {
+    case Generator::Saw: {
         OscillatorSaw *oscillator = new OscillatorSaw();
         read_data(file, &oscillator->reverse, sizeof(oscillator->reverse));
         return reinterpret_cast<void *>(oscillator);
     }
-    case GENERATOR_SINE: {
+    case Generator::Sine: {
         OscillatorSine *oscillator = new OscillatorSine();
         return reinterpret_cast<void *>(oscillator);
     }
-    case GENERATOR_WAVETABLE: {
+    case Generator::Wavetable: {
         OscillatorWavetable *oscillator = new OscillatorWavetable();
         read_data(file, &oscillator->wavetable_index, sizeof(oscillator->wavetable_index));
         read_data(file, &oscillator->interpolation, sizeof(oscillator->interpolation));
         return reinterpret_cast<void *>(oscillator);
     }
-    case GENERATOR_NOISE: {
+    case Generator::Noise: {
         OscillatorNoise *oscillator = new OscillatorNoise();
         return reinterpret_cast<void *>(oscillator);
     }
@@ -1315,20 +1315,20 @@ void Song::delete_oscillator(void *oscillator) {
 
     const uint8_t *bytes = static_cast<const uint8_t *>(oscillator);
     const uint8_t dsp_type = bytes[1];
-    switch (dsp_type) {
-    case GENERATOR_SQUARE:
+    switch (static_cast<Generator>(dsp_type)) {
+    case Generator::Square:
         delete static_cast<OscillatorSquare *>(oscillator);
         break;
-    case GENERATOR_SAW:
+    case Generator::Saw:
         delete static_cast<OscillatorSaw *>(oscillator);
         break;
-    case GENERATOR_SINE:
+    case Generator::Sine:
         delete static_cast<OscillatorSine *>(oscillator);
         break;
-    case GENERATOR_WAVETABLE:
+    case Generator::Wavetable:
         delete static_cast<OscillatorWavetable *>(oscillator);
         break;
-    case GENERATOR_NOISE:
+    case Generator::Noise:
         delete static_cast<OscillatorNoise *>(oscillator);
         break;
     default:

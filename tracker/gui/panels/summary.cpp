@@ -127,24 +127,24 @@ void GUISummaryPanel::draw_summary() {
         for (const void *oscillator : oscillators) {
             const Oscillator *generic = static_cast<const Oscillator *>(oscillator);
             oscillators_size += 1;
-            switch (generic->generator_index) {
-            case GENERATOR_SQUARE: {
+            switch (static_cast<Generator>(generic->generator_index)) {
+            case Generator::Square: {
                 oscillators_size += SIZE_OSCILLATOR_SQUARE;
                 break;
             }
-            case GENERATOR_SAW: {
+            case Generator::Saw: {
                 oscillators_size += SIZE_OSCILLATOR_SAW;
                 break;
             }
-            case GENERATOR_SINE: {
+            case Generator::Sine: {
                 oscillators_size += SIZE_OSCILLATOR_SINE;
                 break;
             }
-            case GENERATOR_WAVETABLE: {
+            case Generator::Wavetable: {
                 oscillators_size += SIZE_OSCILLATOR_WAVETABLE;
                 break;
             }
-            case GENERATOR_NOISE: {
+            case Generator::Noise: {
                 oscillators_size += SIZE_OSCILLATOR_NOISE;
                 break;
             }
