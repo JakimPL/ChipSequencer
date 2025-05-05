@@ -1297,6 +1297,7 @@ void Song::update_sizes() {
 void Song::clear_data() {
     envelopes.clear();
     sequences.clear();
+    commands_sequences.clear();
     orders.clear();
     oscillators.clear();
     wavetables.clear();

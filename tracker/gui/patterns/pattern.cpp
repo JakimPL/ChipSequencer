@@ -13,7 +13,8 @@ Pattern::Pattern(const uint8_t sequence_index) {
     from_sequence(sequence_index);
 }
 
-void Pattern::from_sequence(const uint8_t sequence_index) {
+void Pattern::from_sequence(const uint8_t index) {
+    sequence_index = index;
     const Sequence *sequence = sequences[sequence_index];
     uint16_t total_length = 0;
 

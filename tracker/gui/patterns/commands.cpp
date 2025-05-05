@@ -17,7 +17,8 @@ CommandsPattern::CommandsPattern()
     values_handler.set_limit(MAX_COMMAND_VALUE_SIZE);
 }
 
-void CommandsPattern::from_sequence(const uint8_t sequence_index) {
+void CommandsPattern::from_sequence(const uint8_t index) {
+    sequence_index = index;
     const CommandsSequence *sequence = commands_sequences[sequence_index];
     uint16_t total_length = 0;
 
