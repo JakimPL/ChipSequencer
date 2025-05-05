@@ -47,20 +47,20 @@ void GUISummaryPanel::draw_summary() {
             const DSP *generic = static_cast<const DSP *>(dsp);
             const size_t effect = generic->effect_index;
             dsps_size += 1 + sizeof(uint32_t);
-            switch (effect) {
-            case EFFECT_GAINER: {
+            switch (static_cast<Effect>(effect)) {
+            case Effect::Gainer: {
                 dsps_size += SIZE_DSP_GAINER;
                 break;
             }
-            case EFFECT_DISTORTION: {
+            case Effect::Distortion: {
                 dsps_size += SIZE_DSP_DISTORTION;
                 break;
             }
-            case EFFECT_FILTER: {
+            case Effect::Filter: {
                 dsps_size += SIZE_DSP_FILTER;
                 break;
             }
-            case EFFECT_DELAY: {
+            case Effect::Delay: {
                 dsps_size += SIZE_DSP_DELAY;
                 break;
             }

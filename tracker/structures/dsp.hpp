@@ -9,6 +9,13 @@
 #include "../constants.hpp"
 #include "../sizes.hpp"
 
+enum class Effect : uint8_t {
+    Gainer = EFFECT_GAINER,
+    Distortion = EFFECT_DISTORTION,
+    Filter = EFFECT_FILTER,
+    Delay = EFFECT_DELAY,
+};
+
 struct DSP {
     uint8_t dsp_size = SIZE_DSP;
     uint8_t effect_index;

@@ -941,22 +941,22 @@ void Song::serialize_dsp_header(std::ofstream &file, void *dsp) const {
 
 void Song::serialize_dsp_body(std::ofstream &file, void *dsp) const {
     const uint8_t effect_index = static_cast<DSP *>(dsp)->effect_index;
-    switch (effect_index) {
-    case EFFECT_DISTORTION: {
-        DSPDistortion *distortion = reinterpret_cast<DSPDistortion *>(dsp);
-        write_data(file, &distortion->splitter, sizeof(distortion->splitter));
-        write_data(file, &distortion->level, sizeof(distortion->level));
-        write_data(file, &distortion->pad, sizeof(distortion->pad));
-        return;
-    }
-    case EFFECT_GAINER: {
+    switch (static_cast<Effect>(effect_index)) {
+    case Effect::Gainer: {
         DSPGainer *gainer = reinterpret_cast<DSPGainer *>(dsp);
         write_data(file, &gainer->splitter, sizeof(gainer->splitter));
         write_data(file, &gainer->volume, sizeof(gainer->volume));
         write_data(file, &gainer->pad, sizeof(gainer->pad));
         return;
     }
-    case EFFECT_FILTER: {
+    case Effect::Distortion: {
+        DSPDistortion *distortion = reinterpret_cast<DSPDistortion *>(dsp);
+        write_data(file, &distortion->splitter, sizeof(distortion->splitter));
+        write_data(file, &distortion->level, sizeof(distortion->level));
+        write_data(file, &distortion->pad, sizeof(distortion->pad));
+        return;
+    }
+    case Effect::Filter: {
         DSPFilter *filter = reinterpret_cast<DSPFilter *>(dsp);
         write_data(file, &filter->splitter, sizeof(filter->splitter));
         write_data(file, &filter->frequency, sizeof(filter->frequency));
@@ -964,7 +964,7 @@ void Song::serialize_dsp_body(std::ofstream &file, void *dsp) const {
         write_data(file, &filter->pad, sizeof(filter->pad));
         return;
     }
-    case EFFECT_DELAY: {
+    case Effect::Delay: {
         DSPDelay *delay = reinterpret_cast<DSPDelay *>(dsp);
         write_data(file, &delay->splitter, sizeof(delay->splitter));
         write_data(file, &delay->dry, sizeof(delay->dry));
@@ -990,19 +990,8 @@ void *Song::deserialize_dsp(std::ifstream &header_file, std::ifstream &body_file
     read_data(header_file, &flag, sizeof(flag));
     read_data(header_file, &output, sizeof(output));
 
-    switch (effect_index) {
-    case EFFECT_DISTORTION: {
-        DSPDistortion *distortion = new DSPDistortion();
-        distortion->dsp_size = dsp_size;
-        distortion->effect_index = effect_index;
-        distortion->output_flag = output_flag;
-        distortion->flag = flag;
-        distortion->output = &output;
-        read_data(body_file, &distortion->splitter, sizeof(distortion->splitter));
-        read_data(body_file, &distortion->level, sizeof(distortion->level));
-        return reinterpret_cast<void *>(distortion);
-    }
-    case EFFECT_GAINER: {
+    switch (static_cast<Effect>(effect_index)) {
+    case Effect::Gainer: {
         DSPGainer *gainer = new DSPGainer();
         gainer->dsp_size = dsp_size;
         gainer->effect_index = effect_index;
@@ -1013,7 +1002,18 @@ void *Song::deserialize_dsp(std::ifstream &header_file, std::ifstream &body_file
         read_data(body_file, &gainer->volume, sizeof(gainer->volume));
         return reinterpret_cast<void *>(gainer);
     }
-    case EFFECT_FILTER: {
+    case Effect::Distortion: {
+        DSPDistortion *distortion = new DSPDistortion();
+        distortion->dsp_size = dsp_size;
+        distortion->effect_index = effect_index;
+        distortion->output_flag = output_flag;
+        distortion->flag = flag;
+        distortion->output = &output;
+        read_data(body_file, &distortion->splitter, sizeof(distortion->splitter));
+        read_data(body_file, &distortion->level, sizeof(distortion->level));
+        return reinterpret_cast<void *>(distortion);
+    }
+    case Effect::Filter: {
         DSPFilter *filter = new DSPFilter();
         filter->dsp_size = dsp_size;
         filter->effect_index = effect_index;
@@ -1025,7 +1025,7 @@ void *Song::deserialize_dsp(std::ifstream &header_file, std::ifstream &body_file
         read_data(body_file, &filter->mode, sizeof(filter->mode));
         return reinterpret_cast<void *>(filter);
     }
-    case EFFECT_DELAY: {
+    case Effect::Delay: {
         DSPDelay *delay = new DSPDelay();
         delay->dsp_size = dsp_size;
         delay->effect_index = effect_index;
@@ -1343,17 +1343,17 @@ void Song::delete_dsp(void *dsp) {
 
     const uint8_t *bytes = static_cast<const uint8_t *>(dsp);
     const uint8_t dsp_type = bytes[1];
-    switch (dsp_type) {
-    case EFFECT_GAINER:
+    switch (static_cast<Effect>(dsp_type)) {
+    case Effect::Gainer:
         delete static_cast<DSPGainer *>(dsp);
         return;
-    case EFFECT_DISTORTION:
+    case Effect::Distortion:
         delete static_cast<DSPDistortion *>(dsp);
         return;
-    case EFFECT_FILTER:
+    case Effect::Filter:
         delete static_cast<DSPFilter *>(dsp);
         return;
-    case EFFECT_DELAY:
+    case Effect::Delay:
         delete static_cast<DSPFilter *>(dsp);
         return;
     default:
