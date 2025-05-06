@@ -50,6 +50,8 @@ void GUICommandsSequencesPanel::to() const {
 
     CommandsSequence *sequence = commands_sequences[sequence_index];
     current_sequence.pattern.to_buffer(sequence_index);
+    const std::vector<Command> command_vector = current_sequence.pattern.to_command_vector();
+    sequence->from_command_vector(command_vector);
 }
 
 void GUICommandsSequencesPanel::add() {

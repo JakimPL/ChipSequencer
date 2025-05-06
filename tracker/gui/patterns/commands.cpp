@@ -26,12 +26,10 @@ void CommandsPattern::from_sequence(const uint8_t index) {
     values.clear();
     durations.clear();
     for (size_t i = 0; i < sequence->length; ++i) {
-        const auto command = sequence->commands[i];
-        const Command generic = std::get<Command>(command);
-        const uint8_t command_type = generic.instruction;
-        switch (static_cast<Instruction>(command_type)) {
+        const Command command = sequence->commands[i];
+        switch (static_cast<Instruction>(command.instruction)) {
         case Instruction::PortamentoUp: {
-            const CommandPortamentoUp portamento_up = std::get<CommandPortamentoUp>(command);
+            const CommandPortamentoUp portamento_up = reinterpret_cast<const CommandPortamentoUp &>(command);
             const std::string channel_string = std::to_string(portamento_up.channel);
             const std::string value_string = std::to_string(portamento_up.value / UINT16_MAX);
             commands.push_back("U");
@@ -39,7 +37,7 @@ void CommandsPattern::from_sequence(const uint8_t index) {
             break;
         }
         case Instruction::PortamentoDown: {
-            const CommandPortamentoDown portamento_down = std::get<CommandPortamentoDown>(command);
+            const CommandPortamentoDown portamento_down = reinterpret_cast<const CommandPortamentoDown &>(command);
             const std::string channel_string = std::to_string(portamento_down.channel);
             const std::string value_string = std::to_string(portamento_down.value / UINT16_MAX);
             commands.push_back("D");
@@ -47,20 +45,20 @@ void CommandsPattern::from_sequence(const uint8_t index) {
             break;
         }
         case Instruction::SetMasterGainer: {
-            const CommandSetMasterGainer set_master_gainer = std::get<CommandSetMasterGainer>(command);
+            const CommandSetMasterGainer set_master_gainer = reinterpret_cast<const CommandSetMasterGainer &>(command);
             commands.push_back("G");
             values.push_back(std::to_string(set_master_gainer.gain / UINT16_MAX));
             break;
         }
         case Instruction::SetBPM: {
-            const CommandSetBPM set_bpm = std::get<CommandSetBPM>(command);
+            const CommandSetBPM set_bpm = reinterpret_cast<const CommandSetBPM &>(command);
             const std::string bpm_string = std::to_string(set_bpm.bpm);
             commands.push_back("B");
             values.push_back(bpm_string);
             break;
         }
         case Instruction::SetDivision: {
-            const CommandSetDivision set_division = std::get<CommandSetDivision>(command);
+            const CommandSetDivision set_division = reinterpret_cast<const CommandSetDivision &>(command);
             const std::string division_string = std::to_string(set_division.division);
             commands.push_back("S");
             values.push_back(division_string);
@@ -72,30 +70,95 @@ void CommandsPattern::from_sequence(const uint8_t index) {
         case Instruction::ChangeFloatValue: {
             commands.push_back("C");
             break;
-        case Instruction::Empty:
+        case Instruction::Empty: {
+            commands.push_back("");
+            break;
+        }
         default: {
             throw std::runtime_error("Invalid command type");
         }
         }
         }
 
-        for (size_t j = 1; j < generic.duration; ++j) {
+        indices.push_back(total_length);
+        total_length += command.duration;
+        for (size_t j = 1; j < command.duration; ++j) {
             commands.push_back("");
             values.push_back("");
         }
 
         steps = total_length;
     }
+
+    if (commands.empty()) {
+        commands.push_back("");
+        values.push_back("");
+        durations.push_back(1);
+        indices.push_back(0);
+    }
 }
 
-std::vector<CommandVariant> CommandsPattern::to_command_vector() const {
-    std::vector<CommandVariant> command_vector;
+std::vector<Command> CommandsPattern::to_command_vector() const {
+    std::vector<Command> command_vector;
     for (size_t i = 0; i < commands.size(); ++i) {
-        Command command;
-        command.instruction = static_cast<uint8_t>(Instruction::Empty);
-        command.duration = durations[i];
-        command_vector.push_back(command);
+        const std::string command = commands[i];
+        const std::string value = values[i];
+        if (command.empty()) {
+            continue;
+        }
+
+        switch (command[0]) {
+        case 'U': {
+            CommandPortamentoUp portamento_up;
+            portamento_up.duration = durations[i];
+            portamento_up.channel = 0;
+            portamento_up.value = 0;
+
+            try {
+                portamento_up.channel = std::stoi(value.substr(1));
+            } catch (const std::out_of_range &e) {
+                portamento_up.channel = 0;
+            } catch (const std::invalid_argument &e) {
+                portamento_up.channel = 0;
+            }
+
+            try {
+                portamento_up.value = static_cast<uint16_t>(std::stoi(value.substr(3)) * UINT16_MAX);
+            } catch (const std::out_of_range &e) {
+                portamento_up.value = 0;
+            } catch (const std::invalid_argument &e) {
+                portamento_up.value = 0;
+            }
+
+            command_vector.push_back(reinterpret_cast<Command &>(portamento_up));
+            break;
+        }
+        case 'D': {
+            CommandPortamentoDown portamento_down;
+            portamento_down.duration = durations[i];
+
+            try {
+                portamento_down.channel = std::stoi(value.substr(1));
+            } catch (const std::out_of_range &e) {
+                portamento_down.channel = 0;
+            } catch (const std::invalid_argument &e) {
+                portamento_down.channel = 0;
+            }
+
+            try {
+                portamento_down.value = static_cast<uint16_t>(std::stoi(value.substr(3)) * UINT16_MAX);
+            } catch (const std::out_of_range &e) {
+                portamento_down.value = 0;
+            } catch (const std::invalid_argument &e) {
+                portamento_down.value = 0;
+            }
+
+            command_vector.push_back(reinterpret_cast<Command &>(portamento_down));
+            break;
+        }
+        }
     }
+
     return command_vector;
 }
 

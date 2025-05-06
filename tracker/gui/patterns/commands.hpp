@@ -2,6 +2,7 @@
 #define GUI_PATTERNS_COMMANDS_HPP
 
 #include <cstdint>
+#include <map>
 #include <vector>
 
 #include "../../structures/commands.hpp"
@@ -22,12 +23,13 @@ struct CommandsPattern {
     std::vector<std::string> commands = {};
     std::vector<std::string> values = {};
     std::vector<uint8_t> durations = {};
+    std::vector<uint8_t> indices = {};
 
     StringInputHandler commands_handler;
     StringInputHandler values_handler;
 
     void from_sequence(const uint8_t sequence_index);
-    std::vector<CommandVariant> to_command_vector() const;
+    std::vector<Command> to_command_vector() const;
     void to_buffer(const size_t sequence_index) const;
 
     CommandsPattern();

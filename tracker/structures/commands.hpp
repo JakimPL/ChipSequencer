@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "../constants.hpp"
+#include "../sizes.hpp"
 
 enum class Instruction : uint8_t {
     Empty = INSTRUCTION_EMPTY,
@@ -31,16 +32,16 @@ struct Command {
 struct CommandPortamentoUp {
     uint8_t instruction = INSTRUCTION_PORTAMENTO_UP;
     uint8_t duration;
-    uint8_t channel;
     uint16_t value;
+    uint8_t channel;
     uint8_t pad[3];
 };
 
 struct CommandPortamentoDown {
     uint8_t instruction = INSTRUCTION_PORTAMENTO_DOWN;
     uint8_t duration;
-    uint8_t channel;
     uint16_t value;
+    uint8_t channel;
     uint8_t pad[3];
 };
 
@@ -95,24 +96,14 @@ struct CommandChangeFloatValue {
     _Float32 value;
 };
 
-using CommandVariant = std::variant<
-    Command,
-    CommandPortamentoUp,
-    CommandPortamentoDown,
-    CommandSetMasterGainer,
-    CommandSetBPM,
-    CommandSetDivision,
-    CommandChangeByteValue,
-    CommandChangeWordValue,
-    CommandChangeDwordValue,
-    CommandChangeFloatValue>;
-
-typedef std::array<CommandVariant, UINT8_MAX> CommandsArray;
+typedef std::array<Command, UINT8_MAX> CommandsArray;
 
 struct CommandsSequence {
     uint16_t size;
     uint8_t length;
     CommandsArray commands;
+
+    void from_command_vector(const std::vector<Command> &command_vector);
 };
 
 typedef std::vector<CommandsSequence *> CommandsSequences;
