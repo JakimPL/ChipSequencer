@@ -214,7 +214,7 @@ void GUIGeneralPanel::draw_tempo() {
     if (ImGui::IsItemHovered()) {
         ImGui::SetTooltip("Real BPM: %s", std::to_string(song.calculate_real_bpm()).c_str());
     }
-    draw_int_slider("Division", current_song.division, {}, GUI_MIN_UNIT, GUI_MAX_UNIT);
+    draw_int_slider("Division", current_song.division, {}, GUI_MIN_DIVISION, GUI_MAX_DIVISION);
     ImGui::EndDisabled();
 }
 

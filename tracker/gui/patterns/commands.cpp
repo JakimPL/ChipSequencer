@@ -48,7 +48,8 @@ void CommandsPattern::from_sequence(const uint8_t index) {
         }
         case Instruction::SetMasterGainer: {
             const CommandSetMasterGainer set_master_gainer = reinterpret_cast<const CommandSetMasterGainer &>(command);
-            add_command("G", std::to_string(set_master_gainer.gain / UINT16_MAX));
+            const double gainer_value = 2 * static_cast<double>(set_master_gainer.gain) / UINT16_MAX;
+            add_command("G", convert_double_to_string(gainer_value, 4));
             break;
         }
         case Instruction::SetBPM: {
@@ -124,6 +125,45 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
             portamento_down.duration = duration;
             split_portamento_value(value, portamento_down.channel, portamento_down.value);
             command_vector.push_back(reinterpret_cast<Command &>(portamento_down));
+            break;
+        }
+        case 'G': {
+            CommandSetMasterGainer set_master_gainer;
+            set_master_gainer.duration = duration;
+            try {
+                const double gain = std::round(std::stod(value) * UINT16_MAX / 2);
+                set_master_gainer.gain = static_cast<uint16_t>(gain);
+            } catch (const std::invalid_argument &) {
+                set_master_gainer.gain = UINT16_MAX / 2;
+            }
+
+            command_vector.push_back(reinterpret_cast<Command &>(set_master_gainer));
+            break;
+        }
+        case 'B': {
+            CommandSetBPM set_bpm;
+            set_bpm.duration = duration;
+            try {
+                int bpm = std::stoi(value);
+                bpm = std::clamp(bpm, GUI_MIN_BPM, GUI_MAX_BPM);
+                set_bpm.bpm = static_cast<uint16_t>(bpm);
+            } catch (const std::invalid_argument &) {
+                set_bpm.bpm = DEFAULT_BPM;
+            }
+            command_vector.push_back(reinterpret_cast<Command &>(set_bpm));
+            break;
+        }
+        case 'S': {
+            CommandSetDivision set_division;
+            set_division.duration = duration;
+            try {
+                int division = std::stoi(value);
+                division = std::clamp(division, GUI_MIN_DIVISION, GUI_MAX_DIVISION);
+                set_division.division = static_cast<uint8_t>(division);
+            } catch (const std::invalid_argument &) {
+                set_division.division = DEFAULT_DIVISION;
+            }
+            command_vector.push_back(reinterpret_cast<Command &>(set_division));
             break;
         }
         }

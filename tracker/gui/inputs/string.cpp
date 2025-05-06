@@ -14,7 +14,7 @@ bool StringInputHandler::handle_input() {
     }
 
     bool value_inserted = false;
-    if (synchronize) {
+    if (synchronize or ImGui::IsKeyPressed(ImGuiKey_Enter)) {
         buffer = strings[index];
     }
 
@@ -51,10 +51,6 @@ bool StringInputHandler::handle_input() {
     try {
         strings[index] = buffer;
     } catch (std::out_of_range &) {
-        buffer.clear();
-    }
-
-    if (ImGui::IsKeyPressed(ImGuiKey_Enter)) {
         buffer.clear();
     }
 
