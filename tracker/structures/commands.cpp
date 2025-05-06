@@ -1,7 +1,4 @@
-#include <iostream>
 #include "commands.hpp"
-
-#include <iostream>
 
 void CommandsSequence::from_command_vector(const std::vector<Command> &command_vector) {
     size = 0;

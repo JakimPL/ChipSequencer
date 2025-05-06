@@ -107,6 +107,7 @@ static ImGuiKey values_keys[] = {
     ImGuiKey_8,
     ImGuiKey_9,
     ImGuiKey_Period,
+    ImGuiKey_Comma,
 };
 
 #endif // GUI_MAPPING_HPP

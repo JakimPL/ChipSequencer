@@ -1,7 +1,7 @@
 #include "string.hpp"
 
-StringInputHandler::StringInputHandler(std::vector<std::string> &strings, int &index, const std::vector<ImGuiKey> keys)
-    : strings(strings), InputHandler(index), keys(keys) {
+StringInputHandler::StringInputHandler(std::vector<std::string> &strings, int &index, const std::vector<ImGuiKey> keys, const bool synchronize)
+    : strings(strings), InputHandler(index), keys(keys), synchronize(synchronize) {
 }
 
 bool StringInputHandler::handle_input() {
@@ -14,12 +14,15 @@ bool StringInputHandler::handle_input() {
     }
 
     bool value_inserted = false;
-    buffer = strings[index];
+    if (synchronize) {
+        buffer = strings[index];
+    }
+
     if (ImGui::IsKeyPressed(ImGuiKey_Backspace)) {
         if (!buffer.empty()) {
             buffer.pop_back();
         }
-    } else if (ImGui::IsKeyPressed(ImGuiKey_Backspace)) {
+    } else if (ImGui::IsKeyPressed(ImGuiKey_Space)) {
         buffer.clear();
     }
 
@@ -32,6 +35,8 @@ bool StringInputHandler::handle_input() {
                 input_character = '0' + (key - ImGuiKey_0);
             } else if (key == ImGuiKey_Period) {
                 input_character = '.';
+            } else if (key == ImGuiKey_Comma) {
+                input_character = ',';
             }
 
             if (buffer.size() >= limit) {
@@ -46,6 +51,10 @@ bool StringInputHandler::handle_input() {
     try {
         strings[index] = buffer;
     } catch (std::out_of_range &) {
+        buffer.clear();
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_Enter)) {
         buffer.clear();
     }
 

@@ -18,6 +18,9 @@ class InputHandler {
     virtual bool handle_input() = 0;
     void set_limit(const int max);
     void clear();
+
+    std::string get_buffer() const;
+    void set_buffer(const std::string &value);
 };
 
 #endif // GUI_INPUTS_INPUT_HPP

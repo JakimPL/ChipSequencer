@@ -1,6 +1,8 @@
 #include <algorithm>
+#include <iomanip>
 #include <cctype>
 #include <cstring>
+#include <sstream>
 
 #include "string.hpp"
 
@@ -17,4 +19,21 @@ void string_copy_to_buffer(const std::string &string, char *target, size_t size)
 
     std::strncpy(target, string.c_str(), size - 1);
     target[size - 1] = '\0';
+}
+
+std::vector<std::string> split(const std::string &string, char delimiter) {
+    std::vector<std::string> tokens;
+    std::string token;
+    std::istringstream stream(string);
+    while (std::getline(stream, token, delimiter)) {
+        tokens.push_back(token);
+    }
+
+    return tokens;
+}
+
+std::string convert_double_to_string(const double value, const uint8_t decimals) {
+    std::ostringstream stream;
+    stream << std::fixed << std::setprecision(decimals) << value;
+    return stream.str();
 }

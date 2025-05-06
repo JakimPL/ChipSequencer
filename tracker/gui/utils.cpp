@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 
 #include "../general.hpp"
 #include "../maps/routing.hpp"
@@ -236,13 +235,16 @@ std::pair<size_t, bool> draw_commands_pattern(CommandsPattern &pattern, const bo
                 ImGui::PopStyleColor();
             }
 
+            std::string value;
             if (is_value_selected) {
                 ImGui::PushStyleColor(ImGuiCol_Text, GUI_HIGHLIGHT_COLOR);
+                value = pattern.values_handler.get_buffer();
+            } else {
+                value = pattern.values[i].empty() ? "......" : pattern.values[i];
             }
 
             ImGui::TableSetColumnIndex(2);
             ImGui::PushID(MAX_STEPS + i);
-            const std::string value = pattern.values[i].empty() ? "......" : pattern.values[i];
             if (ImGui::Selectable(value.c_str(), is_value_selected)) {
                 pattern.set_selection(i, CommandSelection::Value);
                 select = true;
