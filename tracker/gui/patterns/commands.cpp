@@ -99,20 +99,31 @@ void CommandsPattern::from_sequence(const uint8_t index) {
 }
 
 std::vector<Command> CommandsPattern::to_command_vector() const {
+    uint8_t duration = 1;
+
     std::vector<Command> command_vector;
-    for (size_t i = 0; i < commands.size(); ++i) {
+    for (int i = steps - 1; i >= 0; --i) {
+        if (i >= commands.size()) {
+            if (command_vector.empty()) {
+                Command empty_command;
+                empty_command.duration = 1;
+                command_vector.push_back(empty_command);
+            }
+            continue;
+        }
+
         const std::string command = commands[i];
         const std::string value = values[i];
-        if (command.empty()) {
+
+        if (command.empty() && i > 0) {
+            ++duration;
             continue;
         }
 
         switch (command[0]) {
         case 'U': {
             CommandPortamentoUp portamento_up;
-            portamento_up.duration = durations[i];
-            portamento_up.channel = 0;
-            portamento_up.value = 0;
+            portamento_up.duration = duration;
 
             try {
                 portamento_up.channel = std::stoi(value.substr(1));
@@ -135,7 +146,7 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
         }
         case 'D': {
             CommandPortamentoDown portamento_down;
-            portamento_down.duration = durations[i];
+            portamento_down.duration = duration;
 
             try {
                 portamento_down.channel = std::stoi(value.substr(1));
@@ -157,8 +168,11 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
             break;
         }
         }
+
+        duration = 1;
     }
 
+    std::reverse(command_vector.begin(), command_vector.end());
     return command_vector;
 }
 
