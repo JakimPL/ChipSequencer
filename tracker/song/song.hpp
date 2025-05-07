@@ -47,9 +47,8 @@ class Song {
     std::string get_element_path(const std::string &directory, const std::string prefix, const size_t i, const char separator = '/') const;
     void calculate_song_length();
 
-    void serialize_dsp_header(std::ofstream &file, void *dsp) const;
-    void serialize_dsp_body(std::ofstream &file, void *dsp) const;
-    void *deserialize_dsp(std::ifstream &header_file, std::ifstream &body_file) const;
+    void serialize_dsp(std::ofstream &file, void *dsp) const;
+    void *deserialize_dsp(std::ifstream &file) const;
     void *deserialize_oscillator(std::ifstream &file) const;
 
     void export_all(const std::string &directory) const;

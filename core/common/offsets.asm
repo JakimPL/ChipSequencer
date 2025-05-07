@@ -48,24 +48,24 @@
     %define DSP_EFFECT_INDEX 1
     %define DSP_OUTPUT_FLAG 2
     %define DSP_FLAG 3
-    %define DSP_OUTPUT 4
-    %define DSP_SPLITTER 8
+    %define DSP_SPLITTER 4
+    %define DSP_TARGET 8
 
 ; Gainer
-    %define DSP_GAINER_VOLUME 12
+    %define DSP_GAINER_VOLUME 9
 
 ; Distortion
-    %define DSP_DISTORTION_LEVEL 12
+    %define DSP_DISTORTION_LEVEL 9
 
 ; Filter
-    %define DSP_FILTER_FREQUENCY 12
-    %define DSP_FILTER_MODE 14
+    %define DSP_FILTER_FREQUENCY 9
+    %define DSP_FILTER_MODE 11
 
 ; Delay
-    %define DSP_DELAY_DRY 12
-    %define DSP_DELAY_WET 13
-    %define DSP_DELAY_FEEDBACK 14
-    %define DSP_DELAY_TIME 15
+    %define DSP_DELAY_DRY 9
+    %define DSP_DELAY_WET 10
+    %define DSP_DELAY_FEEDBACK 11
+    %define DSP_DELAY_TIME 12
 
 ; Commands
     %define COMMAND_TYPE 0

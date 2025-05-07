@@ -6,16 +6,17 @@
 #include "link.hpp"
 
 void Link::assign_output() {
-    Channel *channel = reinterpret_cast<Channel *>(item);
-    void **dsp_output = reinterpret_cast<void **>(item + DSP_OUTPUT);
-
     switch (type) {
-    case ItemType::CHANNEL:
+    case ItemType::CHANNEL: {
+        Channel *channel = reinterpret_cast<Channel *>(item);
         channel->target = table_id;
         break;
-    case ItemType::DSP:
-        *dsp_output = pointer;
+    }
+    case ItemType::DSP: {
+        DSP *dsp = reinterpret_cast<DSP *>(item);
+        dsp->target = table_id;
         break;
+    }
     }
 }
 

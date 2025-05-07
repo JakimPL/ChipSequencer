@@ -59,7 +59,12 @@ load_dsp_target:
     mov edx, [DSP_SPLITTER + edi]
     mov cl, [DSP_OUTPUT_FLAG + edi]
     mov ch, [DSP_FLAG + edi]
-    mov edi, [DSP_OUTPUT + edi]
+    movzx edi, byte [DSP_TARGET + edi]
+    %ifdef BITS_16
+    mov edi, [targets + 2 * edi]
+    %else
+    mov edi, [targets + 4 * edi]
+    %endif
     ret
 
 load_dsp_buffer:
