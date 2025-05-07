@@ -127,8 +127,11 @@ void LinkManager::set_links() {
 }
 
 void LinkManager::save_targets() const {
-    targets.clear();
+    targets = {nullptr};
+    targets[0] = &(output[0]);
+    size_t size = 1;
     std::map<void *, size_t> pointers_map;
+    pointers_map[&(output[0])] = 0;
 
     for (const ItemType type : {ItemType::CHANNEL, ItemType::DSP}) {
         for (Link &link : links[static_cast<size_t>(type)]) {
@@ -138,9 +141,10 @@ void LinkManager::save_targets() const {
 
             const auto it = pointers_map.find(link.pointer);
             if (it == pointers_map.end()) {
-                targets.push_back(link.pointer);
-                link.table_id = targets.size() - 1;
+                targets[size] = link.pointer;
+                link.table_id = size;
                 pointers_map[link.pointer] = link.table_id;
+                size++;
             } else {
                 link.table_id = it->second;
             }

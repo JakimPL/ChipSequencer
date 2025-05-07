@@ -11,7 +11,7 @@ void Link::assign_output() {
 
     switch (type) {
     case ItemType::CHANNEL:
-        channel->output = pointer;
+        channel->target = table_id;
         break;
     case ItemType::DSP:
         *dsp_output = pointer;

@@ -56,7 +56,12 @@ load_channel_target:
     mov edx, [CHANNEL_SPLITTER + edi]
     mov cl, [CHANNEL_OUTPUT_FLAG + edi]
     mov ch, [CHANNEL_FLAG + edi]
-    mov edi, [CHANNEL_OUTPUT + edi]
+    movzx edi, byte [CHANNEL_TARGET + edi]
+    %ifdef BITS_16
+    mov edi, [targets + 2 * edi]
+    %else
+    mov edi, [targets + 4 * edi]
+    %endif
     ret
 
     SEGMENT_BSS

@@ -352,7 +352,7 @@ Channel *Song::add_channel() {
     channel->oscillator_index = 0;
     channel->output_flag = DEFAULT_OUTPUT_FLAG;
     channel->pitch = DEFAULT_CHANNEL_PITCH;
-    channel->output = &output;
+    channel->target = 0;
     channel->splitter[0] = 0x80;
     channel->splitter[1] = 0x80;
     channel->splitter[2] = 0x00;
@@ -1117,15 +1117,10 @@ void Song::export_channels(const std::string &directory) const {
     std::filesystem::create_directories(series_dir);
     for (size_t i = 0; i < channels.size(); i++) {
         const Channel *channel = channels[i];
-        std::string filename = get_element_path(series_dir, "chan_o", i);
-        std::ofstream output_file(filename, std::ios::binary);
-        channel->serialize_output(output_file, channel);
-        output_file.close();
-
-        filename = get_element_path(series_dir, "chan", i);
-        std::ofstream body_file(filename, std::ios::binary);
-        channel->serialize_body(body_file, channel);
-        body_file.close();
+        const std::string filename = get_element_path(series_dir, "chan", i);
+        std::ofstream file(filename, std::ios::binary);
+        channel->serialize(file, channel);
+        file.close();
     }
 }
 
@@ -1254,14 +1249,11 @@ void Song::import_dsps(const std::string &song_dir, const nlohmann::json &json) 
 void Song::import_channels(const std::string &song_dir, const nlohmann::json &json) {
     const size_t channel_count = json["data"]["channels"];
     for (size_t i = 0; i < channel_count; i++) {
-        std::string filename = get_element_path(song_dir + "/chans", "chan_o", i);
-        std::ifstream output_file(filename, std::ios::binary);
-        filename = get_element_path(song_dir + "/chans", "chan", i);
-        std::ifstream body_file(filename, std::ios::binary);
-        Channel *channel = Channel::deserialize(output_file, body_file);
+        const std::string filename = get_element_path(song_dir + "/chans", "chan", i);
+        std::ifstream file(filename, std::ios::binary);
+        Channel *channel = Channel::deserialize(file);
         channels.push_back(channel);
-        output_file.close();
-        body_file.close();
+        file.close();
     }
 }
 

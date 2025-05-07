@@ -1,4 +1,4 @@
-    %define SIZE_CHANNEL 20
+    %define SIZE_CHANNEL 16
     %define SIZE_ENVELOPE 14
 
     %define SIZE_OSCILLATOR_SINE 1

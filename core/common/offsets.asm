@@ -1,13 +1,13 @@
 ; Channel
-    %define CHANNEL_OUTPUT 0
-    %define CHANNEL_SPLITTER 4
-    %define CHANNEL_OUTPUT_FLAG 8
-    %define CHANNEL_ENVELOPE_INDEX 9
-    %define CHANNEL_ORDER_INDEX 10
-    %define CHANNEL_OSCILLATOR_INDEX 11
-    %define CHANNEL_PITCH 12
-    %define CHANNEL_FLAG 16
-    %define CHANNEL_FRACTION 17
+    %define CHANNEL_SPLITTER 0
+    %define CHANNEL_PITCH 4
+    %define CHANNEL_TARGET 8
+    %define CHANNEL_OUTPUT_FLAG 9
+    %define CHANNEL_FLAG 10
+    %define CHANNEL_ENVELOPE_INDEX 11
+    %define CHANNEL_ORDER_INDEX 12
+    %define CHANNEL_OSCILLATOR_INDEX 13
+    %define CHANNEL_FRACTION 14
 
 ; Envelope
     %define ENVELOPE_BASE_VOLUME 0
