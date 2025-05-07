@@ -659,31 +659,6 @@ void Song::generate_header_vector(
     }
 }
 
-void Song::generate_header_channel_vector(std::stringstream &asm_content, const char separator) const {
-    asm_content << "\n\nchannels:\n";
-    for (size_t i = 0; i < channels.size(); i++) {
-        asm_content << "\nglobal channels.channel_" << i << ":\n";
-        asm_content << ".channel_" << i << ":\n";
-        asm_content << "dd " << link_manager.get_link_reference(ItemType::CHANNEL, i) << "\n";
-        asm_content << "incbin \"song" << separator << get_element_path("chans", "chan", i, separator) << "\"\n";
-    }
-}
-
-void Song::generate_header_dsp_vector(std::stringstream &asm_content, const char separator) const {
-    asm_content << "\n\ndsps:\n";
-    for (size_t i = 0; i < dsps.size(); i++) {
-        const DSP *dsp = static_cast<DSP *>(dsps[i]);
-        asm_content << "\nglobal dsps.dsp_" << i << ":\n";
-        asm_content << ".dsp_" << i << ":\n";
-        asm_content << "db " << static_cast<int>(dsp->dsp_size) << "\n";
-        asm_content << "db " << static_cast<int>(dsp->effect_index) << "\n";
-        asm_content << "db " << static_cast<int>(dsp->output_flag) << "\n";
-        asm_content << "db 0\n";
-        asm_content << "dd " << link_manager.get_link_reference(ItemType::DSP, i) << "\n";
-        asm_content << "incbin \"song" << separator << get_element_path("dsps", "dsp", i, separator) << "\"\n";
-    }
-}
-
 void Song::set_used_flags(std::stringstream &asm_content) const {
     if (!dsps.empty()) {
         asm_content << "    \%define USED_DSP\n";
@@ -765,11 +740,14 @@ std::string Song::generate_data_asm_file(const char separator) const {
     generate_header_vector(asm_content, "order", "order", orders.size(), separator);
     generate_header_vector(asm_content, "oscillator", "osc", oscillators.size(), separator);
     generate_header_vector(asm_content, "wavetable", "wave", wavetables.size(), separator);
-    generate_header_dsp_vector(asm_content, separator);
-    generate_header_channel_vector(asm_content, separator);
+    generate_header_vector(asm_content, "channel", "chan", channels.size(), separator);
+    generate_header_vector(asm_content, "dsp", "dsp", dsps.size(), separator);
 
     asm_content << "buffer_offsets:\n";
     asm_content << "incbin \"song" << separator << "offsets.bin\"\n";
+
+    asm_content << "targets:\n";
+    asm_content << "incbin \"song" << separator << "targets.bin\"\n";
 
     return asm_content.str();
 }

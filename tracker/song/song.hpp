@@ -36,8 +36,6 @@ class Song {
         const size_t size,
         const char separator = '/'
     ) const;
-    void generate_header_channel_vector(std::stringstream &asm_content, const char separator = '/') const;
-    void generate_header_dsp_vector(std::stringstream &asm_content, const char separator) const;
     void set_used_flags(std::stringstream &asm_content) const;
     std::string generate_header_asm_file() const;
     std::string generate_data_asm_file(const char separator = '/') const;

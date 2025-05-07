@@ -126,10 +126,10 @@ void LinkManager::set_links() {
     save_targets();
 }
 
-void LinkManager::save_targets() const {
+void LinkManager::save_targets() {
     targets = {nullptr};
     targets[0] = &(output[0]);
-    size_t size = 1;
+    targets_count = 1;
     std::map<void *, size_t> pointers_map;
     pointers_map[&(output[0])] = 0;
 
@@ -141,15 +141,19 @@ void LinkManager::save_targets() const {
 
             const auto it = pointers_map.find(link.pointer);
             if (it == pointers_map.end()) {
-                targets[size] = link.pointer;
-                link.table_id = size;
+                targets[targets_count] = link.pointer;
+                link.table_id = targets_count;
                 pointers_map[link.pointer] = link.table_id;
-                size++;
+                targets_count++;
             } else {
                 link.table_id = it->second;
             }
         }
     }
+}
+
+size_t LinkManager::get_targets_count() const {
+    return targets_count;
 }
 
 void LinkManager::realign_links(const size_t index, const Target target, const ItemType type) {
