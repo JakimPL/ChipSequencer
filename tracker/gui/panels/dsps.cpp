@@ -132,6 +132,7 @@ void GUIDSPsPanel::to() const {
     current_dsp.output_type.set_output_flag(dsp->output_flag);
     current_dsp.output_type.set_item_flag(dsp->flag);
     link_manager.set_link(link, buffer, dsp_index);
+    link_manager.save_targets();
 }
 
 void GUIDSPsPanel::add() {

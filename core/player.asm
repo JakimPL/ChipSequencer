@@ -26,6 +26,7 @@
     extern dsps
     extern channels
     extern buffer_offsets
+    extern targets
 
     %ifn DIRECT_MODE
     global buffer

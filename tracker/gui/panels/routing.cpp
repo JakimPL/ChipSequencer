@@ -61,6 +61,8 @@ void GUIRoutingPanel::to() const {
             link_manager.set_link(link, link.item, id);
         }
     }
+
+    link_manager.save_targets();
 }
 
 void GUIRoutingPanel::collect_links() {

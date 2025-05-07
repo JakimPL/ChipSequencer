@@ -20,4 +20,5 @@ Wavetables wavetables;
 DSPs dsps;
 Channels channels;
 Offsets buffer_offsets;
+Targets targets;
 Links links;

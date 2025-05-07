@@ -1,4 +1,5 @@
 #include <iostream>
+#include <map>
 
 #include "../../general.hpp"
 #include "manager.hpp"
@@ -119,6 +120,30 @@ void LinkManager::set_links() {
             set_link(link, item, i);
         } catch (const std::out_of_range &exception) {
             std::cerr << "Error setting link for a DSP " << i << ": " << exception.what() << std::endl;
+        }
+    }
+
+    save_targets();
+}
+
+void LinkManager::save_targets() const {
+    targets.clear();
+    std::map<void *, size_t> pointers_map;
+
+    for (const ItemType type : {ItemType::CHANNEL, ItemType::DSP}) {
+        for (Link &link : links[static_cast<size_t>(type)]) {
+            if (link.target == Target::UNUSED) {
+                continue;
+            }
+
+            const auto it = pointers_map.find(link.pointer);
+            if (it == pointers_map.end()) {
+                targets.push_back(link.pointer);
+                link.table_id = targets.size() - 1;
+                pointers_map[link.pointer] = link.table_id;
+            } else {
+                link.table_id = it->second;
+            }
         }
     }
 }

@@ -19,3 +19,4 @@ wavetables:
 dsps:
 channels:
 buffer_offsets:
+tagets:

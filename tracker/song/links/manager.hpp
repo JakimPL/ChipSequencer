@@ -29,6 +29,7 @@ class LinkManager {
     void reset();
     void set_link(Link &link, void *item, const uint8_t i);
     void set_links();
+    void save_targets() const;
 
     void realign_links(const size_t index, const Target target, const ItemType type);
     void realign_links(const size_t index, const Target target);

@@ -42,6 +42,7 @@ extern Wavetables wavetables;
 extern DSPs dsps;
 extern Channels channels;
 extern Offsets buffer_offsets;
+extern Targets targets;
 
 extern Links links;
 

@@ -16,9 +16,11 @@ struct Link {
     Target target;
     uint32_t index;
     uint16_t offset;
+
     void *item = nullptr;
     void *base = nullptr;
     void *pointer = nullptr;
+    uint8_t table_id = -1;
     LinkKey key;
 
     void assign_output();

@@ -102,6 +102,7 @@ void GUIChannelsPanel::to() const {
     current_channel.output_type.set_splitter(channel->splitter);
     try {
         link_manager.set_link(link, static_cast<void *>(channel), channel_index);
+        link_manager.save_targets();
     } catch (const std::out_of_range &exception) {
         std::cerr << "Error: " << exception.what() << std::endl;
     }
