@@ -6,8 +6,8 @@ distortion:
 
 .load_coefficient:
     LOAD_OFFSET ecx, dsp_offset
-    fild dword [DSP_DISTORTION_LEVEL + ecx]
-    fdiv dword [f_65536]
+    fild word [DSP_DISTORTION_LEVEL + ecx]
+    fdiv dword [half_range]
 
 .calculate_coefficient:
 ; p = 1 / (1 - a); a from [0, 1]

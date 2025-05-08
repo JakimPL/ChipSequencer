@@ -54,7 +54,7 @@ void GUIDSPsPanel::from() {
     case Effect::Distortion: {
         current_dsp.type = "Distortion";
         const DSPDistortion *distortion = static_cast<const DSPDistortion *>(dsp);
-        current_dsp.distortion_level = static_cast<float>(distortion->level) / UINT16_MAX;
+        current_dsp.distortion_level = 2.0f * static_cast<float>(distortion->level) / UINT16_MAX;
         break;
     }
     case Effect::Filter: {
@@ -70,7 +70,7 @@ void GUIDSPsPanel::from() {
         current_dsp.delay_dry = static_cast<float>(delay->dry) / UINT8_MAX;
         current_dsp.delay_wet = static_cast<float>(delay->wet) / UINT8_MAX;
         current_dsp.delay_feedback = static_cast<float>(delay->feedback) / UINT8_MAX;
-        current_dsp.delay_time = static_cast<float>(delay->delay_time) / UINT16_MAX * 20;
+        current_dsp.delay_time = static_cast<float>(delay->delay_time) / UINT16_MAX * 20.0f;
         break;
     }
     default:
@@ -100,7 +100,7 @@ void GUIDSPsPanel::to() const {
         static_cast<DSP *>(buffer)->~DSP();
         DSPDistortion *dsp = new (buffer) DSPDistortion();
         dsp->effect_index = EFFECT_DISTORTION;
-        dsp->level = static_cast<uint16_t>(std::round(current_dsp.distortion_level * UINT16_MAX));
+        dsp->level = static_cast<uint16_t>(std::round(current_dsp.distortion_level * UINT16_MAX / 2.0f));
         break;
     }
     case Effect::Filter: {
@@ -118,7 +118,7 @@ void GUIDSPsPanel::to() const {
         dsp->dry = static_cast<uint8_t>(std::round(current_dsp.delay_dry * UINT8_MAX));
         dsp->wet = static_cast<uint8_t>(std::round(current_dsp.delay_wet * UINT8_MAX));
         dsp->feedback = static_cast<uint8_t>(std::round(current_dsp.delay_feedback * UINT8_MAX));
-        dsp->delay_time = static_cast<uint16_t>(std::round(current_dsp.delay_time * UINT16_MAX / 20));
+        dsp->delay_time = static_cast<uint16_t>(std::round(current_dsp.delay_time * UINT16_MAX / 20.0f));
         break;
     }
     default:
