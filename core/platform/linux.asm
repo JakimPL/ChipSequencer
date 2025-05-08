@@ -1,10 +1,14 @@
     bits 32
 
-    global output
-
     %define BIN
+
+    %ifdef DEBUG
+    global _start
+    %else
+    global output
     %define FILE_SIZE 0x1000
     %define MEMORY_SIZE 0xD00000
+    %endif
 
     %define SYS_EXIT 0x01
     %define SYS_FORK 0x02
@@ -14,13 +18,14 @@
     %define SYS_PIPE 0x2A
     %define SYS_DUP2 0x3F
 
-    org $00010000
+    %ifndef DEBUG
+    org 0x10000
 program_start:
     db $7F, "ELF", 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0
     dw 2
     dw 3
     dd 1
-    dd entry
+    dd _start
     dd phdr - program_start
     dd 0
     dd 0
@@ -42,18 +47,19 @@ phdr:
     dd 7
     dd 4096
     phdr_size equ $ - phdr
+    %endif
 
 message:
-    db "{message}", 10
+    db "Chip Sequencer by Jakim, 2025", 10
     message_len equ $ - message
 cmd_aplay:
     db "/bin/aplay", 0
 cmd_dash_r:
     db "-r", 0
 cmd_sample_rate:
-    db "{sample_rate}", 0
+    db "44100", 0
 cmd_channels:
-    db "{output_channels}", 0
+    db "2", 0
 cmd_dash_c:
     db "-c", 0
 cmd_format:
@@ -62,7 +68,7 @@ cmd_dash_f:
     db "-f", 0
 
 print_message:
-    mov eax, 4
+    mov eax, SYS_WRITE
     mov ebx, 1
     mov ecx, message
     mov edx, message_len
@@ -74,13 +80,13 @@ sound_driver_initialize:
 sound_driver_terminate:
     ret
 
-entry:
+_start:
 .pipe:
     mov al, SYS_PIPE
     mov ebx, esp
     int 0x80
     lea edx, [ebx + 12]
-    mov ebp, entry
+    mov ebp, _start
 .fork:
     mov al, SYS_FORK
     int 0x80
@@ -100,7 +106,7 @@ main_loop:
     mov eax, SYS_WRITE
     mov ebx, [esp + 36]
     mov ecx, output
-    mov edx, 4 * {output_channels}
+    mov edx, 4 * 2
     int 0x80
 
     popa
