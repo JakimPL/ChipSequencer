@@ -57,7 +57,7 @@ void Song::save_to_file(const std::string &filename) {
     try {
         calculate_song_length();
         link_manager.set_links();
-        export_all(song_dir);
+        export_all(song_dir, CompilationTarget::Linux);
         compress_directory(song_dir, filename);
         std::filesystem::remove_all(temp_base);
     } catch (const std::exception &exception) {
@@ -90,12 +90,13 @@ void Song::load_from_file(const std::string &filename) {
     }
 }
 
-void Song::compile(const std::string &filename, bool compress, const std::string platform) const {
+void Song::compile(const std::string &filename, bool compress, const CompilationTarget compilation_target) const {
+    const std::string platform = (compilation_target == CompilationTarget::DOS) ? "dos" : "linux";
     const auto [temp_base, song_path] = prepare_temp_directory();
     const std::string song_dir = song_path.string();
 
     try {
-        export_all(song_dir);
+        export_all(song_dir, compilation_target);
         compile_sources(temp_base.string(), filename, compress, platform);
         std::filesystem::remove_all(temp_base);
     } catch (const std::exception &exception) {
@@ -178,9 +179,9 @@ void Song::set_output_channels(const uint8_t channels) {
     output_channels = std::clamp(static_cast<int>(channels), 1, MAX_OUTPUT_CHANNELS);
 }
 
-void Song::export_all(const std::string &directory) const {
+void Song::export_all(const std::string &directory, const CompilationTarget compilation_target) const {
     export_header_asm_file(directory);
-    export_data_asm_file(directory);
+    export_data_asm_file(directory, compilation_target);
     export_header(directory);
     export_series(directory, "envel", envelopes, {sizeof(Envelope)});
     export_channels(directory);
@@ -715,7 +716,25 @@ std::string Song::generate_header_asm_file() const {
     return asm_content.str();
 }
 
-std::string Song::generate_data_asm_file(const char separator) const {
+void Song::generate_targets_asm(
+    std::stringstream &asm_content,
+    const CompilationTarget compilation_target,
+    const char separator
+) const {
+    asm_content << "targets:\n";
+    const auto pointers = link_manager.get_pointers_map();
+    for (const auto &pair : pointers) {
+        const LinkKey key = pair.second;
+        if (compilation_target == CompilationTarget::DOS) {
+            asm_content << "    dw ";
+        } else {
+            asm_content << "    dw ";
+        }
+        asm_content << link_manager.get_link_reference(key) << "\n";
+    }
+}
+
+std::string Song::generate_data_asm_file(const CompilationTarget compilation_target, const char separator) const {
     std::stringstream asm_content;
     asm_content << "SEGMENT_DATA\n";
     asm_content << "bpm:\n";
@@ -746,8 +765,7 @@ std::string Song::generate_data_asm_file(const char separator) const {
     asm_content << "buffer_offsets:\n";
     asm_content << "incbin \"song" << separator << "offsets.bin\"\n";
 
-    asm_content << "targets:\n";
-    asm_content << "incbin \"song" << separator << "targets.bin\"\n";
+    generate_targets_asm(asm_content, compilation_target, separator);
 
     return asm_content.str();
 }
@@ -1036,8 +1054,8 @@ void Song::export_header_asm_file(const std::string &directory) const {
     asm_file.close();
 }
 
-void Song::export_data_asm_file(const std::string &directory) const {
-    std::string asm_content = generate_data_asm_file();
+void Song::export_data_asm_file(const std::string &directory, const CompilationTarget compilation_target) const {
+    std::string asm_content = generate_data_asm_file(compilation_target);
     std::ofstream asm_file(directory + "/data.asm");
     asm_file << asm_content;
     asm_file.close();

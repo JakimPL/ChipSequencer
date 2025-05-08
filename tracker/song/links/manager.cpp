@@ -101,25 +101,19 @@ void LinkManager::set_link(Link &link, void *item, const uint8_t i) {
 
 void LinkManager::set_links() {
     clear();
-    size_t link_type = static_cast<size_t>(ItemType::CHANNEL);
-    for (size_t i = 0; i < channels.size(); i++) {
-        Link &link = links[link_type][i];
-        void *item = channels[i];
-        try {
-            set_link(link, item, i);
-        } catch (const std::out_of_range &exception) {
-            std::cerr << "Error setting link for a channel " << i << ": " << exception.what() << std::endl;
-        }
-    }
-
-    link_type = static_cast<size_t>(ItemType::DSP);
-    for (size_t i = 0; i < dsps.size(); i++) {
-        Link &link = links[link_type][i];
-        void *item = dsps[i];
-        try {
-            set_link(link, item, i);
-        } catch (const std::out_of_range &exception) {
-            std::cerr << "Error setting link for a DSP " << i << ": " << exception.what() << std::endl;
+    for (const auto &[type, name] : {
+             std::pair<ItemType, std::string>({ItemType::CHANNEL, "channel"}),
+             std::pair<ItemType, std::string>({ItemType::DSP, "DSP"}),
+         }) {
+        size_t link_type = static_cast<size_t>(type);
+        for (size_t i = 0; i < links[link_type].size(); i++) {
+            Link &link = links[link_type][i];
+            void *item = channels[i];
+            try {
+                set_link(link, item, i);
+            } catch (const std::out_of_range &exception) {
+                std::cerr << "Error setting link for a " << name << " " << i << ": " << exception.what() << std::endl;
+            }
         }
     }
 
@@ -127,33 +121,35 @@ void LinkManager::set_links() {
 }
 
 void LinkManager::save_targets() {
+    pointers_map.clear();
     targets = {nullptr};
     targets[0] = &(output[0]);
-    targets_count = 1;
-    std::map<void *, size_t> pointers_map;
-    pointers_map[&(output[0])] = 0;
 
+    std::map<void *, size_t> index_map;
+    void *output_pointer = &(output[0]);
+    const LinkKey output_key = {Target::DIRECT_OUTPUT, 0, 0};
+    pointers_map.push_back({output_pointer, output_key});
+    index_map[output_pointer] = 0;
+
+    size_t size = 1;
     for (const ItemType type : {ItemType::CHANNEL, ItemType::DSP}) {
         for (Link &link : links[static_cast<size_t>(type)]) {
             if (link.target == Target::UNUSED) {
                 continue;
             }
 
-            const auto it = pointers_map.find(link.pointer);
-            if (it == pointers_map.end()) {
-                targets[targets_count] = link.pointer;
-                link.table_id = targets_count;
-                pointers_map[link.pointer] = link.table_id;
-                targets_count++;
+            const auto it = index_map.find(link.pointer);
+            if (it == index_map.end()) {
+                targets[size] = link.pointer;
+                link.table_id = size;
+                index_map[link.pointer] = link.table_id;
+                pointers_map.push_back({link.pointer, link.key});
+                size++;
             } else {
                 link.table_id = it->second;
             }
         }
     }
-}
-
-size_t LinkManager::get_targets_count() const {
-    return targets_count;
 }
 
 void LinkManager::realign_links(const size_t index, const Target target, const ItemType type) {
@@ -186,10 +182,9 @@ std::vector<Link *> LinkManager::get_links(const LinkKey key) const {
     return {};
 }
 
-std::string LinkManager::get_link_reference(const ItemType type, const size_t index) const {
+std::string LinkManager::get_link_reference(const LinkKey key) const {
     std::string reference;
-    const Link &link = links[static_cast<size_t>(type)][index];
-    switch (link.target) {
+    switch (key.target) {
     case Target::SPLITTER_OUTPUT:
     case Target::DIRECT_OUTPUT: {
         reference = "output";
@@ -201,35 +196,35 @@ std::string LinkManager::get_link_reference(const ItemType type, const size_t in
         break;
     }
     case Target::ENVELOPE: {
-        reference = "envelopes.envelope_" + std::to_string(link.index);
+        reference = "envelopes.envelope_" + std::to_string(key.index);
         break;
     }
     case Target::SEQUENCE: {
-        reference = "sequences.sequence_" + std::to_string(link.index);
+        reference = "sequences.sequence_" + std::to_string(key.index);
         break;
     }
     case Target::COMMANDS: {
-        reference = "commands.commands_sequence_" + std::to_string(link.index);
+        reference = "commands.commands_sequence_" + std::to_string(key.index);
         break;
     }
     case Target::ORDER: {
-        reference = "orders.order_" + std::to_string(link.index);
+        reference = "orders.order_" + std::to_string(key.index);
         break;
     }
     case Target::OSCILLATOR: {
-        reference = "oscillators.oscillator_" + std::to_string(link.index);
+        reference = "oscillators.oscillator_" + std::to_string(key.index);
         break;
     }
     case Target::WAVETABLE: {
-        reference = "wavetables.wavetable_" + std::to_string(link.index);
+        reference = "wavetables.wavetable_" + std::to_string(key.index);
         break;
     }
     case Target::DSP: {
-        reference = "dsps.dsp_" + std::to_string(link.index);
+        reference = "dsps.dsp_" + std::to_string(key.index);
         break;
     }
     case Target::CHANNEL: {
-        reference = "channels.channel_" + std::to_string(link.index);
+        reference = "channels.channel_" + std::to_string(key.index);
         break;
     }
     case Target::UNUSED: {
@@ -237,11 +232,21 @@ std::string LinkManager::get_link_reference(const ItemType type, const size_t in
     }
     }
 
-    if (link.offset != 0) {
-        reference += " + " + std::to_string(link.offset);
+    if (key.offset != 0) {
+        reference += " + " + std::to_string(key.offset);
     }
 
     return reference;
+}
+
+std::string LinkManager::get_link_reference(const ItemType type, const size_t index) const {
+    std::string reference;
+    const Link &link = links[static_cast<size_t>(type)][index];
+    return get_link_reference(link.key);
+}
+
+std::vector<std::pair<void *, LinkKey>> LinkManager::get_pointers_map() const {
+    return pointers_map;
 }
 
 void LinkManager::remove_key(Link &link) {

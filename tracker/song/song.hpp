@@ -8,6 +8,7 @@
 #include "../version.hpp"
 #include "../tuning/frequencies.hpp"
 #include "../tuning/scale.hpp"
+#include "compilation.hpp"
 #include "validation.hpp"
 #include "links/link.hpp"
 
@@ -29,6 +30,11 @@ class Song {
     uint64_t song_length = 0;
     uint16_t max_rows = 0;
 
+    void generate_targets_asm(
+        std::stringstream &asm_content,
+        const CompilationTarget compilation_target,
+        const char separator = '/'
+    ) const;
     void generate_header_vector(
         std::stringstream &asm_content,
         const std::string &name,
@@ -38,7 +44,7 @@ class Song {
     ) const;
     void set_used_flags(std::stringstream &asm_content) const;
     std::string generate_header_asm_file() const;
-    std::string generate_data_asm_file(const char separator = '/') const;
+    std::string generate_data_asm_file(const CompilationTarget compilation_target, const char separator = '/') const;
     nlohmann::json create_header_json() const;
     nlohmann::json import_header(const std::string &directory);
 
@@ -49,11 +55,11 @@ class Song {
     void *deserialize_dsp(std::ifstream &file) const;
     void *deserialize_oscillator(std::ifstream &file) const;
 
-    void export_all(const std::string &directory) const;
+    void export_all(const std::string &directory, const CompilationTarget compilation_target) const;
     void import_all(const std::string &directory, const nlohmann::json &json);
 
     void export_header_asm_file(const std::string &directory) const;
-    void export_data_asm_file(const std::string &directory) const;
+    void export_data_asm_file(const std::string &directory, const CompilationTarget compilation_target) const;
     void export_header(const std::string &directory) const;
 
     template <typename T>
@@ -94,7 +100,7 @@ class Song {
     void new_song();
     void load_from_file(const std::string &filename);
     void save_to_file(const std::string &filename);
-    void compile(const std::string &filename, bool compress = true, const std::string platform = "linux") const;
+    void compile(const std::string &filename, bool compress = true, const CompilationTarget compilation_target = CompilationTarget::Linux) const;
     void render(const std::string &filename);
 
     std::string get_title() const;
