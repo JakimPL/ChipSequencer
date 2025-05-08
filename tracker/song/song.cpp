@@ -721,14 +721,14 @@ void Song::generate_targets_asm(
     const CompilationTarget compilation_target,
     const char separator
 ) const {
-    asm_content << "targets:\n";
+    asm_content << "\n\ntargets:\n";
     const auto pointers = link_manager.get_pointers_map();
     for (const auto &pair : pointers) {
         const LinkKey key = pair.second;
         if (compilation_target == CompilationTarget::DOS) {
             asm_content << "    dw ";
         } else {
-            asm_content << "    dw ";
+            asm_content << "    dd ";
         }
         asm_content << link_manager.get_link_reference(key) << "\n";
     }

@@ -95,25 +95,30 @@ void LinkManager::set_link(Link &link, void *item, const uint8_t i) {
     link.id = i;
     link.item = item;
     link.pointer = link.base + link.offset;
-    link.assign_output();
     assign_key(link);
 }
 
 void LinkManager::set_links() {
     clear();
-    for (const auto &[type, name] : {
-             std::pair<ItemType, std::string>({ItemType::CHANNEL, "channel"}),
-             std::pair<ItemType, std::string>({ItemType::DSP, "DSP"}),
-         }) {
-        size_t link_type = static_cast<size_t>(type);
-        for (size_t i = 0; i < links[link_type].size(); i++) {
-            Link &link = links[link_type][i];
-            void *item = channels[i];
-            try {
-                set_link(link, item, i);
-            } catch (const std::out_of_range &exception) {
-                std::cerr << "Error setting link for a " << name << " " << i << ": " << exception.what() << std::endl;
-            }
+    size_t link_type = static_cast<size_t>(ItemType::CHANNEL);
+    for (size_t i = 0; i < channels.size(); i++) {
+        Link &link = links[link_type][i];
+        void *item = channels[i];
+        try {
+            set_link(link, item, i);
+        } catch (const std::out_of_range &exception) {
+            std::cerr << "Error setting link for a channel " << i << ": " << exception.what() << std::endl;
+        }
+    }
+
+    link_type = static_cast<size_t>(ItemType::DSP);
+    for (size_t i = 0; i < dsps.size(); i++) {
+        Link &link = links[link_type][i];
+        void *item = dsps[i];
+        try {
+            set_link(link, item, i);
+        } catch (const std::out_of_range &exception) {
+            std::cerr << "Error setting link for a DSP " << i << ": " << exception.what() << std::endl;
         }
     }
 
@@ -148,6 +153,8 @@ void LinkManager::save_targets() {
             } else {
                 link.table_id = it->second;
             }
+
+            link.assign_output();
         }
     }
 }
