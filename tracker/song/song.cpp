@@ -98,9 +98,9 @@ void Song::compile(const std::string &filename, bool compress, const Compilation
     try {
         export_all(song_dir, compilation_target);
         compile_sources(temp_base.string(), filename, compress, platform);
-        std::filesystem::remove_all(temp_base);
+        // std::filesystem::remove_all(temp_base);
     } catch (const std::exception &exception) {
-        std::filesystem::remove_all(temp_base);
+        // std::filesystem::remove_all(temp_base);
         throw;
     }
 }
@@ -721,7 +721,9 @@ void Song::generate_targets_asm(
     const CompilationTarget compilation_target,
     const char separator
 ) const {
-    asm_content << "\n\ntargets:\n";
+    asm_content << "\n\n"
+                << "align 4\n"
+                << "targets:\n";
     const auto pointers = link_manager.get_pointers_map();
     for (const auto &pair : pointers) {
         const LinkKey key = pair.second;
@@ -732,6 +734,11 @@ void Song::generate_targets_asm(
         }
         asm_content << link_manager.get_link_reference(key) << "\n";
     }
+}
+
+void Song::generate_offsets_asm(std::stringstream &asm_content, const char separator) const {
+    asm_content << "\n\nbuffer_offsets:\n";
+    asm_content << "incbin \"song" << separator << "offsets.bin\"\n";
 }
 
 std::string Song::generate_data_asm_file(const CompilationTarget compilation_target, const char separator) const {
@@ -761,11 +768,8 @@ std::string Song::generate_data_asm_file(const CompilationTarget compilation_tar
     generate_header_vector(asm_content, "wavetable", "wave", wavetables.size(), separator);
     generate_header_vector(asm_content, "channel", "chan", channels.size(), separator);
     generate_header_vector(asm_content, "dsp", "dsp", dsps.size(), separator);
-
-    asm_content << "buffer_offsets:\n";
-    asm_content << "incbin \"song" << separator << "offsets.bin\"\n";
-
     generate_targets_asm(asm_content, compilation_target, separator);
+    generate_offsets_asm(asm_content, separator);
 
     return asm_content.str();
 }
@@ -945,14 +949,15 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
     }
     case Effect::Distortion: {
         DSPDistortion *distortion = reinterpret_cast<DSPDistortion *>(dsp);
-        write_data(file, &distortion->level, sizeof(distortion->level));
         write_data(file, &distortion->pad, sizeof(distortion->pad));
+        write_data(file, &distortion->level, sizeof(distortion->level));
         return;
     }
     case Effect::Filter: {
         DSPFilter *filter = reinterpret_cast<DSPFilter *>(dsp);
         write_data(file, &filter->frequency, sizeof(filter->frequency));
         write_data(file, &filter->mode, sizeof(filter->mode));
+        write_data(file, &filter->pad, sizeof(filter->pad));
         return;
     }
     case Effect::Delay: {
@@ -961,6 +966,7 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
         write_data(file, &delay->wet, sizeof(delay->wet));
         write_data(file, &delay->feedback, sizeof(delay->feedback));
         write_data(file, &delay->delay_time, sizeof(delay->delay_time));
+        write_data(file, &delay->pad, sizeof(delay->pad));
         return;
     }
     default: {

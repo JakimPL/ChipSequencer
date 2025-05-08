@@ -30,6 +30,7 @@ class Song {
     uint64_t song_length = 0;
     uint16_t max_rows = 0;
 
+    void generate_offsets_asm(std::stringstream &asm_content, const char separator) const;
     void generate_targets_asm(
         std::stringstream &asm_content,
         const CompilationTarget compilation_target,
@@ -42,9 +43,10 @@ class Song {
         const size_t size,
         const char separator = '/'
     ) const;
-    void set_used_flags(std::stringstream &asm_content) const;
     std::string generate_header_asm_file() const;
     std::string generate_data_asm_file(const CompilationTarget compilation_target, const char separator = '/') const;
+
+    void set_used_flags(std::stringstream &asm_content) const;
     nlohmann::json create_header_json() const;
     nlohmann::json import_header(const std::string &directory);
 

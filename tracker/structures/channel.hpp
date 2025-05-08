@@ -37,6 +37,6 @@ constexpr size_t CHANNEL_PITCH = offsetof(Channel, pitch);
 constexpr size_t CHANNEL_FLAG = offsetof(Channel, flag);
 constexpr size_t CHANNEL_FRACTION = offsetof(Channel, fraction);
 
-static_assert(sizeof(Channel) == SIZE_CHANNEL, "Channel must be of 12 bytes.");
+static_assert(sizeof(Channel) == SIZE_CHANNEL, "Channel must be of 15 bytes.");
 
 #endif // STRUCTURES_CHANNEL_HPP

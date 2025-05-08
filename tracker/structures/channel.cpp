@@ -2,7 +2,7 @@
 #include "channel.hpp"
 
 void Channel::serialize(std::ofstream &file, const Channel *channel) const {
-    write_data(file, this, sizeof(Channel) - sizeof(pad));
+    write_data(file, this, sizeof(Channel));
 }
 
 Channel *Channel::deserialize(std::ifstream &file) {
