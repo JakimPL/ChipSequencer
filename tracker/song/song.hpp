@@ -65,25 +65,27 @@ class Song {
     void export_header(const std::string &directory) const;
 
     template <typename T>
-    void export_series(const std::string &song_dir, const std::string &prefix, const std::vector<T> &series, const std::vector<size_t> &sizes) const;
+    void export_series(const std::string &directory, const std::string &prefix, const std::vector<T> &series, const std::vector<size_t> &sizes) const;
 
     template <typename T>
     void export_arrays(const std::string &directory, const std::string &prefix, const std::vector<T> &arrays) const;
 
     void export_channels(const std::string &directory) const;
     void export_dsps(const std::string &directory) const;
+    void export_commands(const std::string &directory) const;
     void export_links(const std::string &filename) const;
     void export_offsets(const std::string &filename) const;
 
-    void import_channels(const std::string &song_dir, const nlohmann::json &json);
-    void import_dsps(const std::string &song_dir, const nlohmann::json &json);
-    void import_links(const std::string &song_dir, const nlohmann::json &json);
+    void import_channels(const std::string &directory, const nlohmann::json &json);
+    void import_dsps(const std::string &directory, const nlohmann::json &json);
+    void import_links(const std::string &directory, const nlohmann::json &json);
 
-    void import_envelopes(const std::string &song_dir, const nlohmann::json &json);
-    void import_sequences(const std::string &song_dir, const nlohmann::json &json);
-    void import_orders(const std::string &song_dir, const nlohmann::json &json);
-    void import_wavetables(const std::string &song_dir, const nlohmann::json &json);
-    void import_oscillators(const std::string &song_dir, const nlohmann::json &json);
+    void import_envelopes(const std::string &directory, const nlohmann::json &json);
+    void import_sequences(const std::string &directory, const nlohmann::json &json);
+    void import_commands(const std::string &directory, const nlohmann::json &json);
+    void import_orders(const std::string &directory, const nlohmann::json &json);
+    void import_wavetables(const std::string &directory, const nlohmann::json &json);
+    void import_oscillators(const std::string &directory, const nlohmann::json &json);
 
     int run_command(const std::string &command) const;
     void compile_sources(const std::string &directory, const std::string &filename, const bool compress, const std::string platform = "linux") const;

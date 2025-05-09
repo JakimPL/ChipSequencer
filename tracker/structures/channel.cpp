@@ -1,7 +1,7 @@
 #include "../utils/file.hpp"
 #include "channel.hpp"
 
-void Channel::serialize(std::ofstream &file, const Channel *channel) const {
+void Channel::serialize(std::ofstream &file) const {
     write_data(file, this, sizeof(Channel));
 }
 

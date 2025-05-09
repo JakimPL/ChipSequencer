@@ -21,7 +21,7 @@ struct Channel {
     uint8_t fraction;
     uint8_t pad[1];
 
-    void serialize(std::ofstream &file, const Channel *channel) const;
+    void serialize(std::ofstream &file) const;
     static Channel *deserialize(std::ifstream &file);
 };
 
