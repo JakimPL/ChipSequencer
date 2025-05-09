@@ -17,7 +17,7 @@ void CommandsSequence::serialize(std::ofstream &file) const {
     write_data(file, &length, sizeof(length));
     for (uint8_t i = 0; i < length; i++) {
         const uint8_t command_size = command_sizes.at(commands[i].instruction);
-        write_data(file, &commands[i], sizeof(Command));
+        write_data(file, &commands[i], command_size);
     }
 }
 
@@ -26,7 +26,14 @@ CommandsSequence *CommandsSequence::deserialize(std::ifstream &file) {
     read_data(file, &commands_sequence->size, sizeof(commands_sequence->size));
     read_data(file, &commands_sequence->length, sizeof(commands_sequence->length));
     for (uint8_t i = 0; i < commands_sequence->length; i++) {
-        const uint8_t command_size = command_sizes.at(commands_sequence->commands[i].instruction);
+        const std::streampos stream_position = file.tellg();
+
+        Command command;
+        uint8_t instruction;
+        read_data(file, &instruction, sizeof(instruction));
+        const uint8_t command_size = command_sizes.at(instruction);
+
+        file.seekg(stream_position);
         read_data(file, &commands_sequence->commands[i], command_size);
     }
 

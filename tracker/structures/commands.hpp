@@ -111,8 +111,6 @@ struct CommandsSequence {
 
 typedef std::vector<CommandsSequence *> CommandsSequences;
 
-// extern const std::map<uint8_t, uint8_t> command_sizes;
-
 constexpr size_t COMMAND_TYPE = offsetof(Command, instruction);
 constexpr size_t COMMAND_DURATION = offsetof(Command, duration);
 constexpr size_t COMMAND_PORTAMENTO_UP_CHANNEL = offsetof(CommandPortamentoUp, channel);
@@ -134,15 +132,25 @@ constexpr size_t COMMAND_CHANGE_FLOAT_VALUE_VALUE = offsetof(CommandChangeFloatV
 constexpr size_t COMMANDS_SIZE = offsetof(CommandsSequence, size);
 constexpr size_t COMMANDS_DATA = offsetof(CommandsSequence, commands);
 
-static_assert(sizeof(Command) == SIZE_COMMAND + sizeof(Command::pad), "Command size mismatch");
-static_assert(sizeof(CommandPortamentoUp) == SIZE_COMMAND_PORTAMENTO_UP + sizeof(CommandPortamentoUp::pad), "CommandPortamentoUp size mismatch");
-static_assert(sizeof(CommandPortamentoDown) == SIZE_COMMAND_PORTAMENTO_DOWN + sizeof(CommandPortamentoDown::pad), "CommandPortamentoDown size mismatch");
-static_assert(sizeof(CommandSetMasterGainer) == SIZE_COMMAND_SET_MASTER_GAINER + sizeof(CommandSetMasterGainer::pad), "CommandSetMasterGainer size mismatch");
-static_assert(sizeof(CommandSetBPM) == SIZE_COMMAND_SET_BPM + sizeof(CommandSetBPM::pad), "CommandSetBPM size mismatch");
-static_assert(sizeof(CommandSetDivision) == SIZE_COMMAND_SET_DIVISION + sizeof(CommandSetDivision::pad), "CommandSetDivision size mismatch");
-static_assert(sizeof(CommandChangeByteValue) == SIZE_COMMAND_CHANGE_BYTE_VALUE + sizeof(CommandChangeByteValue::pad), "CommandChangeByteValue size mismatch");
-static_assert(sizeof(CommandChangeWordValue) == SIZE_COMMAND_CHANGE_WORD_VALUE + sizeof(CommandChangeWordValue::pad), "CommandChangeWordValue size mismatch");
-static_assert(sizeof(CommandChangeDwordValue) == SIZE_COMMAND_CHANGE_DWORD_VALUE, "CommandChangeDwordValue size mismatch");
-static_assert(sizeof(CommandChangeFloatValue) == SIZE_COMMAND_CHANGE_FLOAT_VALUE, "CommandChangeFloatValue size mismatch");
+static_assert(sizeof(Command) == SIZE_COMMAND + sizeof(Command::pad), "Command must be of 2 bytes.");
+static_assert(sizeof(CommandPortamentoUp) == SIZE_COMMAND_PORTAMENTO_UP + sizeof(CommandPortamentoUp::pad), "CommandPortamentoUp must be of 5 bytes.");
+static_assert(sizeof(CommandPortamentoDown) == SIZE_COMMAND_PORTAMENTO_DOWN + sizeof(CommandPortamentoDown::pad), "CommandPortamentoDown must be of 5 bytes.");
+static_assert(sizeof(CommandSetMasterGainer) == SIZE_COMMAND_SET_MASTER_GAINER + sizeof(CommandSetMasterGainer::pad), "CommandSetMasterGainer must be of 4 bytes.");
+static_assert(sizeof(CommandSetBPM) == SIZE_COMMAND_SET_BPM + sizeof(CommandSetBPM::pad), "CommandSetBPM must be of 4 bytes.");
+static_assert(sizeof(CommandSetDivision) == SIZE_COMMAND_SET_DIVISION + sizeof(CommandSetDivision::pad), "CommandSetDivision must be of 3 bytes.");
+static_assert(sizeof(CommandChangeByteValue) == SIZE_COMMAND_CHANGE_BYTE_VALUE + sizeof(CommandChangeByteValue::pad), "CommandChangeByteValue must be of 5 bytes.");
+static_assert(sizeof(CommandChangeWordValue) == SIZE_COMMAND_CHANGE_WORD_VALUE + sizeof(CommandChangeWordValue::pad), "CommandChangeWordValue must be of 6 bytes.");
+static_assert(sizeof(CommandChangeDwordValue) == SIZE_COMMAND_CHANGE_DWORD_VALUE, "CommandChangeDwordValue must be of 8 bytes.");
+static_assert(sizeof(CommandChangeFloatValue) == SIZE_COMMAND_CHANGE_FLOAT_VALUE, "CommandChangeFloatValue must be of 8 bytes.");
+
+static_assert(sizeof(Command) == sizeof(CommandPortamentoUp), "Command and CommandPortamentoUp must be of the same size.");
+static_assert(sizeof(Command) == sizeof(CommandPortamentoDown), "Command and CommandPortamentoDown must be of the same size.");
+static_assert(sizeof(Command) == sizeof(CommandSetMasterGainer), "Command and CommandSetMasterGainer must be of the same size.");
+static_assert(sizeof(Command) == sizeof(CommandSetBPM), "Command and CommandSetBPM must be of the same size.");
+static_assert(sizeof(Command) == sizeof(CommandSetDivision), "Command and CommandSetDivision must be of the same size.");
+static_assert(sizeof(Command) == sizeof(CommandChangeByteValue), "Command and CommandChangeByteValue must be of the same size.");
+static_assert(sizeof(Command) == sizeof(CommandChangeWordValue), "Command and CommandChangeWordValue must be of the same size.");
+static_assert(sizeof(Command) == sizeof(CommandChangeDwordValue), "Command and CommandChangeDwordValue must be of the same size.");
+static_assert(sizeof(Command) == sizeof(CommandChangeFloatValue), "Command and CommandChangeFloatValue must be of the same size.");
 
 #endif // STRUCTURES_COMMANDS_HPP
