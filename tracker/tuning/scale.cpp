@@ -4,10 +4,6 @@
 #include "../utils/math.hpp"
 #include "scale.hpp"
 
-ScaleComposer::ScaleComposer()
-    : symbols(std::begin(scale_symbols), std::end(scale_symbols)) {
-}
-
 ptrdiff_t ScaleComposer::get_ordered_index(const std::string &note_name) {
     const auto *begin = std::begin(scale_names_ordered);
     const auto *end = std::end(scale_names_ordered);
@@ -82,11 +78,11 @@ std::string ScaleComposer::render(const std::string &name, int offset) const {
 
     std::string symbol;
     if (offset == 0) {
-        symbol = symbols.at(0);
+        symbol = scale_symbols[0];
     } else if (offset > 0) {
-        symbol = symbols.at(1);
+        symbol = scale_symbols[1];
     } else {
-        symbol = symbols.at(-1);
+        symbol = scale_symbols[2];
     }
 
     std::string repeated;

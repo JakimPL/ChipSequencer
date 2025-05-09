@@ -6,6 +6,8 @@
 #define MIN_A4_FREQUENCY 400.0
 #define MAX_A4_FREQUENCY 600.0
 
+#include <utility>
+
 constexpr double range_mean = 632.4555320336759; // sqrt(20 * 20_000)
 
 inline static const char *scale_names[] = {
@@ -28,10 +30,10 @@ inline static const char *scale_names_ordered[] = {
     "B",
 };
 
-inline static const std::pair<int, const char *> scale_symbols[] = {
-    {-1, "b"},
-    {0, ""},
-    {1, "#"},
+inline static const char *scale_symbols[] = {
+    "b",
+    "",
+    "#",
 };
 
 #endif // TUNING_CONSTANTS_HPP

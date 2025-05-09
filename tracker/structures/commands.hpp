@@ -105,9 +105,13 @@ struct CommandsSequence {
     CommandsArray commands;
 
     void from_command_vector(const std::vector<Command> &command_vector);
+    void serialize(std::ofstream &file) const;
+    static CommandsSequence *deserialize(std::ifstream &file);
 };
 
 typedef std::vector<CommandsSequence *> CommandsSequences;
+
+// extern const std::map<uint8_t, uint8_t> command_sizes;
 
 constexpr size_t COMMAND_TYPE = offsetof(Command, instruction);
 constexpr size_t COMMAND_DURATION = offsetof(Command, duration);
