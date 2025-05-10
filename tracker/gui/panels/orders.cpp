@@ -136,7 +136,8 @@ void GUIOrdersPanel::draw_order() {
         const int &item = current_order.sequences[i];
 
         ImGui::PushID(i);
-        const bool incorrect = (item < 0 || item >= static_cast<int>(sequences.size()));
+        const size_t size = std::max(sequences.size(), commands_sequences.size());
+        const bool incorrect = (item < 0 || item >= static_cast<int>(size));
         const bool is_selected = (selected_sequence == i);
         const std::string order_string = std::to_string(item);
         if (is_selected) {
@@ -178,7 +179,8 @@ void GUIOrdersPanel::check_keyboard_input() {
         return;
     }
 
-    input_handler.set_limit(static_cast<int>(sequences.size()) - 1);
+    const size_t size = std::max(sequences.size(), commands_sequences.size());
+    input_handler.set_limit(static_cast<int>(size) - 1);
     input_handler.handle_input();
 }
 

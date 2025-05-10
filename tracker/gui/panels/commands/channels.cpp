@@ -39,12 +39,20 @@ void GUICommandsChannelsPanel::from() {
     if (!is_index_valid()) {
         return;
     }
+
+    const CommandsChannel *channel = commands_channels[channel_index];
+    current_channel.bypass = channel->flag & FLAG_BYPASS;
+    current_channel.order_index = channel->order_index;
 }
 
 void GUICommandsChannelsPanel::to() const {
     if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || !is_index_valid() || gui.is_playing()) {
         return;
     }
+
+    CommandsChannel *channel = commands_channels[channel_index];
+    channel->flag = current_channel.bypass ? FLAG_BYPASS : 0;
+    channel->order_index = current_channel.order_index;
 }
 
 void GUICommandsChannelsPanel::add() {
