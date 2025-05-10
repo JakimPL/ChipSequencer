@@ -83,7 +83,7 @@ void GUICommandsSequencesPanel::remove() {
 }
 
 void GUICommandsSequencesPanel::update() {
-    update_items(commands_sequence_names, commands_sequences.size(), "Commands ", sequence_index);
+    update_items(commands_sequence_names, commands_sequences.size(), "Commands sequence ", sequence_index);
     gui.update(GUIElement::Orders);
 }
 

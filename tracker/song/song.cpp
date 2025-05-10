@@ -462,6 +462,7 @@ CommandsChannel *Song::add_commands_channel() {
     }
 
     CommandsChannel *channel = new CommandsChannel();
+    commands_channels.push_back(channel);
     return channel;
 }
 

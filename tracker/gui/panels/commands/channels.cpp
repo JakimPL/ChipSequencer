@@ -76,7 +76,7 @@ void GUICommandsChannelsPanel::remove() {
 }
 
 void GUICommandsChannelsPanel::update() {
-    update_items(commands_channel_names, commands_channel_names.size(), "Command channel ", channel_index);
+    update_items(commands_channel_names, commands_channels.size(), "Command channel ", channel_index);
     gui.update(GUIElement::Patterns);
 }
 
@@ -84,6 +84,14 @@ void GUICommandsChannelsPanel::draw_channel() {
     if (commands_channels.empty()) {
         ImGui::Text("No channels available.");
         return;
+    }
+
+    ImGui::Checkbox("Bypass", &current_channel.bypass);
+    ImGui::Separator();
+
+    ImGui::Text("Order:");
+    if (prepare_combo(order_names, "##OrderCombo", current_channel.order_index, true).right_clicked) {
+        gui.set_index(GUIElement::Orders, current_channel.order_index);
     }
 }
 
