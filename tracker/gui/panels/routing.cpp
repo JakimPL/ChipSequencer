@@ -375,8 +375,8 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
     case Target::SEQUENCE:
         id_prefix = "SequenceNode_";
         break;
-    case Target::COMMANDS:
-        id_prefix = "CommandsNode_";
+    case Target::COMMANDS_SEQUENCE:
+        id_prefix = "CommandsSequenceNode_";
         break;
     case Target::ORDER:
         id_prefix = "OrderNode_";

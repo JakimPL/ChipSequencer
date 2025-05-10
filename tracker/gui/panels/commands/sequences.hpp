@@ -1,10 +1,10 @@
-#ifndef GUI_PANELS_COMMANDS_HPP
-#define GUI_PANELS_COMMANDS_HPP
+#ifndef GUI_PANELS_COMMANDS_SEQUENCES_HPP
+#define GUI_PANELS_COMMANDS_SEQUENCES_HPP
 
-#include "../constants.hpp"
-#include "../init.hpp"
-#include "../patterns/commands.hpp"
-#include "panel.hpp"
+#include "../../constants.hpp"
+#include "../../init.hpp"
+#include "../../patterns/commands.hpp"
+#include "../panel.hpp"
 
 class GUICommandsSequencesPanel : public GUIPanel {
   private:
@@ -32,4 +32,4 @@ class GUICommandsSequencesPanel : public GUIPanel {
     void set_index(const int index) override;
 };
 
-#endif // GUI_PANELS_COMMANDS_HPP
+#endif // GUI_PANELS_COMMANDS_SEQUENCES_HPP

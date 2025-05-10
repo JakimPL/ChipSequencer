@@ -95,7 +95,6 @@ add_executable(main
     tracker/gui/inputs/numeric.cpp
     tracker/gui/inputs/string.cpp
     tracker/gui/panels/channels.cpp
-    tracker/gui/panels/commands.cpp
     tracker/gui/panels/dsps.cpp
     tracker/gui/panels/editor.cpp
     tracker/gui/panels/envelopes.cpp
@@ -109,6 +108,8 @@ add_executable(main
     tracker/gui/panels/sequences.cpp
     tracker/gui/panels/summary.cpp
     tracker/gui/panels/wavetables.cpp
+    tracker/gui/panels/commands/channels.cpp
+    tracker/gui/panels/commands/sequences.cpp
     tracker/gui/patterns/commands.cpp
     tracker/gui/patterns/pattern.cpp
     tracker/maps/routing.cpp

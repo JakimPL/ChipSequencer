@@ -454,7 +454,7 @@ void Song::remove_commands_sequence(const size_t index) {
     if (index < commands_sequences.size()) {
         delete commands_sequences[index];
         commands_sequences.erase(commands_sequences.begin() + index);
-        link_manager.realign_links(index, Target::COMMANDS);
+        link_manager.realign_links(index, Target::COMMANDS_SEQUENCE);
         for (auto &order : orders) {
             for (size_t i = 0; i < order->order_length; i++) {
                 if (order->sequences[i] >= index) {

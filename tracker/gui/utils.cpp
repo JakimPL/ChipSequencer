@@ -347,7 +347,7 @@ bool draw_output(OutputType &output_type, const LinkKey key) {
             break;
         }
         case Target::SEQUENCE:
-        case Target::COMMANDS:
+        case Target::COMMANDS_SEQUENCE:
         case Target::ORDER:
         case Target::WAVETABLE: {
             ImGui::Text("Not implemented yet.");

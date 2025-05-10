@@ -39,7 +39,7 @@ void LinkManager::set_link(Link &link, void *item, const uint8_t i) {
         }
         break;
     }
-    case Target::COMMANDS: {
+    case Target::COMMANDS_SEQUENCE: {
         if (link.index >= commands_sequences.size()) {
             link.base = &output;
         } else {
@@ -210,7 +210,7 @@ std::string LinkManager::get_link_reference(const LinkKey key) const {
         reference = "sequences.sequence_" + std::to_string(key.index);
         break;
     }
-    case Target::COMMANDS: {
+    case Target::COMMANDS_SEQUENCE: {
         reference = "commands.commands_sequence_" + std::to_string(key.index);
         break;
     }
@@ -308,7 +308,7 @@ TargetVariableType LinkManager::get_type(const LinkKey key) const {
     }
     case Target::ENVELOPE:
     case Target::SEQUENCE:
-    case Target::COMMANDS:
+    case Target::COMMANDS_SEQUENCE:
     case Target::ORDER:
     case Target::OSCILLATOR:
     case Target::WAVETABLE:

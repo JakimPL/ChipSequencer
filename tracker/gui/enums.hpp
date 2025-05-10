@@ -7,7 +7,7 @@ enum class GUIElement {
     Editor,
     General,
     Channels,
-    Commands,
+    CommandsSequence,
     DSPs,
     Envelopes,
     Orders,

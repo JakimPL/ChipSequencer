@@ -1,7 +1,7 @@
-#include "../../general.hpp"
-#include "../names.hpp"
-#include "../utils.hpp"
-#include "commands.hpp"
+#include "../../../general.hpp"
+#include "../../names.hpp"
+#include "../../utils.hpp"
+#include "sequences.hpp"
 
 GUICommandsSequencesPanel::GUICommandsSequencesPanel(const bool visible)
     : GUIPanel(visible) {

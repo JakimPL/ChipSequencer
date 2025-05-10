@@ -7,7 +7,6 @@
 #include "enums.hpp"
 #include "init.hpp"
 #include "panels/channels.hpp"
-#include "panels/commands.hpp"
 #include "panels/dsps.hpp"
 #include "panels/editor.hpp"
 #include "panels/envelopes.hpp"
@@ -20,6 +19,8 @@
 #include "panels/sequences.hpp"
 #include "panels/summary.hpp"
 #include "panels/wavetables.hpp"
+#include "panels/commands/channels.hpp"
+#include "panels/commands/sequences.hpp"
 
 class GUI {
   public:

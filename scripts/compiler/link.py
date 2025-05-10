@@ -17,7 +17,7 @@ class LinkTarget(Enum):
     DIRECT_DSP = "direct_dsp"
     ENVELOPE = "envelope"
     SEQUENCE = "sequence"
-    COMMANDS = "commands"
+    COMMANDS_SEQUENCE = "commands_sequence"
     ORDER = "order"
     OSCILLATOR = "oscillator"
     WAVETABLE = "wavetable"
@@ -34,7 +34,7 @@ class LinkTarget(Enum):
             3: LinkTarget.DIRECT_DSP,
             4: LinkTarget.ENVELOPE,
             5: LinkTarget.SEQUENCE,
-            6: LinkTarget.COMMANDS,
+            6: LinkTarget.COMMANDS_SEQUENCE,
             7: LinkTarget.ORDER,
             8: LinkTarget.OSCILLATOR,
             9: LinkTarget.WAVETABLE,

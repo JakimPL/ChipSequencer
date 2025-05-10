@@ -163,7 +163,7 @@ void GUI::set_index(const GUIElement element, const int index) {
     case GUIElement::Channels:
         channels_panel.set_index(index);
         break;
-    case GUIElement::Commands:
+    case GUIElement::CommandsSequence:
         commands_panel.set_index(index);
         break;
     case GUIElement::DSPs:
@@ -205,7 +205,7 @@ void GUI::update(GUIElement element) {
         return general_panel.update();
     case GUIElement::Channels:
         return channels_panel.update();
-    case GUIElement::Commands:
+    case GUIElement::CommandsSequence:
         return commands_panel.update();
     case GUIElement::DSPs:
         return dsps_panel.update();
@@ -361,7 +361,7 @@ void GUI::set_visibility(const GUIElement element, const bool visible) {
     case GUIElement::Channels:
         channels_panel.visible = visible;
         break;
-    case GUIElement::Commands:
+    case GUIElement::CommandsSequence:
         commands_panel.visible = visible;
         break;
     case GUIElement::DSPs:
@@ -406,7 +406,7 @@ bool GUI::get_visibility(const GUIElement element) const {
         return general_panel.visible;
     case GUIElement::Channels:
         return channels_panel.visible;
-    case GUIElement::Commands:
+    case GUIElement::CommandsSequence:
         return commands_panel.visible;
     case GUIElement::DSPs:
         return dsps_panel.visible;
