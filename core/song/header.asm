@@ -1,5 +1,6 @@
     %define CHANNELS 0
     %define DSPS 0
+    %define COMMANDS_CHANNEL 0
     %define WAVETABLES 0
 
     %define OUTPUT_CHANNELS 0
@@ -14,5 +15,6 @@
     %ifndef BIN
     extern num_channels
     extern num_dsps
+    extern num_commands_channels
     extern unit
     %endif

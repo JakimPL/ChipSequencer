@@ -29,6 +29,7 @@ extern _Float32 normalizer;
 
 extern uint8_t num_channels;
 extern uint8_t num_dsps;
+extern uint8_t num_commands_channels;
 
 extern uint64_t reference_frequency;
 extern _Float64 note_divisor;

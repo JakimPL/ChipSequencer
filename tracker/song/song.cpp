@@ -458,6 +458,7 @@ CommandsChannel *Song::add_commands_channel() {
 
     CommandsChannel *channel = new CommandsChannel();
     commands_channels.push_back(channel);
+    num_commands_channels = commands_channels.size();
     return channel;
 }
 
@@ -589,6 +590,14 @@ void Song::remove_commands_sequence(const size_t index) {
 }
 
 void Song::remove_commands_channel(const size_t index) {
+    if (index < commands_channels.size()) {
+        delete commands_channels[index];
+        commands_channels.erase(commands_channels.begin() + index);
+        num_commands_channels = commands_channels.size();
+
+        link_manager.realign_links(index, Target::COMMANDS_CHANNEL);
+        link_manager.set_links();
+    }
 }
 
 std::pair<ValidationResult, int> Song::validate() {
@@ -787,6 +796,7 @@ std::string Song::generate_header_asm_file() const {
     set_used_flags(asm_content);
     asm_content << "    \%define CHANNELS " << channels.size() << "\n";
     asm_content << "    \%define DSPS " << dsps.size() << "\n";
+    asm_content << "    \%define COMMANDS_CHANNELS " << commands_channels.size() << "\n";
     asm_content << "    \%define WAVETABLES " << wavetables.size() << "\n";
     asm_content << "\n";
     asm_content << "    \%define OUTPUT_CHANNELS " << static_cast<int>(output_channels) << "\n";
@@ -800,6 +810,7 @@ std::string Song::generate_header_asm_file() const {
     asm_content << "\n";
     asm_content << "    extern num_channels" << "\n";
     asm_content << "    extern num_dsps" << "\n";
+    asm_content << "    extern num_commands_channels" << "\n";
     asm_content << "    extern unit" << "\n";
     asm_content << "\n";
     return asm_content.str();
@@ -848,7 +859,9 @@ std::string Song::generate_data_asm_file(const CompilationTarget compilation_tar
     asm_content << "num_channels:\n";
     asm_content << "db " << static_cast<int>(num_channels) << "\n";
     asm_content << "num_dsps:\n";
-    asm_content << "db " << static_cast<int>(num_dsps) << "\n\n";
+    asm_content << "db " << static_cast<int>(num_dsps) << "\n";
+    asm_content << "num_commands_channels:\n";
+    asm_content << "db " << static_cast<int>(num_commands_channels) << "\n\n";
 
     generate_header_vector(asm_content, "envelope", "envel", envelopes.size(), separator);
     generate_header_vector(asm_content, "sequence", "seq", sequences.size(), separator);
@@ -1375,6 +1388,7 @@ void Song::import_links(const std::string &directory, const nlohmann::json &json
 void Song::update_sizes() {
     num_channels = channels.size();
     num_dsps = dsps.size();
+    num_commands_channels = commands_channels.size();
 }
 
 void Song::clear_data() {
@@ -1388,8 +1402,7 @@ void Song::clear_data() {
     commands_channels.clear();
     commands_sequences.clear();
     link_manager.reset();
-    num_channels = 0;
-    num_dsps = 0;
+    update_sizes();
     buffers.clear();
 }
 

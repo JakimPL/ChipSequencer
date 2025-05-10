@@ -10,6 +10,8 @@ num_channels:
     db CHANNELS
 num_dsps:
     db DSPS
+num_commands_channels:
+    db COMMANDS_CHANNELS
 
 envelopes:
 sequences:
