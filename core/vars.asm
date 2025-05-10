@@ -16,6 +16,7 @@
     SEGMENT_BSS
     envelope_timer resd MAX_CHANNELS
     sequence_timer resd MAX_CHANNELS
+    commands_timer resd MAX_COMMANDS_CHANNELS
     oscillator_timer resd MAX_CHANNELS
     pitch resb MAX_CHANNELS
 

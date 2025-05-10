@@ -8,7 +8,7 @@ precalculate:
     mov ebx, [mem_pointer]
 .precalculate:
     push ebx
-    call mix
+    call frame
     pop ebx
 
     mov word [ebx], ax

@@ -240,8 +240,10 @@ std::pair<size_t, bool> draw_commands_pattern(CommandsPattern &pattern, const bo
                 ImGui::PushStyleColor(ImGuiCol_Text, GUI_HIGHLIGHT_COLOR);
                 value = pattern.values_handler.get_buffer();
             } else {
-                value = pattern.values[i].empty() ? "......" : pattern.values[i];
+                value = pattern.values[i].empty() ? "" : pattern.values[i];
             }
+
+            pad_string(value, '.', MAX_COMMAND_VALUE_SIZE);
 
             ImGui::TableSetColumnIndex(2);
             ImGui::PushID(MAX_STEPS + i);

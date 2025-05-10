@@ -139,7 +139,7 @@ main_loop:
     call exit
 
 .mix:
-    call mix
+    call frame
 
 .write_stream:
     mov eax, SYS_WRITE

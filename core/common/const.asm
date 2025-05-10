@@ -56,6 +56,7 @@
     %define MAX_OSCILLATORS 32
     %define MAX_WAVETABLES 16
     %define MAX_CHANNELS 32
+    %define MAX_COMMANDS_CHANNELS 32
     %define MAX_DSPS 32
     %define MAX_TARGETS 254
 

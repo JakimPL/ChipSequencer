@@ -166,6 +166,12 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
             command_vector.push_back(reinterpret_cast<Command &>(set_division));
             break;
         }
+        default: {
+            Command empty;
+            empty.duration = duration;
+            command_vector.push_back(empty);
+            break;
+        }
         }
 
         duration = 1;
@@ -183,7 +189,9 @@ void CommandsPattern::to_buffer(const size_t sequence_index) const {
     const CommandsSequence *sequence = commands_sequences[sequence_index];
     const size_t sequence_length = sequence->length;
     for (size_t i = 0; i < sequence_length; ++i) {
-        // buffers.sequences[sequence_index][i] = {command, value};
+        const std::string command = commands[i];
+        const std::string value = values[i];
+        buffers.commands_sequences[sequence_index][i] = {command, value};
     }
 }
 

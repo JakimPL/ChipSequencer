@@ -37,3 +37,9 @@ std::string convert_double_to_string(const double value, const uint8_t decimals)
     stream << std::fixed << std::setprecision(decimals) << value;
     return stream.str();
 }
+
+void pad_string(std::string &string, const char padding, const size_t size) {
+    if (string.size() < size) {
+        string.resize(size, padding);
+    }
+}

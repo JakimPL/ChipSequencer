@@ -63,7 +63,7 @@ sound_driver_step:
     jne .done
     mov dword [song_position], 0
     %else
-    call mix
+    call frame
     %endif
 .done:
     mov byte [calculate], 0

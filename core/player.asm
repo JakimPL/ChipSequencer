@@ -3,7 +3,7 @@
     %ifndef BIN
     global initialize
     global calculate
-    global mix
+    global frame
     global output
     global reset
     global calculate_ticks_per_beat
@@ -65,6 +65,11 @@ initialize:
 
     call sound_driver_initialize
     popa
+    ret
+
+frame:
+    call commands
+    call mix
     ret
 
     %include "core/utils.asm"

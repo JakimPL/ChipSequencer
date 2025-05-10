@@ -264,7 +264,7 @@ sound_driver_step:
     %if PRECALCULATE
     call load_precalculated
     %else
-    call mix
+    call frame
     %endif
     popa
 

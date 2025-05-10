@@ -1,6 +1,7 @@
     %include "core/elements/osc.asm"
     %include "core/elements/adsr.asm"
     %include "core/elements/sequence.asm"
+    %include "core/elements/commands.asm"
     %include "core/elements/order.asm"
     %include "core/elements/channel.asm"
     %include "core/elements/dsp.asm"

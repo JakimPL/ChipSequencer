@@ -10,6 +10,7 @@
 #include <zlib.h>
 
 #include "../general.hpp"
+#include "../sizes.hpp"
 #include "../utils/file.hpp"
 #include "../utils/temp.hpp"
 #include "data.hpp"
@@ -260,7 +261,8 @@ CommandsSequence *Song::add_commands_sequence() {
     }
 
     CommandsSequence *sequence = new CommandsSequence();
-    sequence->size = 0;
+    sequence->size = SIZE_COMMAND;
+    sequence->length = 1;
     commands_sequences.push_back(sequence);
     return sequence;
 }
