@@ -189,9 +189,10 @@ void Song::export_all(const std::string &directory, const CompilationTarget comp
     export_series(directory, "osc", oscillators, get_struct_sizes(oscillators));
     export_dsps(directory);
     export_arrays(directory, "seq", sequences);
-    export_commands_sequences(directory);
     export_arrays(directory, "order", orders);
     export_arrays(directory, "wave", wavetables);
+    export_commands_sequences(directory);
+    export_series(directory, "c_chan", commands_channels, {sizeof(CommandsChannel)});
     export_offsets(directory + "/offsets.bin");
     export_links(directory + "/links.bin");
 }
@@ -199,12 +200,13 @@ void Song::export_all(const std::string &directory, const CompilationTarget comp
 void Song::import_all(const std::string &directory, const nlohmann::json &json) {
     import_envelopes(directory, json);
     import_sequences(directory, json);
-    import_commands_sequences(directory, json);
     import_orders(directory, json);
     import_wavetables(directory, json);
     import_channels(directory, json);
     import_oscillators(directory, json);
     import_dsps(directory, json);
+    import_commands_sequences(directory, json);
+    import_commands_channels(directory, json);
     import_links(directory, json);
 }
 
@@ -225,6 +227,10 @@ Envelope *Song::add_envelope() {
 }
 
 Envelope *Song::duplicate_envelope(const size_t index) {
+    if (index >= envelopes.size()) {
+        return nullptr;
+    }
+
     Envelope *envelope = add_envelope();
     if (envelope == nullptr) {
         return nullptr;
@@ -245,6 +251,20 @@ Sequence *Song::add_sequence() {
     return sequence;
 }
 
+Sequence *Song::duplicate_sequence(const size_t index) {
+    if (index >= sequences.size()) {
+        return nullptr;
+    }
+
+    Sequence *sequence = add_sequence();
+    if (sequence == nullptr) {
+        return nullptr;
+    }
+
+    *sequence = *sequences[index];
+    return sequence;
+}
+
 Order *Song::add_order() {
     if (orders.size() >= MAX_ORDERS) {
         return nullptr;
@@ -257,6 +277,10 @@ Order *Song::add_order() {
 }
 
 Order *Song::duplicate_order(const size_t index) {
+    if (index >= orders.size()) {
+        return nullptr;
+    }
+
     Order *order = add_order();
     if (order == nullptr) {
         return nullptr;
@@ -278,6 +302,10 @@ Wavetable *Song::add_wavetable() {
 }
 
 Wavetable *Song::duplicate_wavetable(const size_t index) {
+    if (index >= wavetables.size()) {
+        return nullptr;
+    }
+
     Wavetable *wavetable = add_wavetable();
     if (wavetable == nullptr) {
         return nullptr;
@@ -299,6 +327,10 @@ void *Song::add_oscillator() {
 }
 
 void *Song::duplicate_oscillator(const size_t index) {
+    if (index >= oscillators.size()) {
+        return nullptr;
+    }
+
     void *oscillator = add_oscillator();
     if (oscillator == nullptr) {
         return nullptr;
@@ -334,6 +366,10 @@ Channel *Song::add_channel() {
 }
 
 Channel *Song::duplicate_channel(const size_t index) {
+    if (index >= channels.size()) {
+        return nullptr;
+    }
+
     Channel *channel = add_channel();
     if (channel == nullptr) {
         return nullptr;
@@ -370,6 +406,10 @@ void *Song::add_dsp() {
 }
 
 void *Song::duplicate_dsp(const size_t index) {
+    if (index >= dsps.size()) {
+        return nullptr;
+    }
+
     void *dsp = add_dsp();
     if (dsp == nullptr) {
         return nullptr;
@@ -390,16 +430,6 @@ void *Song::duplicate_dsp(const size_t index) {
     return dsp;
 }
 
-Sequence *Song::duplicate_sequence(const size_t index) {
-    Sequence *sequence = add_sequence();
-    if (sequence == nullptr) {
-        return nullptr;
-    }
-
-    *sequence = *sequences[index];
-    return sequence;
-}
-
 CommandsSequence *Song::add_commands_sequence() {
     if (commands_sequences.size() >= MAX_COMMANDS_SEQUENCES) {
         return nullptr;
@@ -413,6 +443,10 @@ CommandsSequence *Song::add_commands_sequence() {
 }
 
 CommandsSequence *Song::duplicate_commands_sequence(const size_t index) {
+    if (index >= commands_sequences.size()) {
+        return nullptr;
+    }
+
     CommandsSequence *sequence = add_commands_sequence();
     if (sequence == nullptr) {
         return nullptr;
@@ -432,6 +466,10 @@ CommandsChannel *Song::add_commands_channel() {
 }
 
 CommandsChannel *Song::duplicate_commands_channel(const size_t index) {
+    if (index >= commands_channels.size()) {
+        return nullptr;
+    }
+
     CommandsChannel *channel = add_commands_channel();
     if (channel == nullptr) {
         return nullptr;
@@ -794,8 +832,8 @@ std::string Song::generate_data_asm_file(const CompilationTarget compilation_tar
     generate_header_vector(asm_content, "wavetable", "wave", wavetables.size(), separator);
     generate_header_vector(asm_content, "channel", "chan", channels.size(), separator);
     generate_header_vector(asm_content, "dsp", "dsp", dsps.size(), separator);
-    generate_header_vector(asm_content, "commands_sequences", "comm_seq", commands_sequences.size(), separator);
-    generate_header_vector(asm_content, "commands_channels", "comm_seq", commands_channels.size(), separator);
+    generate_header_vector(asm_content, "commands_sequences", "c_seq", commands_sequences.size(), separator);
+    generate_header_vector(asm_content, "commands_channels", "c_chan", commands_channels.size(), separator);
     generate_targets_asm(asm_content, compilation_target, separator);
     generate_offsets_asm(asm_content, separator);
 
@@ -829,12 +867,13 @@ nlohmann::json Song::create_header_json() const {
     json["data"] = {
         {"envelopes", envelopes.size()},
         {"sequences", sequences.size()},
-        {"commands", commands_sequences.size()},
         {"orders", orders.size()},
         {"wavetables", wavetables.size()},
         {"oscillators", oscillators.size()},
         {"dsps", dsps.size()},
-        {"channels", channels.size()}
+        {"channels", channels.size()},
+        {"commands_sequences", commands_sequences.size()},
+        {"commands_channels", commands_channels.size()},
     };
 
     return json;
@@ -1139,11 +1178,11 @@ void Song::export_dsps(const std::string &directory) const {
 }
 
 void Song::export_commands_sequences(const std::string &directory) const {
-    const std::filesystem::path series_dir = directory + "/comms";
+    const std::filesystem::path series_dir = directory + "/c_seqs";
     std::filesystem::create_directories(series_dir);
     for (size_t i = 0; i < commands_sequences.size(); i++) {
         const CommandsSequence *sequence = commands_sequences[i];
-        const std::string filename = get_element_path(series_dir, "comm", i);
+        const std::string filename = get_element_path(series_dir, "c_seq", i);
         std::ofstream file(filename, std::ios::binary);
         sequence->serialize(file);
         file.close();
@@ -1206,17 +1245,6 @@ void Song::import_sequences(const std::string &directory, const nlohmann::json &
     }
 }
 
-void Song::import_commands_sequences(const std::string &directory, const nlohmann::json &json) {
-    const size_t sequence_count = json["data"]["commands"];
-    for (size_t i = 0; i < sequence_count; i++) {
-        const std::string filename = get_element_path(directory + "/comms", "comm", i);
-        std::ifstream file(filename, std::ios::binary);
-        CommandsSequence *sequence = CommandsSequence::deserialize(file);
-        commands_sequences.push_back(sequence);
-        file.close();
-    }
-}
-
 void Song::import_orders(const std::string &directory, const nlohmann::json &json) {
     const size_t order_count = json["data"]["orders"];
     for (size_t i = 0; i < order_count; i++) {
@@ -1268,6 +1296,29 @@ void Song::import_channels(const std::string &directory, const nlohmann::json &j
         std::ifstream file(filename, std::ios::binary);
         Channel *channel = Channel::deserialize(file);
         channels.push_back(channel);
+        file.close();
+    }
+}
+
+void Song::import_commands_sequences(const std::string &directory, const nlohmann::json &json) {
+    const size_t sequence_count = json["data"]["commands_sequences"];
+    for (size_t i = 0; i < sequence_count; i++) {
+        const std::string filename = get_element_path(directory + "/c_seqs", "c_seq", i);
+        std::ifstream file(filename, std::ios::binary);
+        CommandsSequence *sequence = CommandsSequence::deserialize(file);
+        commands_sequences.push_back(sequence);
+        file.close();
+    }
+}
+
+void Song::import_commands_channels(const std::string &directory, const nlohmann::json &json) {
+    const size_t channel_count = json["data"]["commands_channels"];
+    for (size_t i = 0; i < channel_count; i++) {
+        const std::string filename = get_element_path(directory + "/c_chans", "c_chan", i);
+        std::ifstream file(filename, std::ios::binary);
+        CommandsChannel *channel = new CommandsChannel();
+        read_data(file, channel, sizeof(CommandsChannel));
+        commands_channels.push_back(channel);
         file.close();
     }
 }

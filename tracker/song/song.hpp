@@ -82,10 +82,11 @@ class Song {
 
     void import_envelopes(const std::string &directory, const nlohmann::json &json);
     void import_sequences(const std::string &directory, const nlohmann::json &json);
-    void import_commands_sequences(const std::string &directory, const nlohmann::json &json);
     void import_orders(const std::string &directory, const nlohmann::json &json);
     void import_wavetables(const std::string &directory, const nlohmann::json &json);
     void import_oscillators(const std::string &directory, const nlohmann::json &json);
+    void import_commands_sequences(const std::string &directory, const nlohmann::json &json);
+    void import_commands_channels(const std::string &directory, const nlohmann::json &json);
 
     int run_command(const std::string &command) const;
     void compile_sources(const std::string &directory, const std::string &filename, const bool compress, const std::string platform = "linux") const;
