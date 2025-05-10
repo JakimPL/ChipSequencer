@@ -87,6 +87,14 @@ void LinkManager::set_link(Link &link, void *item, const uint8_t i) {
         }
         break;
     }
+    case Target::COMMANDS_CHANNEL: {
+        if (link.index >= commands_channels.size()) {
+            link.base = &output;
+        } else {
+            link.base = commands_channels[link.index];
+        }
+        break;
+    }
     case Target::UNUSED: {
         throw std::runtime_error("Invalid link target");
     }
@@ -211,7 +219,7 @@ std::string LinkManager::get_link_reference(const LinkKey key) const {
         break;
     }
     case Target::COMMANDS_SEQUENCE: {
-        reference = "commands.commands_sequence_" + std::to_string(key.index);
+        reference = "commands_sequences.commands_sequence_" + std::to_string(key.index);
         break;
     }
     case Target::ORDER: {
@@ -232,6 +240,10 @@ std::string LinkManager::get_link_reference(const LinkKey key) const {
     }
     case Target::CHANNEL: {
         reference = "channels.channel_" + std::to_string(key.index);
+        break;
+    }
+    case Target::COMMANDS_CHANNEL: {
+        reference = "commands_channels.commands_sequence_" + std::to_string(key.index);
         break;
     }
     case Target::UNUSED: {
@@ -308,6 +320,7 @@ TargetVariableType LinkManager::get_type(const LinkKey key) const {
     }
     case Target::ENVELOPE:
     case Target::SEQUENCE:
+    case Target::COMMANDS_CHANNEL:
     case Target::COMMANDS_SEQUENCE:
     case Target::ORDER:
     case Target::OSCILLATOR:

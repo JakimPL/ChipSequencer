@@ -23,6 +23,7 @@ class LinkTarget(Enum):
     WAVETABLE = "wavetable"
     DSP = "dsp"
     CHANNEL = "channel"
+    COMMANDS_CHANNEL = "commands_channel"
     UNUSED = "unused"
 
     @staticmethod
@@ -40,7 +41,8 @@ class LinkTarget(Enum):
             9: LinkTarget.WAVETABLE,
             10: LinkTarget.DSP,
             11: LinkTarget.CHANNEL,
-            12: LinkTarget.UNUSED,
+            12: LinkTarget.COMMANDS_CHANNEL,
+            13: LinkTarget.UNUSED,
         }
 
         return dictionary[integer]

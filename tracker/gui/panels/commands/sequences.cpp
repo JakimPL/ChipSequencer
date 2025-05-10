@@ -10,13 +10,13 @@ GUICommandsSequencesPanel::GUICommandsSequencesPanel(const bool visible)
 }
 
 void GUICommandsSequencesPanel::draw() {
-    ImGui::Begin("Commands");
-    ImGui::Columns(1, "commands_columns");
+    ImGui::Begin("Commands sequences");
+    ImGui::Columns(1, "commands_sequence_columns");
 
     std::vector<size_t> dependencies = song.find_commands_sequence_dependencies(sequence_index);
     push_tertiary_style();
     draw_add_or_remove("orders", dependencies);
-    prepare_combo(commands_names, "##CommandsCombo", sequence_index);
+    prepare_combo(commands_sequence_names, "##CommandsSequenceCombo", sequence_index);
     show_dependency_tooltip("orders", dependencies);
     pop_tertiary_style();
 
@@ -83,7 +83,7 @@ void GUICommandsSequencesPanel::remove() {
 }
 
 void GUICommandsSequencesPanel::update() {
-    update_items(commands_names, commands_sequences.size(), "Commands ", sequence_index);
+    update_items(commands_sequence_names, commands_sequences.size(), "Commands ", sequence_index);
     gui.update(GUIElement::Orders);
 }
 

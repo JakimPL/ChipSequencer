@@ -356,6 +356,9 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
     case Target::CHANNEL:
         id_prefix = "ChannelNode_";
         break;
+    case Target::COMMANDS_CHANNEL:
+        id_prefix = "CommandsChannelNode_";
+        break;
     case Target::DSP:
     case Target::DIRECT_DSP:
         id_prefix = "DSPNode_";

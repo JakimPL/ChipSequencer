@@ -10,16 +10,17 @@
 #include "enums.hpp"
 
 extern std::vector<std::string> channel_names;
-extern std::vector<std::string> commands_names;
 extern std::vector<std::string> dsp_names;
 extern std::vector<std::string> envelope_names;
 extern std::vector<std::string> oscillator_names;
 extern std::vector<std::string> order_names;
 extern std::vector<std::string> sequence_names;
 extern std::vector<std::string> wavetable_names;
+extern std::vector<std::string> commands_channel_names;
+extern std::vector<std::string> commands_sequence_names;
 
 const std::vector<std::string> effect_names = {"Gainer", "Distortion", "Filter", "Delay"};
-const std::vector<std::string> parameter_types = {"Envelope", "Sequence", "Commands sequence", "Order", "Oscillator", "Wavetable", "DSP", "Channel"};
+const std::vector<std::string> parameter_types = {"Envelope", "Sequence", "Commands sequence", "Order", "Oscillator", "Wavetable", "DSP", "Channel", "Commands channel"};
 const std::vector<std::string> target_types = {"Output splitter", "DSP splitter", "Direct output", "DSP", "Parameter"};
 const std::vector<std::string> operation_names = {"Add", "Set", "Multiply", "Zero"};
 const std::vector<std::string> variable_types = {"Float", "Int8", "Int16", "Int32"};
@@ -37,6 +38,7 @@ const std::map<Target, std::string> target_names = {
     {Target::WAVETABLE, "Wavetable"},
     {Target::DSP, "DSP"},
     {Target::CHANNEL, "Channel"},
+    {Target::COMMANDS_CHANNEL, "Commands channel"},
     {Target::UNUSED, "Unused"},
 };
 const std::map<ItemType, std::string> item_types_names = {
@@ -47,6 +49,7 @@ const std::vector<std::pair<GUIElement, const char *>> menu_items = {
     {GUIElement::Editor, "Editor"},
     {GUIElement::General, "General"},
     {GUIElement::Channels, "Channels"},
+    {GUIElement::CommandsChannel, "Commands channel"},
     {GUIElement::CommandsSequence, "Commands sequence"},
     {GUIElement::DSPs, "DSPs"},
     {GUIElement::Envelopes, "Envelopes"},

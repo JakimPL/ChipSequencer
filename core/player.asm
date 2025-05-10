@@ -20,11 +20,13 @@
 
     extern envelopes
     extern sequences
+    extern commands_sequences
     extern orders
     extern oscillators
     extern wavetables
     extern dsps
     extern channels
+    extern commands_channels
     extern buffer_offsets
     extern targets
 

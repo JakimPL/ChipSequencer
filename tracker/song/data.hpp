@@ -41,6 +41,7 @@ extern Oscillators oscillators;
 extern Wavetables wavetables;
 extern DSPs dsps;
 extern Channels channels;
+extern CommandsChannels commands_channels;
 extern Offsets buffer_offsets;
 extern Targets targets;
 

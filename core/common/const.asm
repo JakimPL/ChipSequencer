@@ -51,13 +51,13 @@
 
     %define MAX_ENVELOPES 32
     %define MAX_SEQUENCES 64
-    %define MAX_COMMANDS 64
     %define MAX_ORDERS 64
     %define MAX_OSCILLATORS 32
     %define MAX_WAVETABLES 16
     %define MAX_CHANNELS 32
-    %define MAX_COMMANDS_CHANNELS 32
     %define MAX_DSPS 32
+    %define MAX_COMMANDS_SEQUENCES 64
+    %define MAX_COMMANDS_CHANNELS 32
     %define MAX_TARGETS 254
 
     %define MAX_WAVETABLE_SIZE 4096

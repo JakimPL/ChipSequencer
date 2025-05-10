@@ -123,32 +123,35 @@ class Song {
 
     Envelope *add_envelope();
     Sequence *add_sequence();
-    CommandsSequence *add_commands_sequence();
     Order *add_order();
     Wavetable *add_wavetable();
     void *add_oscillator();
     Channel *add_channel();
     void *add_dsp();
+    CommandsSequence *add_commands_sequence();
+    CommandsChannel *add_commands_channel();
 
     Envelope *duplicate_envelope(const size_t index);
     Sequence *duplicate_sequence(const size_t index);
-    CommandsSequence *duplicate_commands_sequence(const size_t index);
     Order *duplicate_order(const size_t index);
     Wavetable *duplicate_wavetable(const size_t index);
     void *duplicate_oscillator(const size_t index);
     Channel *duplicate_channel(const size_t index);
     void *duplicate_dsp(const size_t index);
+    CommandsChannel *duplicate_commands_channel(const size_t index);
+    CommandsSequence *duplicate_commands_sequence(const size_t index);
 
     void set_buffer_offsets();
 
     void remove_envelope(const size_t index);
     void remove_sequence(const size_t index);
-    void remove_commands_sequence(const size_t index);
     void remove_order(const size_t index);
     void remove_wavetable(const size_t index);
     void remove_oscillator(const size_t index);
     void remove_channel(const size_t index);
     void remove_dsp(const size_t index);
+    void remove_commands_channel(const size_t index);
+    void remove_commands_sequence(const size_t index);
 
     std::pair<ValidationResult, int> validate();
     std::vector<size_t> find_commands_sequence_dependencies(const size_t commands_index) const;

@@ -63,7 +63,8 @@ class GUI {
     GUIEditorPanel editor = GUIEditorPanel(true, current_octave, jump_step, page_size);
     GUIGeneralPanel general_panel;
     GUIChannelsPanel channels_panel;
-    GUICommandsSequencesPanel commands_panel;
+    GUICommandsChannelsPanel commands_channels_panel;
+    GUICommandsSequencesPanel commands_sequences_panel;
     GUIDSPsPanel dsps_panel;
     GUIEnvelopesPanel envelopes_panel;
     GUIOrdersPanel orders_panel;

@@ -131,6 +131,18 @@ Size=234,278
 Collapsed=0
 DockId=0x0000000D,1
 
+[Window][Commands sequences]
+Pos=0,731
+Size=234,278
+Collapsed=0
+DockId=0x0000000D,1
+
+[Window][Commands channels]
+Pos=1489,192
+Size=359,430
+Collapsed=0
+DockId=0x00000011,1
+
 [Table][0x8E77C46A,2]
 Column 0  Weight=1.0000
 Column 1  Weight=1.0000
@@ -153,7 +165,7 @@ DockSpace           ID=0xE241FA1E Window=0xA7EE3C72 Pos=0,19 Size=1848,990 Split
       DockNode      ID=0x0000000A Parent=0x0000000B SizeRef=913,500 Split=X Selected=0xAAA808CD
         DockNode    ID=0x0000000E Parent=0x0000000A SizeRef=234,520 Split=Y Selected=0x5C5BDF3D
           DockNode  ID=0x0000000C Parent=0x0000000E SizeRef=304,220 Selected=0x575D137D
-          DockNode  ID=0x0000000D Parent=0x0000000E SizeRef=304,278 Selected=0x96A6AEA3
+          DockNode  ID=0x0000000D Parent=0x0000000E SizeRef=304,278 Selected=0xE1E91444
         DockNode    ID=0x0000000F Parent=0x0000000A SizeRef=1323,520 CentralNode=1 Selected=0xD94DCD9B
     DockNode        ID=0x00000010 Parent=0x00000003 SizeRef=359,818 Split=Y Selected=0xCA9451E3
       DockNode      ID=0x00000011 Parent=0x00000010 SizeRef=326,430 Selected=0x2E93F19D

@@ -16,6 +16,7 @@ enum class Target : uint8_t {
     WAVETABLE,
     DSP,
     CHANNEL,
+    COMMANDS_CHANNEL,
     UNUSED
 };
 

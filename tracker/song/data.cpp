@@ -19,6 +19,7 @@ Oscillators oscillators;
 Wavetables wavetables;
 DSPs dsps;
 Channels channels;
+CommandsChannels commands_channels;
 Offsets buffer_offsets;
 Targets targets;
 Links links;

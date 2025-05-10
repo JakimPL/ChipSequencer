@@ -245,38 +245,6 @@ Sequence *Song::add_sequence() {
     return sequence;
 }
 
-Sequence *Song::duplicate_sequence(const size_t index) {
-    Sequence *sequence = add_sequence();
-    if (sequence == nullptr) {
-        return nullptr;
-    }
-
-    *sequence = *sequences[index];
-    return sequence;
-}
-
-CommandsSequence *Song::add_commands_sequence() {
-    if (commands_sequences.size() >= MAX_COMMANDS) {
-        return nullptr;
-    }
-
-    CommandsSequence *sequence = new CommandsSequence();
-    sequence->size = SIZE_COMMAND;
-    sequence->length = 1;
-    commands_sequences.push_back(sequence);
-    return sequence;
-}
-
-CommandsSequence *Song::duplicate_commands_sequence(const size_t index) {
-    CommandsSequence *sequence = add_commands_sequence();
-    if (sequence == nullptr) {
-        return nullptr;
-    }
-
-    *sequence = *commands_sequences[index];
-    return sequence;
-}
-
 Order *Song::add_order() {
     if (orders.size() >= MAX_ORDERS) {
         return nullptr;
@@ -422,6 +390,57 @@ void *Song::duplicate_dsp(const size_t index) {
     return dsp;
 }
 
+Sequence *Song::duplicate_sequence(const size_t index) {
+    Sequence *sequence = add_sequence();
+    if (sequence == nullptr) {
+        return nullptr;
+    }
+
+    *sequence = *sequences[index];
+    return sequence;
+}
+
+CommandsSequence *Song::add_commands_sequence() {
+    if (commands_sequences.size() >= MAX_COMMANDS_SEQUENCES) {
+        return nullptr;
+    }
+
+    CommandsSequence *sequence = new CommandsSequence();
+    sequence->size = SIZE_COMMAND;
+    sequence->length = 1;
+    commands_sequences.push_back(sequence);
+    return sequence;
+}
+
+CommandsSequence *Song::duplicate_commands_sequence(const size_t index) {
+    CommandsSequence *sequence = add_commands_sequence();
+    if (sequence == nullptr) {
+        return nullptr;
+    }
+
+    *sequence = *commands_sequences[index];
+    return sequence;
+}
+
+CommandsChannel *Song::add_commands_channel() {
+    if (commands_channels.size() >= MAX_COMMANDS_CHANNELS) {
+        return nullptr;
+    }
+
+    CommandsChannel *channel = new CommandsChannel();
+    return channel;
+}
+
+CommandsChannel *Song::duplicate_commands_channel(const size_t index) {
+    CommandsChannel *channel = add_commands_channel();
+    if (channel == nullptr) {
+        return nullptr;
+    }
+
+    *channel = *commands_channels[index];
+    return channel;
+}
+
 void Song::remove_envelope(const size_t index) {
     if (index < envelopes.size()) {
         delete envelopes[index];
@@ -440,21 +459,6 @@ void Song::remove_sequence(const size_t index) {
         delete sequences[index];
         sequences.erase(sequences.begin() + index);
         link_manager.realign_links(index, Target::SEQUENCE);
-        for (auto &order : orders) {
-            for (size_t i = 0; i < order->order_length; i++) {
-                if (order->sequences[i] >= index) {
-                    order->sequences[i] = std::max(0, order->sequences[i] - 1);
-                }
-            }
-        }
-    }
-}
-
-void Song::remove_commands_sequence(const size_t index) {
-    if (index < commands_sequences.size()) {
-        delete commands_sequences[index];
-        commands_sequences.erase(commands_sequences.begin() + index);
-        link_manager.realign_links(index, Target::COMMANDS_SEQUENCE);
         for (auto &order : orders) {
             for (size_t i = 0; i < order->order_length; i++) {
                 if (order->sequences[i] >= index) {
@@ -533,6 +537,24 @@ void Song::remove_dsp(const size_t index) {
         link_manager.realign_links(index, Target::DSP);
         link_manager.set_links();
     }
+}
+
+void Song::remove_commands_sequence(const size_t index) {
+    if (index < commands_sequences.size()) {
+        delete commands_sequences[index];
+        commands_sequences.erase(commands_sequences.begin() + index);
+        link_manager.realign_links(index, Target::COMMANDS_SEQUENCE);
+        for (auto &order : orders) {
+            for (size_t i = 0; i < order->order_length; i++) {
+                if (order->sequences[i] >= index) {
+                    order->sequences[i] = std::max(0, order->sequences[i] - 1);
+                }
+            }
+        }
+    }
+}
+
+void Song::remove_commands_channel(const size_t index) {
 }
 
 std::pair<ValidationResult, int> Song::validate() {
@@ -767,12 +789,13 @@ std::string Song::generate_data_asm_file(const CompilationTarget compilation_tar
 
     generate_header_vector(asm_content, "envelope", "envel", envelopes.size(), separator);
     generate_header_vector(asm_content, "sequence", "seq", sequences.size(), separator);
-    generate_header_vector(asm_content, "commands", "comm", commands_sequences.size(), separator);
     generate_header_vector(asm_content, "order", "order", orders.size(), separator);
     generate_header_vector(asm_content, "oscillator", "osc", oscillators.size(), separator);
     generate_header_vector(asm_content, "wavetable", "wave", wavetables.size(), separator);
     generate_header_vector(asm_content, "channel", "chan", channels.size(), separator);
     generate_header_vector(asm_content, "dsp", "dsp", dsps.size(), separator);
+    generate_header_vector(asm_content, "commands_sequences", "comm_seq", commands_sequences.size(), separator);
+    generate_header_vector(asm_content, "commands_channels", "comm_seq", commands_channels.size(), separator);
     generate_targets_asm(asm_content, compilation_target, separator);
     generate_offsets_asm(asm_content, separator);
 
