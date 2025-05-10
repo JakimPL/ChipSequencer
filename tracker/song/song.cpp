@@ -1,12 +1,7 @@
 #include <filesystem>
-#include <fstream>
 #include <iostream>
 #include <memory>
-#include <set>
-#include <sstream>
 #include <stdexcept>
-#include <string>
-#include <vector>
 #include <zlib.h>
 
 #include "../general.hpp"
@@ -611,12 +606,29 @@ std::pair<ValidationResult, int> Song::validate() {
         }
     }
 
-    for (size_t index = 0; index < orders.size(); index++) {
-        const Order *order = orders[index];
+    for (size_t index = 0; index < commands_channels.size(); index++) {
+        const CommandsChannel *channel = commands_channels[index];
+        if (channel->order_index >= orders.size()) {
+            return {ValidationResult::ChannelMissingOrder, index};
+        }
+    }
+
+    std::set<size_t> channel_orders = get_channel_orders();
+    for (const size_t order_index : channel_orders) {
+        const Order *order = orders[order_index];
         for (size_t i = 0; i < order->order_length; i++) {
-            const uint8_t sequence_index = order->sequences[i];
-            if (sequence_index >= sequences.size()) {
-                return {ValidationResult::OrderMissingSequence, index};
+            if (order->sequences[i] >= sequences.size()) {
+                return {ValidationResult::OrderMissingSequence, order_index};
+            }
+        }
+    }
+
+    std::set<size_t> commands_channel_orders = get_commands_channel_orders();
+    for (const size_t order_index : commands_channel_orders) {
+        const Order *order = orders[order_index];
+        for (size_t i = 0; i < order->order_length; i++) {
+            if (order->sequences[i] >= commands_sequences.size()) {
+                return {ValidationResult::OrderMissingSequence, order_index};
             }
         }
     }
@@ -639,10 +651,6 @@ std::pair<ValidationResult, int> Song::validate() {
     return {ValidationResult::OK, -1};
 }
 
-std::vector<size_t> Song::find_commands_sequence_dependencies(const size_t commands_index) const {
-    return find_sequence_dependencies(commands_index);
-}
-
 std::vector<size_t> Song::find_envelope_dependencies(const size_t envelope_index) const {
     std::set<size_t> dependencies;
     for (size_t i = 0; i < channels.size(); i++) {
@@ -656,11 +664,12 @@ std::vector<size_t> Song::find_envelope_dependencies(const size_t envelope_index
 
 std::vector<size_t> Song::find_sequence_dependencies(const size_t sequence_index) const {
     std::set<size_t> dependencies;
-    for (size_t i = 0; i < orders.size(); i++) {
-        const Order *order = orders[i];
-        for (size_t j = 0; j < order->order_length; j++) {
-            if (order->sequences[j] == sequence_index) {
-                dependencies.insert(i);
+    std::set<size_t> channel_orders = get_channel_orders();
+    for (const size_t order_index : channel_orders) {
+        const Order *order = orders[order_index];
+        for (size_t i = 0; i < order->order_length; i++) {
+            if (order->sequences[i] == sequence_index) {
+                dependencies.insert(order_index);
             }
         }
     }
@@ -699,6 +708,21 @@ std::vector<size_t> Song::find_oscillator_dependencies(const size_t oscillator_i
     for (size_t i = 0; i < channels.size(); i++) {
         if (channels[i]->oscillator_index == oscillator_index) {
             dependencies.insert(i);
+        }
+    }
+
+    return std::vector<size_t>(dependencies.begin(), dependencies.end());
+}
+
+std::vector<size_t> Song::find_commands_sequence_dependencies(const size_t sequence_index) const {
+    std::set<size_t> dependencies;
+    std::set<size_t> channel_orders = get_commands_channel_orders();
+    for (const size_t order_index : channel_orders) {
+        const Order *order = orders[order_index];
+        for (size_t i = 0; i < order->order_length; i++) {
+            if (order->sequences[i] == sequence_index) {
+                dependencies.insert(order_index);
+            }
         }
     }
 
@@ -1356,12 +1380,13 @@ void Song::update_sizes() {
 void Song::clear_data() {
     envelopes.clear();
     sequences.clear();
-    commands_sequences.clear();
     orders.clear();
     oscillators.clear();
     wavetables.clear();
     dsps.clear();
     channels.clear();
+    commands_channels.clear();
+    commands_sequences.clear();
     link_manager.reset();
     num_channels = 0;
     num_dsps = 0;
@@ -1373,9 +1398,9 @@ void Song::delete_oscillator(void *oscillator) {
         return;
     }
 
-    const uint8_t *bytes = static_cast<const uint8_t *>(oscillator);
-    const uint8_t dsp_type = bytes[1];
-    switch (static_cast<Generator>(dsp_type)) {
+    const Oscillator *generic = reinterpret_cast<const Oscillator *>(oscillator);
+    const uint8_t generator = generic->generator_index;
+    switch (static_cast<Generator>(generator)) {
     case Generator::Square:
         delete static_cast<OscillatorSquare *>(oscillator);
         break;
@@ -1392,7 +1417,7 @@ void Song::delete_oscillator(void *oscillator) {
         delete static_cast<OscillatorNoise *>(oscillator);
         break;
     default:
-        throw std::runtime_error("Unknown oscillator type: " + std::to_string(dsp_type));
+        throw std::runtime_error("Unknown oscillator type: " + std::to_string(generator));
     }
 }
 
@@ -1401,9 +1426,9 @@ void Song::delete_dsp(void *dsp) {
         return;
     }
 
-    const uint8_t *bytes = static_cast<const uint8_t *>(dsp);
-    const uint8_t dsp_type = bytes[1];
-    switch (static_cast<Effect>(dsp_type)) {
+    const DSP *generic = reinterpret_cast<const DSP *>(dsp);
+    const uint8_t effect = generic->effect_index;
+    switch (static_cast<Effect>(effect)) {
     case Effect::Gainer:
         delete static_cast<DSPGainer *>(dsp);
         return;
@@ -1417,6 +1442,34 @@ void Song::delete_dsp(void *dsp) {
         delete static_cast<DSPFilter *>(dsp);
         return;
     default:
-        throw std::runtime_error("Unknown DSP type: " + std::to_string(dsp_type));
+        throw std::runtime_error("Unknown DSP type: " + std::to_string(effect));
     }
+}
+
+std::set<size_t> Song::get_channel_orders() const {
+    std::set<size_t> channel_orders;
+    for (size_t i = 0; i < channels.size(); i++) {
+        const Channel *channel = channels[i];
+        if (channel->order_index >= orders.size()) {
+            continue;
+        }
+
+        channel_orders.insert(channel->order_index);
+    }
+
+    return channel_orders;
+}
+
+std::set<size_t> Song::get_commands_channel_orders() const {
+    std::set<size_t> commands_channel_orders;
+    for (size_t i = 0; i < commands_channels.size(); i++) {
+        const CommandsChannel *channel = commands_channels[i];
+        if (channel->order_index >= orders.size()) {
+            continue;
+        }
+
+        commands_channel_orders.insert(channel->order_index);
+    }
+
+    return commands_channel_orders;
 }

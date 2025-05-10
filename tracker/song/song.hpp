@@ -1,7 +1,12 @@
 #ifndef SONG_SONG_HPP
 #define SONG_SONG_HPP
 
+#include <fstream>
 #include <nlohmann/json.hpp>
+#include <set>
+#include <sstream>
+#include <string>
+#include <vector>
 
 #include "../constants.hpp"
 #include "../structures.hpp"
@@ -98,6 +103,9 @@ class Song {
     void delete_oscillator(void *oscillator);
     void delete_dsp(void *dsp);
 
+    std::set<size_t> get_channel_orders() const;
+    std::set<size_t> get_commands_channel_orders() const;
+
   public:
     Song();
     ~Song();
@@ -155,12 +163,12 @@ class Song {
     void remove_commands_sequence(const size_t index);
 
     std::pair<ValidationResult, int> validate();
-    std::vector<size_t> find_commands_sequence_dependencies(const size_t commands_index) const;
     std::vector<size_t> find_envelope_dependencies(const size_t envelope_index) const;
     std::vector<size_t> find_sequence_dependencies(const size_t sequence_index) const;
     std::vector<size_t> find_order_dependencies(const size_t order_index) const;
     std::vector<size_t> find_wavetable_dependencies(const size_t wavetable_index) const;
     std::vector<size_t> find_oscillator_dependencies(const size_t oscillator_index) const;
+    std::vector<size_t> find_commands_sequence_dependencies(const size_t sequence_index) const;
 
     size_t calculate_dsps(const uint8_t effect) const;
     size_t calculate_oscillators(const uint8_t generator) const;
