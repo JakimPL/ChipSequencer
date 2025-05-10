@@ -13,7 +13,7 @@ void GUICommandsSequencesPanel::draw() {
     ImGui::Begin("Commands");
     ImGui::Columns(1, "commands_columns");
 
-    std::vector<size_t> dependencies = song.find_commands_dependencies(sequence_index);
+    std::vector<size_t> dependencies = song.find_commands_sequence_dependencies(sequence_index);
     push_tertiary_style();
     draw_add_or_remove("orders", dependencies);
     prepare_combo(commands_names, "##CommandsCombo", sequence_index);

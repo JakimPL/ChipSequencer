@@ -1,6 +1,6 @@
-#include "../maps/commands.hpp"
-#include "../utils/file.hpp"
-#include "commands.hpp"
+#include "../../maps/commands.hpp"
+#include "../../utils/file.hpp"
+#include "sequence.hpp"
 
 void CommandsSequence::from_command_vector(const std::vector<Command> &command_vector) {
     size = 0;

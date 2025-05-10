@@ -22,7 +22,7 @@ mix:
     mov [current_channel], cl
 
 .process_channel:
-    call load_offsets
+    call load_channel
     call step
     call increment_timer
     call play_channel

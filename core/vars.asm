@@ -6,7 +6,9 @@
 
     global envelope_mode
     global current_sequence
+    global current_commands_sequence
     global sequence_current_note
+    global commands_sequence_offset
 
     global dsp_input
     global dsp_timer
@@ -23,6 +25,9 @@
     envelope_mode resb MAX_CHANNELS
     current_sequence resb MAX_CHANNELS
     sequence_current_note resb MAX_CHANNELS
+
+    current_commands_sequence resb MAX_COMMANDS_CHANNELS
+    commands_sequence_current_command resb MAX_COMMANDS_CHANNELS
 
     dsp_input resd MAX_DSPS
     dsp_timer resd MAX_DSPS

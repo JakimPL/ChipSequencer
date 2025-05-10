@@ -3,8 +3,9 @@
 
 #pragma pack(push, 1)
 #include "structures/envelope.hpp"
-#include "structures/commands.hpp"
 #include "structures/sequence.hpp"
+#include "structures/commands/sequence.hpp"
+#include "structures/commands/channel.hpp"
 #include "structures/order.hpp"
 #include "structures/oscillator.hpp"
 #include "structures/wavetable.hpp"

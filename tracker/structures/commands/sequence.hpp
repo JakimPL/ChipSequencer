@@ -1,5 +1,5 @@
-#ifndef STRUCTURES_COMMANDS_HPP
-#define STRUCTURES_COMMANDS_HPP
+#ifndef STRUCTURES_COMMANDS_SEQUENCE_HPP
+#define STRUCTURES_COMMANDS_SEQUENCE_HPP
 
 #include <array>
 #include <cstddef>
@@ -8,8 +8,8 @@
 #include <variant>
 #include <vector>
 
-#include "../constants.hpp"
-#include "../sizes.hpp"
+#include "../../constants.hpp"
+#include "../../sizes.hpp"
 
 enum class Instruction : uint8_t {
     Empty = INSTRUCTION_EMPTY,
@@ -153,4 +153,4 @@ static_assert(sizeof(Command) == sizeof(CommandChangeWordValue), "Command and Co
 static_assert(sizeof(Command) == sizeof(CommandChangeDwordValue), "Command and CommandChangeDwordValue must be of the same size.");
 static_assert(sizeof(Command) == sizeof(CommandChangeFloatValue), "Command and CommandChangeFloatValue must be of the same size.");
 
-#endif // STRUCTURES_COMMANDS_HPP
+#endif // STRUCTURES_COMMANDS_SEQUENCE_HPP

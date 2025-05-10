@@ -5,7 +5,7 @@
 #include <map>
 #include <vector>
 
-#include "../../structures/commands.hpp"
+#include "../../structures/commands/sequence.hpp"
 #include "../init.hpp"
 #include "../inputs/string.hpp"
 

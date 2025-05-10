@@ -1,5 +1,5 @@
     SEGMENT_CODE
-load_offsets:
+load_channel:
 .load_channel:
     movzx ebx, byte [current_channel]
     LOAD_ARRAY_ITEM channels, channel_offset, SIZE_CHANNEL

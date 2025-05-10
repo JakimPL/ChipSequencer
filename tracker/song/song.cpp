@@ -189,7 +189,7 @@ void Song::export_all(const std::string &directory, const CompilationTarget comp
     export_series(directory, "osc", oscillators, get_struct_sizes(oscillators));
     export_dsps(directory);
     export_arrays(directory, "seq", sequences);
-    export_commands(directory);
+    export_commands_sequences(directory);
     export_arrays(directory, "order", orders);
     export_arrays(directory, "wave", wavetables);
     export_offsets(directory + "/offsets.bin");
@@ -199,7 +199,7 @@ void Song::export_all(const std::string &directory, const CompilationTarget comp
 void Song::import_all(const std::string &directory, const nlohmann::json &json) {
     import_envelopes(directory, json);
     import_sequences(directory, json);
-    import_commands(directory, json);
+    import_commands_sequences(directory, json);
     import_orders(directory, json);
     import_wavetables(directory, json);
     import_channels(directory, json);
@@ -578,7 +578,7 @@ std::pair<ValidationResult, int> Song::validate() {
     return {ValidationResult::OK, -1};
 }
 
-std::vector<size_t> Song::find_commands_dependencies(const size_t commands_index) const {
+std::vector<size_t> Song::find_commands_sequence_dependencies(const size_t commands_index) const {
     return find_sequence_dependencies(commands_index);
 }
 
@@ -1115,7 +1115,7 @@ void Song::export_dsps(const std::string &directory) const {
     }
 }
 
-void Song::export_commands(const std::string &directory) const {
+void Song::export_commands_sequences(const std::string &directory) const {
     const std::filesystem::path series_dir = directory + "/comms";
     std::filesystem::create_directories(series_dir);
     for (size_t i = 0; i < commands_sequences.size(); i++) {
@@ -1183,7 +1183,7 @@ void Song::import_sequences(const std::string &directory, const nlohmann::json &
     }
 }
 
-void Song::import_commands(const std::string &directory, const nlohmann::json &json) {
+void Song::import_commands_sequences(const std::string &directory, const nlohmann::json &json) {
     const size_t sequence_count = json["data"]["commands"];
     for (size_t i = 0; i < sequence_count; i++) {
         const std::string filename = get_element_path(directory + "/comms", "comm", i);

@@ -72,7 +72,7 @@ class Song {
 
     void export_channels(const std::string &directory) const;
     void export_dsps(const std::string &directory) const;
-    void export_commands(const std::string &directory) const;
+    void export_commands_sequences(const std::string &directory) const;
     void export_links(const std::string &filename) const;
     void export_offsets(const std::string &filename) const;
 
@@ -82,7 +82,7 @@ class Song {
 
     void import_envelopes(const std::string &directory, const nlohmann::json &json);
     void import_sequences(const std::string &directory, const nlohmann::json &json);
-    void import_commands(const std::string &directory, const nlohmann::json &json);
+    void import_commands_sequences(const std::string &directory, const nlohmann::json &json);
     void import_orders(const std::string &directory, const nlohmann::json &json);
     void import_wavetables(const std::string &directory, const nlohmann::json &json);
     void import_oscillators(const std::string &directory, const nlohmann::json &json);
@@ -151,7 +151,7 @@ class Song {
     void remove_dsp(const size_t index);
 
     std::pair<ValidationResult, int> validate();
-    std::vector<size_t> find_commands_dependencies(const size_t commands_index) const;
+    std::vector<size_t> find_commands_sequence_dependencies(const size_t commands_index) const;
     std::vector<size_t> find_envelope_dependencies(const size_t envelope_index) const;
     std::vector<size_t> find_sequence_dependencies(const size_t sequence_index) const;
     std::vector<size_t> find_order_dependencies(const size_t order_index) const;
