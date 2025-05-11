@@ -27,7 +27,7 @@ commands:
 
 .check_timer:
     movzx ecx, byte [current_commands_channel]
-    cmp byte [commands_sequence_current_command + ecx], 0
+    cmp dword [commands_sequence_timer + 4 * ecx], 0
     jne .commands_channel_done
 
 .load_command:
@@ -43,11 +43,14 @@ commands:
 .load_next_command:
     movzx ecx, byte [current_commands_channel]
     inc byte [commands_sequence_current_command + ecx]
-    add word [commands_sequence_current_offset], ax
+    add word [commands_sequence_current_offset + 2 * ecx], ax
     jne .set_timer
 
 .set_timer:
-; TODO
+    movzx ebx, byte [COMMAND_DURATION + edi]
+    mov eax, [ticks_per_beat]
+    mul ebx
+    mov [commands_sequence_timer + 4 * ecx], eax
 
 .commands_channel_done:
     movzx ebx, byte [current_commands_channel]
@@ -58,12 +61,19 @@ commands:
     popa
     ret
 
+reset_commands_channels:
+    movzx bx, [num_commands_channels]
+    mov esi, reset_commands_channel
+    call reset
+    ret
+
 reset_commands_channel:
     mov byte [current_commands_channel], bl
     movzx ecx, byte [current_commands_channel]
     mov dword [commands_sequence_timer + 4 * ecx], 0
     mov byte [current_commands_sequence + ecx], 0
     mov byte [commands_sequence_current_command + ecx], 0
+    mov word [commands_sequence_current_offset + ecx], 0
     ret
 
 ; Commands

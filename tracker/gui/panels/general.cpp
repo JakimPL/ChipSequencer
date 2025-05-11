@@ -70,6 +70,10 @@ void GUIGeneralPanel::to() const {
     song.set_author(current_song.author);
     song.set_message(current_song.message);
 
+    if (gui.is_playing()) {
+        return;
+    }
+
     sample_rate = 4 * std::round(static_cast<float>(current_song.sample_rate) / 4);
     unit = 240.0f / current_song.division;
     normalizer = current_song.normalizer;

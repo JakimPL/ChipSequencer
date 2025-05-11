@@ -22,16 +22,16 @@ load_channel:
     LOAD_VECTOR_ITEM oscillators, oscillator_offset
     ret
 
-reset_channels:
-    movzx bx, [num_channels]
-    mov esi, reset_channel
-    call reset
-    ret
-
 load_order_and_check_constant_pitch:
     LOAD_OFFSET ebx, channel_offset
     test byte [CHANNEL_FLAG + ebx], FLAG_CONSTANT_PITCH
     movzx ebx, byte [CHANNEL_ORDER_INDEX + ebx]
+    ret
+
+reset_channels:
+    movzx bx, [num_channels]
+    mov esi, reset_channel
+    call reset
     ret
 
 reset_channel:
