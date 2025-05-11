@@ -17,13 +17,7 @@ commands:
     movzx ebx, byte [COMMANDS_CHANNEL_ORDER_INDEX + ecx]
     LOAD_VECTOR_ITEM orders, commands_order_offset
 .load_sequence:
-    LOAD_OFFSET ebx, commands_order_offset
-    movzx ecx, byte [current_commands_channel]
-    movzx ecx, byte [current_commands_sequence + ecx]
-    add ebx, ecx
-    movzx ebx, byte [ORDER_SEQUENCES + ebx]
-    LOAD_VECTOR_ITEM_16_BIT commands_sequences, commands_sequence_offset
-    movzx edi, byte [COMMANDS_SEQUENCE_LENGTH + ecx]
+    call load_commands_sequence
 
 .check_timer:
     movzx ecx, byte [current_commands_channel]
@@ -42,12 +36,19 @@ commands:
     LOAD_OFFSET ebx, commands_order_offset
     movzx ecx, byte [current_commands_channel]
     inc byte [current_commands_sequence + ecx]
+    mov byte [commands_sequence_current_command + ecx], 0
+    mov word [commands_sequence_current_offset + ecx], 0
     mov dl, [current_commands_sequence + ecx]
     cmp dl, [ORDER_LENGTH + ebx]
-    jne .load_command_offset
+    jne .load_commands_sequence
     mov byte [current_commands_sequence + ecx], 0
+.load_commands_sequence:
+    pusha
+    call load_commands_sequence
+    popa
 
 .load_command_offset:
+    LOAD_OFFSET edi, commands_sequence_offset
     add edi, COMMANDS_SEQUENCE_DATA
     movzx ecx, word [commands_sequence_current_offset]
     add edi, ecx
@@ -74,6 +75,15 @@ commands:
     jmp .commands_loop
 .done:
     popa
+    ret
+
+load_commands_sequence:
+    LOAD_OFFSET ebx, commands_order_offset
+    movzx ecx, byte [current_commands_channel]
+    movzx ecx, byte [current_commands_sequence + ecx]
+    add ebx, ecx
+    movzx ebx, byte [ORDER_SEQUENCES + ebx]
+    LOAD_VECTOR_ITEM_16_BIT commands_sequences, commands_sequence_offset
     ret
 
 reset_commands_channels:
