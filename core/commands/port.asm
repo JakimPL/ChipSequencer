@@ -2,7 +2,7 @@
 portamento_up:
     %ifdef USED_COMMAND_PORTAMENTO_UP
     call load_portamenento_value
-    fmulp st1, st0
+    fmul
     fistp dword [frequency + 4 * ecx]
 
     xor eax, eax
@@ -17,7 +17,8 @@ portamento_up:
 portamento_down:
     %ifdef USED_COMMAND_PORTAMENTO_DOWN
     call load_portamenento_value
-    fdivp st1, st0
+    fxch
+    fdiv
     fistp dword [frequency + 4 * ecx]
 
     xor eax, eax
