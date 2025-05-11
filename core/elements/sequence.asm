@@ -63,8 +63,7 @@ initialize_sample_rate:
 calculate_ticks_per_beat:
     fild dword [sample_rate]
     fmul dword [unit]
-    fild word [bpm]
-    fdivp st1, st0
+    fidiv word [bpm]
     fistp dword [ticks_per_beat]
     ret
 

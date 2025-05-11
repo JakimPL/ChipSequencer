@@ -80,10 +80,6 @@ reference_frequency:
 note_divisor:
     dq __float64__(TUNING_NOTE_DIVISOR)
     %endif
-f_65536:
-    dd 65536.0
-i_255:
-    dw 255
 
 oscillators_table:
     %ifndef BITS_16

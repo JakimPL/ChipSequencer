@@ -117,6 +117,7 @@ instructions:
     dd portamento_up
     dd portamento_down
     dd set_master_gainer
+    dd set_bpm
     dd set_division
     dd change_byte_value
     dd change_word_value
@@ -127,6 +128,7 @@ instructions:
     dw portamento_up
     dw portamento_down
     dw set_master_gainer
+    dw set_bpm
     dw set_division
     dw change_byte_value
     dw change_word_value

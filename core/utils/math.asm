@@ -130,10 +130,19 @@ pi:
 angle_constant:
     dd ANGLE_CONSTANT
     %endif
+
 half_range:
     dd __float32__(32767.5)
-two:
+
+f_65536:
+    dd 65536.0
+i_255:
+    dw 255
+i_240:
+    dw 240
+i_2:
     dw 2
+
     %ifndef TRACKER
 sample_rate:
     dd SAMPLE_RATE

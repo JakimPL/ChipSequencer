@@ -1031,7 +1031,9 @@ size_t Song::calculate_oscillators(const uint8_t generator) const {
 size_t Song::calculate_commands(const uint8_t instruction) const {
     size_t count = 0;
     for (const auto &commands_sequence : commands_sequences) {
-        for (const Command &command : commands_sequence->commands) {
+        const size_t sequence_length = commands_sequence->length;
+        for (size_t i = 0; i < sequence_length; ++i) {
+            const Command &command = commands_sequence->commands[i];
             if (command.instruction == instruction) {
                 count++;
             }

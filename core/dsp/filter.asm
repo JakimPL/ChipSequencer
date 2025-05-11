@@ -31,7 +31,7 @@ filter:
 
 ; -2 * pi * x
     fld dword [pi]
-    fild word [two]
+    fild word [i_2]
     fmulp st1, st0
     fmulp st1, st0
     fchs
