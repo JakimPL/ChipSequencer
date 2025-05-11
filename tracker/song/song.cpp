@@ -870,8 +870,8 @@ std::string Song::generate_data_asm_file(const CompilationTarget compilation_tar
     generate_header_vector(asm_content, "wavetable", "wave", wavetables.size(), separator);
     generate_header_vector(asm_content, "channel", "chan", channels.size(), separator);
     generate_header_vector(asm_content, "dsp", "dsp", dsps.size(), separator);
-    generate_header_vector(asm_content, "commands_sequences", "c_seq", commands_sequences.size(), separator);
-    generate_header_vector(asm_content, "commands_channels", "c_chan", commands_channels.size(), separator);
+    generate_header_vector(asm_content, "commands_sequence", "c_seq", commands_sequences.size(), separator);
+    generate_header_vector(asm_content, "commands_channel", "c_chan", commands_channels.size(), separator);
     generate_targets_asm(asm_content, compilation_target, separator);
     generate_offsets_asm(asm_content, separator);
 

@@ -14,6 +14,16 @@ load_item:
 .done:
     ret
 
+load_item_16bit:
+; Arguments:
+; EDI - beginning offset (sequence)
+; CL  - element index
+.find_data_16bit:
+    movzx eax, word [edi]
+    add edi, eax
+    loop .find_data_16bit
+    ret
+
 reset:
 ; BX - loop size
 ; SI - function call

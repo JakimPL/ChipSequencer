@@ -1,6 +1,65 @@
     SEGMENT_CODE
 commands:
+    pusha
+    xor ebx, ebx
+.commands_loop:
+    cmp bl, [num_commands_channels]
+    je .done
+
+    mov [current_commands_channel], bl
+.load_commands_channel:
+    LOAD_ARRAY_ITEM commands_channels, commands_channel_offset, SIZE_COMMANDS_CHANNEL
+.check_commands_channel_bypass:
+    movzx edx, byte [COMMANDS_CHANNEL_FLAG + ecx]
+    test dl, FLAG_BYPASS
+    jnz .commands_channel_done
+.load_order:
+    movzx ebx, byte [COMMANDS_CHANNEL_ORDER_INDEX + ecx]
+    LOAD_VECTOR_ITEM orders, commands_order_offset
+.load_sequence:
+    LOAD_OFFSET ebx, commands_order_offset
+    movzx ecx, byte [current_commands_channel]
+    movzx ecx, byte [current_commands_sequence + ecx]
+    add ebx, ecx
+    movzx ebx, byte [ORDER_SEQUENCES + ebx]
+    LOAD_VECTOR_ITEM_16_BIT commands_sequences, commands_sequence_offset
+    movzx edi, byte [COMMANDS_SEQUENCE_LENGTH + ecx]
+
+.check_timer:
+    movzx ecx, byte [current_commands_channel]
+    cmp byte [commands_sequence_current_command + ecx], 0
+    jne .commands_channel_done
+
+.load_command:
+    LOAD_OFFSET edi, commands_sequence_offset
+    movzx ecx, word [commands_sequence_current_offset]
+    add edi, ecx
+.execute_command:
+; TODO
+
+.commands_channel_done:
+    movzx ebx, byte [current_commands_channel]
+    dec dword [commands_sequence_timer + 4 * ebx]
+    inc bl
+    jmp .commands_loop
+.done:
+    popa
     ret
+
+reset_commands_channel:
+    mov byte [current_commands_channel], bl
+    movzx ecx, byte [current_commands_channel]
+    mov dword [commands_sequence_timer + 4 * ecx], 0
+    mov byte [current_commands_sequence + ecx], 0
+    mov byte [commands_sequence_current_command + ecx], 0
+    ret
+
+; Commands
+    %include "core/commands/port.asm"
+    %include "core/commands/gainer.asm"
+    %include "core/commands/bpm.asm"
+    %include "core/commands/division.asm"
+    %include "core/commands/change.asm"
 
     SEGMENT_BSS
     current_commands_channel resb 1

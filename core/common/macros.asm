@@ -56,6 +56,14 @@
     %endif
     %endmacro
 
+    %macro LOAD_VECTOR_ITEM_16_BIT 2
+    %ifdef TRACKER
+    LOAD_ITEM %1, %2
+    %else
+    call load_item_16bit
+    %endif
+    %endmacro
+
     %macro PRINT_STRING 1
     mov dx, %1
     call print_message
