@@ -18,11 +18,7 @@ increment_timer:
     mov eax, [CHANNEL_PITCH + eax]
     jmp .increment_timer
 .load_pitch:
-    movzx eax, byte [pitch + ecx]
-    shl ax, 2
-    lea ebx, [frequencies]
-    add ebx, eax
-    mov ebx, [ebx]
+    mov ebx, [frequency + 4 * ecx]
 .detune:
     LOAD_OFFSET eax, channel_offset
     mov eax, [CHANNEL_PITCH + eax]

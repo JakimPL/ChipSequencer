@@ -18,14 +18,15 @@
     SEGMENT_BSS
     envelope_timer resd MAX_CHANNELS
     sequence_timer resd MAX_CHANNELS
-    commands_sequence_timer resd MAX_COMMANDS_CHANNELS
     oscillator_timer resd MAX_CHANNELS
     pitch resb MAX_CHANNELS
+    frequency resd MAX_CHANNELS
 
     envelope_mode resb MAX_CHANNELS
     current_sequence resb MAX_CHANNELS
     sequence_current_note resb MAX_CHANNELS
 
+    commands_sequence_timer resd MAX_COMMANDS_CHANNELS
     current_commands_sequence resb MAX_COMMANDS_CHANNELS
     commands_sequence_current_command resb MAX_COMMANDS_CHANNELS
     commands_sequence_current_offset resw MAX_COMMANDS_CHANNELS

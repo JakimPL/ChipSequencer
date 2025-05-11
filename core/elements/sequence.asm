@@ -37,8 +37,14 @@ step:
     call set_release
     jmp .progress_sequence
 .note_on:
-    movzx ecx, byte [current_channel]
-    mov [pitch + ecx], al
+    movzx edx, byte [current_channel]
+    mov [pitch + edx], al
+.load_frequency:
+    shl ax, 2
+    mov ebx, frequencies
+    add ebx, eax
+    mov ebx, [ebx]
+    mov [frequency + 4 * edx], ebx
     call reset_envelope
 .progress_sequence:
     mov al, [esi + 1]
