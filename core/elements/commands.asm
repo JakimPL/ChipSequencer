@@ -33,6 +33,21 @@ commands:
 .load_command:
     LOAD_OFFSET edi, commands_sequence_offset
     mov esi, edi
+.check_if_next_sequence:
+    movzx ecx, byte [current_commands_channel]
+    mov cl, [commands_sequence_current_command + ecx]
+    cmp cl, [COMMANDS_SEQUENCE_LENGTH + edi]
+    jne .load_command_offset
+.load_next_sequence:
+    LOAD_OFFSET ebx, commands_order_offset
+    movzx ecx, byte [current_commands_channel]
+    inc byte [current_commands_sequence + ecx]
+    mov dl, [current_commands_sequence + ecx]
+    cmp dl, [ORDER_LENGTH + ebx]
+    jne .load_command_offset
+    mov byte [current_commands_sequence + ecx], 0
+
+.load_command_offset:
     add edi, COMMANDS_SEQUENCE_DATA
     movzx ecx, word [commands_sequence_current_offset]
     add edi, ecx

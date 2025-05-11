@@ -20,9 +20,9 @@
 
 ; Sequence
     %define SEQUENCE_NOTES 1
-    %define SEQUENCE_SIZE 2
 
 ; Order
+    %define ORDER_LENGTH 0
     %define ORDER_SEQUENCES 1
 
 ; Wavetable
