@@ -32,9 +32,21 @@ commands:
 
 .load_command:
     LOAD_OFFSET edi, commands_sequence_offset
+    mov esi, edi
+    add edi, COMMANDS_SEQUENCE_DATA
     movzx ecx, word [commands_sequence_current_offset]
     add edi, ecx
 .execute_command:
+    movzx eax, byte [COMMAND_INSTRUCTION + edi]
+    LOAD_FUNCTION instructions, eax
+
+.load_next_command:
+    movzx ecx, byte [current_commands_channel]
+    inc byte [commands_sequence_current_command + ecx]
+    add word [commands_sequence_current_offset], ax
+    jne .set_timer
+
+.set_timer:
 ; TODO
 
 .commands_channel_done:
@@ -55,11 +67,36 @@ reset_commands_channel:
     ret
 
 ; Commands
+    %include "core/commands/empty.asm"
     %include "core/commands/port.asm"
     %include "core/commands/gainer.asm"
     %include "core/commands/bpm.asm"
     %include "core/commands/division.asm"
     %include "core/commands/change.asm"
+
+    SEGMENT_DATA
+instructions:
+    %ifndef BITS_16
+    dd empty
+    dd portamento_up
+    dd portamento_down
+    dd set_master_gainer
+    dd set_division
+    dd change_byte_value
+    dd change_word_value
+    dd change_dword_value
+    dd change_float_value
+    %else
+    dw empty
+    dw portamento_up
+    dw portamento_down
+    dw set_master_gainer
+    dw set_division
+    dw change_byte_value
+    dw change_word_value
+    dw change_dword_value
+    dw change_float_value
+    %endif
 
     SEGMENT_BSS
     current_commands_channel resb 1

@@ -68,7 +68,7 @@
     %define DSP_DELAY_TIME 12
 
 ; Commands
-    %define COMMAND_TYPE 0
+    %define COMMAND_INSTRUCTION 0
     %define COMMAND_DURATION 1
     %define COMMAND_PORTAMENTO_UP_CHANNEL 2
     %define COMMAND_PORTAMENTO_UP_VALUE 3
