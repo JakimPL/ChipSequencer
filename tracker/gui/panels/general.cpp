@@ -224,8 +224,8 @@ void GUIGeneralPanel::draw_tempo() {
 
 void GUIGeneralPanel::draw_output() {
     ImGui::Text("Output");
-    draw_float_slider("Master gainer", current_song.normalizer, {}, 0.01f, 2.0f);
     ImGui::BeginDisabled(gui.is_playing());
+    draw_float_slider("Master gainer", current_song.normalizer, {}, 0.01f, 2.0f);
     draw_float_slider("Sample rate", current_song.sample_rate, {}, GUI_MIN_SAMPLE_RATE, GUI_MAX_SAMPLE_RATE, GUIScale::Linear, "%.0f");
     draw_int_slider("Output channels", current_song.output_channels, {}, 1, MAX_OUTPUT_CHANNELS);
     ImGui::EndDisabled();
