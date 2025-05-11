@@ -129,8 +129,9 @@ constexpr size_t COMMAND_CHANGE_DWORD_VALUE_VALUE = offsetof(CommandChangeDwordV
 constexpr size_t COMMAND_CHANGE_FLOAT_VALUE_POINTER = offsetof(CommandChangeFloatValue, pointer);
 constexpr size_t COMMAND_CHANGE_FLOAT_VALUE_VALUE = offsetof(CommandChangeFloatValue, value);
 
-constexpr size_t COMMANDS_SIZE = offsetof(CommandsSequence, size);
-constexpr size_t COMMANDS_DATA = offsetof(CommandsSequence, commands);
+constexpr size_t COMMANDS_SEQUENCE_SIZE = offsetof(CommandsSequence, size);
+constexpr size_t COMMANDS_SEQUENCE_LENGTH = offsetof(CommandsSequence, length);
+constexpr size_t COMMANDS_SEQUENCE_DATA = offsetof(CommandsSequence, commands);
 
 static_assert(sizeof(Command) == SIZE_COMMAND + sizeof(Command::pad), "Command must be of 2 bytes.");
 static_assert(sizeof(CommandPortamentoUp) == SIZE_COMMAND_PORTAMENTO_UP + sizeof(CommandPortamentoUp::pad), "CommandPortamentoUp must be of 5 bytes.");

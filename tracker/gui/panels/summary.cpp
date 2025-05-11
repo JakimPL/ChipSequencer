@@ -3,6 +3,7 @@
 
 #include "../../general.hpp"
 #include "../../structures.hpp"
+#include "../../maps/commands.hpp"
 #include "../init.hpp"
 #include "summary.hpp"
 
@@ -29,7 +30,7 @@ void GUISummaryPanel::draw_summary() {
         size_t total_size = 0;
 
         // Channels
-        size_t channels_count = channels.size();
+        const size_t channels_count = channels.size();
         size_t channels_size = channels_count * sizeof(Channel);
         total_size += channels_size;
         ImGui::TableNextRow();
@@ -41,7 +42,7 @@ void GUISummaryPanel::draw_summary() {
         ImGui::Text("%zu", channels_size);
 
         // DSPs
-        size_t dsps_count = dsps.size();
+        const size_t dsps_count = dsps.size();
         size_t dsps_size = 0;
         for (const auto *dsp : dsps) {
             const DSP *generic = static_cast<const DSP *>(dsp);
@@ -76,8 +77,8 @@ void GUISummaryPanel::draw_summary() {
         ImGui::Text("%zu", dsps_size);
 
         // Envelopes
-        size_t envelopes_count = envelopes.size();
-        size_t envelopes_size = envelopes_count * sizeof(Envelope);
+        const size_t envelopes_count = envelopes.size();
+        const size_t envelopes_size = envelopes_count * sizeof(Envelope);
         total_size += envelopes_size;
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
@@ -88,8 +89,8 @@ void GUISummaryPanel::draw_summary() {
         ImGui::Text("%zu", envelopes_size);
 
         // Sequences
+        const size_t sequences_count = sequences.size();
         size_t sequences_size = 0;
-        size_t sequences_count = sequences.size();
         for (const Sequence *sequence : sequences) {
             const size_t sequence_size = sequence->size + 1;
             total_size += sequence_size;
@@ -122,7 +123,7 @@ void GUISummaryPanel::draw_summary() {
         ImGui::Text("%zu", orders_size);
 
         // Oscillators
-        size_t oscillators_count = oscillators.size();
+        const size_t oscillators_count = oscillators.size();
         size_t oscillators_size = 0;
         for (const void *oscillator : oscillators) {
             const Oscillator *generic = static_cast<const Oscillator *>(oscillator);
@@ -161,7 +162,7 @@ void GUISummaryPanel::draw_summary() {
         ImGui::Text("%zu", oscillators_size);
 
         // Wavetables
-        size_t wavetables_count = wavetables.size();
+        const size_t wavetables_count = wavetables.size();
         size_t wavetables_size = 0;
         for (const Wavetable *wavetable : wavetables) {
             wavetables_size += wavetable->wavetable_size + 1;
@@ -176,7 +177,40 @@ void GUISummaryPanel::draw_summary() {
         ImGui::TableSetColumnIndex(2);
         ImGui::Text("%zu", wavetables_size);
 
-        // Total Row
+        // Commands channels
+        const size_t commands_channels_count = commands_channels.size();
+        const size_t commands_channels_size = commands_channels_count * sizeof(CommandsChannel);
+        total_size += commands_channels_size;
+
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+        ImGui::Text("Commands channels");
+        ImGui::TableSetColumnIndex(1);
+        ImGui::Text("%zu", commands_channels_count);
+        ImGui::TableSetColumnIndex(2);
+        ImGui::Text("%zu", commands_channels_size);
+
+        // Commands sequences
+        size_t commands_sequences_count = commands_sequences.size();
+        size_t commands_sequences_size = 0;
+        for (const CommandsSequence *sequence : commands_sequences) {
+            commands_sequences_size += COMMANDS_SEQUENCE_DATA;
+            const size_t sequence_size = sequence->length;
+            for (size_t i = 0; i < sequence_size; i++) {
+                const Command &command = sequence->commands[i];
+                commands_sequences_size += command_sizes.at(command.instruction);
+            }
+        }
+
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+        ImGui::Text("Commands sequences");
+        ImGui::TableSetColumnIndex(1);
+        ImGui::Text("%zu", commands_sequences_count);
+        ImGui::TableSetColumnIndex(2);
+        ImGui::Text("%zu", commands_sequences_size);
+
+        // Total
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
         ImGui::Text("Total song size");
@@ -221,5 +255,37 @@ void GUISummaryPanel::draw_optimizations() {
     }
     if (song.calculate_oscillators(GENERATOR_NOISE) == 0) {
         ImGui::BulletText("Disabled noise oscillator");
+    }
+
+    if (commands_channels.empty()) {
+        ImGui::BulletText("Disabled all commands");
+    } else {
+        if (song.calculate_commands(INSTRUCTION_PORTAMENTO_UP) == 0) {
+            ImGui::BulletText("Disabled portamento up command");
+        }
+        if (song.calculate_commands(INSTRUCTION_PORTAMENTO_DOWN) == 0) {
+            ImGui::BulletText("Disabled portamento down command");
+        }
+        if (song.calculate_commands(INSTRUCTION_SET_MASTER_GAINER) == 0) {
+            ImGui::BulletText("Disabled set master gainer command");
+        }
+        if (song.calculate_commands(INSTRUCTION_SET_BPM) == 0) {
+            ImGui::BulletText("Disabled set BPM command");
+        }
+        if (song.calculate_commands(INSTRUCTION_SET_DIVISION) == 0) {
+            ImGui::BulletText("Disabled set division command");
+        }
+        if (song.calculate_commands(INSTRUCTION_CHANGE_BYTE_VALUE) == 0) {
+            ImGui::BulletText("Disabled change byte value command");
+        }
+        if (song.calculate_commands(INSTRUCTION_CHANGE_WORD_VALUE) == 0) {
+            ImGui::BulletText("Disabled change word value command");
+        }
+        if (song.calculate_commands(INSTRUCTION_CHANGE_DWORD_VALUE) == 0) {
+            ImGui::BulletText("Disabled change dword value command");
+        }
+        if (song.calculate_commands(INSTRUCTION_CHANGE_FLOAT_VALUE) == 0) {
+            ImGui::BulletText("Disabled change float value command");
+        }
     }
 }
