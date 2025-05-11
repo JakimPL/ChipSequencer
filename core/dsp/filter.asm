@@ -39,15 +39,7 @@ filter:
 ; exp(...)
     fldl2e
     fmul
-    fld st0
-    frndint
-    fsub st1, st0
-    fxch
-    f2xm1
-    fld1
-    fadd
-    fscale
-    fstp st1
+    call power
 
 ; a = exp(..), b = 1 - a
     fld1
