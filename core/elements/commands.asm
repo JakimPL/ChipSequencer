@@ -1,3 +1,4 @@
+    %ifdef USED_COMMANDS
     SEGMENT_CODE
 commands:
     pusha
@@ -143,4 +144,5 @@ instructions:
     commands_channel_offset resw 1
     commands_order_offset resw 1
     commands_sequence_offset resw 1
+    %endif
     %endif

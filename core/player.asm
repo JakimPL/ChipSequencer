@@ -46,7 +46,10 @@ initialize:
     call calculate_ticks_per_beat
 
     call reset_channels
+
+    %ifdef USED_COMMANDS
     call reset_commands_channels
+    %endif
 
     %ifdef USED_DSP
     call initialize_dsp_buffers
@@ -71,7 +74,9 @@ initialize:
     ret
 
 frame:
+    %ifdef USED_COMMANDS
     call commands
+    %endif
     call mix
     ret
 

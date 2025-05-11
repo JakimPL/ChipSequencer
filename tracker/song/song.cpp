@@ -788,6 +788,37 @@ void Song::set_used_flags(std::stringstream &asm_content) const {
         asm_content << "    \%define USED_OSCILLATOR_NOISE\n";
     }
 
+    if (!commands_channels.empty()) {
+        asm_content << "    \%define USED_COMMANDS\n";
+        if (calculate_commands(INSTRUCTION_PORTAMENTO_UP) > 0) {
+            asm_content << "    \%define USED_COMMAND_PORTAMENTO_UP\n";
+        }
+        if (calculate_commands(INSTRUCTION_PORTAMENTO_DOWN) > 0) {
+            asm_content << "    \%define USED_COMMAND_PORTAMENTO_DOWN\n";
+        }
+        if (calculate_commands(INSTRUCTION_SET_MASTER_GAINER) > 0) {
+            asm_content << "    \%define USED_COMMAND_SET_MASTER_GAINER\n";
+        }
+        if (calculate_commands(INSTRUCTION_SET_BPM) > 0) {
+            asm_content << "    \%define USED_COMMAND_SET_BPM\n";
+        }
+        if (calculate_commands(INSTRUCTION_SET_DIVISION) > 0) {
+            asm_content << "    \%define USED_COMMAND_SET_DIVISION\n";
+        }
+        if (calculate_commands(INSTRUCTION_CHANGE_BYTE_VALUE) > 0) {
+            asm_content << "    \%define USED_COMMAND_CHANGE_BYTE_VALUE\n";
+        }
+        if (calculate_commands(INSTRUCTION_CHANGE_WORD_VALUE) > 0) {
+            asm_content << "    \%define USED_COMMAND_CHANGE_WORD_VALUE\n";
+        }
+        if (calculate_commands(INSTRUCTION_CHANGE_DWORD_VALUE) > 0) {
+            asm_content << "    \%define USED_COMMAND_CHANGE_DWORD_VALUE\n";
+        }
+        if (calculate_commands(INSTRUCTION_CHANGE_FLOAT_VALUE) > 0) {
+            asm_content << "    \%define USED_COMMAND_CHANGE_FLOAT_VALUE\n";
+        }
+    }
+
     asm_content << "\n";
 }
 
@@ -992,6 +1023,18 @@ size_t Song::calculate_oscillators(const uint8_t generator) const {
     for (const auto &oscillator : oscillators) {
         if (static_cast<Oscillator *>(oscillator)->generator_index == generator) {
             count++;
+        }
+    }
+    return count;
+}
+
+size_t Song::calculate_commands(const uint8_t instruction) const {
+    size_t count = 0;
+    for (const auto &commands_sequence : commands_sequences) {
+        for (const Command &command : commands_sequence->commands) {
+            if (command.instruction == instruction) {
+                count++;
+            }
         }
     }
     return count;

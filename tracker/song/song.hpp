@@ -172,6 +172,7 @@ class Song {
 
     size_t calculate_dsps(const uint8_t effect) const;
     size_t calculate_oscillators(const uint8_t generator) const;
+    size_t calculate_commands(const uint8_t instruction) const;
     float calculate_real_bpm() const;
 };
 
