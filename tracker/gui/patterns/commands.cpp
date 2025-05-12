@@ -32,24 +32,20 @@ void CommandsPattern::from_sequence(const uint8_t index) {
         switch (static_cast<Instruction>(command.instruction)) {
         case Instruction::PortamentoUp: {
             const CommandPortamentoUp portamento_up = reinterpret_cast<const CommandPortamentoUp &>(command);
-            const double portamento_value = cast_portamento_to_double(portamento_up.value);
-            const std::string channel_string = std::to_string(portamento_up.channel);
-            const std::string value_string = convert_double_to_string(portamento_value, 3);
-            add_command("U", channel_string + "," + value_string);
+            const std::string command_value = from_portamento(portamento_up.channel, portamento_up.value);
+            add_command("U", command_value);
             break;
         }
         case Instruction::PortamentoDown: {
             const CommandPortamentoDown portamento_down = reinterpret_cast<const CommandPortamentoDown &>(command);
-            const double portamento_value = cast_portamento_to_double(portamento_down.value);
-            const std::string channel_string = std::to_string(portamento_down.channel);
-            const std::string value_string = convert_double_to_string(portamento_value, 3);
-            add_command("D", channel_string + "," + value_string);
+            const std::string command_value = from_portamento(portamento_down.channel, portamento_down.value);
+            add_command("D", command_value);
             break;
         }
         case Instruction::SetMasterGainer: {
             const CommandSetMasterGainer set_master_gainer = reinterpret_cast<const CommandSetMasterGainer &>(command);
-            const double gainer_value = 2 * static_cast<double>(set_master_gainer.gain) / UINT16_MAX;
-            add_command("G", convert_double_to_string(gainer_value, 4));
+            const std::string command_value = from_gainer(set_master_gainer.gain);
+            add_command("G", command_value);
             break;
         }
         case Instruction::SetBPM: {
@@ -255,6 +251,26 @@ void CommandsPattern::split_portamento_value(const std::string &command_value, u
     }
 }
 
-double CommandsPattern::cast_portamento_to_double(const uint16_t value) const {
+double CommandsPattern::cast_portamento_to_double(const uint16_t value) {
     return MAX_PORTAMENTO * static_cast<float>(value) / UINT16_MAX;
+}
+
+std::string CommandsPattern::from_portamento(const uint8_t channel, const uint16_t value) {
+    const double portamento_value = cast_portamento_to_double(value);
+    return from_portamento(channel, portamento_value);
+}
+
+std::string CommandsPattern::from_portamento(const uint8_t channel, const double value) {
+    const std::string channel_string = std::to_string(channel);
+    const std::string value_string = convert_double_to_string(value, 3);
+    return channel_string + "," + value_string;
+}
+
+std::string CommandsPattern::from_gainer(const uint16_t value) {
+    const double gainer_value = 2 * static_cast<double>(value) / UINT16_MAX;
+    return from_gainer(gainer_value);
+}
+
+std::string CommandsPattern::from_gainer(const double value) {
+    return convert_double_to_string(value, 4);
 }

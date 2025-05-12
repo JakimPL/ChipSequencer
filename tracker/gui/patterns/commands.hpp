@@ -29,7 +29,12 @@ struct CommandsPattern {
     StringInputHandler values_handler;
 
     void split_portamento_value(const std::string &command_value, uint8_t &channel, uint16_t &value) const;
-    double cast_portamento_to_double(const uint16_t value) const;
+    static double cast_portamento_to_double(const uint16_t value);
+
+    static std::string from_portamento(const uint8_t channel, const uint16_t value);
+    static std::string from_portamento(const uint8_t channel, const double value);
+    static std::string from_gainer(const uint16_t value);
+    static std::string from_gainer(const double value);
 
     void from_sequence(const uint8_t sequence_index);
     std::vector<Command> to_command_vector() const;

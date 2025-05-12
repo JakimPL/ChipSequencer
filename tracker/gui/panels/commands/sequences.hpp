@@ -24,6 +24,7 @@ class GUICommandsSequencesPanel : public GUIPanel {
         int division = DEFAULT_DIVISION;
     } edit_dialog_box;
 
+    bool dialog_box_open = false;
     int sequence_index = 0;
 
     bool is_index_valid() const;
@@ -31,6 +32,7 @@ class GUICommandsSequencesPanel : public GUIPanel {
     void draw_sequence_length();
     void open_edit_dialog_box(const int item);
     void draw_edit_dialog_box();
+    void set_current_command();
 
     void from() override;
     void to() const override;

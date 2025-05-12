@@ -25,9 +25,11 @@ void GUICommandsSequencesPanel::draw() {
 
     from();
     draw_sequence();
-    draw_edit_dialog_box();
     check_keyboard_input();
+    draw_edit_dialog_box();
     to();
+
+    dialog_box_open = edit_dialog_box.visible;
 
     ImGui::Columns(1);
     ImGui::End();
@@ -46,7 +48,12 @@ void GUICommandsSequencesPanel::from() {
 }
 
 void GUICommandsSequencesPanel::to() const {
-    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || !is_index_valid()) {
+    const bool focus = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+    if (
+        (!dialog_box_open && focus) ||
+        !is_index_valid() ||
+        gui.is_playing()
+    ) {
         return;
     }
 
@@ -124,7 +131,7 @@ void GUICommandsSequencesPanel::draw_sequence() {
 
     if (current_sequence.pattern.steps > 0) {
         if (ImGui::Button("Edit")) {
-            edit_dialog_box.visible = true;
+            open_edit_dialog_box(current_sequence.pattern.current_row);
         }
     }
 
@@ -132,14 +139,56 @@ void GUICommandsSequencesPanel::draw_sequence() {
 }
 
 void GUICommandsSequencesPanel::open_edit_dialog_box(const int item) {
-    if (!is_index_valid()) {
+    if (item < 0 || item >= current_sequence.pattern.steps) {
         return;
     }
 
+    dialog_box_open = true;
     edit_dialog_box.visible = true;
     edit_dialog_box.item = item;
     const std::string command = current_sequence.pattern.commands[item];
-    edit_dialog_box.instruction = static_cast<int>(command.empty() ? Instruction::Empty : command_characters.at(command[0]));
+    const Instruction instruction = command.empty() ? Instruction::Empty : command_characters.at(command[0]);
+    edit_dialog_box.instruction = static_cast<int>(instruction);
+    switch (instruction) {
+    case Instruction::Empty: {
+        break;
+    }
+    case Instruction::PortamentoUp:
+    case Instruction::PortamentoDown: {
+        uint8_t channel;
+        uint16_t value;
+        current_sequence.pattern.split_portamento_value(current_sequence.pattern.values[item], channel, value);
+        edit_dialog_box.portamento_channel = channel;
+        edit_dialog_box.portamento_value = CommandsPattern::cast_portamento_to_double(value);
+        break;
+    }
+    case Instruction::SetMasterGainer: {
+        edit_dialog_box.gainer = std::stod(current_sequence.pattern.values[item]);
+        break;
+    }
+    case Instruction::SetBPM: {
+        try {
+            edit_dialog_box.bpm = std::stoi(current_sequence.pattern.values[item]);
+        } catch (const std::invalid_argument &) {
+            edit_dialog_box.bpm = DEFAULT_BPM;
+        }
+        break;
+    }
+    case Instruction::SetDivision: {
+        try {
+            edit_dialog_box.division = std::stoi(current_sequence.pattern.values[item]);
+        } catch (const std::invalid_argument &) {
+            edit_dialog_box.division = DEFAULT_DIVISION;
+        }
+        break;
+    }
+    case Instruction::ChangeByteValue:
+    case Instruction::ChangeWordValue:
+    case Instruction::ChangeDwordValue:
+    case Instruction::ChangeFloatValue: {
+        break;
+    }
+    }
 }
 
 void GUICommandsSequencesPanel::draw_edit_dialog_box() {
@@ -205,14 +254,65 @@ void GUICommandsSequencesPanel::draw_edit_dialog_box() {
         }
 
         if (ImGui::Button("OK", ImVec2(button_width, 0))) {
+            set_current_command();
             edit_dialog_box.visible = false;
         }
+
         ImGui::SameLine();
         if (ImGui::Button("Cancel", ImVec2(button_width, 0))) {
             edit_dialog_box.visible = false;
-            edit_dialog_box.item = -1;
         }
+
         ImGui::End();
+    }
+}
+
+void GUICommandsSequencesPanel::set_current_command() {
+    if (edit_dialog_box.item < 0 || edit_dialog_box.item >= current_sequence.pattern.steps) {
+        return;
+    }
+
+    auto &command = current_sequence.pattern.commands[edit_dialog_box.item];
+    auto &value = current_sequence.pattern.values[edit_dialog_box.item];
+    switch (static_cast<Instruction>(edit_dialog_box.instruction)) {
+    case Instruction::Empty: {
+        command = "";
+        value = "";
+        break;
+    }
+    case Instruction::PortamentoUp: {
+        command = "U";
+        value = CommandsPattern::from_portamento(edit_dialog_box.portamento_channel, edit_dialog_box.portamento_value);
+        break;
+    }
+    case Instruction::PortamentoDown: {
+        command = "D";
+        value = CommandsPattern::from_portamento(edit_dialog_box.portamento_channel, edit_dialog_box.portamento_value);
+        break;
+    }
+    case Instruction::SetMasterGainer: {
+        command = "G";
+        value = CommandsPattern::from_gainer(edit_dialog_box.gainer);
+        break;
+    }
+    case Instruction::SetBPM: {
+        command = "B";
+        value = std::to_string(edit_dialog_box.bpm);
+        break;
+    }
+    case Instruction::SetDivision: {
+        command = "S";
+        value = std::to_string(edit_dialog_box.division);
+        break;
+    }
+    case Instruction::ChangeByteValue:
+    case Instruction::ChangeWordValue:
+    case Instruction::ChangeDwordValue:
+    case Instruction::ChangeFloatValue: {
+        command = "M";
+        value = "";
+        break;
+    }
     }
 }
 

@@ -33,4 +33,17 @@ const std::map<char, Instruction> command_characters = {
     {'M', Instruction::ChangeFloatValue}
 };
 
+const std::map<Instruction, char> command_letters = {
+    {Instruction::Empty, ' '},
+    {Instruction::PortamentoUp, 'U'},
+    {Instruction::PortamentoDown, 'D'},
+    {Instruction::SetMasterGainer, 'G'},
+    {Instruction::SetBPM, 'B'},
+    {Instruction::SetDivision, 'S'},
+    {Instruction::ChangeByteValue, 'M'},
+    {Instruction::ChangeWordValue, 'M'},
+    {Instruction::ChangeDwordValue, 'M'},
+    {Instruction::ChangeFloatValue, 'M'}
+};
+
 #endif // MAPS_COMMANDS_HPP
