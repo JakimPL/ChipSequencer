@@ -16,7 +16,7 @@ class GUICommandsSequencesPanel : public GUIPanel {
         bool visible = false;
         int item = -1;
 
-        Instruction instruction = Instruction::Empty;
+        int instruction = 0;
         int portamento_channel = -1;
         float portamento_value = 0.0f;
         float gainer = 0.5f;

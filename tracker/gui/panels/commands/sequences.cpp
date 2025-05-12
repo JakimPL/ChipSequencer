@@ -1,4 +1,5 @@
 #include "../../../general.hpp"
+#include "../../../maps/commands.hpp"
 #include "../../names.hpp"
 #include "../../utils.hpp"
 #include "sequences.hpp"
@@ -137,7 +138,8 @@ void GUICommandsSequencesPanel::open_edit_dialog_box(const int item) {
 
     edit_dialog_box.visible = true;
     edit_dialog_box.item = item;
-    // edit_dialog_box.instruction = current_sequence.pattern.commands[item].instruction;
+    const std::string command = current_sequence.pattern.commands[item];
+    edit_dialog_box.instruction = static_cast<int>(command.empty() ? Instruction::Empty : command_characters.at(command[0]));
 }
 
 void GUICommandsSequencesPanel::draw_edit_dialog_box() {
@@ -145,14 +147,75 @@ void GUICommandsSequencesPanel::draw_edit_dialog_box() {
         return;
     }
 
-    ImGui::OpenPopup("Edit command");
-    ImGui::SetNextWindowSize(ImVec2(300, 200), ImGuiCond_FirstUseEver);
-    if (ImGui::BeginPopupModal("Edit command", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::Text("Edit command");
+    ImGui::SetNextWindowSize(ImVec2(450.0f, 250.0f), ImGuiCond_FirstUseEver);
+    if (ImGui::Begin("Edit command", &edit_dialog_box.visible, ImGuiWindowFlags_NoCollapse)) {
+        std::vector<std::string> names;
+        for (const auto &[key, value] : instruction_names) {
+            names.push_back(value);
+        }
+
+        ImGui::Text("Command:");
+        push_tertiary_style();
+        prepare_combo(names, "##EditCommand", edit_dialog_box.instruction);
+        pop_tertiary_style();
         ImGui::Separator();
-        ImGui::EndPopup();
+
+        push_secondary_style();
+        switch (static_cast<Instruction>(edit_dialog_box.instruction)) {
+        case Instruction::Empty: {
+            break;
+        }
+        case Instruction::PortamentoUp:
+        case Instruction::PortamentoDown: {
+            ImGui::Text("Channel:");
+            prepare_combo(channel_names, "##EditCommandChannel", edit_dialog_box.portamento_channel);
+            draw_float_slider("Semitones", edit_dialog_box.portamento_value, {}, 0.0f, MAX_PORTAMENTO);
+            break;
+        }
+        case Instruction::SetMasterGainer: {
+            draw_float_slider("Gainer", edit_dialog_box.gainer, {}, 0.0f, 1.0f);
+            break;
+        }
+        case Instruction::SetBPM: {
+            draw_int_slider("BPM", edit_dialog_box.bpm, {}, GUI_MIN_BPM, GUI_MAX_BPM);
+            break;
+        }
+        case Instruction::SetDivision: {
+            draw_int_slider("Division", edit_dialog_box.division, {}, GUI_MIN_DIVISION, GUI_MAX_DIVISION);
+            break;
+        }
+        case Instruction::ChangeByteValue:
+        case Instruction::ChangeWordValue:
+        case Instruction::ChangeDwordValue:
+        case Instruction::ChangeFloatValue: {
+            break;
+        }
+        }
+
+        pop_secondary_style();
+        ImGui::Separator();
+
+        const float button_width = 75.0f;
+        const float total_button_width = (button_width * 2) + ImGui::GetStyle().ItemSpacing.x;
+        const float available_width = ImGui::GetContentRegionAvail().x;
+        const float offset_x = (available_width - total_button_width) * 0.5f;
+
+        if (offset_x > 0.0f) {
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset_x);
+        }
+
+        if (ImGui::Button("OK", ImVec2(button_width, 0))) {
+            edit_dialog_box.visible = false;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel", ImVec2(button_width, 0))) {
+            edit_dialog_box.visible = false;
+            edit_dialog_box.item = -1;
+        }
+        ImGui::End();
     }
 }
+
 void GUICommandsSequencesPanel::check_keyboard_input() {
     if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;

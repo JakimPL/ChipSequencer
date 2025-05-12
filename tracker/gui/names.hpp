@@ -69,10 +69,7 @@ const std::map<Instruction, const char *> instruction_names = {
     {Instruction::SetMasterGainer, "Set master gainer"},
     {Instruction::SetBPM, "Set BPM"},
     {Instruction::SetDivision, "Set division"},
-    {Instruction::ChangeByteValue, "Change byte value"},
-    {Instruction::ChangeWordValue, "Change word value"},
-    {Instruction::ChangeDwordValue, "Change dword value"},
-    {Instruction::ChangeFloatValue, "Change float value"},
+    {Instruction::ChangeByteValue, "Change value"},
 };
 
 #endif // GUI_NAMES_HPP

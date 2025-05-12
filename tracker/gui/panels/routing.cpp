@@ -492,6 +492,10 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
 }
 
 RoutingNode *GUIRoutingPanel::handle_node_dragging(const ImVec2 &canvas_origin) {
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || gui.is_playing()) {
+        return nullptr;
+    }
+
     RoutingNode *current_dragging_node_ptr = nullptr;
 
     if (dragging_node_id.has_value()) {
@@ -519,6 +523,10 @@ RoutingNode *GUIRoutingPanel::handle_node_dragging(const ImVec2 &canvas_origin) 
 }
 
 void GUIRoutingPanel::set_source_key(const ImVec2 pin_position, const InputKey &key) {
+    if (gui.is_playing()) {
+        return;
+    }
+
     const ImVec2 radius = ImVec2(GUI_ROUTING_PIN_RADIUS, GUI_ROUTING_PIN_RADIUS);
     const bool is_pin_hovered = ImGui::IsMouseHoveringRect(pin_position - radius, pin_position + radius);
     if (is_pin_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
@@ -529,6 +537,10 @@ void GUIRoutingPanel::set_source_key(const ImVec2 pin_position, const InputKey &
 }
 
 void GUIRoutingPanel::set_target_key(const ImVec2 pin_position, const OutputKey &key) {
+    if (gui.is_playing()) {
+        return;
+    }
+
     const ImVec2 radius = ImVec2(GUI_ROUTING_PIN_RADIUS, GUI_ROUTING_PIN_RADIUS);
     const bool is_pin_hovered = ImGui::IsMouseHoveringRect(pin_position - radius, pin_position + radius);
     if (link_dragging_source_key.has_value() && is_pin_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {

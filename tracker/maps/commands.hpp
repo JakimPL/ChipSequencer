@@ -5,6 +5,7 @@
 
 #include "../constants.hpp"
 #include "../sizes.hpp"
+#include "../structures/commands/sequence.hpp"
 
 const std::map<uint8_t, uint8_t> command_sizes = {
     {INSTRUCTION_EMPTY, SIZE_COMMAND},
@@ -17,6 +18,19 @@ const std::map<uint8_t, uint8_t> command_sizes = {
     {INSTRUCTION_CHANGE_WORD_VALUE, SIZE_COMMAND_CHANGE_WORD_VALUE},
     {INSTRUCTION_CHANGE_DWORD_VALUE, SIZE_COMMAND_CHANGE_DWORD_VALUE},
     {INSTRUCTION_CHANGE_FLOAT_VALUE, SIZE_COMMAND_CHANGE_FLOAT_VALUE}
+};
+
+const std::map<char, Instruction> command_characters = {
+    {' ', Instruction::Empty},
+    {'U', Instruction::PortamentoUp},
+    {'D', Instruction::PortamentoDown},
+    {'G', Instruction::SetMasterGainer},
+    {'B', Instruction::SetBPM},
+    {'S', Instruction::SetDivision},
+    {'M', Instruction::ChangeByteValue},
+    {'M', Instruction::ChangeWordValue},
+    {'M', Instruction::ChangeDwordValue},
+    {'M', Instruction::ChangeFloatValue}
 };
 
 #endif // MAPS_COMMANDS_HPP
