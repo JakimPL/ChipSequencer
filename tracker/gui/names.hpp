@@ -7,6 +7,7 @@
 
 #include "../song/links/target.hpp"
 #include "../song/links/type.hpp"
+#include "../structures/commands/sequence.hpp"
 #include "enums.hpp"
 
 extern std::vector<std::string> channel_names;
@@ -60,6 +61,18 @@ const std::vector<std::pair<GUIElement, const char *>> menu_items = {
     {GUIElement::Sequences, "Sequences"},
     {GUIElement::Summary, "Summary"},
     {GUIElement::Wavetables, "Wavetables"},
+};
+const std::map<Instruction, const char *> instruction_names = {
+    {Instruction::Empty, "Empty"},
+    {Instruction::PortamentoUp, "Portamento up"},
+    {Instruction::PortamentoDown, "Portamento down"},
+    {Instruction::SetMasterGainer, "Set master gainer"},
+    {Instruction::SetBPM, "Set BPM"},
+    {Instruction::SetDivision, "Set division"},
+    {Instruction::ChangeByteValue, "Change byte value"},
+    {Instruction::ChangeWordValue, "Change word value"},
+    {Instruction::ChangeDwordValue, "Change dword value"},
+    {Instruction::ChangeFloatValue, "Change float value"},
 };
 
 #endif // GUI_NAMES_HPP

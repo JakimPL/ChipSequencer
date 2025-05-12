@@ -24,6 +24,7 @@ void GUICommandsSequencesPanel::draw() {
 
     from();
     draw_sequence();
+    draw_edit_dialog_box();
     check_keyboard_input();
     to();
 
@@ -119,9 +120,39 @@ void GUICommandsSequencesPanel::draw_sequence() {
     }
 
     draw_sequence_length();
+
+    if (current_sequence.pattern.steps > 0) {
+        if (ImGui::Button("Edit")) {
+            edit_dialog_box.visible = true;
+        }
+    }
+
     draw_commands_pattern(current_sequence.pattern);
 }
 
+void GUICommandsSequencesPanel::open_edit_dialog_box(const int item) {
+    if (!is_index_valid()) {
+        return;
+    }
+
+    edit_dialog_box.visible = true;
+    edit_dialog_box.item = item;
+    // edit_dialog_box.instruction = current_sequence.pattern.commands[item].instruction;
+}
+
+void GUICommandsSequencesPanel::draw_edit_dialog_box() {
+    if (!edit_dialog_box.visible) {
+        return;
+    }
+
+    ImGui::OpenPopup("Edit command");
+    ImGui::SetNextWindowSize(ImVec2(300, 200), ImGuiCond_FirstUseEver);
+    if (ImGui::BeginPopupModal("Edit command", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::Text("Edit command");
+        ImGui::Separator();
+        ImGui::EndPopup();
+    }
+}
 void GUICommandsSequencesPanel::check_keyboard_input() {
     if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
