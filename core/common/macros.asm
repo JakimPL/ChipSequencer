@@ -60,7 +60,9 @@
     %ifdef TRACKER
     LOAD_ITEM %1, %2
     %else
+    lea ecx, [%1]
     call load_item_16bit
+    mov [%2], ecx
     %endif
     %endmacro
 

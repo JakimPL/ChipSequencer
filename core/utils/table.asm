@@ -16,14 +16,14 @@ load_item:
 
 load_item_16bit:
 ; Arguments:
-; EDI - beginning offset (sequence)
-; CL  - element index
-    cmp cl, 0
+; ECX - beginning offset (sequence)
+; BL  - element index
+    cmp bl, 0
     jz .done
 .find_data_16bit:
-    movzx eax, word [edi]
-    add edi, eax
-    dec cl
+    movzx eax, word [ecx]
+    add ecx, eax
+    dec bl
     jnz .find_data_16bit
 .done:
     ret
