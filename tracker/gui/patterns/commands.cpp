@@ -199,8 +199,12 @@ void CommandsPattern::handle_input(const int min_row, const int max_row) {
 
     if (ImGui::IsKeyPressed(ImGuiKey_LeftArrow)) {
         selection = CommandSelection::Command;
+        values_handler.clear();
+        values_handler.capture_input = true;
     } else if (ImGui::IsKeyPressed(ImGuiKey_RightArrow)) {
         selection = CommandSelection::Value;
+        commands_handler.clear();
+        commands_handler.capture_input = true;
     }
 
     if (selection == CommandSelection::Command) {

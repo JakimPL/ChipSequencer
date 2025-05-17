@@ -14,7 +14,7 @@ bool StringInputHandler::handle_input() {
     }
 
     bool value_inserted = false;
-    if (synchronize or ImGui::IsKeyPressed(ImGuiKey_Enter)) {
+    if (capture_input || synchronize || ImGui::IsKeyPressed(ImGuiKey_Enter)) {
         buffer = strings[index];
     }
 
