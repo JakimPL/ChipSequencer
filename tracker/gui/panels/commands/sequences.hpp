@@ -22,6 +22,7 @@ class GUICommandsSequencesPanel : public GUIPanel {
         float gainer = 0.5f;
         int bpm = DEFAULT_BPM;
         int division = DEFAULT_DIVISION;
+        OutputType output_type;
     } edit_dialog_box;
 
     bool dialog_box_open = false;

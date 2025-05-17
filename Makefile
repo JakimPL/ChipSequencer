@@ -30,11 +30,6 @@ GO_CHECK := $(shell command -v go 2> /dev/null)
 INSTALL_NASM_FMT := GO111MODULE=on go install github.com/yamnikov-oleg/nasmfmt@latest
 NASMFMT_INSTALLED := $(shell command -v nasmfmt 2> /dev/null)
 
-compile:
-	@echo "Compiling the project..."
-	@mkdir -p build
-	@cd build && make --no-print-directory
-
 build:
 	@echo "Building the project..."
 	@mkdir -p build

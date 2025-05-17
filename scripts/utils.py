@@ -29,5 +29,10 @@ def save_binary(data: bytes, path: Union[str, os.PathLike]) -> None:
 
 
 def save_text(data: str, path: Union[str, os.PathLike]) -> None:
+    if os.path.exists(path):
+        with open(path, "r") as file:
+            existing = file.read()
+        if existing == data:
+            return
     with open(path, "w") as file:
         file.write(data)

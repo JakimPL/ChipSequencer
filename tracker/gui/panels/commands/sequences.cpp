@@ -237,6 +237,7 @@ void GUICommandsSequencesPanel::draw_edit_dialog_box() {
         case Instruction::ChangeWordValue:
         case Instruction::ChangeDwordValue:
         case Instruction::ChangeFloatValue: {
+            draw_output(edit_dialog_box.output_type, {});
             break;
         }
         }
