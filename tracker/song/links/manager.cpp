@@ -135,14 +135,16 @@ void LinkManager::set_links() {
     }
 
     link_type = static_cast<size_t>(ItemType::COMMANDS);
-    for (auto &[key, link] : commands_links) {
-        const uint16_t i = (key.first << 8) + key.second;
-        try {
-            set_link(link, nullptr, i);
-        } catch (const std::out_of_range &exception) {
-            std::cerr << "Error setting link for a commands sequence ("
-                      << key.first << ", " << key.second << "): "
-                      << exception.what() << std::endl;
+    for (size_t index = 0; index < commands_sequences.size(); index++) {
+        for (auto &[element, link] : commands_links[index]) {
+            const uint16_t i = (index << 8) + element;
+            try {
+                set_link(link, nullptr, i);
+            } catch (const std::out_of_range &exception) {
+                std::cerr << "Error setting link for a commands sequence ("
+                          << index << ", " << element << "): "
+                          << exception.what() << std::endl;
+            }
         }
     }
 
@@ -358,13 +360,13 @@ void LinkManager::capture_parameter(const LinkKey key, const Link *link) {
     validate_key_and_link(key, link);
     const TargetVariableType type = get_type(key);
     switch (type) {
-    case TargetVariableType::Int8:
+    case TargetVariableType::Byte:
         snapshot[key] = *reinterpret_cast<uint8_t *>(link->pointer);
         break;
-    case TargetVariableType::Int16:
+    case TargetVariableType::Word:
         snapshot[key] = *reinterpret_cast<uint16_t *>(link->pointer);
         break;
-    case TargetVariableType::Int32:
+    case TargetVariableType::Dword:
         snapshot[key] = *reinterpret_cast<uint32_t *>(link->pointer);
         break;
     case TargetVariableType::Float:
@@ -390,13 +392,13 @@ void LinkManager::restore_parameter(const LinkKey key, const Link *link) const {
     validate_key_and_link(key, link);
     const TargetVariableType type = get_type(key);
     switch (type) {
-    case TargetVariableType::Int8:
+    case TargetVariableType::Byte:
         *reinterpret_cast<uint8_t *>(link->pointer) = std::get<uint8_t>(snapshot.at(key));
         break;
-    case TargetVariableType::Int16:
+    case TargetVariableType::Word:
         *reinterpret_cast<uint16_t *>(link->pointer) = std::get<uint16_t>(snapshot.at(key));
         break;
-    case TargetVariableType::Int32:
+    case TargetVariableType::Dword:
         *reinterpret_cast<uint32_t *>(link->pointer) = std::get<uint32_t>(snapshot.at(key));
         break;
     case TargetVariableType::Float:

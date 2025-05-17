@@ -29,6 +29,6 @@ struct Link {
 };
 
 typedef std::array<std::vector<Link>, 3> Links;
-typedef std::map<std::pair<uint8_t, uint8_t>, Link> CommandsLinks;
+typedef std::map<uint8_t, std::map<uint8_t, Link>> CommandsLinks;
 
 #endif // SONG_LINKS_LINK_HPP

@@ -22,9 +22,9 @@ enum class Target : uint8_t {
 
 enum class TargetVariableType : uint8_t {
     Float,
-    Int8,
-    Int16,
-    Int32
+    Byte,
+    Word,
+    Dword
 };
 
 #endif // SONG_LINKS_TARGET_HPP

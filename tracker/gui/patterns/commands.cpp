@@ -231,7 +231,7 @@ void CommandsPattern::add_command(const std::string &command, const std::string 
     values.push_back(value);
 }
 
-void CommandsPattern::split_portamento_value(const std::string &command_value, uint8_t &channel, uint16_t &value) const {
+void CommandsPattern::split_portamento_value(const std::string &command_value, uint8_t &channel, uint16_t &value) {
     std::vector<std::string> value_parts = split(command_value, ',');
     channel = 0;
     value = 0;
@@ -253,6 +253,21 @@ void CommandsPattern::split_portamento_value(const std::string &command_value, u
         } catch (const std::out_of_range &) {
         }
     }
+}
+
+void CommandsPattern::split_change_value_parts(
+    const std::string &command_value,
+    TargetVariableType &target_variable_type,
+    Target &target,
+    uint8_t &index,
+    uint16_t &offset
+) {
+    std::vector<std::string> value_parts = split(command_value, ',');
+    size_t size = value_parts.size();
+    target_variable_type = size < 1 ? TargetVariableType::Byte : static_cast<TargetVariableType>(std::stoi(value_parts[0]));
+    target = size < 2 ? Target::DIRECT_OUTPUT : static_cast<Target>(std::stoi(value_parts[1]));
+    index = size < 3 ? 0 : std::stoi(value_parts[2]);
+    offset = size < 4 ? 0 : std::stoi(value_parts[3]);
 }
 
 double CommandsPattern::cast_portamento_to_double(const uint16_t value) {
@@ -277,4 +292,20 @@ std::string CommandsPattern::from_gainer(const uint16_t value) {
 
 std::string CommandsPattern::from_gainer(const double value) {
     return convert_double_to_string(value, 4);
+}
+
+void CommandsPattern::save_links(size_t sequence_index) const {
+    if (sequence_index == -1) {
+        return;
+    }
+
+    const CommandsSequence *sequence = commands_sequences[sequence_index];
+    for (size_t i = 0; i < sequence->length; ++i) {
+        const Command command = sequence->commands[i];
+        if (command.instruction == static_cast<uint8_t>(Instruction::ChangeByteValue) ||
+            command.instruction == static_cast<uint8_t>(Instruction::ChangeDwordValue) ||
+            command.instruction == static_cast<uint8_t>(Instruction::ChangeWordValue) ||
+            command.instruction == static_cast<uint8_t>(Instruction::ChangeFloatValue)) {
+        }
+    }
 }
