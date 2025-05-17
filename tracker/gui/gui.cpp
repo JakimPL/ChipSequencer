@@ -12,6 +12,7 @@ GUI::GUI()
 }
 
 GUI::~GUI() {
+    stop();
     terminate();
 }
 
