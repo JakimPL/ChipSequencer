@@ -6,8 +6,9 @@ from typing import Dict
 
 
 class LinkType(Enum):
-    CHANNEL = 0
-    DSP = 1
+    CHANNEL
+    DSP
+    COMMANDS
 
 
 class LinkTarget(Enum):

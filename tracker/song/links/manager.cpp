@@ -7,6 +7,8 @@
 void LinkManager::reset() {
     links[static_cast<size_t>(ItemType::CHANNEL)].clear();
     links[static_cast<size_t>(ItemType::DSP)].clear();
+    links[static_cast<size_t>(ItemType::COMMANDS)].clear();
+    commands_links.clear();
 }
 
 void LinkManager::set_link(Link &link, void *item, const uint8_t i) {
@@ -115,7 +117,8 @@ void LinkManager::set_links() {
         try {
             set_link(link, item, i);
         } catch (const std::out_of_range &exception) {
-            std::cerr << "Error setting link for a channel " << i << ": " << exception.what() << std::endl;
+            std::cerr << "Error setting link for a channel " << i << ": "
+                      << exception.what() << std::endl;
         }
     }
 
@@ -126,7 +129,20 @@ void LinkManager::set_links() {
         try {
             set_link(link, item, i);
         } catch (const std::out_of_range &exception) {
-            std::cerr << "Error setting link for a DSP " << i << ": " << exception.what() << std::endl;
+            std::cerr << "Error setting link for a DSP " << i << ": "
+                      << exception.what() << std::endl;
+        }
+    }
+
+    link_type = static_cast<size_t>(ItemType::COMMANDS);
+    for (auto &[key, link] : commands_links) {
+        const uint16_t i = (key.first << 8) + key.second;
+        try {
+            set_link(link, nullptr, i);
+        } catch (const std::out_of_range &exception) {
+            std::cerr << "Error setting link for a commands sequence ("
+                      << key.first << ", " << key.second << "): "
+                      << exception.what() << std::endl;
         }
     }
 
@@ -145,7 +161,7 @@ void LinkManager::save_targets() {
     index_map[output_pointer] = 0;
 
     size_t size = 1;
-    for (const ItemType type : {ItemType::CHANNEL, ItemType::DSP}) {
+    for (const ItemType type : {ItemType::CHANNEL, ItemType::DSP, ItemType::COMMANDS}) {
         for (Link &link : links[static_cast<size_t>(type)]) {
             if (link.target == Target::UNUSED) {
                 continue;

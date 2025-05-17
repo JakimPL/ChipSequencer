@@ -12,7 +12,7 @@
 
 struct Link {
     ItemType type;
-    uint8_t id;
+    uint16_t id;
     Target target;
     uint32_t index;
     uint16_t offset;
@@ -28,6 +28,7 @@ struct Link {
     void deserialize(std::ifstream &file);
 };
 
-typedef std::array<std::vector<Link>, 2> Links;
+typedef std::array<std::vector<Link>, 3> Links;
+typedef std::map<std::pair<uint8_t, uint8_t>, Link> CommandsLinks;
 
 #endif // SONG_LINKS_LINK_HPP

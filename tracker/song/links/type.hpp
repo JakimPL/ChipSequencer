@@ -4,8 +4,9 @@
 #include <cstdint>
 
 enum class ItemType : uint8_t {
-    CHANNEL = 0,
-    DSP = 1
+    CHANNEL,
+    DSP,
+    COMMANDS,
 };
 
 #endif // SONG_LINKS_TYPE_HPP

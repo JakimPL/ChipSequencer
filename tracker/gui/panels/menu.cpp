@@ -105,6 +105,7 @@ void GUIMenu::file_new() {
 }
 
 void GUIMenu::file_save() {
+    gui.stop();
     if (current_path.empty()) {
         file_save_as();
     } else {
@@ -119,6 +120,7 @@ void GUIMenu::file_save_as() {
         std::filesystem::path new_path(target_path);
         free(target_path);
         new_path = check_and_correct_path_by_extension(new_path, ".seq");
+        gui.stop();
         gui.save(new_path);
     } else if (result != NFD_CANCEL) {
         std::cerr << "Error: " << NFD_GetError() << std::endl;

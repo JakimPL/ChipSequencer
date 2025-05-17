@@ -17,6 +17,9 @@ void Link::assign_output() {
         dsp->target = table_id;
         break;
     }
+    case ItemType::COMMANDS: {
+        break;
+    }
     }
 }
 
