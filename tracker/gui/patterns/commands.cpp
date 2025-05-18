@@ -71,7 +71,7 @@ void CommandsPattern::from_sequence(const uint8_t index) {
             break;
         }
         default: {
-            throw std::runtime_error("Invalid command type");
+            throw std::runtime_error("Invalid command type: " + std::to_string(static_cast<int>(command.instruction)));
         }
         }
         }
@@ -264,7 +264,13 @@ void CommandsPattern::split_change_value_parts(
 ) {
     std::vector<std::string> value_parts = split(command_value, ',');
     size_t size = value_parts.size();
-    target_variable_type = size < 1 ? TargetVariableType::Byte : static_cast<TargetVariableType>(std::stoi(value_parts[0]));
+
+    target_variable_type = TargetVariableType::Byte;
+    if (size < 1) {
+        int variable_type_id = std::stoi(value_parts[0]);
+        variable_type_id = std::clamp(variable_type_id, 0, static_cast<int>(TargetVariableType::Count));
+        target_variable_type = static_cast<TargetVariableType>(variable_type_id);
+    }
     target = size < 2 ? Target::DIRECT_OUTPUT : static_cast<Target>(std::stoi(value_parts[1]));
     index = size < 3 ? 0 : std::stoi(value_parts[2]);
     offset = size < 4 ? 0 : std::stoi(value_parts[3]);
@@ -299,6 +305,7 @@ void CommandsPattern::save_links(size_t sequence_index) const {
         return;
     }
 
+    commands_links[sequence_index].clear();
     const CommandsSequence *sequence = commands_sequences[sequence_index];
     for (size_t i = 0; i < sequence->length; ++i) {
         const Command command = sequence->commands[i];

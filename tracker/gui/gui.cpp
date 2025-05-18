@@ -155,6 +155,7 @@ void GUI::set_audio_engine(AudioEngine *engine) {
 
 void GUI::set_index(const GUIElement element, const int index) {
     switch (element) {
+    case GUIElement::Count:
     case GUIElement::All:
     case GUIElement::Menu:
     case GUIElement::Editor:
@@ -199,6 +200,8 @@ void GUI::set_index(const GUIElement element, const int index) {
 
 void GUI::update(GUIElement element) {
     switch (element) {
+    case GUIElement::Count:
+        return;
     case GUIElement::All:
         return update_all();
     case GUIElement::Menu:
@@ -356,6 +359,7 @@ void GUI::deselect_all_rows() {
 
 void GUI::set_visibility(const GUIElement element, const bool visible) {
     switch (element) {
+    case GUIElement::Count:
     case GUIElement::All:
         break;
     case GUIElement::Menu:
@@ -408,6 +412,7 @@ void GUI::set_visibility(const GUIElement element, const bool visible) {
 
 bool GUI::get_visibility(const GUIElement element) const {
     switch (element) {
+    case GUIElement::Count:
     case GUIElement::All:
         return false;
     case GUIElement::Menu:

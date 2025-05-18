@@ -20,6 +20,10 @@ void Link::assign_output() {
     case ItemType::COMMANDS: {
         break;
     }
+    case ItemType::COUNT:
+    default: {
+        throw std::runtime_error("Invalid link type: " + std::to_string(static_cast<int>(type)));
+    }
     }
 }
 

@@ -17,14 +17,16 @@ enum class Target : uint8_t {
     DSP,
     CHANNEL,
     COMMANDS_CHANNEL,
-    UNUSED
+    UNUSED,
+    COUNT,
 };
 
 enum class TargetVariableType : uint8_t {
     Float,
     Byte,
     Word,
-    Dword
+    Dword,
+    Count,
 };
 
 #endif // SONG_LINKS_TARGET_HPP

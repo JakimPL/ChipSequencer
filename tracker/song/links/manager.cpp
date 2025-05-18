@@ -97,8 +97,10 @@ void LinkManager::set_link(Link &link, void *item, const uint8_t i) {
         }
         break;
     }
-    case Target::UNUSED: {
-        throw std::runtime_error("Invalid link target");
+    case Target::UNUSED:
+    case Target::COUNT:
+    default: {
+        throw std::runtime_error("Invalid link target " + std::to_string(static_cast<int>(link.target)));
     }
     }
 
@@ -264,8 +266,10 @@ std::string LinkManager::get_link_reference(const LinkKey key) const {
         reference = "commands_channels.commands_sequence_" + std::to_string(key.index);
         break;
     }
-    case Target::UNUSED: {
-        throw std::runtime_error("Invalid link target");
+    case Target::UNUSED:
+    case Target::COUNT:
+    default: {
+        throw std::runtime_error("Invalid link target: " + std::to_string(static_cast<int>(key.target)));
     }
     }
 
@@ -348,12 +352,14 @@ TargetVariableType LinkManager::get_type(const LinkKey key) const {
         const size_t index = routing_variables.at(key.target).offset_to_index.at(key.offset);
         return routing_variables.at(key.target).types[index];
     }
-    case Target::UNUSED: {
-        throw std::runtime_error("Invalid target type");
+    case Target::UNUSED:
+    case Target::COUNT:
+    default: {
+        throw std::runtime_error("Invalid target type: " + std::to_string(static_cast<int>(key.target)));
     }
     }
 
-    throw std::runtime_error("Invalid target type");
+    throw std::runtime_error("Invalid target type: " + std::to_string(static_cast<int>(key.target)));
 }
 
 void LinkManager::capture_parameter(const LinkKey key, const Link *link) {
@@ -372,8 +378,9 @@ void LinkManager::capture_parameter(const LinkKey key, const Link *link) {
     case TargetVariableType::Float:
         snapshot[key] = *reinterpret_cast<_Float32 *>(link->pointer);
         break;
+    case TargetVariableType::Count:
     default:
-        throw std::runtime_error("Unknown target variable type");
+        throw std::runtime_error("Unknown target variable type: " + std::to_string(static_cast<int>(type)));
     }
 }
 
@@ -404,8 +411,9 @@ void LinkManager::restore_parameter(const LinkKey key, const Link *link) const {
     case TargetVariableType::Float:
         *reinterpret_cast<_Float32 *>(link->pointer) = std::get<_Float32>(snapshot.at(key));
         break;
+    case TargetVariableType::Count:
     default:
-        throw std::runtime_error("Unknown target variable type");
+        throw std::runtime_error("Unknown target variable type: " + std::to_string(static_cast<int>(type)));
     }
 }
 

@@ -7,6 +7,7 @@ enum class ItemType : uint8_t {
     CHANNEL,
     DSP,
     COMMANDS,
+    COUNT,
 };
 
 #endif // SONG_LINKS_TYPE_HPP

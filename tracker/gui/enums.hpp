@@ -18,6 +18,7 @@ enum class GUIElement {
     Sequences,
     Wavetables,
     Summary,
+    Count,
 };
 
 enum class GUIScale {

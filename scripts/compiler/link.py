@@ -9,6 +9,7 @@ class LinkType(Enum):
     CHANNEL
     DSP
     COMMANDS
+    COUNT
 
 
 class LinkTarget(Enum):
@@ -26,6 +27,7 @@ class LinkTarget(Enum):
     CHANNEL = "channel"
     COMMANDS_CHANNEL = "commands_channel"
     UNUSED = "unused"
+    COUNT = "count"
 
     @staticmethod
     def from_integer(integer: int) -> "LinkTarget":
@@ -44,6 +46,7 @@ class LinkTarget(Enum):
             11: LinkTarget.CHANNEL,
             12: LinkTarget.COMMANDS_CHANNEL,
             13: LinkTarget.UNUSED,
+            14: LinkTarget.COUNT,
         }
 
         return dictionary[integer]
