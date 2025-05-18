@@ -294,6 +294,18 @@ std::pair<void *, LinkKey> LinkManager::get_pointer_and_key(const size_t index) 
     return pointers_map.at(index);
 }
 
+size_t LinkManager::find_pointer_id_by_key(const LinkKey key) const {
+    size_t id = 0;
+    for (const auto &[pointer, link_key] : pointers_map) {
+        if (link_key == key) {
+            return id;
+        }
+        id++;
+    }
+
+    throw std::runtime_error("Pointer not found for key: " + std::to_string(static_cast<int>(key.target)) + ", " + std::to_string(key.index) + ", " + std::to_string(key.offset));
+}
+
 void LinkManager::remove_key(Link &link) {
     const auto map_it = map.find(link.key);
     if (map_it != map.end()) {

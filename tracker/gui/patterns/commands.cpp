@@ -162,26 +162,16 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
         case 'B': {
             CommandSetBPM set_bpm;
             set_bpm.duration = duration;
-            try {
-                int bpm = std::stoi(value);
-                bpm = std::clamp(bpm, GUI_MIN_BPM, GUI_MAX_BPM);
-                set_bpm.bpm = static_cast<uint16_t>(bpm);
-            } catch (const std::invalid_argument &) {
-                set_bpm.bpm = DEFAULT_BPM;
-            }
+            const int bpm = string_to_integer(value, DEFAULT_BPM, GUI_MIN_BPM, GUI_MAX_BPM);
+            set_bpm.bpm = static_cast<uint16_t>(bpm);
             command_vector.push_back(reinterpret_cast<Command &>(set_bpm));
             break;
         }
         case 'S': {
             CommandSetDivision set_division;
             set_division.duration = duration;
-            try {
-                int division = std::stoi(value);
-                division = std::clamp(division, GUI_MIN_DIVISION, GUI_MAX_DIVISION);
-                set_division.division = static_cast<uint8_t>(division);
-            } catch (const std::invalid_argument &) {
-                set_division.division = DEFAULT_DIVISION;
-            }
+            const int division = string_to_integer(value, DEFAULT_DIVISION, GUI_MIN_DIVISION, GUI_MAX_DIVISION);
+            set_division.division = static_cast<uint8_t>(division);
             command_vector.push_back(reinterpret_cast<Command &>(set_division));
             break;
         }
@@ -191,10 +181,13 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
             uint8_t index;
             uint16_t offset;
             split_change_value_parts(value, target_variable_type, target, index, offset);
+            const LinkKey key = {target, index, offset};
+            const uint8_t id = link_manager.find_pointer_id_by_key(key);
             switch (target_variable_type) {
             case TargetVariableType::Byte: {
                 CommandChangeByteValue change_value;
                 change_value.duration = duration;
+                change_value.pointer = id;
                 change_value.value = 0;
                 command_vector.push_back(reinterpret_cast<Command &>(change_value));
                 break;
@@ -202,6 +195,7 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
             case TargetVariableType::Word: {
                 CommandChangeWordValue change_value;
                 change_value.duration = duration;
+                change_value.pointer = id;
                 change_value.value = 0;
                 command_vector.push_back(reinterpret_cast<Command &>(change_value));
                 break;
@@ -209,6 +203,7 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
             case TargetVariableType::Dword: {
                 CommandChangeDwordValue change_value;
                 change_value.duration = duration;
+                change_value.pointer = id;
                 change_value.value = 0;
                 command_vector.push_back(reinterpret_cast<Command &>(change_value));
                 break;
@@ -216,6 +211,7 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
             case TargetVariableType::Float: {
                 CommandChangeFloatValue change_value;
                 change_value.duration = duration;
+                change_value.pointer = id;
                 change_value.value = 0;
                 command_vector.push_back(reinterpret_cast<Command &>(change_value));
                 break;
@@ -300,22 +296,12 @@ void CommandsPattern::split_portamento_value(const std::string &command_value, u
     channel = 0;
     value = 0;
     if (value_parts.size() >= 1 && !channels.empty()) {
-        try {
-            channel = std::stoi(value_parts[0]);
-            channel = std::clamp(channel, static_cast<uint8_t>(0), static_cast<uint8_t>(channels.size() - 1));
-        } catch (const std::invalid_argument &) {
-        } catch (const std::out_of_range &) {
-        }
+        channel = static_cast<uint8_t>(string_to_integer(value_parts[0], 0, 0, channels.size() - 1));
     }
 
     if (value_parts.size() >= 2) {
-        try {
-            double parsed_value = std::stod(value_parts[1]);
-            parsed_value = std::clamp(parsed_value, 0.0, MAX_PORTAMENTO);
-            value = static_cast<uint16_t>(std::round(parsed_value * UINT16_MAX / MAX_PORTAMENTO));
-        } catch (const std::invalid_argument &) {
-        } catch (const std::out_of_range &) {
-        }
+        const double parsed_value = string_to_double(value_parts[1], 0.0, 0.0, MAX_PORTAMENTO);
+        value = static_cast<uint16_t>(std::round(parsed_value * UINT16_MAX / MAX_PORTAMENTO));
     }
 }
 
@@ -334,50 +320,59 @@ void CommandsPattern::split_change_value_parts(
     target_variable_type = TargetVariableType::Byte;
     target = Target::DIRECT_OUTPUT;
     if (size >= 1) {
-        int variable_type_id = std::stoi(value_parts[0]);
-        variable_type_id = std::clamp(variable_type_id, 0, static_cast<int>(TargetVariableType::Count) - 1);
+        const int variable_type_id = string_to_integer(value_parts[0], static_cast<int>(target_variable_type), 0, static_cast<int>(TargetVariableType::Count) - 1);
         target_variable_type = static_cast<TargetVariableType>(variable_type_id);
     }
     if (size >= 2) {
-        int target_id = std::stoi(value_parts[1]);
-        target_id = std::clamp(target_id, 0, static_cast<int>(Target::COUNT) - 1);
+        const int target_id = string_to_integer(value_parts[1], static_cast<int>(target), 0, static_cast<int>(Target::COUNT) - 1);
         target = static_cast<Target>(target_id);
     }
     if (size >= 3) {
-        int index_id = std::stoi(value_parts[2]);
+        int index_id = string_to_integer(value_parts[2], 0);
+
         switch (target) {
         case Target::DIRECT_OUTPUT:
         case Target::SPLITTER_OUTPUT: {
             index_id = std::clamp(index_id, 0, static_cast<int>(MAX_OUTPUT_CHANNELS - 1));
+            break;
         }
         case Target::DSP:
         case Target::DIRECT_DSP:
         case Target::SPLITTER_DSP: {
             index_id = std::clamp(index_id, 0, static_cast<int>(dsps.size()) - 1);
+            break;
         }
         case Target::CHANNEL: {
             index_id = std::clamp(index_id, 0, static_cast<int>(channels.size()) - 1);
+            break;
         }
         case Target::COMMANDS_CHANNEL: {
             index_id = std::clamp(index_id, 0, static_cast<int>(commands_channels.size()) - 1);
+            break;
         }
         case Target::ENVELOPE: {
             index_id = std::clamp(index_id, 0, static_cast<int>(envelopes.size()) - 1);
+            break;
         }
         case Target::SEQUENCE: {
             index_id = std::clamp(index_id, 0, static_cast<int>(sequences.size()) - 1);
+            break;
         }
         case Target::COMMANDS_SEQUENCE: {
             index_id = std::clamp(index_id, 0, static_cast<int>(commands_sequences.size()) - 1);
+            break;
         }
         case Target::ORDER: {
             index_id = std::clamp(index_id, 0, static_cast<int>(orders.size()) - 1);
+            break;
         }
         case Target::OSCILLATOR: {
             index_id = std::clamp(index_id, 0, static_cast<int>(oscillators.size()) - 1);
+            break;
         }
         case Target::WAVETABLE: {
             index_id = std::clamp(index_id, 0, static_cast<int>(wavetables.size()) - 1);
+            break;
         }
         case Target::UNUSED:
         case Target::COUNT:

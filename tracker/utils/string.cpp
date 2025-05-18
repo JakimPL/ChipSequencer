@@ -43,3 +43,25 @@ void pad_string(std::string &string, const char padding, const size_t size) {
         string.resize(size, padding);
     }
 }
+
+int string_to_integer(const std::string &string, const int default_value, const int min, const int max) {
+    try {
+        int value = std::stoi(string);
+        return std::clamp(value, min, max);
+    } catch (const std::invalid_argument &) {
+        return default_value;
+    } catch (const std::out_of_range &) {
+        return default_value;
+    }
+}
+
+double string_to_double(const std::string &string, const double default_value, const double min, const double max) {
+    try {
+        double value = std::stod(string);
+        return std::clamp(value, min, max);
+    } catch (const std::invalid_argument &) {
+        return default_value;
+    } catch (const std::out_of_range &) {
+        return default_value;
+    }
+}
