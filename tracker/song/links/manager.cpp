@@ -290,6 +290,10 @@ std::vector<std::pair<void *, LinkKey>> LinkManager::get_pointers_map() const {
     return pointers_map;
 }
 
+std::pair<void *, LinkKey> LinkManager::get_pointer_and_key(const size_t index) const {
+    return pointers_map.at(index);
+}
+
 void LinkManager::remove_key(Link &link) {
     const auto map_it = map.find(link.key);
     if (map_it != map.end()) {

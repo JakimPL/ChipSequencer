@@ -1,5 +1,4 @@
 #include "../../constants.hpp"
-#include "../../maps/offsets.hpp"
 #include "../../structures.hpp"
 #include "../../utils/file.hpp"
 #include "../output.hpp"

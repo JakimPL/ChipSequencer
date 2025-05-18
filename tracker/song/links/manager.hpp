@@ -40,6 +40,7 @@ class LinkManager {
     std::string get_link_reference(const LinkKey key) const;
     std::string get_link_reference(const ItemType type, const size_t index) const;
     std::vector<std::pair<void *, LinkKey>> get_pointers_map() const;
+    std::pair<void *, LinkKey> get_pointer_and_key(size_t index) const;
 
     void capture_parameters();
     void restore_parameters() const;

@@ -12,6 +12,8 @@
 #include "functions.hpp"
 #include "song.hpp"
 
+#define JSON_INDENTATION 4
+
 Song::Song() {
     set_buffer_offsets();
     new_song();
@@ -1221,7 +1223,7 @@ void Song::export_data_asm_file(const std::string &directory, const CompilationT
 void Song::export_header(const std::string &directory) const {
     const nlohmann::json header = create_header_json();
     std::ofstream header_file(directory + "/header.json");
-    header_file << header.dump(4);
+    header_file << header.dump(JSON_INDENTATION);
     header_file.close();
 }
 

@@ -42,6 +42,7 @@ struct CommandsPattern {
     static std::string from_portamento(const uint8_t channel, const double value);
     static std::string from_gainer(const uint16_t value);
     static std::string from_gainer(const double value);
+    static std::string from_change_value(const TargetVariableType type, const LinkKey key);
 
     void from_sequence(const uint8_t sequence_index);
     std::vector<Command> to_command_vector() const;
