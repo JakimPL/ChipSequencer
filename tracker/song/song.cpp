@@ -943,6 +943,7 @@ nlohmann::json Song::create_header_json() const {
         {"oscillators", oscillators.size()},
         {"dsps", dsps.size()},
         {"channels", channels.size()},
+        {"commands", links[static_cast<size_t>(ItemType::COMMANDS)].size()},
         {"commands_sequences", commands_sequences.size()},
         {"commands_channels", commands_channels.size()},
     };
@@ -1298,7 +1299,7 @@ void Song::export_offsets(const std::string &filename) const {
 
 void Song::export_links(const std::string &filename) const {
     std::ofstream file(filename, std::ios::binary);
-    for (const ItemType &type : {ItemType::CHANNEL, ItemType::DSP}) {
+    for (const ItemType &type : {ItemType::CHANNEL, ItemType::DSP, ItemType::COMMANDS}) {
         const size_t link_type = static_cast<size_t>(type);
         for (const auto &link : links[link_type]) {
             link.serialize(file);
@@ -1411,6 +1412,7 @@ void Song::import_commands_channels(const std::string &directory, const nlohmann
 void Song::import_links(const std::string &directory, const nlohmann::json &json) {
     const size_t channel_count = json["data"]["channels"];
     const size_t dsp_count = json["data"]["dsps"];
+    const size_t commands_count = json["data"]["commands"];
     const std::string links_filename = directory + "/links.bin";
     std::ifstream file(links_filename, std::ios::binary);
 
@@ -1426,6 +1428,16 @@ void Song::import_links(const std::string &directory, const nlohmann::json &json
         Link link;
         link.deserialize(file);
         links[link_type].push_back(link);
+    }
+
+    link_type = static_cast<size_t>(ItemType::COMMANDS);
+    for (size_t i = 0; i < commands_count; i++) {
+        Link link;
+        link.deserialize(file);
+        links[link_type].push_back(link);
+        const size_t sequence_index = link.id >> 8;
+        const size_t channel_index = link.id & 0xFF;
+        commands_links[sequence_index][channel_index] = link;
     }
 
     link_manager.set_links();

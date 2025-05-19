@@ -26,7 +26,7 @@ enum class Instruction : uint8_t {
 struct Command {
     uint8_t instruction = INSTRUCTION_EMPTY;
     uint8_t duration;
-    uint8_t pad[10];
+    uint8_t pad[10] = {0, 0, 0, 0, 0, 0, static_cast<uint8_t>(Target::UNUSED), 0, 0, 0};
 };
 
 struct CommandPortamentoUp {
