@@ -54,3 +54,7 @@ bool NumericInputHandler::handle_input() {
 
     return value_inserted;
 }
+
+void NumericInputHandler::clear() {
+    buffer.clear();
+}

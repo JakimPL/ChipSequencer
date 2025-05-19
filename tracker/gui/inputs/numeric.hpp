@@ -10,6 +10,7 @@ class NumericInputHandler : public InputHandler {
 
   public:
     NumericInputHandler(std::vector<int> &vector, int &index);
+    void clear() override;
     bool handle_input() override;
 };
 

@@ -99,7 +99,7 @@ void GUIMenu::draw() {
 
 void GUIMenu::file_new() {
     gui.stop();
-    song.new_song();
+    gui.new_song();
     current_path = std::filesystem::path();
     gui.update();
 }

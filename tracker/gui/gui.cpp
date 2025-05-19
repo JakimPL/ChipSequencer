@@ -16,6 +16,11 @@ GUI::~GUI() {
     terminate();
 }
 
+void GUI::new_song() {
+    clear_input_buffers();
+    song.new_song();
+}
+
 void GUI::save(const std::string &filename) {
     current_path = filename;
     song.save_to_file(current_path);
@@ -23,6 +28,7 @@ void GUI::save(const std::string &filename) {
 }
 
 void GUI::open(const std::string &filename) {
+    clear_input_buffers();
     song.load_from_file(filename);
     current_path = filename;
 
@@ -448,4 +454,8 @@ bool GUI::get_visibility(const GUIElement element) const {
     }
 
     return false;
+}
+
+void GUI::clear_input_buffers() {
+    commands_sequences_panel.clear_input_buffers();
 }

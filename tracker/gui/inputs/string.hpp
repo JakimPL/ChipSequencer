@@ -11,6 +11,7 @@ class StringInputHandler : public InputHandler {
 
   public:
     StringInputHandler(std::vector<std::string> &strings, int &index, const std::vector<ImGuiKey> keys, const bool synchronize = true);
+    void clear() override;
     bool handle_input() override;
 
     bool capture_input = false;

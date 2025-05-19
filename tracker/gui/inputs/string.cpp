@@ -67,3 +67,8 @@ bool StringInputHandler::handle_input() {
 
     return value_inserted;
 }
+
+void StringInputHandler::clear() {
+    buffer.clear();
+    capture_input = true;
+}

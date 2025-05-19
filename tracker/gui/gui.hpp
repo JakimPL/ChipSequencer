@@ -39,6 +39,7 @@ class GUI {
     bool is_playing() const;
     bool is_paused() const;
 
+    void new_song();
     void save(const std::string &filename);
     void open(const std::string &filename);
 
@@ -88,6 +89,7 @@ class GUI {
     void update_all();
     void frame_all();
     void set_visibility_all(const bool visible);
+    void clear_input_buffers();
 };
 
 #endif // GUI_GUI_HPP

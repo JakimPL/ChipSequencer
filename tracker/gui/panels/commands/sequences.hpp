@@ -47,6 +47,7 @@ class GUICommandsSequencesPanel : public GUIPanel {
     GUICommandsSequencesPanel(const bool visible = true);
     void update() override;
     void set_index(const int index) override;
+    void clear_input_buffers();
 };
 
 #endif // GUI_PANELS_COMMANDS_SEQUENCES_HPP

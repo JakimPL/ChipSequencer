@@ -333,3 +333,8 @@ void GUICommandsSequencesPanel::check_keyboard_input() {
 void GUICommandsSequencesPanel::set_index(const int index) {
     sequence_index = clamp_index(index, commands_sequences.size());
 }
+
+void GUICommandsSequencesPanel::clear_input_buffers() {
+    current_sequence.pattern.commands_handler.clear();
+    current_sequence.pattern.values_handler.clear();
+}

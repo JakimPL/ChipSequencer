@@ -15,9 +15,9 @@ class InputHandler {
 
   public:
     InputHandler(int &index);
+    virtual void clear() = 0;
     virtual bool handle_input() = 0;
     void set_limit(const int max);
-    void clear();
 
     std::string get_buffer() const;
     void set_buffer(const std::string &value);
