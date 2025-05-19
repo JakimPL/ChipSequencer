@@ -182,7 +182,7 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
             uint16_t offset;
             split_change_value_parts(value, target_variable_type, target, index, offset);
             const LinkKey key = {target, index, offset};
-            const uint8_t id = link_manager.find_pointer_id_by_key(key);
+            const uint8_t id = -1;
 
             CommandChangeValue change_value;
             change_value.duration = duration;
@@ -429,29 +429,31 @@ void CommandsPattern::save_links(size_t sequence_index) const {
         return;
     }
 
+    std::vector<std::pair<size_t, LinkKey>> commands_to_update;
+
     commands_links[sequence_index].clear();
-    const CommandsSequence *sequence = commands_sequences[sequence_index];
+    CommandsSequence *sequence = commands_sequences[sequence_index];
     for (size_t i = 0; i < sequence->length; ++i) {
         const Command command = sequence->commands[i];
         if (command.instruction == static_cast<uint8_t>(Instruction::ChangeByteValue) ||
             command.instruction == static_cast<uint8_t>(Instruction::ChangeDwordValue) ||
             command.instruction == static_cast<uint8_t>(Instruction::ChangeWordValue) ||
             command.instruction == static_cast<uint8_t>(Instruction::ChangeFloatValue)) {
-            TargetVariableType target_variable_type;
-            Target target;
-            uint8_t index;
-            uint16_t offset;
-            split_change_value_parts(
-                commands[i],
-                target_variable_type,
-                target,
-                index,
-                offset
-            );
+            CommandChangeValue change_value = reinterpret_cast<const CommandChangeValue &>(command);
             const uint16_t id = (sequence_index << 8) + i;
-            const Link link = {ItemType::COMMANDS, id, target, index, offset};
+            const LinkKey key = {static_cast<Target>(change_value.target), change_value.index, change_value.offset};
+            const Link link = {ItemType::COMMANDS, id, key.target, static_cast<uint8_t>(key.index), key.offset};
             commands_links[sequence_index][i] = link;
+            commands_to_update.push_back({i, key});
         }
+    }
+
+    link_manager.set_links();
+
+    for (auto &[index, key] : commands_to_update) {
+        const size_t id = link_manager.find_pointer_id_by_key(key);
+        CommandChangeValue &command = reinterpret_cast<CommandChangeValue &>(sequence->commands[index]);
+        command.pointer = static_cast<uint16_t>(id);
     }
 }
 

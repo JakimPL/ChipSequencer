@@ -17,6 +17,10 @@ class LinkManager {
     std::unordered_map<LinkKey, ParameterValue> snapshot;
     std::vector<std::pair<void *, LinkKey>> pointers_map;
 
+    void set_channels_links();
+    void set_dsps_links();
+    void set_commands_links();
+
     void capture_parameter(const LinkKey key, const Link *link);
     void restore_parameter(const LinkKey key, const Link *link) const;
     void validate_key_and_link(const LinkKey key, const Link *link) const;

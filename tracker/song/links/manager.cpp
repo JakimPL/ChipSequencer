@@ -111,8 +111,7 @@ void LinkManager::set_link(Link &link, void *item, const uint8_t i) {
     assign_key(link);
 }
 
-void LinkManager::set_links() {
-    clear();
+void LinkManager::set_channels_links() {
     size_t link_type = static_cast<size_t>(ItemType::CHANNEL);
     for (size_t i = 0; i < channels.size(); i++) {
         Link &link = links[link_type][i];
@@ -124,8 +123,10 @@ void LinkManager::set_links() {
                       << exception.what() << std::endl;
         }
     }
+}
 
-    link_type = static_cast<size_t>(ItemType::DSP);
+void LinkManager::set_dsps_links() {
+    size_t link_type = static_cast<size_t>(ItemType::DSP);
     for (size_t i = 0; i < dsps.size(); i++) {
         Link &link = links[link_type][i];
         void *item = dsps[i];
@@ -136,8 +137,10 @@ void LinkManager::set_links() {
                       << exception.what() << std::endl;
         }
     }
+}
 
-    link_type = static_cast<size_t>(ItemType::COMMANDS);
+void LinkManager::set_commands_links() {
+    size_t link_type = static_cast<size_t>(ItemType::COMMANDS);
     for (size_t index = 0; index < commands_sequences.size(); index++) {
         for (auto &[element, link] : commands_links[index]) {
             const uint16_t i = (index << 8) + element;
@@ -148,9 +151,17 @@ void LinkManager::set_links() {
                           << index << ", " << element << "): "
                           << exception.what() << std::endl;
             }
+
+            links[link_type].push_back(link);
         }
     }
+}
 
+void LinkManager::set_links() {
+    clear();
+    set_channels_links();
+    set_dsps_links();
+    set_commands_links();
     save_targets();
 }
 
@@ -202,6 +213,7 @@ void LinkManager::realign_links(const size_t index, const Target target, const I
 void LinkManager::realign_links(const size_t index, const Target target) {
     realign_links(index, target, ItemType::CHANNEL);
     realign_links(index, target, ItemType::DSP);
+    realign_links(index, target, ItemType::COMMANDS);
 }
 
 bool LinkManager::is_linked(const LinkKey key) const {
