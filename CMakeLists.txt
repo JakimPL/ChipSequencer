@@ -123,7 +123,6 @@ add_executable(main
     tracker/structures/order.cpp
     tracker/structures/sequence.cpp
     tracker/structures/wavetable.cpp
-    tracker/structures/commands/channel.cpp
     tracker/structures/commands/sequence.cpp
     tracker/tuning/frequencies.cpp
     tracker/tuning/scale.cpp

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <map>
+#include <sstream>
 
 #include "../../general.hpp"
 #include "manager.hpp"
@@ -303,7 +304,12 @@ size_t LinkManager::find_pointer_id_by_key(const LinkKey key) const {
         id++;
     }
 
-    throw std::runtime_error("Pointer not found for key: " + std::to_string(static_cast<int>(key.target)) + ", " + std::to_string(key.index) + ", " + std::to_string(key.offset));
+    std::ostringstream error_message;
+    error_message << "Pointer not found for key: "
+                  << "Target " << static_cast<int>(key.target) << ", "
+                  << "Index " << key.index << ", "
+                  << "Offset " << key.offset;
+    throw std::runtime_error(error_message.str());
 }
 
 void LinkManager::remove_key(Link &link) {
