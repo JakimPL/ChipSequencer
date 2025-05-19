@@ -65,28 +65,28 @@ void CommandsPattern::from_sequence(const uint8_t index) {
         case Instruction::ChangeByteValue: {
             const CommandChangeByteValue change_value = reinterpret_cast<const CommandChangeByteValue &>(command);
             const LinkKey key = get_command_key(reinterpret_cast<const CommandChangeValue *>(&change_value));
-            const std::string command_value = from_change_value(TargetVariableType::Byte, key);
+            const std::string command_value = from_change_value(TargetVariableType::Byte, key, change_value.value);
             add_command("M", command_value);
             break;
         }
         case Instruction::ChangeWordValue: {
             const CommandChangeWordValue change_value = reinterpret_cast<const CommandChangeWordValue &>(command);
             const LinkKey key = get_command_key(reinterpret_cast<const CommandChangeValue *>(&change_value));
-            const std::string command_value = from_change_value(TargetVariableType::Word, key);
+            const std::string command_value = from_change_value(TargetVariableType::Word, key, change_value.value);
             add_command("M", command_value);
             break;
         }
         case Instruction::ChangeDwordValue: {
             const CommandChangeDwordValue change_value = reinterpret_cast<const CommandChangeDwordValue &>(command);
             const LinkKey key = get_command_key(reinterpret_cast<const CommandChangeValue *>(&change_value));
-            const std::string command_value = from_change_value(TargetVariableType::Dword, key);
+            const std::string command_value = from_change_value(TargetVariableType::Dword, key, change_value.value);
             add_command("M", command_value);
             break;
         }
         case Instruction::ChangeFloatValue: {
             const CommandChangeFloatValue change_value = reinterpret_cast<const CommandChangeFloatValue &>(command);
             const LinkKey key = get_command_key(reinterpret_cast<const CommandChangeValue *>(&change_value));
-            const std::string command_value = from_change_value(TargetVariableType::Float, key);
+            const std::string command_value = from_change_value(TargetVariableType::Float, key, change_value.value);
             add_command("M", command_value);
             break;
         }
@@ -180,7 +180,8 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
             Target target;
             uint8_t index;
             uint16_t offset;
-            split_change_value_parts(value, target_variable_type, target, index, offset);
+            uint32_t generic_value;
+            split_change_value_parts(value, target_variable_type, target, index, offset, generic_value);
             const LinkKey key = {target, index, offset};
             const uint8_t id = -1;
 
@@ -195,28 +196,28 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
             case TargetVariableType::Byte: {
                 CommandChangeByteValue change_byte_value = reinterpret_cast<CommandChangeByteValue &>(change_value);
                 change_byte_value.instruction = INSTRUCTION_CHANGE_BYTE_VALUE;
-                change_byte_value.value = 0;
+                change_byte_value.value = static_cast<uint8_t>(generic_value);
                 command_vector.push_back(reinterpret_cast<Command &>(change_byte_value));
                 break;
             }
             case TargetVariableType::Word: {
                 CommandChangeWordValue change_word_value = reinterpret_cast<CommandChangeWordValue &>(change_value);
                 change_word_value.instruction = INSTRUCTION_CHANGE_WORD_VALUE;
-                change_word_value.value = 0;
+                change_word_value.value = static_cast<uint16_t>(generic_value);
                 command_vector.push_back(reinterpret_cast<Command &>(change_word_value));
                 break;
             }
             case TargetVariableType::Dword: {
                 CommandChangeDwordValue change_dword_value = reinterpret_cast<CommandChangeDwordValue &>(change_value);
                 change_dword_value.instruction = INSTRUCTION_CHANGE_DWORD_VALUE;
-                change_dword_value.value = 0;
+                change_dword_value.value = generic_value;
                 command_vector.push_back(reinterpret_cast<Command &>(change_dword_value));
                 break;
             }
             case TargetVariableType::Float: {
                 CommandChangeFloatValue change_float_value = reinterpret_cast<CommandChangeFloatValue &>(change_value);
                 change_float_value.instruction = INSTRUCTION_CHANGE_FLOAT_VALUE;
-                change_float_value.value = 0.0;
+                change_float_value.value = generic_value;
                 command_vector.push_back(reinterpret_cast<Command &>(change_float_value));
                 break;
             }
@@ -316,7 +317,8 @@ void CommandsPattern::split_change_value_parts(
     TargetVariableType &target_variable_type,
     Target &target,
     uint8_t &index,
-    uint16_t &offset
+    uint16_t &offset,
+    uint32_t &value
 ) {
     std::vector<std::string> value_parts = split(command_value, ',');
     size_t size = value_parts.size();
@@ -387,6 +389,36 @@ void CommandsPattern::split_change_value_parts(
         }
         }
     }
+
+    if (size >= 4) {
+        offset = static_cast<uint16_t>(string_to_integer(value_parts[3], 0, 0, UINT16_MAX));
+    }
+
+    if (size >= 5) {
+        switch (target_variable_type) {
+        case TargetVariableType::Byte: {
+            value = static_cast<uint8_t>(string_to_integer(value_parts[4], 0, 0, UINT8_MAX));
+            break;
+        }
+        case TargetVariableType::Word: {
+            value = static_cast<uint16_t>(string_to_integer(value_parts[4], 0, 0, UINT16_MAX));
+            break;
+        }
+        case TargetVariableType::Dword: {
+            value = static_cast<uint32_t>(string_to_integer(value_parts[4], 0, 0, UINT32_MAX));
+            break;
+        }
+        case TargetVariableType::Float: {
+            float numeric = string_to_double(value_parts[4], 0.0);
+            value = reinterpret_cast<uint32_t &>(numeric);
+            break;
+        }
+        case TargetVariableType::Count:
+        default: {
+            throw std::runtime_error("Invalid target variable type: " + std::to_string(static_cast<int>(target_variable_type)));
+        }
+        }
+    }
 }
 
 double CommandsPattern::cast_portamento_to_double(const uint16_t value) {
@@ -415,12 +447,31 @@ std::string CommandsPattern::from_gainer(const double value) {
     return convert_double_to_string(value, 4);
 }
 
-std::string CommandsPattern::from_change_value(const TargetVariableType type, const LinkKey key) {
+std::string CommandsPattern::from_change_value(const TargetVariableType type, const LinkKey key, const uint32_t value) {
     std::ostringstream stream;
     stream << static_cast<int>(type) << ","
            << static_cast<int>(key.target) << ","
            << key.index << ","
-           << key.offset;
+           << key.offset << ",";
+
+    switch (type) {
+    case TargetVariableType::Byte:
+    case TargetVariableType::Word:
+    case TargetVariableType::Dword: {
+        stream << static_cast<int>(value);
+        break;
+    }
+    case TargetVariableType::Float: {
+        const float numeric = reinterpret_cast<const float &>(value);
+        stream << convert_double_to_string(numeric, 6);
+        break;
+    }
+    case TargetVariableType::Count:
+    default: {
+        throw std::runtime_error("Invalid target variable type: " + std::to_string(static_cast<int>(type)));
+    }
+    }
+
     return stream.str();
 }
 
@@ -453,6 +504,10 @@ void CommandsPattern::save_links(size_t sequence_index) const {
     for (auto &[index, key] : commands_to_update) {
         const size_t id = link_manager.find_pointer_id_by_key(key);
         CommandChangeValue &command = reinterpret_cast<CommandChangeValue &>(sequence->commands[index]);
+        const LinkKey command_key = link_manager.get_pointer_and_key(id).second;
+        command.target = static_cast<uint8_t>(command_key.target);
+        command.index = command_key.index;
+        command.offset = command_key.offset;
         command.pointer = static_cast<uint16_t>(id);
     }
 }

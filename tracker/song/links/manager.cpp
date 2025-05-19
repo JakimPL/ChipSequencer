@@ -318,11 +318,11 @@ size_t LinkManager::find_pointer_id_by_key(const LinkKey key) const {
     }
 
     std::ostringstream error_message;
-    error_message << "Pointer not found for key: "
-                  << "Target " << static_cast<int>(key.target) << ", "
-                  << "Index " << key.index << ", "
-                  << "Offset " << key.offset;
-    throw std::runtime_error(error_message.str());
+    std::cerr << "Pointer not found for key: "
+              << "Target " << static_cast<int>(key.target) << ", "
+              << "Index " << key.index << ", "
+              << "Offset " << key.offset << std::endl;
+    return 0;
 }
 
 void LinkManager::remove_key(Link &link) {

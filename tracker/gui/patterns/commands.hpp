@@ -35,14 +35,15 @@ struct CommandsPattern {
         TargetVariableType &target_variable_type,
         Target &target,
         uint8_t &index,
-        uint16_t &offset
+        uint16_t &offset,
+        uint32_t &value
     );
 
     static std::string from_portamento(const uint8_t channel, const uint16_t value);
     static std::string from_portamento(const uint8_t channel, const double value);
     static std::string from_gainer(const uint16_t value);
     static std::string from_gainer(const double value);
-    static std::string from_change_value(const TargetVariableType type, const LinkKey key);
+    static std::string from_change_value(const TargetVariableType type, const LinkKey key, const uint32_t value);
     LinkKey get_command_key(const CommandChangeValue *command) const;
 
     void from_sequence(const uint8_t sequence_index);

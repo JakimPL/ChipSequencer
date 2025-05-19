@@ -197,8 +197,8 @@ std::pair<size_t, bool> draw_commands_pattern(CommandsPattern &pattern, const bo
     }
 
     if (ImGui::BeginTable("CommandsPatternTable", 3, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg)) {
-        ImGui::TableSetupColumn("Index", ImGuiTableColumnFlags_WidthFixed, 50.0f);
-        ImGui::TableSetupColumn("Command");
+        ImGui::TableSetupColumn("Index", ImGuiTableColumnFlags_WidthFixed, 40.0f);
+        ImGui::TableSetupColumn("Com", ImGuiTableColumnFlags_WidthFixed, 50.0f);
         ImGui::TableSetupColumn("Value");
         if (header) {
             ImGui::TableHeadersRow();
