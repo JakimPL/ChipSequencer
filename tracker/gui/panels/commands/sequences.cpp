@@ -187,9 +187,47 @@ void GUICommandsSequencesPanel::open_edit_dialog_box(const int item) {
     case Instruction::ChangeWordValue:
     case Instruction::ChangeDwordValue:
     case Instruction::ChangeFloatValue: {
+        TargetVariableType target_variable_type;
+        Target target;
+        uint8_t index;
+        uint16_t offset;
+        uint32_t value;
+        current_sequence.pattern.split_change_value_parts(
+            current_sequence.pattern.values[item],
+            target_variable_type,
+            target,
+            index,
+            offset,
+            value
+        );
+
+        edit_dialog_box.variable_type = static_cast<int>(target_variable_type);
+        edit_dialog_box.target = static_cast<int>(target);
+        edit_dialog_box.index = index;
+        edit_dialog_box.offset = offset;
+
+        if (instruction == Instruction::ChangeFloatValue) {
+            edit_dialog_box.value_float = *reinterpret_cast<float *>(&value);
+        } else {
+            edit_dialog_box.value_integer = value;
+        }
         break;
     }
+    default: {
+        throw std::runtime_error("Invalid instruction: " + std::to_string(static_cast<int>(instruction)));
     }
+    }
+}
+
+void GUICommandsSequencesPanel::draw_output_section() {
+    push_secondary_style();
+    ImGui::Text("Output:");
+
+    ImGui::Text("Operation:");
+    prepare_combo(simple_operation_names, "##OutputTypeOperation", edit_dialog_box.operation);
+    ImGui::Text("Variable:");
+    prepare_combo(variable_types, "##OutputTypeCombo", edit_dialog_box.variable_type);
+    pop_secondary_style();
 }
 
 void GUICommandsSequencesPanel::draw_edit_dialog_box() {
@@ -238,7 +276,7 @@ void GUICommandsSequencesPanel::draw_edit_dialog_box() {
         case Instruction::ChangeWordValue:
         case Instruction::ChangeDwordValue:
         case Instruction::ChangeFloatValue: {
-            draw_output(edit_dialog_box.output_type, {});
+            draw_output_section();
             break;
         }
         }

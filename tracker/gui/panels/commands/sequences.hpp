@@ -22,7 +22,15 @@ class GUICommandsSequencesPanel : public GUIPanel {
         float gainer = 0.5f;
         int bpm = DEFAULT_BPM;
         int division = DEFAULT_DIVISION;
-        OutputType output_type;
+
+        int variable_type = 0;
+        int target = 0;
+        int index = 0;
+        int offset = 0;
+        int value_integer = 0;
+        float value_float = 0.0f;
+
+        int operation = 1;
     } edit_dialog_box;
 
     bool dialog_box_open = false;
@@ -33,6 +41,7 @@ class GUICommandsSequencesPanel : public GUIPanel {
     void draw_sequence_length();
     void open_edit_dialog_box(const int item);
     void draw_edit_dialog_box();
+    void draw_output_section();
     void set_current_command();
 
     void from() override;

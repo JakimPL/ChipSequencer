@@ -267,22 +267,59 @@ std::pair<size_t, bool> draw_commands_pattern(CommandsPattern &pattern, const bo
     return {index + pattern.commands.size(), select};
 }
 
+void draw_output_output_splitter(std::array<float, MAX_OUTPUT_CHANNELS> &splitter, const LinkKey key) {
+    const size_t output_channels = song.get_output_channels();
+    ImGui::Text("Splitter:");
+    for (size_t i = 0; i < output_channels; ++i) {
+        const LinkKey splitter_key = {key.target, key.index, static_cast<uint16_t>(key.offset + i)};
+        const std::string label = "Channel " + std::to_string(i);
+        draw_float_slider(label.c_str(), splitter[i], splitter_key, 0.0f, 1.0f);
+    }
+}
+
+void draw_output_dsp_splitter(
+    std::array<float, MAX_OUTPUT_CHANNELS> &splitter,
+    int &dsp_channel,
+    const int dsp_index,
+    const LinkKey key
+) {
+    if (dsps.empty() || dsp_index >= static_cast<int>(dsps.size()) - 1) {
+        ImGui::Text("No DSPs available.");
+        return;
+    }
+
+    ImGui::Text("Initial DSP:");
+    draw_int_slider("DSP", dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
+    ImGui::Text("Splitter:");
+    int start = dsp_channel;
+    int end = start + std::clamp(static_cast<int>(dsps.size()) - start, 0, MAX_OUTPUT_CHANNELS);
+    for (int i = dsp_channel; i < end; ++i) {
+        const size_t j = i - dsp_channel;
+        const std::string label = dsp_names[i];
+        const LinkKey splitter_key = {key.target, key.index, static_cast<uint16_t>(key.offset + j)};
+        draw_float_slider(label.c_str(), splitter[j], splitter_key, 0.0f, 1.0f);
+    }
+}
+
+void draw_output_direct_dsp(int &dsp_channel, const int dsp_index, const LinkKey key) {
+    if (dsps.empty() || dsp_index >= static_cast<int>(dsps.size()) - 1) {
+        ImGui::Text("No DSPs available.");
+        return;
+    }
+    draw_int_slider("DSP", dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
+}
+
 bool draw_output(OutputType &output_type, const LinkKey key) {
     push_secondary_style();
     ImGui::Separator();
     ImGui::Text("Output:");
     bool value_changed = prepare_combo(target_types, "##OutputTargetCombo", output_type.target).value_changed;
-    const size_t output_channels = song.get_output_channels();
     const int dsp_index = key.target == Target::DSP ? key.index : -1;
+    const size_t output_channels = song.get_output_channels();
 
     switch (static_cast<OutputTarget>(output_type.target)) {
     case OutputTarget::OutputSplitter: {
-        ImGui::Text("Splitter:");
-        for (size_t i = 0; i < output_channels; ++i) {
-            const LinkKey splitter_key = {key.target, key.index, static_cast<uint16_t>(key.offset + i)};
-            const std::string label = "Channel " + std::to_string(i);
-            draw_float_slider(label.c_str(), output_type.splitter[i], splitter_key, 0.0f, 1.0f);
-        }
+        draw_output_output_splitter(output_type.splitter, key);
 
         if (value_changed) {
             output_type.operation = static_cast<int>(OutputOperation::Add);
@@ -291,22 +328,7 @@ bool draw_output(OutputType &output_type, const LinkKey key) {
         break;
     }
     case OutputTarget::DSPSplitter: {
-        if (dsps.empty() || dsp_index >= static_cast<int>(dsps.size()) - 1) {
-            ImGui::Text("No DSPs available.");
-            break;
-        }
-
-        ImGui::Text("Initial DSP:");
-        draw_int_slider("DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
-        ImGui::Text("Splitter:");
-        int start = output_type.dsp_channel;
-        int end = start + std::clamp(static_cast<int>(dsps.size()) - start, 0, MAX_OUTPUT_CHANNELS);
-        for (int i = output_type.dsp_channel; i < end; ++i) {
-            const size_t j = i - output_type.dsp_channel;
-            const std::string label = dsp_names[i];
-            const LinkKey splitter_key = {key.target, key.index, static_cast<uint16_t>(key.offset + j)};
-            draw_float_slider(label.c_str(), output_type.splitter[j], splitter_key, 0.0f, 1.0f);
-        }
+        draw_output_dsp_splitter(output_type.splitter, output_type.dsp_channel, dsp_index, key);
 
         if (value_changed) {
             output_type.operation = static_cast<int>(OutputOperation::Add);
@@ -324,12 +346,7 @@ bool draw_output(OutputType &output_type, const LinkKey key) {
         break;
     }
     case OutputTarget::DirectDSP: {
-        if (dsps.empty() || dsp_index >= static_cast<int>(dsps.size()) - 1) {
-            ImGui::Text("No DSPs available.");
-            break;
-        }
-
-        draw_int_slider("DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
+        draw_output_direct_dsp(output_type.dsp_channel, dsp_index, key);
 
         if (value_changed) {
             output_type.operation = static_cast<int>(OutputOperation::Add);
