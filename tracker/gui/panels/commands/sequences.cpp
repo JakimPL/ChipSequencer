@@ -201,10 +201,10 @@ void GUICommandsSequencesPanel::open_edit_dialog_box(const int item) {
             value
         );
 
-        edit_dialog_box.variable_type = static_cast<int>(target_variable_type);
-        edit_dialog_box.target = static_cast<int>(target);
-        edit_dialog_box.index = index;
-        edit_dialog_box.offset = offset;
+        edit_dialog_box.output_type.variable_type = static_cast<int>(target_variable_type);
+        edit_dialog_box.output_type.target = static_cast<int>(target);
+        edit_dialog_box.output_type.index = index;
+        edit_dialog_box.output_type.offset = offset;
 
         if (instruction == Instruction::ChangeFloatValue) {
             edit_dialog_box.value_float = *reinterpret_cast<float *>(&value);
@@ -223,10 +223,32 @@ void GUICommandsSequencesPanel::draw_output_section() {
     push_secondary_style();
     ImGui::Text("Output:");
 
+    draw_output_parameter(edit_dialog_box.output_type, {});
     ImGui::Text("Operation:");
-    prepare_combo(simple_operation_names, "##OutputTypeOperation", edit_dialog_box.operation);
+    prepare_combo(simple_operation_names, "##OutputTypeOperation", edit_dialog_box.output_type.operation);
     ImGui::Text("Variable:");
-    prepare_combo(variable_types, "##OutputTypeCombo", edit_dialog_box.variable_type);
+    prepare_combo(variable_types, "##OutputTypeCombo", edit_dialog_box.output_type.variable_type);
+    switch (static_cast<TargetVariableType>(edit_dialog_box.output_type.variable_type)) {
+    case TargetVariableType::Byte: {
+        draw_int_slider("Value", edit_dialog_box.value_integer, {}, 0, UINT8_MAX);
+        break;
+    }
+    case TargetVariableType::Word: {
+        draw_int_slider("Value", edit_dialog_box.value_integer, {}, 0, UINT16_MAX);
+        break;
+    }
+    case TargetVariableType::Dword: {
+        draw_int_slider("Value", edit_dialog_box.value_integer, {}, 0, UINT32_MAX);
+        break;
+    }
+    case TargetVariableType::Float: {
+        draw_float_slider("Value", edit_dialog_box.value_float, {}, 0.0f, 1.0f);
+        break;
+    }
+    case TargetVariableType::Count:
+    default:
+        break;
+    }
     pop_secondary_style();
 }
 

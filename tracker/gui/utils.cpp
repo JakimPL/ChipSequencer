@@ -267,155 +267,93 @@ std::pair<size_t, bool> draw_commands_pattern(CommandsPattern &pattern, const bo
     return {index + pattern.commands.size(), select};
 }
 
-void draw_output_output_splitter(std::array<float, MAX_OUTPUT_CHANNELS> &splitter, const LinkKey key) {
+void draw_output_output_splitter(OutputType &output_type, const LinkKey key) {
     const size_t output_channels = song.get_output_channels();
     ImGui::Text("Splitter:");
     for (size_t i = 0; i < output_channels; ++i) {
         const LinkKey splitter_key = {key.target, key.index, static_cast<uint16_t>(key.offset + i)};
         const std::string label = "Channel " + std::to_string(i);
-        draw_float_slider(label.c_str(), splitter[i], splitter_key, 0.0f, 1.0f);
+        draw_float_slider(label.c_str(), output_type.splitter[i], splitter_key, 0.0f, 1.0f);
     }
 }
 
-void draw_output_dsp_splitter(
-    std::array<float, MAX_OUTPUT_CHANNELS> &splitter,
-    int &dsp_channel,
-    const int dsp_index,
-    const LinkKey key
-) {
+void draw_output_dsp_splitter(OutputType &output_type, const int dsp_index, const LinkKey key) {
     if (dsps.empty() || dsp_index >= static_cast<int>(dsps.size()) - 1) {
-        ImGui::Text("No DSPs available.");
+        ImGui::Text("No DSP available.");
         return;
     }
 
     ImGui::Text("Initial DSP:");
-    draw_int_slider("DSP", dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
+    draw_int_slider("DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
     ImGui::Text("Splitter:");
-    int start = dsp_channel;
+    int start = output_type.dsp_channel;
     int end = start + std::clamp(static_cast<int>(dsps.size()) - start, 0, MAX_OUTPUT_CHANNELS);
-    for (int i = dsp_channel; i < end; ++i) {
-        const size_t j = i - dsp_channel;
+    for (int i = output_type.dsp_channel; i < end; ++i) {
+        const size_t j = i - output_type.dsp_channel;
         const std::string label = dsp_names[i];
         const LinkKey splitter_key = {key.target, key.index, static_cast<uint16_t>(key.offset + j)};
-        draw_float_slider(label.c_str(), splitter[j], splitter_key, 0.0f, 1.0f);
+        draw_float_slider(label.c_str(), output_type.splitter[j], splitter_key, 0.0f, 1.0f);
     }
 }
 
-void draw_output_direct_dsp(int &dsp_channel, const int dsp_index, const LinkKey key) {
+void draw_output_direct_output(OutputType &output_type, const LinkKey key) {
+    const size_t output_channels = song.get_output_channels();
+    draw_int_slider("Channel", output_type.output_channel, {}, 0, output_channels - 1);
+}
+
+void draw_output_direct_dsp(OutputType &output_type, const int dsp_index, const LinkKey key) {
     if (dsps.empty() || dsp_index >= static_cast<int>(dsps.size()) - 1) {
-        ImGui::Text("No DSPs available.");
+        ImGui::Text("No DSP available.");
         return;
     }
-    draw_int_slider("DSP", dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
+
+    draw_int_slider("DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
 }
 
-bool draw_output(OutputType &output_type, const LinkKey key) {
-    push_secondary_style();
+bool draw_output_parameter(OutputType &output_type, const LinkKey key) {
     ImGui::Separator();
-    ImGui::Text("Output:");
-    bool value_changed = prepare_combo(target_types, "##OutputTargetCombo", output_type.target).value_changed;
-    const int dsp_index = key.target == Target::DSP ? key.index : -1;
-    const size_t output_channels = song.get_output_channels();
-
-    switch (static_cast<OutputTarget>(output_type.target)) {
-    case OutputTarget::OutputSplitter: {
-        draw_output_output_splitter(output_type.splitter, key);
-
-        if (value_changed) {
-            output_type.operation = static_cast<int>(OutputOperation::Add);
-        }
-
+    bool value_changed = prepare_combo(parameter_types, "##OutputParameterCombo", output_type.parameter_type).value_changed;
+    const Target target = static_cast<Target>(output_type.parameter_type + static_cast<int>(OutputTarget::Parameter));
+    switch (target) {
+    case Target::ENVELOPE: {
+        draw_output_parameter_generic(output_type, envelope_names, "Envelope");
         break;
     }
-    case OutputTarget::DSPSplitter: {
-        draw_output_dsp_splitter(output_type.splitter, output_type.dsp_channel, dsp_index, key);
-
-        if (value_changed) {
-            output_type.operation = static_cast<int>(OutputOperation::Add);
-        }
-
+    case Target::SEQUENCE:
+    case Target::COMMANDS_SEQUENCE:
+    case Target::ORDER:
+    case Target::WAVETABLE:
+    case Target::COMMANDS_CHANNEL: {
+        ImGui::Text("Not implemented yet.");
         break;
     }
-    case OutputTarget::DirectOutput: {
-        draw_int_slider("Channel", output_type.output_channel, {}, 0, output_channels - 1);
-
-        if (value_changed) {
-            output_type.operation = static_cast<int>(OutputOperation::Add);
-        }
-
+    case Target::OSCILLATOR: {
+        draw_output_parameter_oscillator(output_type);
         break;
     }
-    case OutputTarget::DirectDSP: {
-        draw_output_direct_dsp(output_type.dsp_channel, dsp_index, key);
-
-        if (value_changed) {
-            output_type.operation = static_cast<int>(OutputOperation::Add);
-        }
-
+    case Target::DSP: {
+        draw_output_parameter_dsp(output_type);
         break;
     }
-    case OutputTarget::Parameter: {
-        ImGui::Separator();
-        value_changed |= prepare_combo(parameter_types, "##OutputParameterCombo", output_type.parameter_type).value_changed;
-        const Target target = static_cast<Target>(output_type.parameter_type + static_cast<int>(OutputTarget::Parameter));
-        switch (target) {
-        case Target::ENVELOPE: {
-            draw_output_parameter(output_type, envelope_names, "Envelope");
-            break;
-        }
-        case Target::SEQUENCE:
-        case Target::COMMANDS_SEQUENCE:
-        case Target::ORDER:
-        case Target::WAVETABLE:
-        case Target::COMMANDS_CHANNEL: {
-            ImGui::Text("Not implemented yet.");
-            break;
-        }
-        case Target::OSCILLATOR: {
-            draw_output_parameter_oscillator(output_type);
-            break;
-        }
-        case Target::DSP: {
-            draw_output_parameter_dsp(output_type);
-            break;
-        }
-        case Target::CHANNEL: {
-            draw_output_parameter(output_type, channel_names, "Channel");
-            break;
-        }
-        case Target::SPLITTER_OUTPUT:
-        case Target::SPLITTER_DSP:
-        case Target::DIRECT_OUTPUT:
-        case Target::DIRECT_DSP:
-        case Target::UNUSED:
-        case Target::COUNT:
-        default: {
-            throw std::runtime_error("Invalid target type: " + std::to_string(static_cast<int>(target)));
-        }
-        }
-
-        if (value_changed) {
-            output_type.operation = static_cast<int>(OutputOperation::Set);
-        }
-
+    case Target::CHANNEL: {
+        draw_output_parameter_generic(output_type, channel_names, "Channel");
         break;
     }
+    case Target::SPLITTER_OUTPUT:
+    case Target::SPLITTER_DSP:
+    case Target::DIRECT_OUTPUT:
+    case Target::DIRECT_DSP:
+    case Target::UNUSED:
+    case Target::COUNT:
+    default: {
+        throw std::runtime_error("Invalid target type: " + std::to_string(static_cast<int>(target)));
     }
-
-    ImGui::Separator();
-    ImGui::Text("Operation:");
-    prepare_combo(operation_names, "##OutputTypeOperation", output_type.operation);
-    ImGui::Text("Variable:");
-    prepare_combo(variable_types, "##OutputTypeCombo", output_type.variable_type);
-    ImGui::BeginDisabled(output_type.variable_type == 0);
-    draw_int_slider("Shift", output_type.shift, {}, 0, 15);
-    ImGui::EndDisabled();
-    pop_secondary_style();
+    }
 
     return value_changed;
 }
 
-void draw_output_parameter(OutputType &output_type, const std::vector<std::string> &names, const std::string label) {
+void draw_output_parameter_generic(OutputType &output_type, const std::vector<std::string> &names, const std::string label) {
     if (names.empty()) {
         const std::string text = "No " + to_lower(label) + "s available.";
         ImGui::Text("%s", text.c_str());
@@ -492,6 +430,74 @@ void draw_output_parameter_dsp(OutputType &output_type) {
         output_type.offset = routing.offsets[output_type.routing_index];
         output_type.variable_type = static_cast<int>(routing.types[output_type.routing_index]);
     }
+}
+
+bool draw_output(OutputType &output_type, const LinkKey key) {
+    push_secondary_style();
+    ImGui::Separator();
+    ImGui::Text("Output:");
+    bool value_changed = prepare_combo(target_types, "##OutputTargetCombo", output_type.target).value_changed;
+    const int dsp_index = key.target == Target::DSP ? key.index : -1;
+
+    switch (static_cast<OutputTarget>(output_type.target)) {
+    case OutputTarget::OutputSplitter: {
+        draw_output_output_splitter(output_type, key);
+
+        if (value_changed) {
+            output_type.operation = static_cast<int>(OutputOperation::Add);
+        }
+
+        break;
+    }
+    case OutputTarget::DSPSplitter: {
+        draw_output_dsp_splitter(output_type, dsp_index, key);
+
+        if (value_changed) {
+            output_type.operation = static_cast<int>(OutputOperation::Add);
+        }
+
+        break;
+    }
+    case OutputTarget::DirectOutput: {
+        draw_output_direct_output(output_type, key);
+
+        if (value_changed) {
+            output_type.operation = static_cast<int>(OutputOperation::Add);
+        }
+
+        break;
+    }
+    case OutputTarget::DirectDSP: {
+        draw_output_direct_dsp(output_type, dsp_index, key);
+
+        if (value_changed) {
+            output_type.operation = static_cast<int>(OutputOperation::Add);
+        }
+
+        break;
+    }
+    case OutputTarget::Parameter: {
+        value_changed |= draw_output_parameter(output_type, key);
+
+        if (value_changed) {
+            output_type.operation = static_cast<int>(OutputOperation::Set);
+        }
+
+        break;
+    }
+    }
+
+    ImGui::Separator();
+    ImGui::Text("Operation:");
+    prepare_combo(operation_names, "##OutputTypeOperation", output_type.operation);
+    ImGui::Text("Variable:");
+    prepare_combo(variable_types, "##OutputTypeCombo", output_type.variable_type);
+    ImGui::BeginDisabled(output_type.variable_type == 0);
+    draw_int_slider("Shift", output_type.shift, {}, 0, 15);
+    ImGui::EndDisabled();
+    pop_secondary_style();
+
+    return value_changed;
 }
 
 void show_dependency_tooltip(const std::string &label, std::vector<size_t> &dependencies) {

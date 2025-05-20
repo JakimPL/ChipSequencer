@@ -23,14 +23,9 @@ class GUICommandsSequencesPanel : public GUIPanel {
         int bpm = DEFAULT_BPM;
         int division = DEFAULT_DIVISION;
 
-        int variable_type = 0;
-        int target = 0;
-        int index = 0;
-        int offset = 0;
+        OutputType output_type;
         int value_integer = 0;
         float value_float = 0.0f;
-
-        int operation = 1;
     } edit_dialog_box;
 
     bool dialog_box_open = false;
