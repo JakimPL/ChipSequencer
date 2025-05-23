@@ -7,17 +7,21 @@
 #include "../sizes.hpp"
 #include "../structures/commands/sequence.hpp"
 
-const std::map<uint8_t, uint8_t> command_sizes = {
-    {INSTRUCTION_EMPTY, SIZE_COMMAND},
-    {INSTRUCTION_PORTAMENTO_UP, SIZE_COMMAND_PORTAMENTO_UP},
-    {INSTRUCTION_PORTAMENTO_DOWN, SIZE_COMMAND_PORTAMENTO_DOWN},
-    {INSTRUCTION_SET_MASTER_GAINER, SIZE_COMMAND_SET_MASTER_GAINER},
-    {INSTRUCTION_SET_BPM, SIZE_COMMAND_SET_BPM},
-    {INSTRUCTION_SET_DIVISION, SIZE_COMMAND_SET_DIVISION},
-    {INSTRUCTION_CHANGE_BYTE_VALUE, SIZE_COMMAND_CHANGE_BYTE_VALUE},
-    {INSTRUCTION_CHANGE_WORD_VALUE, SIZE_COMMAND_CHANGE_WORD_VALUE},
-    {INSTRUCTION_CHANGE_DWORD_VALUE, SIZE_COMMAND_CHANGE_DWORD_VALUE},
-    {INSTRUCTION_CHANGE_FLOAT_VALUE, SIZE_COMMAND_CHANGE_FLOAT_VALUE}
+const std::array<uint8_t, INSTRUCTION_COUNT> command_sizes = {
+    SIZE_COMMAND,
+    SIZE_COMMAND_PORTAMENTO_UP,
+    SIZE_COMMAND_PORTAMENTO_DOWN,
+    SIZE_COMMAND_SET_MASTER_GAINER,
+    SIZE_COMMAND_SET_BPM,
+    SIZE_COMMAND_SET_DIVISION,
+    SIZE_COMMAND_CHANGE_BYTE_VALUE,
+    SIZE_COMMAND_CHANGE_WORD_VALUE,
+    SIZE_COMMAND_CHANGE_DWORD_VALUE,
+    SIZE_COMMAND_CHANGE_FLOAT_VALUE,
+    SIZE_COMMAND_ADD_BYTE_VALUE,
+    SIZE_COMMAND_ADD_WORD_VALUE,
+    SIZE_COMMAND_ADD_DWORD_VALUE,
+    SIZE_COMMAND_ADD_FLOAT_VALUE,
 };
 
 const std::map<char, Instruction> command_characters = {
@@ -30,7 +34,11 @@ const std::map<char, Instruction> command_characters = {
     {'M', Instruction::ChangeByteValue},
     {'M', Instruction::ChangeWordValue},
     {'M', Instruction::ChangeDwordValue},
-    {'M', Instruction::ChangeFloatValue}
+    {'M', Instruction::ChangeFloatValue},
+    {'A', Instruction::AddByteValue},
+    {'A', Instruction::AddWordValue},
+    {'A', Instruction::AddDwordValue},
+    {'A', Instruction::AddFloatValue},
 };
 
 const std::map<Instruction, char> command_letters = {
@@ -43,7 +51,11 @@ const std::map<Instruction, char> command_letters = {
     {Instruction::ChangeByteValue, 'M'},
     {Instruction::ChangeWordValue, 'M'},
     {Instruction::ChangeDwordValue, 'M'},
-    {Instruction::ChangeFloatValue, 'M'}
+    {Instruction::ChangeFloatValue, 'M'},
+    {Instruction::AddByteValue, 'A'},
+    {Instruction::AddWordValue, 'A'},
+    {Instruction::AddDwordValue, 'A'},
+    {Instruction::AddFloatValue, 'A'},
 };
 
 #endif // MAPS_COMMANDS_HPP

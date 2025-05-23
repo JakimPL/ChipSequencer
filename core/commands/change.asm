@@ -107,14 +107,6 @@ add_float_value:
     %endif
     ret
 
-    %ifdef USED_COMMAND_ADD_32BIT_VALUE
-add_32bit_value:
-    call load_target
-    mov ebx, [COMMAND_ADD_VALUE_VALUE + edi]
-    add [eax], ebx
-    ret
-    %endif
-
     %ifdef USED_COMMAND_LOAD_TARGET
 load_target:
     movzx eax, word [COMMAND_CHANGE_VALUE_POINTER + edi]

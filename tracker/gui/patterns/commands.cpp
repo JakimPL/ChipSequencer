@@ -90,6 +90,34 @@ void CommandsPattern::from_sequence(const uint8_t index) {
             add_command("M", command_value);
             break;
         }
+        case Instruction::AddByteValue: {
+            const CommandAddByteValue add_value = reinterpret_cast<const CommandAddByteValue &>(command);
+            const LinkKey key = get_command_key(reinterpret_cast<const CommandChangeValue *>(&add_value));
+            const std::string command_value = from_change_value(TargetVariableType::Byte, key, add_value.value);
+            add_command("A", command_value);
+            break;
+        }
+        case Instruction::AddWordValue: {
+            const CommandAddWordValue add_value = reinterpret_cast<const CommandAddWordValue &>(command);
+            const LinkKey key = get_command_key(reinterpret_cast<const CommandChangeValue *>(&add_value));
+            const std::string command_value = from_change_value(TargetVariableType::Word, key, add_value.value);
+            add_command("A", command_value);
+            break;
+        }
+        case Instruction::AddDwordValue: {
+            const CommandAddDwordValue add_value = reinterpret_cast<const CommandAddDwordValue &>(command);
+            const LinkKey key = get_command_key(reinterpret_cast<const CommandChangeValue *>(&add_value));
+            const std::string command_value = from_change_value(TargetVariableType::Dword, key, add_value.value);
+            add_command("A", command_value);
+            break;
+        }
+        case Instruction::AddFloatValue: {
+            const CommandAddFloatValue add_value = reinterpret_cast<const CommandAddFloatValue &>(command);
+            const LinkKey key = get_command_key(reinterpret_cast<const CommandChangeValue *>(&add_value));
+            const std::string command_value = from_change_value(TargetVariableType::Float, key, add_value.value);
+            add_command("A", command_value);
+            break;
+        }
         case Instruction::Empty: {
             add_command();
             break;
@@ -131,7 +159,8 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
             continue;
         }
 
-        switch (command[0]) {
+        const char command_char = command[0];
+        switch (command_char) {
         case 'U': {
             CommandPortamentoUp portamento_up;
             portamento_up.duration = duration;
@@ -175,7 +204,9 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
             command_vector.push_back(reinterpret_cast<Command &>(set_division));
             break;
         }
+        case 'A':
         case 'M': {
+            const bool add = command_char == 'A';
             TargetVariableType target_variable_type;
             Target target;
             uint8_t index;
@@ -195,28 +226,28 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
             switch (target_variable_type) {
             case TargetVariableType::Byte: {
                 CommandChangeByteValue change_byte_value = reinterpret_cast<CommandChangeByteValue &>(change_value);
-                change_byte_value.instruction = INSTRUCTION_CHANGE_BYTE_VALUE;
+                change_byte_value.instruction = add ? INSTRUCTION_ADD_BYTE_VALUE : INSTRUCTION_CHANGE_BYTE_VALUE;
                 change_byte_value.value = static_cast<uint8_t>(generic_value);
                 command_vector.push_back(reinterpret_cast<Command &>(change_byte_value));
                 break;
             }
             case TargetVariableType::Word: {
                 CommandChangeWordValue change_word_value = reinterpret_cast<CommandChangeWordValue &>(change_value);
-                change_word_value.instruction = INSTRUCTION_CHANGE_WORD_VALUE;
+                change_word_value.instruction = add ? INSTRUCTION_ADD_WORD_VALUE : INSTRUCTION_CHANGE_WORD_VALUE;
                 change_word_value.value = static_cast<uint16_t>(generic_value);
                 command_vector.push_back(reinterpret_cast<Command &>(change_word_value));
                 break;
             }
             case TargetVariableType::Dword: {
                 CommandChangeDwordValue change_dword_value = reinterpret_cast<CommandChangeDwordValue &>(change_value);
-                change_dword_value.instruction = INSTRUCTION_CHANGE_DWORD_VALUE;
+                change_dword_value.instruction = add ? INSTRUCTION_ADD_DWORD_VALUE : INSTRUCTION_CHANGE_DWORD_VALUE;
                 change_dword_value.value = generic_value;
                 command_vector.push_back(reinterpret_cast<Command &>(change_dword_value));
                 break;
             }
             case TargetVariableType::Float: {
                 CommandChangeFloatValue change_float_value = reinterpret_cast<CommandChangeFloatValue &>(change_value);
-                change_float_value.instruction = INSTRUCTION_CHANGE_FLOAT_VALUE;
+                change_float_value.instruction = add ? INSTRUCTION_ADD_FLOAT_VALUE : INSTRUCTION_CHANGE_FLOAT_VALUE;
                 change_float_value.value = generic_value;
                 command_vector.push_back(reinterpret_cast<Command &>(change_float_value));
                 break;

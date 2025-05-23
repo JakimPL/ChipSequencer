@@ -89,10 +89,11 @@ static KeyNoteMapping key_note_linear_mapping[] = {
 static ImGuiKey commands_keys[] = {
     ImGuiKey_U,
     ImGuiKey_D,
-    ImGuiKey_M,
     ImGuiKey_B,
     ImGuiKey_S,
     ImGuiKey_G,
+    ImGuiKey_M,
+    ImGuiKey_A,
 };
 
 static ImGuiKey values_keys[] = {

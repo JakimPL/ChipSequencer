@@ -186,7 +186,11 @@ void GUICommandsSequencesPanel::open_edit_dialog_box(const int item) {
     case Instruction::ChangeByteValue:
     case Instruction::ChangeWordValue:
     case Instruction::ChangeDwordValue:
-    case Instruction::ChangeFloatValue: {
+    case Instruction::ChangeFloatValue:
+    case Instruction::AddByteValue:
+    case Instruction::AddWordValue:
+    case Instruction::AddDwordValue:
+    case Instruction::AddFloatValue: {
         TargetVariableType target_variable_type;
         Target target;
         uint8_t index;
@@ -206,10 +210,20 @@ void GUICommandsSequencesPanel::open_edit_dialog_box(const int item) {
         edit_dialog_box.output_type.index = index;
         edit_dialog_box.output_type.offset = offset;
 
-        if (instruction == Instruction::ChangeFloatValue) {
+        if (instruction == Instruction::ChangeFloatValue ||
+            instruction == Instruction::AddFloatValue) {
             edit_dialog_box.value_float = *reinterpret_cast<float *>(&value);
         } else {
             edit_dialog_box.value_integer = value;
+        }
+
+        if (instruction == Instruction::AddByteValue ||
+            instruction == Instruction::AddWordValue ||
+            instruction == Instruction::AddDwordValue ||
+            instruction == Instruction::AddFloatValue) {
+            edit_dialog_box.output_type.operation = static_cast<int>(OutputOperation::Add);
+        } else {
+            edit_dialog_box.output_type.operation = static_cast<int>(OutputOperation::Set);
         }
         break;
     }
@@ -297,7 +311,11 @@ void GUICommandsSequencesPanel::draw_edit_dialog_box() {
         case Instruction::ChangeByteValue:
         case Instruction::ChangeWordValue:
         case Instruction::ChangeDwordValue:
-        case Instruction::ChangeFloatValue: {
+        case Instruction::ChangeFloatValue:
+        case Instruction::AddByteValue:
+        case Instruction::AddWordValue:
+        case Instruction::AddDwordValue:
+        case Instruction::AddFloatValue: {
             draw_output_section();
             break;
         }
@@ -337,42 +355,37 @@ void GUICommandsSequencesPanel::set_current_command() {
     current_sequence.pattern.values_handler.clear();
     auto &command = current_sequence.pattern.commands[edit_dialog_box.item];
     auto &value = current_sequence.pattern.values[edit_dialog_box.item];
+    command = command_letters.at(static_cast<Instruction>(edit_dialog_box.instruction));
     switch (static_cast<Instruction>(edit_dialog_box.instruction)) {
     case Instruction::Empty: {
-        command = "";
         value = "";
         break;
     }
-    case Instruction::PortamentoUp: {
-        command = "U";
-        value = CommandsPattern::from_portamento(edit_dialog_box.portamento_channel, edit_dialog_box.portamento_value);
-        break;
-    }
+    case Instruction::PortamentoUp:
     case Instruction::PortamentoDown: {
-        command = "D";
         value = CommandsPattern::from_portamento(edit_dialog_box.portamento_channel, edit_dialog_box.portamento_value);
         break;
     }
     case Instruction::SetMasterGainer: {
-        command = "G";
         value = CommandsPattern::from_gainer(edit_dialog_box.gainer);
         break;
     }
     case Instruction::SetBPM: {
-        command = "B";
         value = std::to_string(edit_dialog_box.bpm);
         break;
     }
     case Instruction::SetDivision: {
-        command = "S";
         value = std::to_string(edit_dialog_box.division);
         break;
     }
     case Instruction::ChangeByteValue:
     case Instruction::ChangeWordValue:
     case Instruction::ChangeDwordValue:
-    case Instruction::ChangeFloatValue: {
-        command = "M";
+    case Instruction::ChangeFloatValue:
+    case Instruction::AddByteValue:
+    case Instruction::AddWordValue:
+    case Instruction::AddDwordValue:
+    case Instruction::AddFloatValue: {
         value = CommandsPattern::from_output_type(edit_dialog_box.output_type, edit_dialog_box.value_integer, edit_dialog_box.value_float);
         break;
     }
