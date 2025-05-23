@@ -5,6 +5,7 @@
 #include <map>
 #include <vector>
 
+#include "../../song/output.hpp"
 #include "../../structures/commands/sequence.hpp"
 #include "../init.hpp"
 #include "../inputs/string.hpp"
@@ -44,6 +45,7 @@ struct CommandsPattern {
     static std::string from_gainer(const uint16_t value);
     static std::string from_gainer(const double value);
     static std::string from_change_value(const TargetVariableType type, const LinkKey key, const uint32_t value);
+    static std::string from_output_type(const OutputType &output_type, const int &value_integer, const float &value_float);
     LinkKey get_command_key(const CommandChangeValue *command) const;
 
     void from_sequence(const uint8_t sequence_index);

@@ -313,8 +313,8 @@ void draw_output_direct_dsp(OutputType &output_type, const int dsp_index, const 
 bool draw_output_parameter(OutputType &output_type, const LinkKey key) {
     ImGui::Separator();
     bool value_changed = prepare_combo(parameter_types, "##OutputParameterCombo", output_type.parameter_type).value_changed;
-    const Target target = static_cast<Target>(output_type.parameter_type + static_cast<int>(OutputTarget::Parameter));
-    switch (target) {
+    output_type.target = output_type.parameter_type + static_cast<int>(OutputTarget::Parameter);
+    switch (static_cast<Target>(output_type.target)) {
     case Target::ENVELOPE: {
         draw_output_parameter_generic(output_type, envelope_names, "Envelope");
         break;
@@ -346,7 +346,7 @@ bool draw_output_parameter(OutputType &output_type, const LinkKey key) {
     case Target::UNUSED:
     case Target::COUNT:
     default: {
-        throw std::runtime_error("Invalid target type: " + std::to_string(static_cast<int>(target)));
+        throw std::runtime_error("Invalid target type: " + std::to_string(output_type.target));
     }
     }
 

@@ -463,12 +463,40 @@ std::string CommandsPattern::from_change_value(const TargetVariableType type, co
     }
     case TargetVariableType::Float: {
         const float numeric = reinterpret_cast<const float &>(value);
-        stream << convert_double_to_string(numeric, 6);
+        stream << convert_double_to_string(numeric);
         break;
     }
     case TargetVariableType::Count:
     default: {
         throw std::runtime_error("Invalid target variable type: " + std::to_string(static_cast<int>(type)));
+    }
+    }
+
+    return stream.str();
+}
+
+std::string CommandsPattern::from_output_type(const OutputType &output_type, const int &value_integer, const float &value_float) {
+    std::ostringstream stream;
+    stream << static_cast<int>(output_type.variable_type) << ","
+           << static_cast<int>(output_type.target) << ","
+           << output_type.index << ","
+           << output_type.offset << ",";
+
+    switch (static_cast<TargetVariableType>(output_type.variable_type)) {
+    case TargetVariableType::Byte:
+    case TargetVariableType::Word:
+    case TargetVariableType::Dword: {
+        stream << static_cast<int>(value_integer);
+        break;
+    }
+    case TargetVariableType::Float: {
+        const float numeric = value_float;
+        stream << convert_double_to_string(numeric);
+        break;
+    }
+    case TargetVariableType::Count:
+    default: {
+        throw std::runtime_error("Invalid target variable type: " + std::to_string(static_cast<int>(output_type.variable_type)));
     }
     }
 

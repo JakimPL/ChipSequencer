@@ -334,6 +334,7 @@ void GUICommandsSequencesPanel::set_current_command() {
         return;
     }
 
+    current_sequence.pattern.values_handler.clear();
     auto &command = current_sequence.pattern.commands[edit_dialog_box.item];
     auto &value = current_sequence.pattern.values[edit_dialog_box.item];
     switch (static_cast<Instruction>(edit_dialog_box.instruction)) {
@@ -372,7 +373,7 @@ void GUICommandsSequencesPanel::set_current_command() {
     case Instruction::ChangeDwordValue:
     case Instruction::ChangeFloatValue: {
         command = "M";
-        value = "";
+        value = CommandsPattern::from_output_type(edit_dialog_box.output_type, edit_dialog_box.value_integer, edit_dialog_box.value_float);
         break;
     }
     }
