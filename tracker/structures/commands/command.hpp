@@ -21,6 +21,10 @@ enum class Instruction : uint8_t {
     ChangeWordValue = INSTRUCTION_CHANGE_WORD_VALUE,
     ChangeDwordValue = INSTRUCTION_CHANGE_DWORD_VALUE,
     ChangeFloatValue = INSTRUCTION_CHANGE_FLOAT_VALUE,
+    AddByteValue = INSTRUCTION_ADD_BYTE_VALUE,
+    AddWordValue = INSTRUCTION_ADD_WORD_VALUE,
+    AddDwordValue = INSTRUCTION_ADD_DWORD_VALUE,
+    AddFloatValue = INSTRUCTION_ADD_FLOAT_VALUE,
 };
 
 struct Command {

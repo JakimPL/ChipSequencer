@@ -21,6 +21,10 @@
     %define USED_COMMAND_CHANGE_WORD_VALUE
     %define USED_COMMAND_CHANGE_DWORD_VALUE
     %define USED_COMMAND_CHANGE_FLOAT_VALUE
+    %define USED_COMMAND_ADD_BYTE_VALUE
+    %define USED_COMMAND_ADD_WORD_VALUE
+    %define USED_COMMAND_ADD_DWORD_VALUE
+    %define USED_COMMAND_ADD_FLOAT_VALUE
     %endif
 
     %include "core/common/config.asm"

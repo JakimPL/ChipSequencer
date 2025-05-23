@@ -123,6 +123,10 @@ instructions:
     dd change_word_value
     dd change_dword_value
     dd change_float_value
+    dd add_byte_value
+    dd add_word_value
+    dd add_dword_value
+    dd add_float_value
     %else
     dw empty
     dw portamento_up
@@ -134,6 +138,10 @@ instructions:
     dw change_word_value
     dw change_dword_value
     dw change_float_value
+    dw add_byte_value
+    dw add_word_value
+    dw add_dword_value
+    dw add_float_value
     %endif
 
     SEGMENT_BSS
