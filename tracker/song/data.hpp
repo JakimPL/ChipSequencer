@@ -11,12 +11,15 @@ extern "C" std::array<_Float32, MAX_DSPS> dsp_input;
 
 extern "C" std::array<uint32_t, MAX_CHANNELS> envelope_timer;
 extern "C" std::array<uint32_t, MAX_CHANNELS> sequence_timer;
+extern "C" std::array<uint32_t, MAX_CHANNELS> commands_sequence_timer;
 extern "C" std::array<uint32_t, MAX_CHANNELS> oscillator_timer;
 extern "C" std::array<uint8_t, MAX_CHANNELS> pitch;
 
 extern "C" std::array<uint8_t, MAX_CHANNELS> envelope_mode;
 extern "C" std::array<uint8_t, MAX_CHANNELS> current_sequence;
 extern "C" std::array<uint8_t, MAX_CHANNELS> sequence_current_note;
+extern "C" std::array<uint8_t, MAX_CHANNELS> current_commands_sequence;
+extern "C" std::array<uint8_t, MAX_CHANNELS> commands_sequence_current_command;
 
 extern "C" uint32_t ticks_per_beat;
 

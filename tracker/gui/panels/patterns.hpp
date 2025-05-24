@@ -28,6 +28,10 @@ class GUIPatternsPanel : public GUIPanel {
     void draw_channel(size_t channel_index);
     std::pair<Pattern *, uint16_t> find_pattern_by_current_row() const;
     int get_pages() const;
+    bool is_playing() const;
+
+    void from_sequences();
+    void from_commands_sequences();
 
     void from() override;
     void to() const override;

@@ -22,6 +22,11 @@ CommandsPattern::CommandsPattern()
     values_handler.set_limit(MAX_COMMAND_VALUE_SIZE);
 }
 
+CommandsPattern::CommandsPattern(const uint8_t sequence_index)
+    : CommandsPattern() {
+    from_sequence(sequence_index);
+}
+
 void CommandsPattern::from_sequence(const uint8_t index) {
     sequence_index = index;
     const CommandsSequence *sequence = commands_sequences[sequence_index];
@@ -301,6 +306,19 @@ void CommandsPattern::to_buffer(const size_t sequence_index) const {
         const std::string value = values[i];
         buffers.commands_sequences[sequence_index][i] = {command, value};
     }
+}
+
+int CommandsPattern::calculate_playing_row(size_t channel_index) {
+    if (indices.empty()) {
+        return -1;
+    }
+
+    size_t note_index = commands_sequence_current_command[channel_index] - 1;
+    note_index = std::min(note_index, indices.size() - 1);
+    int playing_row = indices[note_index];
+    playing_row += durations[note_index];
+    playing_row -= 1 + commands_sequence_timer[channel_index] / ticks_per_beat;
+    return playing_row;
 }
 
 void CommandsPattern::handle_input(const int min_row, const int max_row) {

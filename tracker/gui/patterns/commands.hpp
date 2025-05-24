@@ -17,6 +17,9 @@ enum class CommandSelection {
 };
 
 struct CommandsPattern {
+    CommandsPattern();
+    CommandsPattern(const uint8_t sequence_index);
+
     CommandSelection selection = CommandSelection::None;
     uint8_t sequence_index = -1;
     int current_row = -1;
@@ -52,8 +55,8 @@ struct CommandsPattern {
     std::vector<Command> to_command_vector() const;
     void to_buffer(const size_t sequence_index) const;
     void save_links(size_t sequence_index) const;
+    int calculate_playing_row(size_t channel_index);
 
-    CommandsPattern();
     void handle_input(const int min_row = 0, const int max_row = -1);
     void set_selection(const int row, const CommandSelection item);
     void add_command(const std::string &command = "", const std::string &value = "");

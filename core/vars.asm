@@ -6,9 +6,12 @@
 
     global envelope_mode
     global current_sequence
-    global current_commands_sequence
     global sequence_current_note
+
+    global commands_sequence_timer
+    global current_commands_sequence
     global commands_sequence_offset
+    global commands_sequence_current_command
 
     global dsp_input
     global dsp_timer
