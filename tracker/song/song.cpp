@@ -433,7 +433,7 @@ CommandsSequence *Song::add_commands_sequence() {
     }
 
     CommandsSequence *sequence = new CommandsSequence();
-    sequence->size = SIZE_COMMAND;
+    sequence->size = 0;
     sequence->length = 1;
     commands_sequences.push_back(sequence);
     return sequence;

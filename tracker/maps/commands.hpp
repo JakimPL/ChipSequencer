@@ -8,7 +8,7 @@
 #include "../structures/commands/sequence.hpp"
 
 const std::array<uint8_t, INSTRUCTION_COUNT> command_sizes = {
-    SIZE_COMMAND,
+    SIZE_COMMAND_EMPTY,
     SIZE_COMMAND_PORTAMENTO_UP,
     SIZE_COMMAND_PORTAMENTO_DOWN,
     SIZE_COMMAND_SET_MASTER_GAINER,

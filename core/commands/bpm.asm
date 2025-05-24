@@ -5,11 +5,6 @@ set_bpm:
     mov [bpm], ax
     call calculate_ticks_per_beat
 
-    xor eax, eax
-    %ifdef TRACKER
-    mov al, MAX_SIZE_COMMAND
-    %else
-    mov al, SIZE_COMMAND_SET_BPM
-    %endif
+    SET_COMMAND_SIZE SIZE_COMMAND_SET_BPM
     %endif
     ret

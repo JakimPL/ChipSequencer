@@ -9,12 +9,6 @@ set_division:
 
     fstp dword [unit]
     call calculate_ticks_per_beat
-
-    xor eax, eax
-    %ifdef TRACKER
-    mov al, MAX_SIZE_COMMAND
-    %else
-    mov al, SIZE_COMMAND_SET_DIVISION
-    %endif
+    SET_COMMAND_SIZE SIZE_COMMAND_SET_DIVISION
     %endif
     ret

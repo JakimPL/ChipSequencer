@@ -196,7 +196,7 @@ constexpr size_t COMMAND_ADD_DWORD_VALUE_VALUE = offsetof(CommandAddDwordValue, 
 constexpr size_t COMMAND_ADD_FLOAT_VALUE_POINTER = offsetof(CommandAddFloatValue, pointer);
 constexpr size_t COMMAND_ADD_FLOAT_VALUE_VALUE = offsetof(CommandAddFloatValue, value);
 
-static_assert(sizeof(Command) == SIZE_COMMAND + sizeof(Command::pad), "Command must be of 2 bytes.");
+static_assert(sizeof(Command) == SIZE_COMMAND_EMPTY + sizeof(Command::pad), "Command must be of 2 bytes.");
 static_assert(sizeof(CommandPortamentoUp) == SIZE_COMMAND_PORTAMENTO_UP + sizeof(CommandPortamentoUp::pad), "CommandPortamentoUp must be of 5 bytes.");
 static_assert(sizeof(CommandPortamentoDown) == SIZE_COMMAND_PORTAMENTO_DOWN + sizeof(CommandPortamentoDown::pad), "CommandPortamentoDown must be of 5 bytes.");
 static_assert(sizeof(CommandSetMasterGainer) == SIZE_COMMAND_SET_MASTER_GAINER + sizeof(CommandSetMasterGainer::pad), "CommandSetMasterGainer must be of 4 bytes.");

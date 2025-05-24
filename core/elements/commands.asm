@@ -51,7 +51,8 @@ commands:
 .load_command_offset:
     LOAD_OFFSET edi, commands_sequence_offset
     add edi, COMMANDS_SEQUENCE_DATA
-    movzx ecx, word [commands_sequence_current_offset]
+    movzx ebx, byte [current_commands_channel]
+    movzx ecx, word [commands_sequence_current_offset + 2 * ebx]
     add edi, ecx
 .execute_command:
     movzx eax, byte [COMMAND_INSTRUCTION + edi]

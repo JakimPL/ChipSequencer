@@ -8,11 +8,6 @@ set_master_gainer:
     fdiv dword [half_range]
     fstp dword [normalizer]
 
-    xor eax, eax
-    %ifdef TRACKER
-    mov al, MAX_SIZE_COMMAND
-    %else
-    mov al, SIZE_COMMAND_SET_MASTER_GAINER
-    %endif
+    SET_COMMAND_SIZE SIZE_COMMAND_SET_MASTER_GAINER
     %endif
     ret

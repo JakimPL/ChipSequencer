@@ -126,3 +126,12 @@
     add [si], %1
     %endif
     %endmacro
+
+    %macro SET_COMMAND_SIZE 1
+    xor eax, eax
+    %ifdef TRACKER
+    mov al, MAX_SIZE_COMMAND
+    %else
+    mov al, %1
+    %endif
+    %endmacro
