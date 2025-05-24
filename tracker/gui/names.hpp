@@ -70,6 +70,22 @@ const std::map<Instruction, const char *> instruction_names = {
     {Instruction::SetMasterGainer, "Set master gainer"},
     {Instruction::SetBPM, "Set BPM"},
     {Instruction::SetDivision, "Set division"},
+    {Instruction::ChangeByteValue, "Change Int8 value"},
+    {Instruction::ChangeWordValue, "Change Int16 value"},
+    {Instruction::ChangeDwordValue, "Change Int32 value"},
+    {Instruction::ChangeFloatValue, "Change float value"},
+    {Instruction::AddByteValue, "Add Int8 value"},
+    {Instruction::AddWordValue, "Add Int16 value"},
+    {Instruction::AddDwordValue, "Add Int32 value"},
+    {Instruction::AddFloatValue, "Add float value"},
+};
+const std::map<Instruction, const char *> simple_instruction_names = {
+    {Instruction::Empty, "Empty"},
+    {Instruction::PortamentoUp, "Portamento up"},
+    {Instruction::PortamentoDown, "Portamento down"},
+    {Instruction::SetMasterGainer, "Set master gainer"},
+    {Instruction::SetBPM, "Set BPM"},
+    {Instruction::SetDivision, "Set division"},
     {Instruction::ChangeByteValue, "Change value"},
 };
 

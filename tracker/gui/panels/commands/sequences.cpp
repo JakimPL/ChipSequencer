@@ -275,7 +275,7 @@ void GUICommandsSequencesPanel::draw_edit_dialog_box() {
     ImGui::SetNextWindowSize(ImVec2(450.0f, 250.0f), ImGuiCond_FirstUseEver);
     if (ImGui::Begin("Edit command", &edit_dialog_box.visible, ImGuiWindowFlags_NoCollapse)) {
         std::vector<std::string> names;
-        for (const auto &[key, value] : instruction_names) {
+        for (const auto &[key, value] : simple_instruction_names) {
             names.push_back(value);
         }
 

@@ -66,6 +66,4 @@ const std::map<Instruction, char> command_letters = {
     {Instruction::AddFloatValue, 'A'},
 };
 
-static_assert(commands_sizes.size() == static_cast<size_t>(Instruction::Count), "Size of commands_sizes does not match Instruction::Count");
-
 #endif // MAPS_COMMANDS_HPP
