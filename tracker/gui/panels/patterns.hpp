@@ -5,16 +5,18 @@
 #include <vector>
 
 #include "../constants.hpp"
+#include "../patterns/commands.hpp"
 #include "../patterns/pattern.hpp"
 #include "panel.hpp"
 
 class GUIPatternsPanel : public GUIPanel {
   private:
-    struct CurrentPattern {
+    struct CurrentPatterns {
         uint16_t total_rows = 0;
         std::map<size_t, std::vector<Pattern>> patterns;
+        std::map<size_t, std::vector<CommandsPattern>> commands_patterns;
         std::map<size_t, int> playing_rows;
-    } current_pattern;
+    } current_patterns;
 
     int page = 0;
     size_t current_channel = -1;

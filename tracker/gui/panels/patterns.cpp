@@ -34,7 +34,7 @@ void GUIPatternsPanel::draw_pages() {
 }
 
 void GUIPatternsPanel::draw_channels() {
-    size_t columns = current_pattern.patterns.size();
+    size_t columns = current_patterns.patterns.size();
     if (columns == 0) {
         ImGui::Text("No channels available.");
         return;
@@ -51,7 +51,7 @@ void GUIPatternsPanel::draw_channels() {
     ImGui::BeginChild("##PatternChannels", ImVec2(child_width, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 
     if (ImGui::BeginTable("ChannelsTable", num_channels, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersOuter)) {
-        for (const auto &[index, pattern] : current_pattern.patterns) {
+        for (const auto &[index, pattern] : current_patterns.patterns) {
             ImGui::TableNextColumn();
             draw_channel(index);
         }
@@ -70,8 +70,8 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
     const uint16_t start = page * gui.get_page_size();
     const uint16_t end = start + gui.get_page_size();
 
-    for (auto &pattern : current_pattern.patterns[channel_index]) {
-        const int playing_row = current_pattern.playing_rows[channel_index];
+    for (auto &pattern : current_patterns.patterns[channel_index]) {
+        const int playing_row = current_patterns.playing_rows[channel_index];
         auto [new_index, select] = draw_pattern(pattern, false, index, playing_row, start, end);
         if (select) {
             current_channel = channel_index;
@@ -84,9 +84,9 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
 }
 
 void GUIPatternsPanel::from() {
-    current_pattern.total_rows = 0;
-    current_pattern.patterns.clear();
-    current_pattern.playing_rows.clear();
+    current_patterns.total_rows = 0;
+    current_patterns.patterns.clear();
+    current_patterns.playing_rows.clear();
     const bool is_playing = gui.is_playing() && ticks_per_beat > 0;
     for (size_t channel_index = 0; channel_index < channels.size(); ++channel_index) {
         const Channel *channel = channels[channel_index];
@@ -100,7 +100,7 @@ void GUIPatternsPanel::from() {
 
         uint16_t row = 0;
         uint8_t playing_sequence = current_sequence[channel_index];
-        current_pattern.playing_rows[channel_index] = -1;
+        current_patterns.playing_rows[channel_index] = -1;
         for (size_t j = 0; j < order->order_length; ++j) {
             const uint8_t sequence_index = order_sequences[j];
             if (sequence_index >= sequences.size()) {
@@ -109,16 +109,16 @@ void GUIPatternsPanel::from() {
 
             Pattern pattern = Pattern(sequence_index);
             pattern.current_row = channel_index == current_channel ? current_row - row : -1;
-            current_pattern.patterns[channel_index].push_back(pattern);
+            current_patterns.patterns[channel_index].push_back(pattern);
             if (is_playing && playing_sequence == j) {
                 const int playing_row = pattern.calculate_playing_row(channel_index);
-                current_pattern.playing_rows[channel_index] = row + playing_row;
+                current_patterns.playing_rows[channel_index] = row + playing_row;
             }
 
             row += pattern.steps;
         }
 
-        current_pattern.total_rows = std::max(current_pattern.total_rows, row);
+        current_patterns.total_rows = std::max(current_patterns.total_rows, row);
     }
 }
 
@@ -155,23 +155,23 @@ void GUIPatternsPanel::check_keyboard_input() {
     if (ImGui::IsKeyPressed(ImGuiKey_PageUp)) {
         page = std::max(page - 1, 0);
     }
-    if (!current_pattern.patterns.empty()) {
-        auto it = current_pattern.patterns.find(current_channel);
+    if (!current_patterns.patterns.empty()) {
+        auto it = current_patterns.patterns.find(current_channel);
         if (ImGui::IsKeyPressed(ImGuiKey_LeftArrow)) {
-            if (it == current_pattern.patterns.end() || it == current_pattern.patterns.begin()) {
-                current_channel = current_pattern.patterns.rbegin()->first;
+            if (it == current_patterns.patterns.end() || it == current_patterns.patterns.begin()) {
+                current_channel = current_patterns.patterns.rbegin()->first;
             } else {
                 --it;
                 current_channel = it->first;
             }
         }
         if (ImGui::IsKeyPressed(ImGuiKey_RightArrow)) {
-            if (it == current_pattern.patterns.end()) {
-                current_channel = current_pattern.patterns.begin()->first;
+            if (it == current_patterns.patterns.end()) {
+                current_channel = current_patterns.patterns.begin()->first;
             } else {
                 ++it;
-                if (it == current_pattern.patterns.end()) {
-                    current_channel = current_pattern.patterns.begin()->first;
+                if (it == current_patterns.patterns.end()) {
+                    current_channel = current_patterns.patterns.begin()->first;
                 } else {
                     current_channel = it->first;
                 }
@@ -181,12 +181,12 @@ void GUIPatternsPanel::check_keyboard_input() {
 }
 
 std::pair<Pattern *, uint16_t> GUIPatternsPanel::find_pattern_by_current_row() const {
-    const auto it = current_pattern.patterns.find(current_channel);
-    if (it == current_pattern.patterns.end()) {
+    const auto it = current_patterns.patterns.find(current_channel);
+    if (it == current_patterns.patterns.end()) {
         return {nullptr, 0};
     }
 
-    const auto &patterns = current_pattern.patterns.at(current_channel);
+    const auto &patterns = current_patterns.patterns.at(current_channel);
     uint16_t rows = 0;
     size_t pattern_id;
     for (pattern_id = 0; pattern_id < patterns.size(); ++pattern_id) {
@@ -206,11 +206,11 @@ std::pair<Pattern *, uint16_t> GUIPatternsPanel::find_pattern_by_current_row() c
 }
 
 int GUIPatternsPanel::get_pages() const {
-    return std::ceil(static_cast<float>(current_pattern.total_rows) / gui.get_page_size());
+    return std::ceil(static_cast<float>(current_patterns.total_rows) / gui.get_page_size());
 }
 
 void GUIPatternsPanel::deselect_all_rows() {
-    for (auto &pattern : current_pattern.patterns) {
+    for (auto &pattern : current_patterns.patterns) {
         for (auto &p : pattern.second) {
             p.current_row = -1;
         }

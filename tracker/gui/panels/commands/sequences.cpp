@@ -17,7 +17,10 @@ void GUICommandsSequencesPanel::draw() {
     std::vector<size_t> dependencies = song.find_commands_sequence_dependencies(sequence_index);
     push_tertiary_style();
     draw_add_or_remove("orders", dependencies);
-    prepare_combo(commands_sequence_names, "##CommandsSequenceCombo", sequence_index);
+    if (prepare_combo(commands_sequence_names, "##CommandsSequenceCombo", sequence_index).value_changed) {
+        current_sequence.pattern.values_handler.clear();
+        current_sequence.pattern.commands_handler.clear();
+    }
     show_dependency_tooltip("orders", dependencies);
     pop_tertiary_style();
 
