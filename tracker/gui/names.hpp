@@ -28,8 +28,8 @@ const std::vector<std::string> operation_names = {"Add", "Set", "Multiply", "Zer
 const std::vector<std::string> variable_types = {"Int8", "Int16", "Int32", "Float"};
 const std::vector<std::string> generator_names = {"Square", "Saw", "Sine", "Wavetable", "Noise"};
 const std::map<Target, std::string> target_names = {
-    {Target::SPLITTER_OUTPUT, "Output Splitter"},
-    {Target::SPLITTER_DSP, "DSP Splitter"},
+    {Target::SPLITTER_OUTPUT, "Output splitter"},
+    {Target::SPLITTER_DSP, "DSP splitter"},
     {Target::DIRECT_OUTPUT, "Output"},
     {Target::DIRECT_DSP, "DSP"},
     {Target::ENVELOPE, "Envelope"},

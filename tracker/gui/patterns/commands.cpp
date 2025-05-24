@@ -216,7 +216,7 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
         case Instruction::AddWordValue:
         case Instruction::AddDwordValue:
         case Instruction::AddFloatValue: {
-            const bool add = command[0] == 'A';
+            const bool add = command[0] == command_letters.at(Instruction::AddByteValue);
             TargetVariableType target_variable_type;
             Target target;
             uint8_t index;

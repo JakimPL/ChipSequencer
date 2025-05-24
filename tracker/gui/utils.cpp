@@ -519,7 +519,7 @@ void show_dependency_tooltip(const std::string &label, std::vector<size_t> &depe
 void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t index) {
     if (ImGui::IsItemHovered()) {
         const std::string &command = pattern.commands[index];
-        const std::string &value = pattern.values[index];
+        const std::string &command_value = pattern.values[index];
         if (command.empty()) {
             return;
         }
@@ -534,21 +534,21 @@ void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t 
         case Instruction::PortamentoDown: {
             uint8_t channel;
             uint16_t value_portamento;
-            CommandsPattern::split_portamento_value(value, channel, value_portamento);
-            const double portamento = CommandsPattern::cast_portamento_to_double(value_portamento);
-            ImGui::SetTooltip("Portamento %s: channel %d, %.3f semitones", command_char == 'U' ? "up" : "down", channel, portamento);
+            pattern.split_portamento_value(command_value, channel, value_portamento);
+            const double portamento = pattern.cast_portamento_to_double(value_portamento);
+            ImGui::SetTooltip("Portamento %s: channel %d, %.3f semitones", command_char == command_letters.at(Instruction::PortamentoUp) ? "up" : "down", channel, portamento);
             break;
         }
         case Instruction::SetMasterGainer: {
-            ImGui::SetTooltip("Master gainer: %.4f", std::stod(value));
+            ImGui::SetTooltip("Master gainer: %.4f", std::stod(command_value));
             break;
         }
         case Instruction::SetBPM: {
-            ImGui::SetTooltip("BPM: %d", std::stoi(value));
+            ImGui::SetTooltip("BPM: %d", std::stoi(command_value));
             break;
         }
         case Instruction::SetDivision: {
-            ImGui::SetTooltip("Division: %d", std::stoi(value));
+            ImGui::SetTooltip("Division: %d", std::stoi(command_value));
             break;
         }
         case Instruction::ChangeByteValue:
@@ -559,6 +559,24 @@ void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t 
         case Instruction::AddWordValue:
         case Instruction::AddDwordValue:
         case Instruction::AddFloatValue: {
+            const bool add = command_char == command_letters.at(Instruction::AddByteValue);
+            TargetVariableType target_variable_type;
+            Target target;
+            uint8_t index;
+            uint16_t offset;
+            uint32_t value;
+            pattern.split_change_value_parts(
+                command_value,
+                target_variable_type,
+                target,
+                index,
+                offset,
+                value
+            );
+
+            const std::string target_name = target_names.at(target);
+            const std::string variable_type_name = variable_types.at(static_cast<size_t>(target_variable_type));
+            ImGui::SetTooltip("%s %s: %s %d, offset %d, value %u", add ? "Add" : "Set", variable_type_name.c_str(), target_name.c_str(), index, offset, value);
             break;
         }
         case Instruction::Count:
