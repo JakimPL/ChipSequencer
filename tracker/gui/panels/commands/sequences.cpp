@@ -227,6 +227,7 @@ void GUICommandsSequencesPanel::open_edit_dialog_box(const int item) {
         }
         break;
     }
+    case Instruction::Count:
     default: {
         throw std::runtime_error("Invalid instruction: " + std::to_string(static_cast<int>(instruction)));
     }
@@ -319,6 +320,10 @@ void GUICommandsSequencesPanel::draw_edit_dialog_box() {
             draw_output_section();
             break;
         }
+        case Instruction::Count:
+        default: {
+            throw std::runtime_error("Invalid instruction: " + std::to_string(static_cast<int>(edit_dialog_box.instruction)));
+        }
         }
 
         pop_secondary_style();
@@ -388,6 +393,10 @@ void GUICommandsSequencesPanel::set_current_command() {
     case Instruction::AddFloatValue: {
         value = CommandsPattern::from_output_type(edit_dialog_box.output_type, edit_dialog_box.value_integer, edit_dialog_box.value_float);
         break;
+    }
+    case Instruction::Count:
+    default: {
+        throw std::runtime_error("Invalid instruction: " + std::to_string(static_cast<int>(edit_dialog_box.instruction)));
     }
     }
 }

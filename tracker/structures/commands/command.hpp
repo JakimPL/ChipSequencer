@@ -25,6 +25,7 @@ enum class Instruction : uint8_t {
     AddWordValue = INSTRUCTION_ADD_WORD_VALUE,
     AddDwordValue = INSTRUCTION_ADD_DWORD_VALUE,
     AddFloatValue = INSTRUCTION_ADD_FLOAT_VALUE,
+    Count = INSTRUCTION_COUNT,
 };
 
 struct Command {

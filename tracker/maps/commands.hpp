@@ -7,7 +7,7 @@
 #include "../sizes.hpp"
 #include "../structures/commands/sequence.hpp"
 
-const std::array<uint8_t, INSTRUCTION_COUNT> command_sizes = {
+const std::array<uint8_t, static_cast<size_t>(Instruction::Count)> command_sizes = {
     SIZE_COMMAND_EMPTY,
     SIZE_COMMAND_PORTAMENTO_UP,
     SIZE_COMMAND_PORTAMENTO_DOWN,

@@ -2,6 +2,7 @@
 #include <cmath>
 
 #include "../general.hpp"
+#include "../maps/commands.hpp"
 #include "../maps/routing.hpp"
 #include "../utils/string.hpp"
 #include "constants.hpp"
@@ -229,6 +230,7 @@ std::pair<size_t, bool> draw_commands_pattern(CommandsPattern &pattern, const bo
                 select = true;
             }
 
+            show_commands_pattern_tooltip(pattern, i);
             ImGui::PopID();
 
             if (is_command_selected) {
@@ -251,6 +253,7 @@ std::pair<size_t, bool> draw_commands_pattern(CommandsPattern &pattern, const bo
                 pattern.set_selection(i, CommandSelection::Value);
                 select = true;
             }
+            show_commands_pattern_tooltip(pattern, i);
             ImGui::PopID();
 
             if (is_value_selected) {
@@ -510,6 +513,19 @@ void show_dependency_tooltip(const std::string &label, std::vector<size_t> &depe
             }
         }
         ImGui::SetTooltip("%s", tooltip.c_str());
+    }
+}
+
+void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t index) {
+    if (ImGui::IsItemHovered()) {
+        const std::string &command = pattern.commands[index];
+        const std::string &value = pattern.values[index];
+        if (command.empty()) {
+            return;
+        }
+
+        const char command_char = command[0];
+        const Instruction instruction = command_characters.at(command_char);
     }
 }
 

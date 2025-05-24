@@ -36,6 +36,7 @@ void draw_output_parameter_dsp(OutputType &output_type);
 bool draw_output(OutputType &output_type, const LinkKey key);
 
 void show_dependency_tooltip(const std::string &label, std::vector<size_t> &dependencies);
+void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t index);
 
 std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header = true, const size_t index = 0, const int playing_row = -1, const uint16_t start = 0, const uint16_t end = UINT16_MAX);
 std::pair<size_t, bool> draw_commands_pattern(CommandsPattern &pattern, const bool header = true, const size_t index = 0, const int playing_row = -1, const uint16_t start = 0, const uint16_t end = UINT16_MAX);

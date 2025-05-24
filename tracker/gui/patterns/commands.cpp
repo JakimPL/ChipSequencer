@@ -1,6 +1,7 @@
 #include <sstream>
 
 #include "../../general.hpp"
+#include "../../maps/commands.hpp"
 #include "../../utils/string.hpp"
 #include "../mapping.hpp"
 #include "commands.hpp"
@@ -31,97 +32,100 @@ void CommandsPattern::from_sequence(const uint8_t index) {
     durations.clear();
     for (size_t i = 0; i < sequence->length; ++i) {
         const Command command = sequence->commands[i];
-        switch (static_cast<Instruction>(command.instruction)) {
+        const Instruction instruction = static_cast<Instruction>(command.instruction);
+        const std::string command_letter(1, command_letters.at(instruction));
+        switch (instruction) {
         case Instruction::PortamentoUp: {
             const CommandPortamentoUp portamento_up = reinterpret_cast<const CommandPortamentoUp &>(command);
             const std::string command_value = from_portamento(portamento_up.channel, portamento_up.value);
-            add_command("U", command_value);
+            add_command(command_letter, command_value);
             break;
         }
         case Instruction::PortamentoDown: {
             const CommandPortamentoDown portamento_down = reinterpret_cast<const CommandPortamentoDown &>(command);
             const std::string command_value = from_portamento(portamento_down.channel, portamento_down.value);
-            add_command("D", command_value);
+            add_command(command_letter, command_value);
             break;
         }
         case Instruction::SetMasterGainer: {
             const CommandSetMasterGainer set_master_gainer = reinterpret_cast<const CommandSetMasterGainer &>(command);
             const std::string command_value = from_gainer(set_master_gainer.gain);
-            add_command("G", command_value);
+            add_command(command_letter, command_value);
             break;
         }
         case Instruction::SetBPM: {
             const CommandSetBPM set_bpm = reinterpret_cast<const CommandSetBPM &>(command);
             const std::string command_value = std::to_string(set_bpm.bpm);
-            add_command("B", command_value);
+            add_command(command_letter, command_value);
             break;
         }
         case Instruction::SetDivision: {
             const CommandSetDivision set_division = reinterpret_cast<const CommandSetDivision &>(command);
             const std::string command_value = std::to_string(set_division.division);
-            add_command("S", command_value);
+            add_command(command_letter, command_value);
             break;
         }
         case Instruction::ChangeByteValue: {
             const CommandChangeByteValue change_value = reinterpret_cast<const CommandChangeByteValue &>(command);
             const LinkKey key = get_command_key(reinterpret_cast<const CommandChangeValue *>(&change_value));
             const std::string command_value = from_change_value(TargetVariableType::Byte, key, change_value.value);
-            add_command("M", command_value);
+            add_command(command_letter, command_value);
             break;
         }
         case Instruction::ChangeWordValue: {
             const CommandChangeWordValue change_value = reinterpret_cast<const CommandChangeWordValue &>(command);
             const LinkKey key = get_command_key(reinterpret_cast<const CommandChangeValue *>(&change_value));
             const std::string command_value = from_change_value(TargetVariableType::Word, key, change_value.value);
-            add_command("M", command_value);
+            add_command(command_letter, command_value);
             break;
         }
         case Instruction::ChangeDwordValue: {
             const CommandChangeDwordValue change_value = reinterpret_cast<const CommandChangeDwordValue &>(command);
             const LinkKey key = get_command_key(reinterpret_cast<const CommandChangeValue *>(&change_value));
             const std::string command_value = from_change_value(TargetVariableType::Dword, key, change_value.value);
-            add_command("M", command_value);
+            add_command(command_letter, command_value);
             break;
         }
         case Instruction::ChangeFloatValue: {
             const CommandChangeFloatValue change_value = reinterpret_cast<const CommandChangeFloatValue &>(command);
             const LinkKey key = get_command_key(reinterpret_cast<const CommandChangeValue *>(&change_value));
             const std::string command_value = from_change_value(TargetVariableType::Float, key, change_value.value);
-            add_command("M", command_value);
+            add_command(command_letter, command_value);
             break;
         }
         case Instruction::AddByteValue: {
             const CommandAddByteValue add_value = reinterpret_cast<const CommandAddByteValue &>(command);
             const LinkKey key = get_command_key(reinterpret_cast<const CommandChangeValue *>(&add_value));
             const std::string command_value = from_change_value(TargetVariableType::Byte, key, add_value.value);
-            add_command("A", command_value);
+            add_command(command_letter, command_value);
             break;
         }
         case Instruction::AddWordValue: {
             const CommandAddWordValue add_value = reinterpret_cast<const CommandAddWordValue &>(command);
             const LinkKey key = get_command_key(reinterpret_cast<const CommandChangeValue *>(&add_value));
             const std::string command_value = from_change_value(TargetVariableType::Word, key, add_value.value);
-            add_command("A", command_value);
+            add_command(command_letter, command_value);
             break;
         }
         case Instruction::AddDwordValue: {
             const CommandAddDwordValue add_value = reinterpret_cast<const CommandAddDwordValue &>(command);
             const LinkKey key = get_command_key(reinterpret_cast<const CommandChangeValue *>(&add_value));
             const std::string command_value = from_change_value(TargetVariableType::Dword, key, add_value.value);
-            add_command("A", command_value);
+            add_command(command_letter, command_value);
             break;
         }
         case Instruction::AddFloatValue: {
             const CommandAddFloatValue add_value = reinterpret_cast<const CommandAddFloatValue &>(command);
             const LinkKey key = get_command_key(reinterpret_cast<const CommandChangeValue *>(&add_value));
             const std::string command_value = from_change_value(TargetVariableType::Float, key, add_value.value);
-            add_command("A", command_value);
+            add_command(command_letter, command_value);
             break;
         }
         case Instruction::Empty: {
             add_command();
             break;
         }
+        case Instruction::Count:
         default: {
             throw std::runtime_error("Invalid command type: " + std::to_string(static_cast<int>(command.instruction)));
         }
@@ -159,23 +163,23 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
             continue;
         }
 
-        const char command_char = command[0];
-        switch (command_char) {
-        case 'U': {
+        const Instruction instruction = command.empty() ? Instruction::Empty : command_characters.at(command[0]);
+        switch (instruction) {
+        case Instruction::PortamentoUp: {
             CommandPortamentoUp portamento_up;
             portamento_up.duration = duration;
             split_portamento_value(value, portamento_up.channel, portamento_up.value);
             command_vector.push_back(reinterpret_cast<Command &>(portamento_up));
             break;
         }
-        case 'D': {
+        case Instruction::PortamentoDown: {
             CommandPortamentoDown portamento_down;
             portamento_down.duration = duration;
             split_portamento_value(value, portamento_down.channel, portamento_down.value);
             command_vector.push_back(reinterpret_cast<Command &>(portamento_down));
             break;
         }
-        case 'G': {
+        case Instruction::SetMasterGainer: {
             CommandSetMasterGainer set_master_gainer;
             set_master_gainer.duration = duration;
             try {
@@ -188,7 +192,7 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
             command_vector.push_back(reinterpret_cast<Command &>(set_master_gainer));
             break;
         }
-        case 'B': {
+        case Instruction::SetBPM: {
             CommandSetBPM set_bpm;
             set_bpm.duration = duration;
             const int bpm = string_to_integer(value, DEFAULT_BPM, GUI_MIN_BPM, GUI_MAX_BPM);
@@ -196,7 +200,7 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
             command_vector.push_back(reinterpret_cast<Command &>(set_bpm));
             break;
         }
-        case 'S': {
+        case Instruction::SetDivision: {
             CommandSetDivision set_division;
             set_division.duration = duration;
             const int division = string_to_integer(value, DEFAULT_DIVISION, GUI_MIN_DIVISION, GUI_MAX_DIVISION);
@@ -204,9 +208,15 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
             command_vector.push_back(reinterpret_cast<Command &>(set_division));
             break;
         }
-        case 'A':
-        case 'M': {
-            const bool add = command_char == 'A';
+        case Instruction::ChangeByteValue:
+        case Instruction::ChangeWordValue:
+        case Instruction::ChangeDwordValue:
+        case Instruction::ChangeFloatValue:
+        case Instruction::AddByteValue:
+        case Instruction::AddWordValue:
+        case Instruction::AddDwordValue:
+        case Instruction::AddFloatValue: {
+            const bool add = command[0] == 'A';
             TargetVariableType target_variable_type;
             Target target;
             uint8_t index;
@@ -260,11 +270,15 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
 
             break;
         }
-        default: {
+        case Instruction::Empty: {
             Command empty;
             empty.duration = duration;
             command_vector.push_back(empty);
             break;
+        }
+        case Instruction::Count:
+        default: {
+            throw std::runtime_error("Invalid command type: " + std::to_string(static_cast<int>(instruction)));
         }
         }
 
