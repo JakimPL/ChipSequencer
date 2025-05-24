@@ -13,6 +13,11 @@ bool NumericInputHandler::handle_input() {
         return false;
     }
 
+    if (capture_input || ImGui::IsKeyPressed(ImGuiKey_Enter)) {
+        buffer = std::to_string(vector[index]);
+        capture_input = false;
+    }
+
     if (ImGui::IsKeyPressed(ImGuiKey_Backspace)) {
         if (!buffer.empty()) {
             buffer.pop_back();
@@ -38,10 +43,6 @@ bool NumericInputHandler::handle_input() {
         }
     }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_Enter)) {
-        buffer = std::to_string(vector[index]);
-    }
-
     if (ImGui::IsKeyPressed(ImGuiKey_UpArrow)) {
         index = std::max(0, index - 1);
         buffer.clear();
@@ -53,8 +54,4 @@ bool NumericInputHandler::handle_input() {
     }
 
     return value_inserted;
-}
-
-void NumericInputHandler::clear() {
-    buffer.clear();
 }

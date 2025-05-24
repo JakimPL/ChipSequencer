@@ -10,6 +10,7 @@ void InputHandler::set_limit(const int max) {
 
 void InputHandler::clear() {
     buffer.clear();
+    capture_input = true;
 }
 
 std::string InputHandler::get_buffer() const {

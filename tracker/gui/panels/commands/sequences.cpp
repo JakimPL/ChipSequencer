@@ -71,6 +71,8 @@ void GUICommandsSequencesPanel::add() {
     }
 
     sequence_index = commands_sequences.size() - 1;
+    current_sequence.pattern.values_handler.clear();
+    current_sequence.pattern.commands_handler.clear();
     update();
 }
 
@@ -81,14 +83,22 @@ void GUICommandsSequencesPanel::duplicate() {
     }
 
     sequence_index = commands_sequences.size() - 1;
+    current_sequence.pattern.values_handler.clear();
+    current_sequence.pattern.commands_handler.clear();
     update();
 }
 
 void GUICommandsSequencesPanel::remove() {
+    const size_t previous_index = sequence_index;
     if (is_index_valid()) {
         song.remove_commands_sequence(sequence_index);
         sequence_index = std::max(0, sequence_index - 1);
         update();
+    }
+
+    if (previous_index != sequence_index) {
+        current_sequence.pattern.values_handler.clear();
+        current_sequence.pattern.commands_handler.clear();
     }
 }
 

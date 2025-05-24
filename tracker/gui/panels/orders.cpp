@@ -76,6 +76,7 @@ void GUIOrdersPanel::add() {
     }
 
     order_index = orders.size() - 1;
+    input_handler.clear();
     update();
 }
 
@@ -86,14 +87,20 @@ void GUIOrdersPanel::duplicate() {
     }
 
     order_index = orders.size() - 1;
+    input_handler.clear();
     update();
 }
 
 void GUIOrdersPanel::remove() {
+    const size_t previous_index = order_index;
     if (is_index_valid()) {
         song.remove_order(order_index);
         order_index = std::max(0, order_index - 1);
         update();
+    }
+
+    if (previous_index != order_index) {
+        input_handler.clear();
     }
 }
 
