@@ -7,7 +7,7 @@
 #include "target.hpp"
 
 struct LinkKey {
-    Target target = Target::UNUSED;
+    Target target = Target::COUNT;
     int index = -1;
     uint16_t offset = -1;
 

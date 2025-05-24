@@ -390,9 +390,6 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
     case Target::WAVETABLE:
         id_prefix = "WavetableNode_";
         break;
-    case Target::UNUSED:
-        id_prefix = "UnknownNode_";
-        break;
     case Target::COUNT:
     default:
         throw std::runtime_error("Invalid target type: " + std::to_string(static_cast<int>(routing_node.identifier.type)));

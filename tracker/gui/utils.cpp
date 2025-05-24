@@ -346,7 +346,6 @@ bool draw_output_parameter(OutputType &output_type, const LinkKey key) {
     case Target::SPLITTER_DSP:
     case Target::DIRECT_OUTPUT:
     case Target::DIRECT_DSP:
-    case Target::UNUSED:
     case Target::COUNT:
     default: {
         throw std::runtime_error("Invalid target type: " + std::to_string(output_type.target));

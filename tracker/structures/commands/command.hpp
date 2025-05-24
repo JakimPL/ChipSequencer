@@ -31,7 +31,7 @@ enum class Instruction : uint8_t {
 struct Command {
     uint8_t instruction = INSTRUCTION_EMPTY;
     uint8_t duration;
-    uint8_t pad[10] = {0, 0, 0, 0, 0, 0, static_cast<uint8_t>(Target::UNUSED), 0, 0, 0};
+    uint8_t pad[10] = {0, 0, 0, 0, 0, 0, static_cast<uint8_t>(Target::COUNT), 0, 0, 0};
 };
 
 struct CommandPortamentoUp {
@@ -76,7 +76,7 @@ struct CommandChangeValue {
     uint8_t duration;
     uint16_t pointer;
     uint8_t pad[4];
-    uint8_t target = static_cast<uint8_t>(Target::UNUSED);
+    uint8_t target = static_cast<uint8_t>(Target::COUNT);
     uint8_t index = -1;
     uint16_t offset = 0;
 };
@@ -87,7 +87,7 @@ struct CommandChangeByteValue {
     uint16_t pointer;
     uint8_t value;
     uint8_t pad[3];
-    uint8_t target = static_cast<uint8_t>(Target::UNUSED);
+    uint8_t target = static_cast<uint8_t>(Target::COUNT);
     uint8_t index = -1;
     uint16_t offset = 0;
 };
@@ -98,7 +98,7 @@ struct CommandChangeWordValue {
     uint16_t pointer;
     uint16_t value;
     uint8_t pad[2];
-    uint8_t target = static_cast<uint8_t>(Target::UNUSED);
+    uint8_t target = static_cast<uint8_t>(Target::COUNT);
     uint8_t index = -1;
     uint16_t offset = 0;
 };
@@ -109,7 +109,7 @@ struct CommandChangeDwordValue {
     uint16_t pointer;
     uint32_t value;
     uint8_t pad[0];
-    uint8_t target = static_cast<uint8_t>(Target::UNUSED);
+    uint8_t target = static_cast<uint8_t>(Target::COUNT);
     uint8_t index = -1;
     uint16_t offset = 0;
 };
@@ -120,7 +120,7 @@ struct CommandChangeFloatValue {
     uint16_t pointer;
     _Float32 value;
     uint8_t pad[0];
-    uint8_t target = static_cast<uint8_t>(Target::UNUSED);
+    uint8_t target = static_cast<uint8_t>(Target::COUNT);
     uint8_t index = -1;
     uint16_t offset = 0;
 };
@@ -131,7 +131,7 @@ struct CommandAddByteValue {
     uint16_t pointer;
     uint8_t value;
     uint8_t pad[3];
-    uint8_t target = static_cast<uint8_t>(Target::UNUSED);
+    uint8_t target = static_cast<uint8_t>(Target::COUNT);
     uint8_t index = -1;
     uint16_t offset = 0;
 };
@@ -142,7 +142,7 @@ struct CommandAddWordValue {
     uint16_t pointer;
     uint16_t value;
     uint8_t pad[2];
-    uint8_t target = static_cast<uint8_t>(Target::UNUSED);
+    uint8_t target = static_cast<uint8_t>(Target::COUNT);
     uint8_t index = -1;
     uint16_t offset = 0;
 };
@@ -153,7 +153,7 @@ struct CommandAddDwordValue {
     uint16_t pointer;
     uint32_t value;
     uint8_t pad[0];
-    uint8_t target = static_cast<uint8_t>(Target::UNUSED);
+    uint8_t target = static_cast<uint8_t>(Target::COUNT);
     uint8_t index = -1;
     uint16_t offset = 0;
 };
@@ -164,7 +164,7 @@ struct CommandAddFloatValue {
     uint16_t pointer;
     _Float32 value;
     uint8_t pad[0];
-    uint8_t target = static_cast<uint8_t>(Target::UNUSED);
+    uint8_t target = static_cast<uint8_t>(Target::COUNT);
     uint8_t index = -1;
     uint16_t offset = 0;
 };

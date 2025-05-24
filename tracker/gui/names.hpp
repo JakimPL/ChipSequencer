@@ -41,7 +41,7 @@ const std::map<Target, std::string> target_names = {
     {Target::DSP, "DSP"},
     {Target::CHANNEL, "Channel"},
     {Target::COMMANDS_CHANNEL, "Commands channel"},
-    {Target::UNUSED, "Unused"},
+    {Target::COUNT, "Unused"},
 };
 const std::map<ItemType, std::string> item_types_names = {
     {ItemType::CHANNEL, "Channel"},

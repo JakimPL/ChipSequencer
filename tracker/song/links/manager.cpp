@@ -98,7 +98,6 @@ void LinkManager::set_link(Link &link, void *item, const uint8_t i) {
         }
         break;
     }
-    case Target::UNUSED:
     case Target::COUNT:
     default: {
         throw std::runtime_error("Invalid link target " + std::to_string(static_cast<int>(link.target)));
@@ -180,7 +179,7 @@ void LinkManager::save_targets() {
     size_t size = 1;
     for (const ItemType type : {ItemType::CHANNEL, ItemType::DSP, ItemType::COMMANDS}) {
         for (Link &link : links[static_cast<size_t>(type)]) {
-            if (link.target == Target::UNUSED) {
+            if (link.target == Target::COUNT) {
                 continue;
             }
 
@@ -280,7 +279,6 @@ std::string LinkManager::get_link_reference(const LinkKey key) const {
         reference = "commands_channels.commands_sequence_" + std::to_string(key.index);
         break;
     }
-    case Target::UNUSED:
     case Target::COUNT:
     default: {
         throw std::runtime_error("Invalid link target: " + std::to_string(static_cast<int>(key.target)));
@@ -317,11 +315,6 @@ size_t LinkManager::find_pointer_id_by_key(const LinkKey key) const {
         id++;
     }
 
-    std::ostringstream error_message;
-    std::cerr << "Pointer not found for key: "
-              << "Target " << static_cast<int>(key.target) << ", "
-              << "Index " << key.index << ", "
-              << "Offset " << key.offset << std::endl;
     return 0;
 }
 
@@ -350,7 +343,7 @@ void LinkManager::assign_key(Link &link) {
 }
 
 void LinkManager::validate_key_and_link(const LinkKey key, const Link *link) const {
-    if (key.target == Target::UNUSED) {
+    if (key.target == Target::COUNT) {
         return;
     }
     if (link == nullptr) {
@@ -384,10 +377,13 @@ TargetVariableType LinkManager::get_type(const LinkKey key) const {
     case Target::WAVETABLE:
     case Target::DSP:
     case Target::CHANNEL: {
-        const size_t index = routing_variables.at(key.target).offset_to_index.at(key.offset);
-        return routing_variables.at(key.target).types[index];
+        try {
+            const size_t index = routing_variables.at(key.target).offset_to_index.at(key.offset);
+            return routing_variables.at(key.target).types[index];
+        } catch (const std::out_of_range &exception) {
+            return TargetVariableType::Byte;
+        }
     }
-    case Target::UNUSED:
     case Target::COUNT:
     default: {
         throw std::runtime_error("Invalid target type: " + std::to_string(static_cast<int>(key.target)));

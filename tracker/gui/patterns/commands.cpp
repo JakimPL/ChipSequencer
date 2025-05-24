@@ -427,7 +427,6 @@ void CommandsPattern::split_change_value_parts(
             index_id = std::clamp(index_id, 0, static_cast<int>(wavetables.size()) - 1);
             break;
         }
-        case Target::UNUSED:
         case Target::COUNT:
         default: {
             throw std::runtime_error("Invalid target type: " + std::to_string(static_cast<int>(target)));
@@ -586,7 +585,7 @@ void CommandsPattern::save_links(size_t sequence_index) const {
 }
 
 LinkKey CommandsPattern::get_command_key(const CommandChangeValue *command) const {
-    if (command->target == static_cast<uint8_t>(Target::UNUSED)) {
+    if (command->target == static_cast<uint8_t>(Target::COUNT)) {
         return link_manager.get_pointer_and_key(command->pointer).second;
     }
 
