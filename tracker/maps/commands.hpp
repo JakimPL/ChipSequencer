@@ -1,13 +1,15 @@
 #ifndef MAPS_COMMANDS_HPP
 #define MAPS_COMMANDS_HPP
 
+#include <array>
+#include <cstdint>
 #include <map>
 
 #include "../constants.hpp"
 #include "../sizes.hpp"
 #include "../structures/commands/sequence.hpp"
 
-const std::array<uint8_t, static_cast<size_t>(Instruction::Count)> command_sizes = {
+const std::array<uint8_t, static_cast<size_t>(Instruction::Count)> commands_sizes = {
     SIZE_COMMAND_EMPTY,
     SIZE_COMMAND_PORTAMENTO_UP,
     SIZE_COMMAND_PORTAMENTO_DOWN,

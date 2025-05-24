@@ -74,6 +74,10 @@ void GUIOscillatorsPanel::from() {
         current_oscillator.type = "Noise";
         break;
     }
+    case Generator::Count:
+    default: {
+        throw std::runtime_error("Unknown oscillator type: " + std::to_string(generic->generator_index));
+    }
     }
 }
 
@@ -117,6 +121,10 @@ void GUIOscillatorsPanel::to() const {
         noise->generator_index = GENERATOR_NOISE;
         noise->oscillator_size = SIZE_OSCILLATOR_NOISE;
         break;
+    }
+    case Generator::Count:
+    default: {
+        throw std::runtime_error("Unknown oscillator type: " + std::to_string(current_oscillator.generator_index));
     }
     }
 }
@@ -215,15 +223,17 @@ void GUIOscillatorsPanel::draw_oscillator() {
     case Generator::Sine:
     case Generator::Noise:
         break;
-    case Generator::Square:
+    case Generator::Square: {
         ImGui::Text("Duty Cycle");
         ImGui::NextColumn();
         draw_float_slider("##DutyCycle", current_oscillator.square_duty_cycle, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_SQUARE_DUTY_CYCLE}, 0.0f, 1.0f);
         break;
-    case Generator::Saw:
+    }
+    case Generator::Saw: {
         ImGui::Checkbox("Reverse", &current_oscillator.saw_reverse);
         break;
-    case Generator::Wavetable:
+    }
+    case Generator::Wavetable: {
         ImGui::Text("Wavetable");
         ImGui::NextColumn();
         if (prepare_combo(wavetable_names, "##WavetableCombo", current_oscillator.wavetable_index, true).right_clicked) {
@@ -233,6 +243,11 @@ void GUIOscillatorsPanel::draw_oscillator() {
         ImGui::NextColumn();
         ImGui::Checkbox("Interpolation", &current_oscillator.wavetable_interpolation);
         break;
+    }
+    case Generator::Count:
+    default: {
+        throw std::runtime_error("Invalid oscillator type: " + std::to_string(current_oscillator.generator_index));
+    }
     }
 
     ImGui::Columns(1);

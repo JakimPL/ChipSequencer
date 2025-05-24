@@ -170,9 +170,9 @@ class Song {
     std::vector<size_t> find_oscillator_dependencies(const size_t oscillator_index) const;
     std::vector<size_t> find_commands_sequence_dependencies(const size_t sequence_index) const;
 
-    size_t calculate_dsps(const uint8_t effect) const;
-    size_t calculate_oscillators(const uint8_t generator) const;
-    size_t calculate_commands(const uint8_t instruction) const;
+    size_t calculate_dsps(const Effect effect) const;
+    size_t calculate_oscillators(const Generator generator) const;
+    size_t calculate_commands(const Instruction instruction) const;
     float calculate_real_bpm() const;
 };
 

@@ -111,12 +111,14 @@
     %define GENERATOR_SINE 2
     %define GENERATOR_WAVETABLE 3
     %define GENERATOR_NOISE 4
+    %define GENERATOR_COUNT 5
 
 ; Effects
     %define EFFECT_GAINER 0
     %define EFFECT_DISTORTION 1
     %define EFFECT_FILTER 2
     %define EFFECT_DELAY 3
+    %define EFFECT_COUNT 4
 
 ; Commands
     %define INSTRUCTION_EMPTY 0

@@ -14,6 +14,7 @@ enum class Effect : uint8_t {
     Distortion = EFFECT_DISTORTION,
     Filter = EFFECT_FILTER,
     Delay = EFFECT_DELAY,
+    Count = EFFECT_COUNT,
 };
 
 struct DSP {

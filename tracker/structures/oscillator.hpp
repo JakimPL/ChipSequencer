@@ -13,6 +13,7 @@ enum class Generator : uint8_t {
     Sine = GENERATOR_SINE,
     Wavetable = GENERATOR_WAVETABLE,
     Noise = GENERATOR_NOISE,
+    Count = GENERATOR_COUNT,
 };
 
 struct Oscillator {

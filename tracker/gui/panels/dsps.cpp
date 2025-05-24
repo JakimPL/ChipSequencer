@@ -73,6 +73,7 @@ void GUIDSPsPanel::from() {
         current_dsp.delay_time = static_cast<float>(delay->delay_time) / UINT16_MAX * 20.0f;
         break;
     }
+    case Effect::Count:
     default:
         throw std::runtime_error("Unknown DSP type: " + std::to_string(current_dsp.effect_index));
     }
@@ -121,6 +122,7 @@ void GUIDSPsPanel::to() const {
         dsp->delay_time = static_cast<uint16_t>(std::round(current_dsp.delay_time * UINT16_MAX / 20.0f));
         break;
     }
+    case Effect::Count:
     default:
         throw std::runtime_error("Unknown DSP type: " + std::to_string(current_dsp.effect_index));
     }
@@ -244,6 +246,10 @@ void GUIDSPsPanel::draw_effect() {
         ImGui::SameLine();
         draw_knob("Time", current_dsp.delay_time, {Target::DSP, dsp_index, DSP_DELAY_TIME}, 0.01f, 10.0f);
         break;
+    }
+    case Effect::Count:
+    default: {
+        throw std::runtime_error("Unknown DSP type: " + std::to_string(current_dsp.effect_index));
     }
     }
 }

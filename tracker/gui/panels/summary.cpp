@@ -4,7 +4,10 @@
 #include "../../general.hpp"
 #include "../../structures.hpp"
 #include "../../maps/commands.hpp"
+#include "../../maps/dsps.hpp"
+#include "../../maps/oscillators.hpp"
 #include "../init.hpp"
+#include "../names.hpp"
 #include "summary.hpp"
 
 GUISummaryPanel::GUISummaryPanel(const bool visible)
@@ -47,26 +50,9 @@ void GUISummaryPanel::draw_summary() {
         for (const auto *dsp : dsps) {
             const DSP *generic = static_cast<const DSP *>(dsp);
             const size_t effect = generic->effect_index;
-            dsps_size += 1 + sizeof(uint32_t);
-            switch (static_cast<Effect>(effect)) {
-            case Effect::Gainer: {
-                dsps_size += SIZE_DSP_GAINER;
-                break;
-            }
-            case Effect::Distortion: {
-                dsps_size += SIZE_DSP_DISTORTION;
-                break;
-            }
-            case Effect::Filter: {
-                dsps_size += SIZE_DSP_FILTER;
-                break;
-            }
-            case Effect::Delay: {
-                dsps_size += SIZE_DSP_DELAY;
-                break;
-            }
-            }
+            dsps_size += 1 + sizeof(uint32_t) + dsps_sizes.at(effect);
         }
+
         total_size += dsps_size;
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
@@ -127,29 +113,7 @@ void GUISummaryPanel::draw_summary() {
         size_t oscillators_size = 0;
         for (const void *oscillator : oscillators) {
             const Oscillator *generic = static_cast<const Oscillator *>(oscillator);
-            oscillators_size += 1;
-            switch (static_cast<Generator>(generic->generator_index)) {
-            case Generator::Square: {
-                oscillators_size += SIZE_OSCILLATOR_SQUARE;
-                break;
-            }
-            case Generator::Saw: {
-                oscillators_size += SIZE_OSCILLATOR_SAW;
-                break;
-            }
-            case Generator::Sine: {
-                oscillators_size += SIZE_OSCILLATOR_SINE;
-                break;
-            }
-            case Generator::Wavetable: {
-                oscillators_size += SIZE_OSCILLATOR_WAVETABLE;
-                break;
-            }
-            case Generator::Noise: {
-                oscillators_size += SIZE_OSCILLATOR_NOISE;
-                break;
-            }
-            }
+            oscillators_size += 1 + oscillators_sizes.at(generic->generator_index);
         }
 
         total_size += oscillators_size;
@@ -198,7 +162,7 @@ void GUISummaryPanel::draw_summary() {
             const size_t sequence_size = sequence->length;
             for (size_t i = 0; i < sequence_size; i++) {
                 const Command &command = sequence->commands[i];
-                commands_sequences_size += command_sizes.at(command.instruction);
+                commands_sequences_size += commands_sizes.at(command.instruction);
             }
         }
 
@@ -230,62 +194,30 @@ void GUISummaryPanel::draw_optimizations() {
     if (dsps.empty()) {
         ImGui::BulletText("Disabled all DSPs");
     } else {
-        if (song.calculate_dsps(EFFECT_GAINER) == 0) {
-            ImGui::BulletText("Disabled gainer effect");
-        }
-        if (song.calculate_dsps(EFFECT_DISTORTION) == 0) {
-            ImGui::BulletText("Disabled distortion effect");
-        }
-        if (song.calculate_dsps(EFFECT_FILTER) == 0) {
-            ImGui::BulletText("Disabled filter effect");
-        }
-        if (song.calculate_dsps(EFFECT_DELAY) == 0) {
-            ImGui::BulletText("Disabled delay effect");
+        for (size_t i = 0; i < effect_names.size(); ++i) {
+            const Effect effect = static_cast<Effect>(i);
+            const std::string &name = effect_names[i];
+            if (song.calculate_dsps(effect) == 0) {
+                ImGui::BulletText("Disabled effect: %s", name.c_str());
+            }
         }
     }
 
-    if (song.calculate_oscillators(GENERATOR_SQUARE) == 0) {
-        ImGui::BulletText("Disabled square oscillator");
-    }
-    if (song.calculate_oscillators(GENERATOR_SINE) == 0) {
-        ImGui::BulletText("Disabled sine oscillator");
-    }
-    if (song.calculate_oscillators(GENERATOR_SAW) == 0) {
-        ImGui::BulletText("Disabled saw oscillator");
-    }
-    if (song.calculate_oscillators(GENERATOR_NOISE) == 0) {
-        ImGui::BulletText("Disabled noise oscillator");
+    for (size_t i = 0; generator_names.size() > i; ++i) {
+        const Generator generator = static_cast<Generator>(i);
+        const std::string &name = generator_names[i];
+        if (song.calculate_oscillators(generator) == 0) {
+            ImGui::BulletText("Disabled generator: %s", generator_names[i].c_str());
+        }
     }
 
     if (commands_channels.empty()) {
         ImGui::BulletText("Disabled all commands");
     } else {
-        if (song.calculate_commands(INSTRUCTION_PORTAMENTO_UP) == 0) {
-            ImGui::BulletText("Disabled portamento up command");
-        }
-        if (song.calculate_commands(INSTRUCTION_PORTAMENTO_DOWN) == 0) {
-            ImGui::BulletText("Disabled portamento down command");
-        }
-        if (song.calculate_commands(INSTRUCTION_SET_MASTER_GAINER) == 0) {
-            ImGui::BulletText("Disabled set master gainer command");
-        }
-        if (song.calculate_commands(INSTRUCTION_SET_BPM) == 0) {
-            ImGui::BulletText("Disabled set BPM command");
-        }
-        if (song.calculate_commands(INSTRUCTION_SET_DIVISION) == 0) {
-            ImGui::BulletText("Disabled set division command");
-        }
-        if (song.calculate_commands(INSTRUCTION_CHANGE_BYTE_VALUE) == 0) {
-            ImGui::BulletText("Disabled change byte value command");
-        }
-        if (song.calculate_commands(INSTRUCTION_CHANGE_WORD_VALUE) == 0) {
-            ImGui::BulletText("Disabled change word value command");
-        }
-        if (song.calculate_commands(INSTRUCTION_CHANGE_DWORD_VALUE) == 0) {
-            ImGui::BulletText("Disabled change dword value command");
-        }
-        if (song.calculate_commands(INSTRUCTION_CHANGE_FLOAT_VALUE) == 0) {
-            ImGui::BulletText("Disabled change float value command");
+        for (const auto &[instruction, name] : instruction_names) {
+            if (song.calculate_commands(instruction) == 0) {
+                ImGui::BulletText("Disabled command: %s", name);
+            }
         }
     }
 }

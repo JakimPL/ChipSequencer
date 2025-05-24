@@ -10,6 +10,7 @@
 #include "../utils/temp.hpp"
 #include "data.hpp"
 #include "functions.hpp"
+#include "headers.hpp"
 #include "song.hpp"
 
 #define JSON_INDENTATION 4
@@ -763,61 +764,31 @@ void Song::generate_header_vector(
 void Song::set_used_flags(std::stringstream &asm_content) const {
     if (!dsps.empty()) {
         asm_content << "    \%define USED_DSP\n";
-        if (calculate_dsps(EFFECT_GAINER) > 0) {
-            asm_content << "    \%define USED_DSP_GAINER\n";
-        }
-        if (calculate_dsps(EFFECT_DISTORTION) > 0) {
-            asm_content << "    \%define USED_DSP_DISTORTION\n";
-        }
-        if (calculate_dsps(EFFECT_FILTER) > 0) {
-            asm_content << "    \%define USED_DSP_FILTER\n";
-        }
-        if (calculate_dsps(EFFECT_DELAY) >= 0) {
-            asm_content << "    \%define USED_DSP_DELAY\n";
+        for (size_t i = 0; i < static_cast<size_t>(Effect::Count); i++) {
+            const Effect effect = static_cast<Effect>(i);
+            const std::string &effect_name = header_effect_names[i];
+            if (calculate_dsps(effect) > 0) {
+                asm_content << "    \%define USED_" << effect_name << "\n";
+            }
         }
     }
 
-    if (calculate_oscillators(GENERATOR_SQUARE) > 0) {
-        asm_content << "    \%define USED_OSCILLATOR_SQUARE\n";
-    }
-    if (calculate_oscillators(GENERATOR_SINE) > 0) {
-        asm_content << "    \%define USED_OSCILLATOR_SINE\n";
-    }
-    if (calculate_oscillators(GENERATOR_SAW) >= 0) {
-        asm_content << "    \%define USED_OSCILLATOR_SAW\n";
-    }
-    if (calculate_oscillators(GENERATOR_NOISE) > 0) {
-        asm_content << "    \%define USED_OSCILLATOR_NOISE\n";
+    for (size_t i = 0; i < static_cast<size_t>(Generator::Count); i++) {
+        const Generator generator = static_cast<Generator>(i);
+        const std::string &generator_name = header_generator_names[i];
+        if (calculate_oscillators(generator) > 0) {
+            asm_content << "    \%define USED_" << generator_name << "\n";
+        }
     }
 
     if (!commands_channels.empty()) {
         asm_content << "    \%define USED_COMMANDS\n";
-        if (calculate_commands(INSTRUCTION_PORTAMENTO_UP) > 0) {
-            asm_content << "    \%define USED_COMMAND_PORTAMENTO_UP\n";
-        }
-        if (calculate_commands(INSTRUCTION_PORTAMENTO_DOWN) > 0) {
-            asm_content << "    \%define USED_COMMAND_PORTAMENTO_DOWN\n";
-        }
-        if (calculate_commands(INSTRUCTION_SET_MASTER_GAINER) > 0) {
-            asm_content << "    \%define USED_COMMAND_SET_MASTER_GAINER\n";
-        }
-        if (calculate_commands(INSTRUCTION_SET_BPM) > 0) {
-            asm_content << "    \%define USED_COMMAND_SET_BPM\n";
-        }
-        if (calculate_commands(INSTRUCTION_SET_DIVISION) > 0) {
-            asm_content << "    \%define USED_COMMAND_SET_DIVISION\n";
-        }
-        if (calculate_commands(INSTRUCTION_CHANGE_BYTE_VALUE) > 0) {
-            asm_content << "    \%define USED_COMMAND_CHANGE_BYTE_VALUE\n";
-        }
-        if (calculate_commands(INSTRUCTION_CHANGE_WORD_VALUE) > 0) {
-            asm_content << "    \%define USED_COMMAND_CHANGE_WORD_VALUE\n";
-        }
-        if (calculate_commands(INSTRUCTION_CHANGE_DWORD_VALUE) > 0) {
-            asm_content << "    \%define USED_COMMAND_CHANGE_DWORD_VALUE\n";
-        }
-        if (calculate_commands(INSTRUCTION_CHANGE_FLOAT_VALUE) > 0) {
-            asm_content << "    \%define USED_COMMAND_CHANGE_FLOAT_VALUE\n";
+        for (size_t i = 0; i < static_cast<size_t>(Instruction::Count); i++) {
+            const Instruction instruction = static_cast<Instruction>(i);
+            const std::string &command_name = header_instruction_names[i];
+            if (calculate_commands(instruction) > 0) {
+                asm_content << "    \%define USED_" << command_name << "\n";
+            }
         }
     }
 
@@ -1011,33 +982,36 @@ void Song::calculate_song_length() {
     song_length = max_rows * ticks_per_beat;
 }
 
-size_t Song::calculate_dsps(const uint8_t effect) const {
+size_t Song::calculate_dsps(const Effect effect) const {
     size_t count = 0;
+    const uint8_t effect_value = static_cast<uint8_t>(effect);
     for (const auto &dsp : dsps) {
-        if (static_cast<DSP *>(dsp)->effect_index == effect) {
+        if (static_cast<DSP *>(dsp)->effect_index == effect_value) {
             count++;
         }
     }
     return count;
 }
 
-size_t Song::calculate_oscillators(const uint8_t generator) const {
+size_t Song::calculate_oscillators(const Generator generator) const {
     size_t count = 0;
+    const uint8_t generator_value = static_cast<uint8_t>(generator);
     for (const auto &oscillator : oscillators) {
-        if (static_cast<Oscillator *>(oscillator)->generator_index == generator) {
+        if (static_cast<Oscillator *>(oscillator)->generator_index == generator_value) {
             count++;
         }
     }
     return count;
 }
 
-size_t Song::calculate_commands(const uint8_t instruction) const {
+size_t Song::calculate_commands(const Instruction instruction) const {
     size_t count = 0;
+    const uint8_t instruction_value = static_cast<uint8_t>(instruction);
     for (const auto &commands_sequence : commands_sequences) {
         const size_t sequence_length = commands_sequence->length;
         for (size_t i = 0; i < sequence_length; ++i) {
             const Command &command = commands_sequence->commands[i];
-            if (command.instruction == instruction) {
+            if (command.instruction == instruction_value) {
                 count++;
             }
         }
@@ -1123,6 +1097,7 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
         write_data(file, &delay->pad, sizeof(delay->pad));
         return;
     }
+    case Effect::Count:
     default: {
         throw std::runtime_error("Unknown DSP type: " + std::to_string(effect_index));
     }
@@ -1163,6 +1138,7 @@ void *Song::deserialize_dsp(std::ifstream &file) const {
         read_data(file, &delay->delay_time, sizeof(delay->delay_time));
         return reinterpret_cast<void *>(delay);
     }
+    case Effect::Count:
     default: {
         throw std::runtime_error("Unknown DSP type: " + std::to_string(generic->effect_index));
     }
@@ -1201,6 +1177,7 @@ void *Song::deserialize_oscillator(std::ifstream &file) const {
         OscillatorNoise *oscillator = new OscillatorNoise();
         return reinterpret_cast<void *>(oscillator);
     }
+    case Generator::Count:
     default: {
         throw std::runtime_error("Unknown oscillator type: " + std::to_string(oscillator_type));
     }
@@ -1473,21 +1450,27 @@ void Song::delete_oscillator(void *oscillator) {
     const Oscillator *generic = reinterpret_cast<const Oscillator *>(oscillator);
     const uint8_t generator = generic->generator_index;
     switch (static_cast<Generator>(generator)) {
-    case Generator::Square:
+    case Generator::Square: {
         delete static_cast<OscillatorSquare *>(oscillator);
         break;
-    case Generator::Saw:
+    }
+    case Generator::Saw: {
         delete static_cast<OscillatorSaw *>(oscillator);
         break;
-    case Generator::Sine:
+    }
+    case Generator::Sine: {
         delete static_cast<OscillatorSine *>(oscillator);
         break;
-    case Generator::Wavetable:
+    }
+    case Generator::Wavetable: {
         delete static_cast<OscillatorWavetable *>(oscillator);
         break;
-    case Generator::Noise:
+    }
+    case Generator::Noise: {
         delete static_cast<OscillatorNoise *>(oscillator);
         break;
+    }
+    case Generator::Count:
     default:
         throw std::runtime_error("Unknown oscillator type: " + std::to_string(generator));
     }
@@ -1501,18 +1484,23 @@ void Song::delete_dsp(void *dsp) {
     const DSP *generic = reinterpret_cast<const DSP *>(dsp);
     const uint8_t effect = generic->effect_index;
     switch (static_cast<Effect>(effect)) {
-    case Effect::Gainer:
+    case Effect::Gainer: {
         delete static_cast<DSPGainer *>(dsp);
         return;
-    case Effect::Distortion:
+    }
+    case Effect::Distortion: {
         delete static_cast<DSPDistortion *>(dsp);
         return;
-    case Effect::Filter:
+    }
+    case Effect::Filter: {
         delete static_cast<DSPFilter *>(dsp);
         return;
-    case Effect::Delay:
+    }
+    case Effect::Delay: {
         delete static_cast<DSPFilter *>(dsp);
         return;
+    }
+    case Effect::Count:
     default:
         throw std::runtime_error("Unknown DSP type: " + std::to_string(effect));
     }
