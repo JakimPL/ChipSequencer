@@ -9,7 +9,13 @@
 #include "../sizes.hpp"
 #include "../structures/commands/sequence.hpp"
 
-const std::array<uint8_t, static_cast<size_t>(Instruction::Count)> commands_sizes = {
+template <typename... T>
+constexpr std::array<uint8_t, sizeof...(T)> make_commands_sizes(T... args) {
+    static_assert(sizeof...(T) == static_cast<size_t>(Instruction::Count), "Number of command sizes must match Instruction::Count");
+    return {static_cast<uint8_t>(args)...};
+}
+
+constexpr auto commands_sizes = make_commands_sizes(
     SIZE_COMMAND_EMPTY,
     SIZE_COMMAND_PORTAMENTO_UP,
     SIZE_COMMAND_PORTAMENTO_DOWN,
@@ -23,8 +29,8 @@ const std::array<uint8_t, static_cast<size_t>(Instruction::Count)> commands_size
     SIZE_COMMAND_ADD_BYTE_VALUE,
     SIZE_COMMAND_ADD_WORD_VALUE,
     SIZE_COMMAND_ADD_DWORD_VALUE,
-    SIZE_COMMAND_ADD_FLOAT_VALUE,
-};
+    SIZE_COMMAND_ADD_FLOAT_VALUE
+);
 
 const std::map<char, Instruction> command_characters = {
     {' ', Instruction::Empty},
@@ -59,5 +65,7 @@ const std::map<Instruction, char> command_letters = {
     {Instruction::AddDwordValue, 'A'},
     {Instruction::AddFloatValue, 'A'},
 };
+
+static_assert(commands_sizes.size() == static_cast<size_t>(Instruction::Count), "Size of commands_sizes does not match Instruction::Count");
 
 #endif // MAPS_COMMANDS_HPP
