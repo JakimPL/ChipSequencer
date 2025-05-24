@@ -2,7 +2,7 @@
 #include <iostream>
 #include <sndfile.h>
 
-#include "../song/data.hpp"
+#include "../song/core.hpp"
 #include "../song/functions.hpp"
 #include "file.hpp"
 

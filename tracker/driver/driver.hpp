@@ -3,7 +3,7 @@
 
 #include <array>
 #include <string>
-#include "../song/data.hpp"
+#include "../song/core.hpp"
 
 class Driver {
   public:

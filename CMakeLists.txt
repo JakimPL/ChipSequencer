@@ -83,18 +83,18 @@ target_include_directories(nfd PUBLIC
 target_link_libraries(nfd PUBLIC ${GTK_LIBRARIES})
 
 add_executable(main
-    tracker/main.cpp
-    tracker/general.cpp
     tracker/audio/engine.cpp
     tracker/driver/file.cpp
     tracker/driver/port.cpp
+    tracker/general.cpp
     tracker/gui/gui.cpp
-    tracker/gui/names.cpp
-    tracker/gui/utils.cpp
     tracker/gui/inputs/input.cpp
     tracker/gui/inputs/numeric.cpp
     tracker/gui/inputs/string.cpp
+    tracker/gui/names.cpp
     tracker/gui/panels/channels.cpp
+    tracker/gui/panels/commands/channels.cpp
+    tracker/gui/panels/commands/sequences.cpp
     tracker/gui/panels/dsps.cpp
     tracker/gui/panels/editor.cpp
     tracker/gui/panels/envelopes.cpp
@@ -108,22 +108,22 @@ add_executable(main
     tracker/gui/panels/sequences.cpp
     tracker/gui/panels/summary.cpp
     tracker/gui/panels/wavetables.cpp
-    tracker/gui/panels/commands/channels.cpp
-    tracker/gui/panels/commands/sequences.cpp
     tracker/gui/patterns/commands.cpp
     tracker/gui/patterns/pattern.cpp
+    tracker/gui/utils.cpp
+    tracker/main.cpp
     tracker/maps/routing.cpp
     tracker/song/buffers.cpp
-    tracker/song/data.cpp
-    tracker/song/song.cpp
-    tracker/song/output.cpp
+    tracker/song/core.cpp
     tracker/song/links/link.cpp
     tracker/song/links/manager.cpp
+    tracker/song/output.cpp
+    tracker/song/song.cpp
     tracker/structures/channel.cpp
+    tracker/structures/commands/sequence.cpp
     tracker/structures/order.cpp
     tracker/structures/sequence.cpp
     tracker/structures/wavetable.cpp
-    tracker/structures/commands/sequence.cpp
     tracker/tuning/frequencies.cpp
     tracker/tuning/scale.cpp
     tracker/utils/math.cpp

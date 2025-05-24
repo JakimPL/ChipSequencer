@@ -2,7 +2,7 @@
 
 #include "../../constants.hpp"
 #include "../../general.hpp"
-#include "../../song/data.hpp"
+#include "../../song/core.hpp"
 #include "../mapping.hpp"
 #include "pattern.hpp"
 

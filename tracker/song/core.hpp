@@ -1,5 +1,5 @@
-#ifndef SONG_DATA_HPP
-#define SONG_DATA_HPP
+#ifndef SONG_CORE_HPP
+#define SONG_CORE_HPP
 
 #include "../constants.hpp"
 #include "../structures.hpp"
@@ -52,4 +52,4 @@ extern Targets targets;
 extern Links links;
 extern CommandsLinks commands_links;
 
-#endif // SONG_DATA_HPP
+#endif // SONG_CORE_HPP

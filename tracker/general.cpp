@@ -1,5 +1,5 @@
 #include "general.hpp"
-#include "song/data.hpp"
+#include "song/core.hpp"
 
 ScaleComposer scale_composer = ScaleComposer();
 FrequencyTable frequency_table = FrequencyTable(scale_composer, DEFAULT_A4_FREQUENCY);
