@@ -526,6 +526,46 @@ void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t 
 
         const char command_char = command[0];
         const Instruction instruction = command_characters.at(command_char);
+        switch (instruction) {
+        case Instruction::Empty: {
+            return;
+        }
+        case Instruction::PortamentoUp:
+        case Instruction::PortamentoDown: {
+            uint8_t channel;
+            uint16_t value_portamento;
+            CommandsPattern::split_portamento_value(value, channel, value_portamento);
+            const double portamento = CommandsPattern::cast_portamento_to_double(value_portamento);
+            ImGui::SetTooltip("Portamento %s: channel %d, %.3f semitones", command_char == 'U' ? "up" : "down", channel, portamento);
+            break;
+        }
+        case Instruction::SetMasterGainer: {
+            ImGui::SetTooltip("Master gainer: %.4f", std::stod(value));
+            break;
+        }
+        case Instruction::SetBPM: {
+            ImGui::SetTooltip("BPM: %d", std::stoi(value));
+            break;
+        }
+        case Instruction::SetDivision: {
+            ImGui::SetTooltip("Division: %d", std::stoi(value));
+            break;
+        }
+        case Instruction::ChangeByteValue:
+        case Instruction::ChangeWordValue:
+        case Instruction::ChangeDwordValue:
+        case Instruction::ChangeFloatValue:
+        case Instruction::AddByteValue:
+        case Instruction::AddWordValue:
+        case Instruction::AddDwordValue:
+        case Instruction::AddFloatValue: {
+            break;
+        }
+        case Instruction::Count:
+        default: {
+            throw std::runtime_error("Invalid instruction: " + command);
+        }
+        }
     }
 }
 
