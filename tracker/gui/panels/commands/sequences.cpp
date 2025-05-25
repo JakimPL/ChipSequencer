@@ -13,6 +13,7 @@ GUICommandsSequencesPanel::GUICommandsSequencesPanel(const bool visible)
 void GUICommandsSequencesPanel::draw() {
     ImGui::Begin("Commands sequences");
     ImGui::Columns(1, "commands_sequence_columns");
+    ImGui::BeginDisabled(gui.is_playing());
 
     std::vector<size_t> dependencies = song.find_commands_sequence_dependencies(sequence_index);
     push_tertiary_style();
@@ -34,6 +35,7 @@ void GUICommandsSequencesPanel::draw() {
 
     dialog_box_open = edit_dialog_box.visible;
 
+    ImGui::EndDisabled();
     ImGui::Columns(1);
     ImGui::End();
 }
