@@ -1,10 +1,10 @@
 #include "string.hpp"
 
-StringInputHandler::StringInputHandler(std::vector<std::string> &strings, int &index, const std::vector<ImGuiKey> keys, const bool synchronize)
-    : strings(strings), InputHandler(index), keys(keys), synchronize(synchronize) {
+StringInputHandler::StringInputHandler(const std::vector<ImGuiKey> keys, const bool synchronize)
+    : keys(keys), synchronize(synchronize) {
 }
 
-bool StringInputHandler::handle_input() {
+bool StringInputHandler::handle_input(std::vector<std::string> &strings, int &index) {
     if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return false;
     }

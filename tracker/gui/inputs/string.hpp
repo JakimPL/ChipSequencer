@@ -7,11 +7,10 @@ class StringInputHandler : public InputHandler {
   private:
     bool synchronize;
     std::vector<ImGuiKey> keys;
-    std::vector<std::string> &strings;
 
   public:
-    StringInputHandler(std::vector<std::string> &strings, int &index, const std::vector<ImGuiKey> keys, const bool synchronize = true);
-    bool handle_input() override;
+    StringInputHandler(const std::vector<ImGuiKey> keys, const bool synchronize = true);
+    bool handle_input(std::vector<std::string> &strings, int &index);
 };
 
 #endif // GUI_INPUTS_STRING_HPP

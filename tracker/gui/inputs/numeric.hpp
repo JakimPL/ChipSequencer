@@ -6,11 +6,9 @@
 class NumericInputHandler : public InputHandler {
   private:
     std::vector<ImGuiKey> keys;
-    std::vector<int> &vector;
 
   public:
-    NumericInputHandler(std::vector<int> &vector, int &index);
-    bool handle_input() override;
+    bool handle_input(std::vector<int> &vector, int &index);
 };
 
 #endif // GUI_INPUTS_NUMERIC_HPP

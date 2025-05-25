@@ -1,10 +1,6 @@
 #include "numeric.hpp"
 
-NumericInputHandler::NumericInputHandler(std::vector<int> &vector, int &index)
-    : InputHandler(index), vector(vector) {
-}
-
-bool NumericInputHandler::handle_input() {
+bool NumericInputHandler::handle_input(std::vector<int> &vector, int &index) {
     if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return false;
     }

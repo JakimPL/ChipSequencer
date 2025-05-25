@@ -20,7 +20,7 @@ class GUIOrdersPanel : public GUIPanel {
 
     int order_index = 0;
     int selected_sequence = 0;
-    NumericInputHandler input_handler = NumericInputHandler(current_order.sequences, selected_sequence);
+    NumericInputHandler input_handler;
 
     bool is_index_valid() const;
     void draw_order_length();

@@ -190,7 +190,7 @@ void GUIOrdersPanel::check_keyboard_input() {
 
     const size_t size = std::max(sequences.size(), commands_sequences.size());
     input_handler.set_limit(static_cast<int>(size) - 1);
-    input_handler.handle_input();
+    input_handler.handle_input(current_order.sequences, selected_sequence);
 }
 
 void GUIOrdersPanel::set_index(const int index) {

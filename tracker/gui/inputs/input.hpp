@@ -10,13 +10,9 @@
 class InputHandler {
   protected:
     std::string buffer;
-    int &index;
     int limit = 0;
 
   public:
-    InputHandler(int &index);
-    virtual bool handle_input() = 0;
-
     void clear();
     std::string get_buffer() const;
     void set_buffer(const std::string &value);
