@@ -322,32 +322,6 @@ int CommandsPattern::calculate_playing_row(size_t channel_index) {
     return playing_row;
 }
 
-void CommandsPattern::handle_input(const int min_row, const int max_row) {
-    const bool valid = current_row >= 0 && current_row < commands.size();
-    if (!valid) {
-        return;
-    }
-
-    if (ImGui::IsKeyPressed(ImGuiKey_LeftArrow)) {
-        selection = CommandSelection::Command;
-        values_handler.clear();
-        values_handler.capture_input = true;
-    } else if (ImGui::IsKeyPressed(ImGuiKey_RightArrow)) {
-        selection = CommandSelection::Value;
-        commands_handler.clear();
-        commands_handler.capture_input = true;
-    }
-
-    if (selection == CommandSelection::Command) {
-        if (commands_handler.handle_input()) {
-            selection = CommandSelection::Value;
-            values_handler.clear();
-        }
-    } else if (selection == CommandSelection::Value) {
-        values_handler.handle_input();
-    }
-}
-
 void CommandsPattern::set_selection(const int row, const CommandSelection item) {
     if (selection == CommandSelection::Value && (current_row != row || item != selection)) {
         values_handler.set_buffer(values[row]);
@@ -609,4 +583,30 @@ LinkKey CommandsPattern::get_command_key(const CommandChangeValue *command) cons
     }
 
     return {static_cast<Target>(command->target), command->index, command->offset};
+}
+
+void CommandsPattern::handle_input(const int min_row, const int max_row) {
+    const bool valid = current_row >= 0 && current_row < commands.size();
+    if (!valid) {
+        return;
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_LeftArrow)) {
+        selection = CommandSelection::Command;
+        values_handler.clear();
+        values_handler.capture_input = true;
+    } else if (ImGui::IsKeyPressed(ImGuiKey_RightArrow)) {
+        selection = CommandSelection::Value;
+        commands_handler.clear();
+        commands_handler.capture_input = true;
+    }
+
+    if (selection == CommandSelection::Command) {
+        if (commands_handler.handle_input()) {
+            selection = CommandSelection::Value;
+            values_handler.clear();
+        }
+    } else if (selection == CommandSelection::Value) {
+        values_handler.handle_input();
+    }
 }

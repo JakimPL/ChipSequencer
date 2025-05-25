@@ -37,6 +37,8 @@ class GUIPatternsPanel : public GUIPanel {
     void draw_commands_channel(size_t channel_index);
     std::pair<Pattern *, uint16_t> find_pattern_by_current_row() const;
     std::pair<CommandsPattern *, uint16_t> find_commands_pattern_by_current_row() const;
+    void handle_pattern_input(Pattern *pattern, const uint16_t index);
+    void handle_commands_pattern_input(CommandsPattern *pattern, const uint16_t index);
     int get_pages() const;
     bool is_playing() const;
 
