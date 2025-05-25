@@ -107,8 +107,7 @@ reset_commands_channel:
     %include "core/commands/empty.asm"
     %include "core/commands/port.asm"
     %include "core/commands/gainer.asm"
-    %include "core/commands/bpm.asm"
-    %include "core/commands/division.asm"
+    %include "core/commands/tempo.asm"
     %include "core/commands/change.asm"
 
     SEGMENT_DATA

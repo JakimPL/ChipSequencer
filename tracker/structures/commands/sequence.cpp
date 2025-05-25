@@ -3,7 +3,7 @@
 #include "sequence.hpp"
 
 void CommandsSequence::from_command_vector(const std::vector<Command> &command_vector) {
-    size = 0;
+    size = COMMANDS_SEQUENCE_DATA;
     length = 0;
     for (const Command &command : command_vector) {
         commands[length] = command;
