@@ -2,8 +2,8 @@
 
 #include "../../constants.hpp"
 #include "../../general.hpp"
+#include "../../maps/keys.hpp"
 #include "../../song/core.hpp"
-#include "../mapping.hpp"
 #include "pattern.hpp"
 
 Pattern::Pattern() {

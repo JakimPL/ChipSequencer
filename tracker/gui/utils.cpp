@@ -3,10 +3,10 @@
 
 #include "../general.hpp"
 #include "../maps/commands.hpp"
+#include "../maps/keys.hpp"
 #include "../maps/routing.hpp"
 #include "../utils/string.hpp"
 #include "constants.hpp"
-#include "mapping.hpp"
 #include "names.hpp"
 #include "utils.hpp"
 

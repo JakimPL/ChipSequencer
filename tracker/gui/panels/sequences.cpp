@@ -1,8 +1,8 @@
 #include <algorithm>
 
 #include "../../general.hpp"
+#include "../../maps/keys.hpp"
 #include "../enums.hpp"
-#include "../mapping.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
 #include "sequences.hpp"

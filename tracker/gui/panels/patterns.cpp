@@ -71,7 +71,7 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
     const uint16_t end = start + gui.get_page_size();
 
     for (auto &pattern : current_patterns.patterns[channel_index]) {
-        const int playing_row = current_patterns.playing_rows[channel_index];
+        const int playing_row = current_patterns.playing_rows[{false, channel_index}];
         auto [new_index, select] = draw_pattern(pattern, false, index, playing_row, start, end);
         if (select) {
             current_channel = channel_index;
@@ -105,7 +105,7 @@ void GUIPatternsPanel::from_sequences() {
 
         uint16_t row = 0;
         uint8_t playing_sequence = current_sequence[channel_index];
-        current_patterns.playing_rows[channel_index] = -1;
+        current_patterns.playing_rows[{false, channel_index}] = -1;
         for (size_t j = 0; j < order->order_length; ++j) {
             const uint8_t sequence_index = order_sequences[j];
             if (sequence_index >= sequences.size()) {
@@ -117,7 +117,7 @@ void GUIPatternsPanel::from_sequences() {
             current_patterns.patterns[channel_index].push_back(pattern);
             if (playing && playing_sequence == j) {
                 const int playing_row = pattern.calculate_playing_row(channel_index);
-                current_patterns.playing_rows[channel_index] = row + playing_row;
+                current_patterns.playing_rows[{false, channel_index}] = row + playing_row;
             }
 
             row += pattern.steps;
@@ -131,7 +131,7 @@ void GUIPatternsPanel::from_commands_sequences() {
     current_patterns.commands_patterns.clear();
     const bool playing = is_playing();
     for (size_t channel_index = 0; channel_index < commands_channels.size(); ++channel_index) {
-        const Channel *channel = channels[channel_index];
+        const CommandsChannel *channel = commands_channels[channel_index];
         const uint8_t order_index = channel->order_index;
         if (order_index >= orders.size()) {
             continue;
@@ -142,7 +142,7 @@ void GUIPatternsPanel::from_commands_sequences() {
 
         uint16_t row = 0;
         uint8_t playing_sequence = current_sequence[channel_index];
-        current_patterns.playing_rows[channel_index] = -1;
+        current_patterns.playing_rows[{true, channel_index}] = -1;
         for (size_t j = 0; j < order->order_length; ++j) {
             const uint8_t sequence_index = order_sequences[j];
             if (sequence_index >= sequences.size()) {
@@ -154,7 +154,7 @@ void GUIPatternsPanel::from_commands_sequences() {
             current_patterns.commands_patterns[channel_index].push_back(pattern);
             if (playing && playing_sequence == j) {
                 const int playing_row = pattern.calculate_playing_row(channel_index);
-                current_patterns.playing_rows[channel_index] = row + playing_row;
+                current_patterns.playing_rows[{true, channel_index}] = row + playing_row;
             }
 
             row += pattern.steps;

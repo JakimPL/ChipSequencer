@@ -2,8 +2,8 @@
 
 #include "../../general.hpp"
 #include "../../maps/commands.hpp"
+#include "../../maps/keys.hpp"
 #include "../../utils/string.hpp"
-#include "../mapping.hpp"
 #include "commands.hpp"
 
 CommandsPattern::CommandsPattern()

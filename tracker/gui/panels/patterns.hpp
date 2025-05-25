@@ -15,7 +15,7 @@ class GUIPatternsPanel : public GUIPanel {
         uint16_t total_rows = 0;
         std::map<size_t, std::vector<Pattern>> patterns;
         std::map<size_t, std::vector<CommandsPattern>> commands_patterns;
-        std::map<size_t, int> playing_rows;
+        std::map<std::pair<bool, size_t>, int> playing_rows;
     } current_patterns;
 
     int page = 0;
