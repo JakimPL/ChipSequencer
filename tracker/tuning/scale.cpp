@@ -78,11 +78,11 @@ std::string ScaleComposer::render(const std::string &name, int offset) const {
 
     std::string symbol;
     if (offset == 0) {
-        symbol = scale_symbols[0];
-    } else if (offset > 0) {
         symbol = scale_symbols[1];
-    } else {
+    } else if (offset > 0) {
         symbol = scale_symbols[2];
+    } else {
+        symbol = scale_symbols[0];
     }
 
     std::string repeated;

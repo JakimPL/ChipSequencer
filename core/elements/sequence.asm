@@ -51,8 +51,10 @@ step:
     inc byte [sequence_current_note + ecx]
     mov dword [sequence_timer + 4 * ecx], 1
     mov al, [NOTE_DURATION + esi]
-    inc al
+    mov ebx, [ticks_per_beat]
+    mov [sequence_timer + 4 * ecx], ebx
     mov [sequence_timer_row + ecx], al
+    ret
 
 .decrease_timer:
     dec dword [sequence_timer + 4 * ecx]

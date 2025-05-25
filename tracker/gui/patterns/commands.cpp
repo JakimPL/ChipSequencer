@@ -301,7 +301,9 @@ void CommandsPattern::to_buffer(const size_t sequence_index) const {
 }
 
 int CommandsPattern::calculate_playing_row(size_t channel_index) {
-    if (indices.empty()) {
+    const CommandsChannel *channel = commands_channels[channel_index];
+    const bool bypass = channel->flag & FLAG_BYPASS;
+    if (indices.empty() || bypass) {
         return -1;
     }
 

@@ -13,7 +13,7 @@ commands:
 .check_commands_channel_bypass:
     movzx edx, byte [COMMANDS_CHANNEL_FLAG + ecx]
     test dl, FLAG_BYPASS
-    jnz .check_timer
+    jnz .next_commands_channel
 .load_order:
     movzx ebx, byte [COMMANDS_CHANNEL_ORDER_INDEX + ecx]
     LOAD_VECTOR_ITEM orders, commands_order_offset
