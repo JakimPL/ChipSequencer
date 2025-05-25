@@ -9,13 +9,21 @@
 #include "../patterns/pattern.hpp"
 #include "panel.hpp"
 
+struct VariantChannelIndex {
+    bool command;
+    size_t index;
+    bool operator<(const VariantChannelIndex &other) const {
+        return std::tie(command, index) < std::tie(other.command, other.index);
+    }
+};
+
 class GUIPatternsPanel : public GUIPanel {
   private:
     struct CurrentPatterns {
         uint16_t total_rows = 0;
         std::map<size_t, std::vector<Pattern>> patterns;
         std::map<size_t, std::vector<CommandsPattern>> commands_patterns;
-        std::map<std::pair<bool, size_t>, int> playing_rows;
+        std::map<VariantChannelIndex, int> playing_rows;
     } current_patterns;
 
     int page = 0;

@@ -138,6 +138,7 @@ void CommandsPattern::from_sequence(const uint8_t index) {
 
         indices.push_back(total_length);
         total_length += command.duration;
+        durations.push_back(command.duration);
         for (size_t j = 1; j < command.duration; ++j) {
             add_command();
         }

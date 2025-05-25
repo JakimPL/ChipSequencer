@@ -112,9 +112,9 @@ void GUIPatternsPanel::from_sequences() {
                 break;
             }
 
-            Pattern pattern = Pattern(sequence_index);
+            current_patterns.patterns[channel_index].emplace_back(sequence_index);
+            Pattern &pattern = current_patterns.patterns[channel_index].back();
             pattern.current_row = channel_index == current_channel ? current_row - row : -1;
-            current_patterns.patterns[channel_index].push_back(pattern);
             if (playing && playing_sequence == j) {
                 const int playing_row = pattern.calculate_playing_row(channel_index);
                 current_patterns.playing_rows[{false, channel_index}] = row + playing_row;
@@ -149,9 +149,9 @@ void GUIPatternsPanel::from_commands_sequences() {
                 break;
             }
 
-            CommandsPattern pattern = CommandsPattern(sequence_index);
+            current_patterns.commands_patterns[channel_index].emplace_back(sequence_index);
+            CommandsPattern &pattern = current_patterns.commands_patterns[channel_index].back();
             pattern.current_row = channel_index == current_channel ? current_row - row : -1;
-            current_patterns.commands_patterns[channel_index].push_back(pattern);
             if (playing && playing_sequence == j) {
                 const int playing_row = pattern.calculate_playing_row(channel_index);
                 current_patterns.playing_rows[{true, channel_index}] = row + playing_row;
