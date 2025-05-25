@@ -155,7 +155,7 @@ void GUIOrdersPanel::draw_order() {
 
         if (ImGui::Selectable("##selectable", is_selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)) {
             selected_sequence = i;
-            input_handler.clear();
+            input_handler.clear(false);
         }
 
         ImGui::SameLine();

@@ -4,9 +4,9 @@ void InputHandler::set_limit(const int max) {
     limit = max;
 }
 
-void InputHandler::clear() {
+void InputHandler::clear(const bool capture) {
     buffer.clear();
-    capture_input = true;
+    capture_input = capture;
 }
 
 std::string InputHandler::get_buffer() const {

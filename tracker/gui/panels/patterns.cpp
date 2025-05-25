@@ -95,7 +95,7 @@ void GUIPatternsPanel::draw_commands_channel(size_t channel_index) {
     const uint16_t end = start + gui.get_page_size();
 
     for (auto &pattern : current_patterns.commands_patterns[channel_index]) {
-        const int playing_row = current_patterns.playing_rows[{false, channel_index}];
+        const int playing_row = current_patterns.playing_rows[{true, channel_index}];
         auto [new_index, select] = draw_commands_pattern(pattern, false, index, playing_row, start, end);
         if (select) {
             current_channel = {true, channel_index};
@@ -164,7 +164,7 @@ void GUIPatternsPanel::from_commands_sequences() {
         std::vector<uint8_t> order_sequences = std::vector<uint8_t>(order->sequences.begin(), order->sequences.begin() + order->order_length);
 
         uint16_t row = 0;
-        uint8_t playing_sequence = current_sequence[channel_index];
+        uint8_t playing_sequence = current_commands_sequence[channel_index];
         current_patterns.playing_rows[{true, channel_index}] = -1;
         for (size_t j = 0; j < order->order_length; ++j) {
             const uint8_t sequence_index = order_sequences[j];

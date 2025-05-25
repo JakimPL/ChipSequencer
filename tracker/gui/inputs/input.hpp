@@ -13,7 +13,7 @@ class InputHandler {
     int limit = 0;
 
   public:
-    void clear();
+    void clear(const bool capture = true);
     std::string get_buffer() const;
     void set_buffer(const std::string &value);
     void set_limit(const int max);

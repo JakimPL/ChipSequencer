@@ -305,10 +305,10 @@ int CommandsPattern::calculate_playing_row(size_t channel_index) {
         return -1;
     }
 
-    size_t note_index = commands_sequence_current_command[channel_index] - 1;
-    note_index = std::min(note_index, indices.size() - 1);
-    int playing_row = indices[note_index];
-    playing_row += durations[note_index];
+    size_t command_index = commands_sequence_current_command[channel_index] - 1;
+    command_index = std::min(command_index, indices.size() - 1);
+    int playing_row = indices[command_index];
+    playing_row += durations[command_index];
     playing_row -= 1 + commands_sequence_timer[channel_index] / ticks_per_beat;
     return playing_row;
 }

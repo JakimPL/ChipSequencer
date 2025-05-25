@@ -38,7 +38,7 @@ commands:
     movzx ecx, byte [current_commands_channel]
     inc byte [current_commands_sequence + ecx]
     mov byte [commands_sequence_current_command + ecx], 0
-    mov word [commands_sequence_current_offset + ecx], 0
+    mov word [commands_sequence_current_offset + 2 * ecx], 0
     mov dl, [current_commands_sequence + ecx]
     cmp dl, [ORDER_LENGTH + ebx]
     jne .load_commands_sequence
@@ -100,7 +100,7 @@ reset_commands_channel:
     mov dword [commands_sequence_timer + 4 * ecx], 0
     mov byte [current_commands_sequence + ecx], 0
     mov byte [commands_sequence_current_command + ecx], 0
-    mov word [commands_sequence_current_offset + ecx], 0
+    mov word [commands_sequence_current_offset + 2 * ecx], 0
     ret
 
 ; Commands
