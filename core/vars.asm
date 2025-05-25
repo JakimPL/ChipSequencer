@@ -13,6 +13,9 @@
     global commands_sequence_offset
     global commands_sequence_current_command
 
+    global sequence_timer_row
+    global commands_sequence_timer_row
+
     global dsp_input
     global dsp_timer
     global output

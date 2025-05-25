@@ -87,7 +87,7 @@ int Pattern::calculate_playing_row(size_t channel_index) {
     note_index = std::min(note_index, indices.size() - 1);
     int playing_row = indices[note_index];
     playing_row += durations[note_index];
-    playing_row -= 1 + sequence_timer[channel_index] / ticks_per_beat;
+    playing_row -= sequence_timer_row[channel_index];
     return playing_row;
 }
 
