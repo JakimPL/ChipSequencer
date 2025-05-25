@@ -31,7 +31,7 @@ filter:
 
 ; -2 * pi * x
     fld dword [pi]
-    fild word [two]
+    fild word [i_2]
     fmulp st1, st0
     fmulp st1, st0
     fchs
@@ -39,15 +39,7 @@ filter:
 ; exp(...)
     fldl2e
     fmul
-    fld st0
-    frndint
-    fsub st1, st0
-    fxch
-    f2xm1
-    fld1
-    fadd
-    fscale
-    fstp st1
+    call power
 
 ; a = exp(..), b = 1 - a
     fld1
@@ -68,8 +60,8 @@ filter:
     MOV_TO_SI eax
 
 .apply_mode:
-    cmp dl, 0
-    je .done
+    cmp dl, 0x80
+    jc .done
 
 .difference:
     fsub st1, st0

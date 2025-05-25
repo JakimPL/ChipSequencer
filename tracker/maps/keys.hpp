@@ -1,7 +1,7 @@
-#ifndef GUI_MAPPING_HPP
-#define GUI_MAPPING_HPP
+#ifndef MAPS_KEYS_HPP
+#define MAPS_KEYS_HPP
 
-#include "init.hpp"
+#include "../gui/init.hpp"
 
 struct KeyNoteMapping {
     ImGuiKey key;
@@ -86,4 +86,29 @@ static KeyNoteMapping key_note_linear_mapping[] = {
     {ImGuiKey_RightBracket, 22} // G-6
 };
 
-#endif // GUI_MAPPING_HPP
+constexpr std::array<ImGuiKey, 7> commands_keys = {
+    ImGuiKey_U,
+    ImGuiKey_D,
+    ImGuiKey_B,
+    ImGuiKey_S,
+    ImGuiKey_G,
+    ImGuiKey_M,
+    ImGuiKey_A,
+};
+
+constexpr std::array<ImGuiKey, 12> values_keys = {
+    ImGuiKey_0,
+    ImGuiKey_1,
+    ImGuiKey_2,
+    ImGuiKey_3,
+    ImGuiKey_4,
+    ImGuiKey_5,
+    ImGuiKey_6,
+    ImGuiKey_7,
+    ImGuiKey_8,
+    ImGuiKey_9,
+    ImGuiKey_Period,
+    ImGuiKey_Comma,
+};
+
+#endif // MAPS_KEYS_HPP

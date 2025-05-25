@@ -1,5 +1,65 @@
 #include "routing.hpp"
 
+const std::map<Target, RoutingItems> routing_variables = {
+    {
+        Target::ENVELOPE,
+        RoutingItems({
+            {"Base volume", ENVELOPE_BASE_VOLUME, TargetVariableType::Word},
+            {"Sustain level", ENVELOPE_SUSTAIN_LEVEL, TargetVariableType::Word},
+            {"Attack", ENVELOPE_ATTACK, TargetVariableType::Word},
+            {"Decay", ENVELOPE_DECAY, TargetVariableType::Word},
+            {"Hold", ENVELOPE_HOLD, TargetVariableType::Word},
+            {"Release", ENVELOPE_RELEASE, TargetVariableType::Word},
+        }),
+    },
+    {
+        Target::SEQUENCE,
+        RoutingItems({}),
+    },
+    {
+        Target::ORDER,
+        RoutingItems({}),
+    },
+    {
+        Target::OSCILLATOR,
+        RoutingItems({
+            {"Duty cycle", OSCILLATOR_SQUARE_DUTY_CYCLE, TargetVariableType::Byte, GENERATOR_SQUARE},
+            {"Interpolation", OSCILLATOR_WAVETABLE_INTERPOLATION, TargetVariableType::Byte, GENERATOR_WAVETABLE},
+        }),
+    },
+    {
+        Target::WAVETABLE,
+        RoutingItems({}),
+    },
+    {
+        Target::DSP,
+        RoutingItems({
+            {"Gain", DSP_GAINER_VOLUME, TargetVariableType::Word, EFFECT_GAINER},
+            {"Level", DSP_DISTORTION_LEVEL, TargetVariableType::Word, EFFECT_DISTORTION},
+            {"Cutoff frequency", DSP_FILTER_FREQUENCY, TargetVariableType::Word, EFFECT_FILTER},
+            {"High-pass", DSP_FILTER_MODE, TargetVariableType::Byte, EFFECT_FILTER},
+            {"Dry", DSP_DELAY_DRY, TargetVariableType::Byte, EFFECT_DELAY},
+            {"Wet", DSP_DELAY_WET, TargetVariableType::Byte, EFFECT_DELAY},
+            {"Feedback", DSP_DELAY_FEEDBACK, TargetVariableType::Byte, EFFECT_DELAY},
+            {"Delay time", DSP_DELAY_TIME, TargetVariableType::Word, EFFECT_DELAY},
+            {"Splitter 0", DSP_SPLITTER, TargetVariableType::Byte},
+            {"Splitter 1", DSP_SPLITTER + 1, TargetVariableType::Byte},
+            {"Splitter 2", DSP_SPLITTER + 2, TargetVariableType::Byte},
+            {"Splitter 3", DSP_SPLITTER + 3, TargetVariableType::Byte},
+        }),
+    },
+    {
+        Target::CHANNEL,
+        RoutingItems({
+            {"Pitch", CHANNEL_PITCH, TargetVariableType::Dword},
+            {"Splitter 0", CHANNEL_SPLITTER, TargetVariableType::Byte},
+            {"Splitter 1", CHANNEL_SPLITTER + 1, TargetVariableType::Byte},
+            {"Splitter 2", CHANNEL_SPLITTER + 2, TargetVariableType::Byte},
+            {"Splitter 3", CHANNEL_SPLITTER + 3, TargetVariableType::Byte},
+        }),
+    },
+};
+
 RoutingItems::RoutingItems(std::vector<RoutingItem> items) {
     for (size_t i = 0; i < items.size(); ++i) {
         const auto &item = items[i];

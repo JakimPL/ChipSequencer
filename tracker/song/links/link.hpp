@@ -12,13 +12,15 @@
 
 struct Link {
     ItemType type;
-    uint8_t id;
+    uint16_t id;
     Target target;
     uint32_t index;
     uint16_t offset;
+
     void *item = nullptr;
     void *base = nullptr;
     void *pointer = nullptr;
+    uint8_t table_id = -1;
     LinkKey key;
 
     void assign_output();
@@ -26,6 +28,7 @@ struct Link {
     void deserialize(std::ifstream &file);
 };
 
-typedef std::array<std::vector<Link>, 2> Links;
+typedef std::array<std::vector<Link>, static_cast<size_t>(ItemType::COUNT)> Links;
+typedef std::map<uint8_t, std::map<uint8_t, Link>> CommandsLinks;
 
 #endif // SONG_LINKS_LINK_HPP

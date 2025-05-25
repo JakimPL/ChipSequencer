@@ -10,19 +10,22 @@ enum class Target : uint8_t {
     DIRECT_DSP,
     ENVELOPE,
     SEQUENCE,
+    COMMANDS_SEQUENCE,
     ORDER,
     OSCILLATOR,
     WAVETABLE,
     DSP,
     CHANNEL,
-    UNUSED
+    COMMANDS_CHANNEL,
+    COUNT,
 };
 
 enum class TargetVariableType : uint8_t {
+    Byte,
+    Word,
+    Dword,
     Float,
-    Int8,
-    Int16,
-    Int32
+    Count,
 };
 
 #endif // SONG_LINKS_TARGET_HPP

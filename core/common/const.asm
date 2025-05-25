@@ -56,6 +56,9 @@
     %define MAX_WAVETABLES 16
     %define MAX_CHANNELS 32
     %define MAX_DSPS 32
+    %define MAX_COMMANDS_SEQUENCES 64
+    %define MAX_COMMANDS_CHANNELS 32
+    %define MAX_TARGETS 254
 
     %define MAX_WAVETABLE_SIZE 4096
     %define MAX_DSP_BUFFER_SIZE 1048576 ; 10 s
@@ -65,6 +68,11 @@
     %define MAX_ORDER_ITEMS 64
     %define MAX_STEPS 64
     %define MAX_WAVETABLE_POINTS 255
+
+    %define MAX_COMMAND_COMMAND_SIZE 1
+    %define MAX_COMMAND_VALUE_SIZE 20
+
+    %define MAX_PORTAMENTO 65.535
 
 ; Let C = magic_constant. Each frame, an envelope timer increases by C / v.
 ; where v is proportional to time t belonging to the range [0, MAX_ENVELOPE_TIMER_LENGTH].
@@ -103,12 +111,31 @@
     %define GENERATOR_SINE 2
     %define GENERATOR_WAVETABLE 3
     %define GENERATOR_NOISE 4
+    %define GENERATOR_COUNT 5
 
 ; Effects
     %define EFFECT_GAINER 0
     %define EFFECT_DISTORTION 1
     %define EFFECT_FILTER 2
     %define EFFECT_DELAY 3
+    %define EFFECT_COUNT 4
+
+; Commands
+    %define INSTRUCTION_EMPTY 0
+    %define INSTRUCTION_PORTAMENTO_UP 1
+    %define INSTRUCTION_PORTAMENTO_DOWN 2
+    %define INSTRUCTION_SET_MASTER_GAINER 3
+    %define INSTRUCTION_SET_BPM 4
+    %define INSTRUCTION_SET_DIVISION 5
+    %define INSTRUCTION_CHANGE_BYTE_VALUE 6
+    %define INSTRUCTION_CHANGE_WORD_VALUE 7
+    %define INSTRUCTION_CHANGE_DWORD_VALUE 8
+    %define INSTRUCTION_CHANGE_FLOAT_VALUE 9
+    %define INSTRUCTION_ADD_BYTE_VALUE 10
+    %define INSTRUCTION_ADD_WORD_VALUE 11
+    %define INSTRUCTION_ADD_DWORD_VALUE 12
+    %define INSTRUCTION_ADD_FLOAT_VALUE 13
+    %define INSTRUCTION_COUNT 14
 
 ; Oscillators
     %define BASE_VOLUME 0x8000

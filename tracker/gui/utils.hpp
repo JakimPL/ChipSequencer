@@ -7,7 +7,7 @@
 #include "../song/links/key.hpp"
 #include "enums.hpp"
 #include "init.hpp"
-#include "pattern.hpp"
+#include "patterns/pattern.hpp"
 
 struct GUIState {
     bool value_changed;
@@ -25,14 +25,22 @@ void draw_link_tooltip(const LinkKey &key);
 void draw_popup(const std::string &message);
 bool draw_button(const char *label, const float button_padding = 0.0f);
 
-bool draw_output(OutputType &output_type, const int dsp_index = -1);
-void draw_output_parameter(OutputType &output_type, const std::vector<std::string> &names, const std::string label);
+void draw_output_output_splitter(OutputType &output_type, const LinkKey key);
+void draw_output_dsp_splitter(OutputType &output_type, const int dsp_index, const LinkKey key);
+void draw_output_direct_output(OutputType &output_type, const LinkKey key);
+void draw_output_direct_dsp(OutputType &output_type, const int dsp_index, const LinkKey key);
+bool draw_output_parameter(OutputType &output_type, const LinkKey key);
+void draw_output_parameter_generic(OutputType &output_type, const std::vector<std::string> &names, const std::string label);
 void draw_output_parameter_oscillator(OutputType &output_type);
 void draw_output_parameter_dsp(OutputType &output_type);
+bool draw_output(OutputType &output_type, const LinkKey key);
 
 void show_dependency_tooltip(const std::string &label, std::vector<size_t> &dependencies);
+void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t index);
 
 std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header = true, const size_t index = 0, const int playing_row = -1, const uint16_t start = 0, const uint16_t end = UINT16_MAX);
+std::pair<size_t, bool> draw_commands_pattern(CommandsPattern &pattern, const bool header = true, const size_t index = 0, const int playing_row = -1, const uint16_t start = 0, const uint16_t end = UINT16_MAX);
+
 GUIState prepare_combo(const std::vector<std::string> &names, std::string label, int &index, const bool error_if_empty = false);
 void update_items(std::vector<std::string> &names, size_t size, std::string label, int &index);
 void push_secondary_style();

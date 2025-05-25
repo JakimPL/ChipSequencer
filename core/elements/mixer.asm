@@ -22,7 +22,7 @@ mix:
     mov [current_channel], cl
 
 .process_channel:
-    call load_offsets
+    call load_channel
     call step
     call increment_timer
     call play_channel
@@ -67,7 +67,12 @@ mix:
     %endif
 
 .normalize:
-    fld dword [output]
+    xor ecx, ecx
+    mov cl, MAX_OUTPUT_CHANNELS
+.normalize_loop:
+    dec cl
+
+    fld dword [output + 4 * ecx]
     fld dword [normalizer]
     fmul
 
@@ -76,7 +81,10 @@ mix:
     %ifdef BITS_16
     call float_to_integer
     %endif
-    mov [output], eax
+    mov [output + 4 * ecx], eax
+
+    cmp cl, 0
+    jne .normalize_loop
     popa
     ret
 

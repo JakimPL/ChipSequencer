@@ -32,54 +32,6 @@ struct RoutingItems {
     RoutingTuple filter_items(const int index) const;
 };
 
-const std::map<Target, RoutingItems> routing_variables = {
-    {
-        Target::ENVELOPE,
-        RoutingItems({
-            {"Base volume", ENVELOPE_BASE_VOLUME, TargetVariableType::Int16},
-            {"Sustain level", ENVELOPE_SUSTAIN_LEVEL, TargetVariableType::Int16},
-            {"Attack", ENVELOPE_ATTACK, TargetVariableType::Int16},
-            {"Decay", ENVELOPE_DECAY, TargetVariableType::Int16},
-            {"Hold", ENVELOPE_HOLD, TargetVariableType::Int16},
-            {"Release", ENVELOPE_RELEASE, TargetVariableType::Int16},
-        }),
-    },
-    {
-        Target::SEQUENCE,
-        RoutingItems({}),
-    },
-    {
-        Target::ORDER,
-        RoutingItems({}),
-    },
-    {
-        Target::OSCILLATOR,
-        RoutingItems({
-            {"Duty cycle", OSCILLATOR_SQUARE_DUTY_CYCLE, TargetVariableType::Int8, GENERATOR_SQUARE},
-        }),
-    },
-    {
-        Target::WAVETABLE,
-        RoutingItems({}),
-    },
-    {
-        Target::DSP,
-        RoutingItems({
-            {"Gain", DSP_GAINER_VOLUME, TargetVariableType::Int16, EFFECT_GAINER},
-            {"Level", DSP_DISTORTION_LEVEL, TargetVariableType::Int16, EFFECT_DISTORTION},
-            {"Cutoff frequency", DSP_FILTER_FREQUENCY, TargetVariableType::Int16, EFFECT_FILTER},
-            {"Dry", DSP_DELAY_DRY, TargetVariableType::Int8, EFFECT_DELAY},
-            {"Wet", DSP_DELAY_WET, TargetVariableType::Int8, EFFECT_DELAY},
-            {"Feedback", DSP_DELAY_FEEDBACK, TargetVariableType::Int8, EFFECT_DELAY},
-            {"Delay time", DSP_DELAY_TIME, TargetVariableType::Int16, EFFECT_DELAY},
-        }),
-    },
-    {
-        Target::CHANNEL,
-        RoutingItems({
-            {"Pitch", CHANNEL_PITCH, TargetVariableType::Int32},
-        }),
-    },
-};
+extern const std::map<Target, RoutingItems> routing_variables;
 
 #endif // MAPS_ROUTING_HPP

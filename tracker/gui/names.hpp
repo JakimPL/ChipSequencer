@@ -7,6 +7,7 @@
 
 #include "../song/links/target.hpp"
 #include "../song/links/type.hpp"
+#include "../structures/commands/sequence.hpp"
 #include "enums.hpp"
 
 extern std::vector<std::string> channel_names;
@@ -16,26 +17,31 @@ extern std::vector<std::string> oscillator_names;
 extern std::vector<std::string> order_names;
 extern std::vector<std::string> sequence_names;
 extern std::vector<std::string> wavetable_names;
+extern std::vector<std::string> commands_channel_names;
+extern std::vector<std::string> commands_sequence_names;
 
 const std::vector<std::string> effect_names = {"Gainer", "Distortion", "Filter", "Delay"};
-const std::vector<std::string> parameter_types = {"Envelope", "Sequence", "Order", "Oscillator", "Wavetable", "DSP", "Channel"};
+const std::vector<std::string> parameter_types = {"Envelope", "Sequence", "Commands sequence", "Order", "Oscillator", "Wavetable", "DSP", "Channel", "Commands channel"};
 const std::vector<std::string> target_types = {"Output splitter", "DSP splitter", "Direct output", "DSP", "Parameter"};
+const std::vector<std::string> simple_operation_names = {"Add", "Set"};
 const std::vector<std::string> operation_names = {"Add", "Set", "Multiply", "Zero"};
-const std::vector<std::string> variable_types = {"Float", "Int8", "Int16", "Int32"};
+const std::vector<std::string> variable_types = {"Int8", "Int16", "Int32", "Float"};
 const std::vector<std::string> generator_names = {"Square", "Saw", "Sine", "Wavetable", "Noise"};
 const std::map<Target, std::string> target_names = {
-    {Target::SPLITTER_OUTPUT, "Output Splitter"},
-    {Target::SPLITTER_DSP, "DSP Splitter"},
+    {Target::SPLITTER_OUTPUT, "Output splitter"},
+    {Target::SPLITTER_DSP, "DSP splitter"},
     {Target::DIRECT_OUTPUT, "Output"},
     {Target::DIRECT_DSP, "DSP"},
     {Target::ENVELOPE, "Envelope"},
     {Target::SEQUENCE, "Sequence"},
+    {Target::COMMANDS_SEQUENCE, "Commands sequence"},
     {Target::ORDER, "Order"},
     {Target::OSCILLATOR, "Oscillator"},
     {Target::WAVETABLE, "Wavetable"},
     {Target::DSP, "DSP"},
     {Target::CHANNEL, "Channel"},
-    {Target::UNUSED, "Unused"},
+    {Target::COMMANDS_CHANNEL, "Commands channel"},
+    {Target::COUNT, "Unused"},
 };
 const std::map<ItemType, std::string> item_types_names = {
     {ItemType::CHANNEL, "Channel"},
@@ -45,6 +51,8 @@ const std::vector<std::pair<GUIElement, const char *>> menu_items = {
     {GUIElement::Editor, "Editor"},
     {GUIElement::General, "General"},
     {GUIElement::Channels, "Channels"},
+    {GUIElement::CommandsChannel, "Commands channel"},
+    {GUIElement::CommandsSequence, "Commands sequence"},
     {GUIElement::DSPs, "DSPs"},
     {GUIElement::Envelopes, "Envelopes"},
     {GUIElement::Orders, "Orders"},
@@ -54,6 +62,31 @@ const std::vector<std::pair<GUIElement, const char *>> menu_items = {
     {GUIElement::Sequences, "Sequences"},
     {GUIElement::Summary, "Summary"},
     {GUIElement::Wavetables, "Wavetables"},
+};
+const std::map<Instruction, const char *> instruction_names = {
+    {Instruction::Empty, "Empty"},
+    {Instruction::PortamentoUp, "Portamento up"},
+    {Instruction::PortamentoDown, "Portamento down"},
+    {Instruction::SetMasterGainer, "Set master gainer"},
+    {Instruction::SetBPM, "Set BPM"},
+    {Instruction::SetDivision, "Set division"},
+    {Instruction::ChangeByteValue, "Change Int8 value"},
+    {Instruction::ChangeWordValue, "Change Int16 value"},
+    {Instruction::ChangeDwordValue, "Change Int32 value"},
+    {Instruction::ChangeFloatValue, "Change float value"},
+    {Instruction::AddByteValue, "Add Int8 value"},
+    {Instruction::AddWordValue, "Add Int16 value"},
+    {Instruction::AddDwordValue, "Add Int32 value"},
+    {Instruction::AddFloatValue, "Add float value"},
+};
+const std::map<Instruction, const char *> simple_instruction_names = {
+    {Instruction::Empty, "Empty"},
+    {Instruction::PortamentoUp, "Portamento up"},
+    {Instruction::PortamentoDown, "Portamento down"},
+    {Instruction::SetMasterGainer, "Set master gainer"},
+    {Instruction::SetBPM, "Set BPM"},
+    {Instruction::SetDivision, "Set division"},
+    {Instruction::ChangeByteValue, "Change value"},
 };
 
 #endif // GUI_NAMES_HPP

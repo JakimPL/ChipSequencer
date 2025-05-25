@@ -19,6 +19,8 @@
 #include "panels/sequences.hpp"
 #include "panels/summary.hpp"
 #include "panels/wavetables.hpp"
+#include "panels/commands/channels.hpp"
+#include "panels/commands/sequences.hpp"
 
 class GUI {
   public:
@@ -37,6 +39,7 @@ class GUI {
     bool is_playing() const;
     bool is_paused() const;
 
+    void new_song();
     void save(const std::string &filename);
     void open(const std::string &filename);
 
@@ -61,6 +64,8 @@ class GUI {
     GUIEditorPanel editor = GUIEditorPanel(true, current_octave, jump_step, page_size);
     GUIGeneralPanel general_panel;
     GUIChannelsPanel channels_panel;
+    GUICommandsChannelsPanel commands_channels_panel;
+    GUICommandsSequencesPanel commands_sequences_panel;
     GUIDSPsPanel dsps_panel;
     GUIEnvelopesPanel envelopes_panel;
     GUIOrdersPanel orders_panel;
@@ -84,6 +89,7 @@ class GUI {
     void update_all();
     void frame_all();
     void set_visibility_all(const bool visible);
+    void clear_input_buffers();
 };
 
 #endif // GUI_GUI_HPP

@@ -8,7 +8,7 @@ void sound_driver_step() __attribute__((used));
 
 void calculate_ticks_per_beat();
 void initialize();
-void mix();
+void frame();
 }
 
 inline void sound_driver_initialize() {

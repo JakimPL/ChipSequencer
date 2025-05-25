@@ -17,7 +17,9 @@ void GUIOrdersPanel::draw() {
     std::vector<size_t> dependencies = song.find_order_dependencies(order_index);
     push_tertiary_style();
     draw_add_or_remove("channels", dependencies);
-    prepare_combo(order_names, "##OrderCombo", order_index);
+    if (prepare_combo(order_names, "##OrderCombo", order_index).value_changed) {
+        input_handler.clear();
+    }
     show_dependency_tooltip("channels", dependencies);
     pop_tertiary_style();
 
@@ -51,7 +53,7 @@ void GUIOrdersPanel::from() {
 }
 
 void GUIOrdersPanel::to() const {
-    if (!is_index_valid()) {
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || !is_index_valid()) {
         return;
     }
 
@@ -76,6 +78,7 @@ void GUIOrdersPanel::add() {
     }
 
     order_index = orders.size() - 1;
+    input_handler.clear();
     update();
 }
 
@@ -86,14 +89,20 @@ void GUIOrdersPanel::duplicate() {
     }
 
     order_index = orders.size() - 1;
+    input_handler.clear();
     update();
 }
 
 void GUIOrdersPanel::remove() {
+    const size_t previous_index = order_index;
     if (is_index_valid()) {
         song.remove_order(order_index);
         order_index = std::max(0, order_index - 1);
         update();
+    }
+
+    if (previous_index != order_index) {
+        input_handler.clear();
     }
 }
 
@@ -136,7 +145,8 @@ void GUIOrdersPanel::draw_order() {
         const int &item = current_order.sequences[i];
 
         ImGui::PushID(i);
-        const bool incorrect = (item < 0 || item >= static_cast<int>(sequences.size()));
+        const size_t size = std::max(sequences.size(), commands_sequences.size());
+        const bool incorrect = (item < 0 || item >= static_cast<int>(size));
         const bool is_selected = (selected_sequence == i);
         const std::string order_string = std::to_string(item);
         if (is_selected) {
@@ -145,7 +155,7 @@ void GUIOrdersPanel::draw_order() {
 
         if (ImGui::Selectable("##selectable", is_selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)) {
             selected_sequence = i;
-            digit_buffer.clear();
+            input_handler.clear(false);
         }
 
         ImGui::SameLine();
@@ -174,43 +184,13 @@ void GUIOrdersPanel::check_keyboard_input() {
         return;
     }
 
-    if (selected_sequence < 0 || selected_sequence >= current_order.sequences.size())
+    if (selected_sequence < 0 || selected_sequence >= current_order.sequences.size()) {
         return;
-
-    for (int key = ImGuiKey_0; key <= ImGuiKey_9; key++) {
-        if (ImGui::IsKeyPressed((ImGuiKey) key))
-            digit_buffer.push_back('0' + (key - ImGuiKey_0));
     }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_Backspace)) {
-        if (!digit_buffer.empty()) {
-            digit_buffer.pop_back();
-        }
-    }
-
-    if (!digit_buffer.empty()) {
-        try {
-            int value = std::stoi(digit_buffer);
-            value = std::max(std::min(value, static_cast<int>(sequences.size()) - 1), 0);
-            current_order.sequences[selected_sequence] = value;
-        } catch (std::out_of_range &) {
-            digit_buffer.clear();
-        }
-    }
-
-    if (ImGui::IsKeyPressed(ImGuiKey_Enter)) {
-        digit_buffer = std::to_string(current_order.sequences[selected_sequence]);
-    }
-
-    if (ImGui::IsKeyPressed(ImGuiKey_UpArrow)) {
-        selected_sequence = std::max(0, selected_sequence - 1);
-        digit_buffer.clear();
-    }
-
-    if (ImGui::IsKeyPressed(ImGuiKey_DownArrow)) {
-        selected_sequence = std::min((int) current_order.sequences.size() - 1, selected_sequence + 1);
-        digit_buffer.clear();
-    }
+    const size_t size = std::max(sequences.size(), commands_sequences.size());
+    input_handler.set_limit(static_cast<int>(size) - 1);
+    input_handler.handle_input(current_order.sequences, selected_sequence);
 }
 
 void GUIOrdersPanel::set_index(const int index) {

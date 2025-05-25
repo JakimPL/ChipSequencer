@@ -7,3 +7,5 @@ std::vector<std::string> oscillator_names;
 std::vector<std::string> order_names;
 std::vector<std::string> sequence_names;
 std::vector<std::string> wavetable_names;
+std::vector<std::string> commands_channel_names;
+std::vector<std::string> commands_sequence_names;

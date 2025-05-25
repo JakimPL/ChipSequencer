@@ -1,21 +1,28 @@
 #include "../../constants.hpp"
-#include "../../maps/offsets.hpp"
 #include "../../structures.hpp"
 #include "../../utils/file.hpp"
 #include "../output.hpp"
 #include "link.hpp"
 
 void Link::assign_output() {
-    Channel *channel = reinterpret_cast<Channel *>(item);
-    void **dsp_output = reinterpret_cast<void **>(item + DSP_OUTPUT);
-
     switch (type) {
-    case ItemType::CHANNEL:
-        channel->output = pointer;
+    case ItemType::CHANNEL: {
+        Channel *channel = reinterpret_cast<Channel *>(item);
+        channel->target = table_id;
         break;
-    case ItemType::DSP:
-        *dsp_output = pointer;
+    }
+    case ItemType::DSP: {
+        DSP *dsp = reinterpret_cast<DSP *>(item);
+        dsp->target = table_id;
         break;
+    }
+    case ItemType::COMMANDS: {
+        break;
+    }
+    case ItemType::COUNT:
+    default: {
+        throw std::runtime_error("Invalid link type: " + std::to_string(static_cast<int>(type)));
+    }
     }
 }
 

@@ -56,6 +56,16 @@
     %endif
     %endmacro
 
+    %macro LOAD_VECTOR_ITEM_16_BIT 2
+    %ifdef TRACKER
+    LOAD_ITEM %1, %2
+    %else
+    lea ecx, [%1]
+    call load_item_16bit
+    mov [%2], ecx
+    %endif
+    %endmacro
+
     %macro PRINT_STRING 1
     mov dx, %1
     call print_message
@@ -114,5 +124,14 @@
     add [esi], %1
     %else
     add [si], %1
+    %endif
+    %endmacro
+
+    %macro SET_COMMAND_SIZE 1
+    xor eax, eax
+    %ifdef TRACKER
+    mov al, MAX_SIZE_COMMAND
+    %else
+    mov al, %1
     %endif
     %endmacro

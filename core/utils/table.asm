@@ -14,6 +14,20 @@ load_item:
 .done:
     ret
 
+load_item_16bit:
+; Arguments:
+; ECX - beginning offset (sequence)
+; BL  - element index
+    cmp bl, 0
+    jz .done
+.find_data_16bit:
+    movzx eax, word [ecx]
+    add ecx, eax
+    dec bl
+    jnz .find_data_16bit
+.done:
+    ret
+
 reset:
 ; BX - loop size
 ; SI - function call
@@ -54,8 +68,8 @@ load_table_8bit_item:
 ; ECX - divisor
 ; SI  - table address
 ; AX  - input timer/output
-    cmp dl, 0
-    je .no_interpolation
+    cmp dl, 0x80
+    jc .no_interpolation
 .interpolation:
     call load_table_item
     call sample_interpolation_set

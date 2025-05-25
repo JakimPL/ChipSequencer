@@ -5,7 +5,7 @@
 
 #include "../constants.hpp"
 #include "../init.hpp"
-#include "../pattern.hpp"
+#include "../patterns/pattern.hpp"
 #include "panel.hpp"
 
 class GUISequencesPanel : public GUIPanel {
@@ -15,7 +15,6 @@ class GUISequencesPanel : public GUIPanel {
     } current_sequence;
 
     int sequence_index = 0;
-    int jump_step = 1;
 
     bool is_index_valid() const;
     void draw_sequence_length();

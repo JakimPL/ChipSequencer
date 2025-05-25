@@ -46,7 +46,7 @@ void GUIRoutingPanel::from() {
 }
 
 void GUIRoutingPanel::to() const {
-    if (gui.is_playing()) {
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || gui.is_playing()) {
         return;
     }
 
@@ -61,6 +61,8 @@ void GUIRoutingPanel::to() const {
             link_manager.set_link(link, link.item, id);
         }
     }
+
+    link_manager.save_targets();
 }
 
 void GUIRoutingPanel::collect_links() {
@@ -107,7 +109,9 @@ void GUIRoutingPanel::collect_nodes() {
         auto it = existing_node_indices.find(current_id);
 
         if (it != existing_node_indices.end()) {
-            update_channel_node(i, it->second, next_nodes);
+            RoutingNode &node = nodes[it->second];
+            update_channel_node(i, node);
+            next_nodes.push_back(node);
             existing_node_indices.erase(it);
         } else {
             add_channel_node(i, next_nodes, column_next_y);
@@ -119,7 +123,9 @@ void GUIRoutingPanel::collect_nodes() {
         auto it = existing_node_indices.find(current_id);
 
         if (it != existing_node_indices.end()) {
-            update_dsp_node(i, it->second, next_nodes);
+            RoutingNode &node = nodes[it->second];
+            update_dsp_node(i, node);
+            next_nodes.push_back(node);
             existing_node_indices.erase(it);
         } else {
             add_dsp_node(i, next_nodes, column_next_y);
@@ -132,7 +138,9 @@ void GUIRoutingPanel::collect_nodes() {
         auto it = existing_node_indices.find(current_id);
 
         if (it != existing_node_indices.end()) {
-            update_output_node(i, it->second, next_nodes);
+            RoutingNode &node = nodes[it->second];
+            update_output_node(i, node);
+            next_nodes.push_back(node);
             existing_node_indices.erase(it);
         } else {
             add_output_node(i, next_nodes, column_next_y);
@@ -142,103 +150,96 @@ void GUIRoutingPanel::collect_nodes() {
     nodes = std::move(next_nodes);
 }
 
-void GUIRoutingPanel::update_channel_node(size_t index, size_t existing_index, std::vector<RoutingNode> &next_nodes) {
-    RoutingNode &channel_node = nodes[existing_index];
-    const auto &channel_routing = routing_variables.at(Target::CHANNEL);
-
+void GUIRoutingPanel::update_channel_node(size_t index, RoutingNode &channel_node) {
     channel_node.name = channel_names[index];
-    channel_node.bypass = channels[index]->flag & FLAG_BYPASS;
     channel_node.parameters.clear();
     channel_node.lines = 1;
+
+    const Channel *channel = channels[index];
+    const Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][index];
+    const auto &channel_routing = routing_variables.at(Target::CHANNEL);
+    channel_node.bypass = channel->flag & FLAG_BYPASS;
+
     for (size_t j = 0; j < channel_routing.labels.size(); ++j) {
+        if (channel_routing.offsets[j] >= CHANNEL_SPLITTER && channel_routing.offsets[j] < CHANNEL_SPLITTER + 4) {
+            const int splitter_id = channel_routing.offsets[j] - CHANNEL_SPLITTER;
+            if (get_splitter_bounds(splitter_id, index, link)) {
+                continue;
+            }
+        }
+
         const OutputKey key = {Target::CHANNEL, static_cast<int>(index), channel_routing.offsets[j]};
         channel_node.parameters.push_back({key, channel_routing.labels[j]});
         channel_node.lines += 1;
     }
-
-    next_nodes.push_back(channel_node);
 }
 
 void GUIRoutingPanel::add_channel_node(size_t index, std::vector<RoutingNode> &next_nodes, std::map<float, float> &column_next_y) {
     const float channel_x = 50.0f;
     const float vertical_padding = 20.0f;
-    const auto &channel_routing = routing_variables.at(Target::CHANNEL);
-    NodeIdentifier current_id = {Target::CHANNEL, index};
 
     RoutingNode channel_node;
+    NodeIdentifier current_id = {Target::CHANNEL, index};
     channel_node.identifier = current_id;
     channel_node.key = {ItemType::CHANNEL, static_cast<int>(index)};
-    channel_node.name = channel_names[index];
-    channel_node.bypass = channels[index]->flag & FLAG_BYPASS;
-    for (size_t j = 0; j < channel_routing.labels.size(); ++j) {
-        const OutputKey key = {Target::CHANNEL, static_cast<int>(index), channel_routing.offsets[j]};
-        channel_node.parameters.push_back({key, channel_routing.labels[j]});
-        channel_node.lines += 1;
-    }
+    update_channel_node(index, channel_node);
 
+    const float estimated_height = channel_node.lines * ImGui::GetTextLineHeight();
     channel_node.position = {channel_x, column_next_y[channel_x]};
-    float estimated_height = channel_node.lines * ImGui::GetTextLineHeight();
     column_next_y[channel_x] += estimated_height + vertical_padding;
 
     next_nodes.push_back(channel_node);
 }
 
-void GUIRoutingPanel::update_dsp_node(size_t index, size_t existing_index, std::vector<RoutingNode> &next_nodes) {
-    RoutingNode &dsp_node = nodes[existing_index];
-    const auto &dsp_routing = routing_variables.at(Target::DSP);
-
+void GUIRoutingPanel::update_dsp_node(size_t index, RoutingNode &dsp_node) {
     dsp_node.name = dsp_names[index];
     dsp_node.parameters.clear();
     dsp_node.lines = 1;
+
     const DSP *dsp = static_cast<DSP *>(dsps[index]);
+    const Link &link = links[static_cast<size_t>(ItemType::DSP)][index];
+    const auto &dsp_routing = routing_variables.at(Target::DSP);
     const auto filtered_items = dsp_routing.filter_items(dsp->effect_index);
     const auto labels = std::get<1>(filtered_items);
     const auto offsets = std::get<2>(filtered_items);
     dsp_node.bypass = dsp->flag & FLAG_BYPASS;
+
     for (size_t j = 0; j < labels.size(); ++j) {
+        if (offsets[j] >= DSP_SPLITTER && offsets[j] < DSP_SPLITTER + 4) {
+            const int splitter_id = offsets[j] - DSP_SPLITTER;
+            if (get_splitter_bounds(splitter_id, index, link)) {
+                continue;
+            }
+        }
+
         const OutputKey key = {Target::DSP, static_cast<int>(index), offsets[j]};
         dsp_node.parameters.push_back({key, labels[j]});
         dsp_node.lines += 1;
     }
-
-    next_nodes.push_back(dsp_node);
 }
 
 void GUIRoutingPanel::add_dsp_node(size_t index, std::vector<RoutingNode> &next_nodes, std::map<float, float> &column_next_y) {
     const float channel_x = 50.0f;
     const float dsp_x = channel_x + GUI_ROUTING_NODE_WIDTH + 50.0f;
     const float vertical_padding = 20.0f;
-    const auto &dsp_routing = routing_variables.at(Target::DSP);
-    NodeIdentifier current_id = {Target::DSP, index};
 
     RoutingNode dsp_node;
+    NodeIdentifier current_id = {Target::DSP, index};
     dsp_node.identifier = current_id;
     dsp_node.key = {ItemType::DSP, static_cast<int>(index)};
-    dsp_node.name = dsp_names[index];
-    const DSP *dsp = static_cast<DSP *>(dsps[index]);
-    const auto filtered_items = dsp_routing.filter_items(dsp->effect_index);
-    const auto labels = std::get<1>(filtered_items);
-    const auto offsets = std::get<2>(filtered_items);
-    dsp_node.bypass = dsp->flag & FLAG_BYPASS;
-    for (size_t j = 0; j < labels.size(); ++j) {
-        const OutputKey key = {Target::DSP, static_cast<int>(index), offsets[j]};
-        dsp_node.parameters.push_back({key, labels[j]});
-        dsp_node.lines += 1;
-    }
+    update_dsp_node(index, dsp_node);
 
+    const float estimated_height = dsp_node.lines * ImGui::GetTextLineHeight();
     dsp_node.position = {dsp_x, column_next_y[dsp_x]};
-    float estimated_height = dsp_node.lines * ImGui::GetTextLineHeight();
     column_next_y[dsp_x] += estimated_height + vertical_padding;
 
     next_nodes.push_back(dsp_node);
 }
 
-void GUIRoutingPanel::update_output_node(size_t index, size_t existing_index, std::vector<RoutingNode> &next_nodes) {
-    RoutingNode &node_to_update = nodes[existing_index];
-    node_to_update.name = "Output channel " + std::to_string(index);
-    node_to_update.parameters.clear();
-    node_to_update.lines = 1;
-    next_nodes.push_back(node_to_update);
+void GUIRoutingPanel::update_output_node(size_t index, RoutingNode &output_node) {
+    output_node.name = "Output " + std::to_string(index);
+    output_node.parameters.clear();
+    output_node.lines = 1;
 }
 
 void GUIRoutingPanel::add_output_node(size_t index, std::vector<RoutingNode> &next_nodes, std::map<float, float> &column_next_y) {
@@ -246,14 +247,14 @@ void GUIRoutingPanel::add_output_node(size_t index, std::vector<RoutingNode> &ne
     const float dsp_x = channel_x + GUI_ROUTING_NODE_WIDTH + 50.0f;
     const float output_x = dsp_x + GUI_ROUTING_NODE_WIDTH + 50.0f;
     const float vertical_padding = 20.0f;
-    NodeIdentifier current_id = {Target::DIRECT_OUTPUT, index};
 
     RoutingNode output_node;
+    NodeIdentifier current_id = {Target::DIRECT_OUTPUT, index};
     output_node.identifier = current_id;
-    output_node.name = "Output channel " + std::to_string(index);
+    update_output_node(index, output_node);
 
+    const float estimated_height = output_node.lines * ImGui::GetTextLineHeight();
     output_node.position = {output_x, column_next_y[output_x]};
-    float estimated_height = output_node.lines * ImGui::GetTextLineHeight();
     column_next_y[output_x] += estimated_height + vertical_padding;
 
     next_nodes.push_back(output_node);
@@ -285,6 +286,11 @@ void GUIRoutingPanel::draw_link(const InputKey source, const OutputKey target, u
     const ImU32 audio_color = IM_COL32(0, 200, 0, alpha);
     const ImU32 parameter_color = IM_COL32(200, 150, 0, alpha);
     const ImU32 dragging_color = IM_COL32(150, 150, 150, 255);
+
+    /* don't show invalid DSP links */
+    if (!is_linking_possible(source, target)) {
+        return;
+    }
 
     const bool dragging = link_dragging_source_key.has_value() && link_dragging_source_key.value() == source;
     auto source_pin_it = output_pins.find(source);
@@ -350,6 +356,9 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
     case Target::CHANNEL:
         id_prefix = "ChannelNode_";
         break;
+    case Target::COMMANDS_CHANNEL:
+        id_prefix = "CommandsChannelNode_";
+        break;
     case Target::DSP:
     case Target::DIRECT_DSP:
         id_prefix = "DSPNode_";
@@ -369,6 +378,9 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
     case Target::SEQUENCE:
         id_prefix = "SequenceNode_";
         break;
+    case Target::COMMANDS_SEQUENCE:
+        id_prefix = "CommandsSequenceNode_";
+        break;
     case Target::ORDER:
         id_prefix = "OrderNode_";
         break;
@@ -378,10 +390,9 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
     case Target::WAVETABLE:
         id_prefix = "WavetableNode_";
         break;
-    case Target::UNUSED:
+    case Target::COUNT:
     default:
-        id_prefix = "UnknownNode_";
-        break;
+        throw std::runtime_error("Invalid target type: " + std::to_string(static_cast<int>(routing_node.identifier.type)));
     }
     const std::string id_str = id_prefix + std::to_string(routing_node.identifier.id);
     ImGui::PushID(id_str.c_str());
@@ -441,7 +452,7 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
         output_pins[key] = pin_position;
 
         const bool is_pin_hovered = ImGui::IsMouseHoveringRect(pin_position - ImVec2(GUI_ROUTING_PIN_RADIUS, GUI_ROUTING_PIN_RADIUS), pin_position + ImVec2(GUI_ROUTING_PIN_RADIUS, GUI_ROUTING_PIN_RADIUS));
-        set_dragging_source_key(pin_position, key);
+        set_source_key(pin_position, key);
     }
 
     if (routing_node.identifier.type != Target::CHANNEL) {
@@ -456,7 +467,7 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
         draw_list->AddCircleFilled(pin_position, GUI_ROUTING_PIN_RADIUS, color);
 
         input_pins[key] = pin_position;
-        set_dragging_target_key(pin_position, key);
+        set_target_key(pin_position, key);
     }
 
     ImVec4 text_color_vector = routing_node.bypass ? ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled) : ImGui::GetStyleColorVec4(ImGuiCol_Text);
@@ -473,13 +484,17 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
         draw_list->AddText(current_text_pos, routing_node.bypass ? text_color : color, parameter_label.c_str());
         current_text_pos.y += line_height + style.ItemSpacing.y;
         input_pins[parameter_key] = pin_position;
-        set_dragging_target_key(pin_position, parameter_key);
+        set_target_key(pin_position, parameter_key);
     }
 
     ImGui::PopID();
 }
 
 RoutingNode *GUIRoutingPanel::handle_node_dragging(const ImVec2 &canvas_origin) {
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || gui.is_playing()) {
+        return nullptr;
+    }
+
     RoutingNode *current_dragging_node_ptr = nullptr;
 
     if (dragging_node_id.has_value()) {
@@ -506,7 +521,11 @@ RoutingNode *GUIRoutingPanel::handle_node_dragging(const ImVec2 &canvas_origin) 
     return current_dragging_node_ptr;
 }
 
-void GUIRoutingPanel::set_dragging_source_key(const ImVec2 pin_position, const InputKey &key) {
+void GUIRoutingPanel::set_source_key(const ImVec2 pin_position, const InputKey &key) {
+    if (gui.is_playing()) {
+        return;
+    }
+
     const ImVec2 radius = ImVec2(GUI_ROUTING_PIN_RADIUS, GUI_ROUTING_PIN_RADIUS);
     const bool is_pin_hovered = ImGui::IsMouseHoveringRect(pin_position - radius, pin_position + radius);
     if (is_pin_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
@@ -516,7 +535,11 @@ void GUIRoutingPanel::set_dragging_source_key(const ImVec2 pin_position, const I
     }
 }
 
-void GUIRoutingPanel::set_dragging_target_key(const ImVec2 pin_position, const OutputKey &key) {
+void GUIRoutingPanel::set_target_key(const ImVec2 pin_position, const OutputKey &key) {
+    if (gui.is_playing()) {
+        return;
+    }
+
     const ImVec2 radius = ImVec2(GUI_ROUTING_PIN_RADIUS, GUI_ROUTING_PIN_RADIUS);
     const bool is_pin_hovered = ImGui::IsMouseHoveringRect(pin_position - radius, pin_position + radius);
     if (link_dragging_source_key.has_value() && is_pin_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
@@ -531,8 +554,28 @@ bool GUIRoutingPanel::is_linking_possible(const InputKey &source_key, const Outp
     const size_t id = source_key.second;
     const size_t item = target_key.index;
     const Target target = target_key.target;
-    return (item > id || type != ItemType::DSP || target != Target::DIRECT_DSP);
+    return (item > id || type != ItemType::DSP || (target != Target::DIRECT_DSP && target != Target::SPLITTER_DSP));
 }
 
 void GUIRoutingPanel::check_keyboard_input() {
+}
+
+bool GUIRoutingPanel::get_splitter_bounds(const size_t j, size_t index, const Link &link) const {
+    if (link.target != Target::SPLITTER_OUTPUT && link.target != Target::SPLITTER_DSP) {
+        return true;
+    }
+
+    if (link.target == Target::SPLITTER_OUTPUT) {
+        if (j >= song.get_output_channels()) {
+            return true;
+        }
+    } else if (link.target == Target::SPLITTER_DSP) {
+        const size_t link_offset = link.offset / sizeof(uint32_t);
+        const size_t offset = link.type == ItemType::DSP ? std::max(index + 1, link_offset) : link_offset;
+        if (j + offset >= dsps.size()) {
+            return true;
+        }
+    }
+
+    return false;
 }

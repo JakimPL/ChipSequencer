@@ -1,4 +1,6 @@
 #include <iostream>
+#include <map>
+#include <sstream>
 
 #include "../../general.hpp"
 #include "manager.hpp"
@@ -6,6 +8,8 @@
 void LinkManager::reset() {
     links[static_cast<size_t>(ItemType::CHANNEL)].clear();
     links[static_cast<size_t>(ItemType::DSP)].clear();
+    links[static_cast<size_t>(ItemType::COMMANDS)].clear();
+    commands_links.clear();
 }
 
 void LinkManager::set_link(Link &link, void *item, const uint8_t i) {
@@ -35,6 +39,14 @@ void LinkManager::set_link(Link &link, void *item, const uint8_t i) {
             link.base = &output;
         } else {
             link.base = sequences[link.index];
+        }
+        break;
+    }
+    case Target::COMMANDS_SEQUENCE: {
+        if (link.index >= commands_sequences.size()) {
+            link.base = &output;
+        } else {
+            link.base = commands_sequences[link.index];
         }
         break;
     }
@@ -78,39 +90,111 @@ void LinkManager::set_link(Link &link, void *item, const uint8_t i) {
         }
         break;
     }
-    case Target::UNUSED: {
-        throw std::runtime_error("Invalid link target");
+    case Target::COMMANDS_CHANNEL: {
+        if (link.index >= commands_channels.size()) {
+            link.base = &output;
+        } else {
+            link.base = commands_channels[link.index];
+        }
+        break;
+    }
+    case Target::COUNT:
+    default: {
+        throw std::runtime_error("Invalid link target " + std::to_string(static_cast<int>(link.target)));
     }
     }
 
     link.id = i;
     link.item = item;
     link.pointer = link.base + link.offset;
-    link.assign_output();
     assign_key(link);
 }
 
-void LinkManager::set_links() {
-    clear();
-    size_t link_type = static_cast<size_t>(ItemType::CHANNEL);
+void LinkManager::set_channels_links() {
+    const size_t link_type = static_cast<size_t>(ItemType::CHANNEL);
     for (size_t i = 0; i < channels.size(); i++) {
         Link &link = links[link_type][i];
         void *item = channels[i];
         try {
             set_link(link, item, i);
         } catch (const std::out_of_range &exception) {
-            std::cerr << "Error setting link for a channel " << i << ": " << exception.what() << std::endl;
+            std::cerr << "Error setting link for a channel " << i << ": "
+                      << exception.what() << std::endl;
         }
     }
+}
 
-    link_type = static_cast<size_t>(ItemType::DSP);
+void LinkManager::set_dsps_links() {
+    const size_t link_type = static_cast<size_t>(ItemType::DSP);
     for (size_t i = 0; i < dsps.size(); i++) {
         Link &link = links[link_type][i];
         void *item = dsps[i];
         try {
             set_link(link, item, i);
         } catch (const std::out_of_range &exception) {
-            std::cerr << "Error setting link for a DSP " << i << ": " << exception.what() << std::endl;
+            std::cerr << "Error setting link for a DSP " << i << ": "
+                      << exception.what() << std::endl;
+        }
+    }
+}
+
+void LinkManager::set_commands_links() {
+    const size_t link_type = static_cast<size_t>(ItemType::COMMANDS);
+    links[link_type].clear();
+    for (size_t index = 0; index < commands_sequences.size(); index++) {
+        for (auto &[element, link] : commands_links[index]) {
+            const uint16_t i = (index << 8) + element;
+            try {
+                set_link(link, nullptr, i);
+            } catch (const std::out_of_range &exception) {
+                std::cerr << "Error setting link for a commands sequence ("
+                          << index << ", " << element << "): "
+                          << exception.what() << std::endl;
+            }
+
+            links[link_type].push_back(link);
+        }
+    }
+}
+
+void LinkManager::set_links() {
+    clear();
+    set_channels_links();
+    set_dsps_links();
+    set_commands_links();
+    save_targets();
+}
+
+void LinkManager::save_targets() {
+    pointers_map.clear();
+    targets = {nullptr};
+    targets[0] = &(output[0]);
+
+    std::map<void *, size_t> index_map;
+    void *output_pointer = &(output[0]);
+    const LinkKey output_key = {Target::DIRECT_OUTPUT, 0, 0};
+    pointers_map.push_back({output_pointer, output_key});
+    index_map[output_pointer] = 0;
+
+    size_t size = 1;
+    for (const ItemType type : {ItemType::CHANNEL, ItemType::DSP, ItemType::COMMANDS}) {
+        for (Link &link : links[static_cast<size_t>(type)]) {
+            if (link.target == Target::COUNT) {
+                continue;
+            }
+
+            const auto it = index_map.find(link.pointer);
+            if (it == index_map.end()) {
+                targets[size] = link.pointer;
+                link.table_id = size;
+                index_map[link.pointer] = link.table_id;
+                pointers_map.push_back({link.pointer, link.key});
+                size++;
+            } else {
+                link.table_id = it->second;
+            }
+
+            link.assign_output();
         }
     }
 }
@@ -129,6 +213,7 @@ void LinkManager::realign_links(const size_t index, const Target target, const I
 void LinkManager::realign_links(const size_t index, const Target target) {
     realign_links(index, target, ItemType::CHANNEL);
     realign_links(index, target, ItemType::DSP);
+    realign_links(index, target, ItemType::COMMANDS);
 }
 
 bool LinkManager::is_linked(const LinkKey key) const {
@@ -145,10 +230,9 @@ std::vector<Link *> LinkManager::get_links(const LinkKey key) const {
     return {};
 }
 
-std::string LinkManager::get_link_reference(const ItemType type, const size_t index) const {
+std::string LinkManager::get_link_reference(const LinkKey key) const {
     std::string reference;
-    const Link &link = links[static_cast<size_t>(type)][index];
-    switch (link.target) {
+    switch (key.target) {
     case Target::SPLITTER_OUTPUT:
     case Target::DIRECT_OUTPUT: {
         reference = "output";
@@ -160,43 +244,78 @@ std::string LinkManager::get_link_reference(const ItemType type, const size_t in
         break;
     }
     case Target::ENVELOPE: {
-        reference = "envelopes.envelope_" + std::to_string(link.index);
+        reference = "envelopes.envelope_" + std::to_string(key.index);
         break;
     }
     case Target::SEQUENCE: {
-        reference = "sequences.sequence_" + std::to_string(link.index);
+        reference = "sequences.sequence_" + std::to_string(key.index);
+        break;
+    }
+    case Target::COMMANDS_SEQUENCE: {
+        reference = "commands_sequences.commands_sequence_" + std::to_string(key.index);
         break;
     }
     case Target::ORDER: {
-        reference = "orders.order_" + std::to_string(link.index);
+        reference = "orders.order_" + std::to_string(key.index);
         break;
     }
     case Target::OSCILLATOR: {
-        reference = "oscillators.oscillator_" + std::to_string(link.index);
+        reference = "oscillators.oscillator_" + std::to_string(key.index);
         break;
     }
     case Target::WAVETABLE: {
-        reference = "wavetables.wavetable_" + std::to_string(link.index);
+        reference = "wavetables.wavetable_" + std::to_string(key.index);
         break;
     }
     case Target::DSP: {
-        reference = "dsps.dsp_" + std::to_string(link.index);
+        reference = "dsps.dsp_" + std::to_string(key.index);
         break;
     }
     case Target::CHANNEL: {
-        reference = "channels.channel_" + std::to_string(link.index);
+        reference = "channels.channel_" + std::to_string(key.index);
         break;
     }
-    case Target::UNUSED: {
-        throw std::runtime_error("Invalid link target");
+    case Target::COMMANDS_CHANNEL: {
+        reference = "commands_channels.commands_sequence_" + std::to_string(key.index);
+        break;
+    }
+    case Target::COUNT:
+    default: {
+        throw std::runtime_error("Invalid link target: " + std::to_string(static_cast<int>(key.target)));
     }
     }
 
-    if (link.offset != 0) {
-        reference += " + " + std::to_string(link.offset);
+    if (key.offset != 0) {
+        reference += " + " + std::to_string(key.offset);
     }
 
     return reference;
+}
+
+std::string LinkManager::get_link_reference(const ItemType type, const size_t index) const {
+    std::string reference;
+    const Link &link = links[static_cast<size_t>(type)][index];
+    return get_link_reference(link.key);
+}
+
+std::vector<std::pair<void *, LinkKey>> LinkManager::get_pointers_map() const {
+    return pointers_map;
+}
+
+std::pair<void *, LinkKey> LinkManager::get_pointer_and_key(const size_t index) const {
+    return pointers_map.at(index);
+}
+
+size_t LinkManager::find_pointer_id_by_key(const LinkKey key) const {
+    size_t id = 0;
+    for (const auto &[pointer, link_key] : pointers_map) {
+        if (link_key == key) {
+            return id;
+        }
+        id++;
+    }
+
+    return 0;
 }
 
 void LinkManager::remove_key(Link &link) {
@@ -224,7 +343,7 @@ void LinkManager::assign_key(Link &link) {
 }
 
 void LinkManager::validate_key_and_link(const LinkKey key, const Link *link) const {
-    if (key.target == Target::UNUSED) {
+    if (key.target == Target::COUNT) {
         return;
     }
     if (link == nullptr) {
@@ -251,40 +370,48 @@ TargetVariableType LinkManager::get_type(const LinkKey key) const {
     }
     case Target::ENVELOPE:
     case Target::SEQUENCE:
+    case Target::COMMANDS_CHANNEL:
+    case Target::COMMANDS_SEQUENCE:
     case Target::ORDER:
     case Target::OSCILLATOR:
     case Target::WAVETABLE:
     case Target::DSP:
     case Target::CHANNEL: {
-        const size_t index = routing_variables.at(key.target).offset_to_index.at(key.offset);
-        return routing_variables.at(key.target).types[index];
+        try {
+            const size_t index = routing_variables.at(key.target).offset_to_index.at(key.offset);
+            return routing_variables.at(key.target).types[index];
+        } catch (const std::out_of_range &exception) {
+            return TargetVariableType::Byte;
+        }
     }
-    case Target::UNUSED: {
-        throw std::runtime_error("Invalid target type");
+    case Target::COUNT:
+    default: {
+        throw std::runtime_error("Invalid target type: " + std::to_string(static_cast<int>(key.target)));
     }
     }
 
-    throw std::runtime_error("Invalid target type");
+    throw std::runtime_error("Invalid target type: " + std::to_string(static_cast<int>(key.target)));
 }
 
 void LinkManager::capture_parameter(const LinkKey key, const Link *link) {
     validate_key_and_link(key, link);
     const TargetVariableType type = get_type(key);
     switch (type) {
-    case TargetVariableType::Int8:
+    case TargetVariableType::Byte:
         snapshot[key] = *reinterpret_cast<uint8_t *>(link->pointer);
         break;
-    case TargetVariableType::Int16:
+    case TargetVariableType::Word:
         snapshot[key] = *reinterpret_cast<uint16_t *>(link->pointer);
         break;
-    case TargetVariableType::Int32:
+    case TargetVariableType::Dword:
         snapshot[key] = *reinterpret_cast<uint32_t *>(link->pointer);
         break;
     case TargetVariableType::Float:
         snapshot[key] = *reinterpret_cast<_Float32 *>(link->pointer);
         break;
+    case TargetVariableType::Count:
     default:
-        throw std::runtime_error("Unknown target variable type");
+        throw std::runtime_error("Unknown target variable type: " + std::to_string(static_cast<int>(type)));
     }
 }
 
@@ -303,20 +430,21 @@ void LinkManager::restore_parameter(const LinkKey key, const Link *link) const {
     validate_key_and_link(key, link);
     const TargetVariableType type = get_type(key);
     switch (type) {
-    case TargetVariableType::Int8:
+    case TargetVariableType::Byte:
         *reinterpret_cast<uint8_t *>(link->pointer) = std::get<uint8_t>(snapshot.at(key));
         break;
-    case TargetVariableType::Int16:
+    case TargetVariableType::Word:
         *reinterpret_cast<uint16_t *>(link->pointer) = std::get<uint16_t>(snapshot.at(key));
         break;
-    case TargetVariableType::Int32:
+    case TargetVariableType::Dword:
         *reinterpret_cast<uint32_t *>(link->pointer) = std::get<uint32_t>(snapshot.at(key));
         break;
     case TargetVariableType::Float:
         *reinterpret_cast<_Float32 *>(link->pointer) = std::get<_Float32>(snapshot.at(key));
         break;
+    case TargetVariableType::Count:
     default:
-        throw std::runtime_error("Unknown target variable type");
+        throw std::runtime_error("Unknown target variable type: " + std::to_string(static_cast<int>(type)));
     }
 }
 

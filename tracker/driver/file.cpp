@@ -2,7 +2,7 @@
 #include <iostream>
 #include <sndfile.h>
 
-#include "../song/data.hpp"
+#include "../song/core.hpp"
 #include "../song/functions.hpp"
 #include "file.hpp"
 
@@ -21,7 +21,7 @@ void FileDriver::play() {
     samples.reserve(song_length);
     initialize();
     for (size_t i = 0; i < song_length; i++) {
-        mix();
+        frame();
         std::vector<float> frame;
         for (size_t j = 0; j < output_channels; j++) {
             frame.push_back(output[j]);

@@ -70,6 +70,10 @@ void GUIGeneralPanel::to() const {
     song.set_author(current_song.author);
     song.set_message(current_song.message);
 
+    if (gui.is_playing()) {
+        return;
+    }
+
     sample_rate = 4 * std::round(static_cast<float>(current_song.sample_rate) / 4);
     unit = 240.0f / current_song.division;
     normalizer = current_song.normalizer;
@@ -214,14 +218,14 @@ void GUIGeneralPanel::draw_tempo() {
     if (ImGui::IsItemHovered()) {
         ImGui::SetTooltip("Real BPM: %s", std::to_string(song.calculate_real_bpm()).c_str());
     }
-    draw_int_slider("Division", current_song.division, {}, GUI_MIN_UNIT, GUI_MAX_UNIT);
+    draw_int_slider("Division", current_song.division, {}, GUI_MIN_DIVISION, GUI_MAX_DIVISION);
     ImGui::EndDisabled();
 }
 
 void GUIGeneralPanel::draw_output() {
     ImGui::Text("Output");
-    draw_float_slider("Master gainer", current_song.normalizer, {}, 0.01f, 2.0f);
     ImGui::BeginDisabled(gui.is_playing());
+    draw_float_slider("Master gainer", current_song.normalizer, {}, 0.01f, 2.0f);
     draw_float_slider("Sample rate", current_song.sample_rate, {}, GUI_MIN_SAMPLE_RATE, GUI_MAX_SAMPLE_RATE, GUIScale::Linear, "%.0f");
     draw_int_slider("Output channels", current_song.output_channels, {}, 1, MAX_OUTPUT_CHANNELS);
     ImGui::EndDisabled();

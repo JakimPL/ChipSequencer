@@ -15,7 +15,7 @@ struct Note {
 typedef std::array<Note, UINT8_MAX> Notes;
 
 struct Sequence {
-    uint8_t data_size;
+    uint8_t size;
     Notes notes;
 
     void from_note_vector(const std::vector<Note> &note_vector);
@@ -25,7 +25,7 @@ struct Sequence {
 
 typedef std::vector<Sequence *> Sequences;
 
-constexpr size_t SEQUENCE_DATA_SIZE = offsetof(Sequence, data_size);
+constexpr size_t SEQUENCE_SIZE = offsetof(Sequence, size);
 constexpr size_t SEQUENCE_NOTES = offsetof(Sequence, notes);
 
 #endif // STRUCTURES_SEQUENCE_HPP

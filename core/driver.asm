@@ -2,7 +2,7 @@
 
     %ifndef BIN
     extern calculate
-    extern mix
+    extern frame
     extern output
     extern reset
 

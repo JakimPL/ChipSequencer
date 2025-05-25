@@ -71,7 +71,7 @@ void GUIChannelsPanel::from() {
 }
 
 void GUIChannelsPanel::to() const {
-    if (!is_index_valid() || gui.is_playing()) {
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || !is_index_valid() || gui.is_playing()) {
         return;
     }
 
@@ -102,6 +102,7 @@ void GUIChannelsPanel::to() const {
     current_channel.output_type.set_splitter(channel->splitter);
     try {
         link_manager.set_link(link, static_cast<void *>(channel), channel_index);
+        link_manager.save_targets();
     } catch (const std::out_of_range &exception) {
         std::cerr << "Error: " << exception.what() << std::endl;
     }
@@ -229,7 +230,7 @@ void GUIChannelsPanel::draw_channel() {
         draw_float_slider("Transpose", current_channel.transpose, key, GUI_MIN_TRANSPOSE, GUI_MAX_TRANSPOSE);
     }
 
-    if (draw_output(current_channel.output_type)) {
+    if (draw_output(current_channel.output_type, {Target::CHANNEL, channel_index, CHANNEL_SPLITTER})) {
         update_channel_name(channel_index, current_channel.output_type.target);
     }
 }

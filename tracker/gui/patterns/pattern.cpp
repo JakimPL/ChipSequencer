@@ -1,9 +1,9 @@
 #include <algorithm>
 
-#include "../constants.hpp"
-#include "../general.hpp"
-#include "../song/data.hpp"
-#include "mapping.hpp"
+#include "../../constants.hpp"
+#include "../../general.hpp"
+#include "../../maps/keys.hpp"
+#include "../../song/core.hpp"
 #include "pattern.hpp"
 
 Pattern::Pattern() {
@@ -21,7 +21,7 @@ void Pattern::from_sequence(const uint8_t index) {
     notes.clear();
     indices.clear();
     durations.clear();
-    for (size_t i = 0; i < sequence->data_size / 2; ++i) {
+    for (size_t i = 0; i < sequence->size / 2; ++i) {
         uint16_t duration = sequence->notes[i].duration;
         durations.push_back(duration);
         indices.push_back(total_length);
@@ -41,7 +41,7 @@ void Pattern::to_buffer(const size_t sequence_index) const {
     }
 
     const Sequence *sequence = sequences[sequence_index];
-    const size_t sequence_length = sequence->data_size / 2;
+    const size_t sequence_length = sequence->size / 2;
     for (size_t i = 0; i < sequence_length; ++i) {
         const uint8_t pitch = notes[i];
         if (pitch == NOTE_OFF) {

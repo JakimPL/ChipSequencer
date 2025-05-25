@@ -1,14 +1,11 @@
 import os
 import re
-from collections import defaultdict
-from typing import DefaultDict, Dict, List, Tuple, Union
+from typing import Dict, List, Union
 
 from pyconf import (
     CONSTANTS_ASM_FILE,
     CONSTANTS_HPP_FILE,
     LINK_PY_FILE,
-    OFFSETS_ASM_FILE,
-    OFFSETS_HPP_FILE,
     SIZES_ASM_FILE,
     SIZES_HPP_FILE,
     TARGET_HPP_FILE,
@@ -22,8 +19,6 @@ class ConstantManager:
         self,
         constants_asm_file: Union[str, os.PathLike] = CONSTANTS_ASM_FILE,
         constants_hpp_file: Union[str, os.PathLike] = CONSTANTS_HPP_FILE,
-        offsets_asm_file: Union[str, os.PathLike] = OFFSETS_ASM_FILE,
-        offsets_hpp_file: Union[str, os.PathLike] = OFFSETS_HPP_FILE,
         sizes_asm_file: Union[str, os.PathLike] = SIZES_ASM_FILE,
         sizes_hpp_file: Union[str, os.PathLike] = SIZES_HPP_FILE,
         target_hpp_file: Union[str, os.PathLike] = TARGET_HPP_FILE,
@@ -32,8 +27,6 @@ class ConstantManager:
     ):
         self.constants_asm_file = constants_asm_file
         self.constants_hpp_file = constants_hpp_file
-        self.offsets_asm_file = offsets_asm_file
-        self.offsets_hpp_file = offsets_hpp_file
         self.sizes_asm_file = sizes_asm_file
         self.sizes_hpp_file = sizes_hpp_file
         self.target_hpp_file = target_hpp_file
@@ -42,10 +35,8 @@ class ConstantManager:
 
     def __call__(self):
         asm_constants = load_text(self.constants_asm_file)
-        asm_offsets = load_text(self.offsets_asm_file)
         asm_sizes = load_text(self.sizes_asm_file)
         hpp_constants = self.convert_asm_to_cpp(asm_constants)
-        hpp_offsets = self.convert_asm_to_cpp(asm_offsets)
         hpp_sizes = self.convert_asm_to_cpp(asm_sizes)
         save_text(hpp_constants, self.constants_hpp_file)
         save_text(hpp_sizes, self.sizes_hpp_file)
@@ -54,13 +45,6 @@ class ConstantManager:
         link_type = load_text(self.type_hpp_file)
         link_py = self.compose_link_py_file(target, link_type)
         save_text(link_py, self.link_py_file)
-
-        groups = self.extract_groups_from_targets(target)
-        x16, x32 = self.parse_cpp_constants(hpp_offsets)
-        x16_to_x32 = self.get_offset_map(x16, x32, groups)
-        x32_to_x16 = self.get_offset_map(x32, x16, groups)
-        offsets = self.compose_offset_hpp_file(x16_to_x32, x32_to_x16)
-        save_text(offsets, self.offsets_hpp_file)
 
     @staticmethod
     def extract_groups_from_targets(target: str) -> List[str]:
@@ -88,46 +72,6 @@ class ConstantManager:
         return int(string)
 
     @staticmethod
-    def parse_cpp_constants(cpp_constants: str) -> Tuple[DefaultDict[str, Dict[str, int]], ...]:
-        lines = [line for line in cpp_constants.splitlines() if line.startswith("#") and line != "#define TRACKER"]
-        x16 = defaultdict(dict)
-        x32 = defaultdict(dict)
-        elf = None
-        for line in lines:
-            if line == "#ifdef TRACKER":
-                elf = True
-                continue
-            if line == "#else":
-                elf = not elf
-                continue
-            if line == "#endif":
-                elf = None
-                continue
-
-            split = line.split(" ")
-            if len(split) != 3:
-                continue
-
-            _, key, value = split
-            group = key.split("_")[0].lower()
-            if '"' in value:
-                continue
-
-            value = ConstantManager.parse(value)
-            if elf is not True:
-                x16[group][key] = value
-            if elf is not False:
-                x32[group][key] = value
-
-        return x16, x32
-
-    @staticmethod
-    def get_offset_map(
-        source: DefaultDict[str, Dict[str, int]], target: DefaultDict[str, Dict[str, int]], groups: List[str]
-    ) -> List[Dict[int, int]]:
-        return [{source[group][key]: target[group][key] for key in source[group]} for group in groups]
-
-    @staticmethod
     def compose_definition(source: List[Dict[int, int]], name: str) -> str:
         lines = [f"{name} = {{"]
         for mapping in source:
@@ -140,33 +84,6 @@ class ConstantManager:
                 lines += ["    },"]
         lines += ["};", ""]
         return "\n".join(lines)
-
-    @staticmethod
-    def compose_offset_hpp_file(x16_to_x32: List[Dict[int, int]], x32_to_x16: List[Dict[int, int]]) -> str:
-        declaration = "const std::vector<std::map<uint16_t, uint16_t>> "
-
-        header = """#ifndef MAPS_OFFSETS_HPP
-#define MAPS_OFFSETS_HPP
-
-#include <cstdint>
-#include <map>
-#include <vector>
-
-"""
-        end = """
-#endif // MAPS_OFFSETS_HPP
-"""
-
-        return "".join(
-            [
-                header,
-                declaration,
-                ConstantManager.compose_definition(x16_to_x32, "x16_to_x32"),
-                declaration,
-                ConstantManager.compose_definition(x32_to_x16, "x32_to_x16"),
-                end,
-            ]
-        )
 
     @staticmethod
     def compose_link_py_file(target: str, link_type: str) -> str:

@@ -4,6 +4,7 @@
 
     extern num_channels
     extern num_dsps
+    extern num_commands_channels
 
     global envelopes
     global sequences
@@ -12,6 +13,8 @@
     global wavetables
     global dsps
     global channels
+    global commands_sequences
+    global commands_channels
     global buffer_offsets
 
     extern dsp_input

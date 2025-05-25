@@ -1,10 +1,10 @@
-#ifndef GUI_PATTERN_HPP
-#define GUI_PATTERN_HPP
+#ifndef GUI_PATTERNS_PATTERN_HPP
+#define GUI_PATTERNS_PATTERN_HPP
 
 #include <cstdint>
 #include <vector>
 
-#include "../structures/sequence.hpp"
+#include "../../structures/sequence.hpp"
 
 struct Pattern {
     Pattern();
@@ -27,4 +27,4 @@ struct Pattern {
     void handle_input(const int min_row = 0, const int max_row = -1);
 };
 
-#endif // GUI_PATTERN_HPP
+#endif // GUI_PATTERNS_PATTERN_HPP

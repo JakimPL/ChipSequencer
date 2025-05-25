@@ -1,0 +1,4 @@
+    SEGMENT_CODE
+empty:
+    SET_COMMAND_SIZE SIZE_COMMAND_EMPTY
+    ret

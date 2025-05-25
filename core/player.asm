@@ -3,7 +3,7 @@
     %ifndef BIN
     global initialize
     global calculate
-    global mix
+    global frame
     global output
     global reset
     global calculate_ticks_per_beat
@@ -20,12 +20,15 @@
 
     extern envelopes
     extern sequences
+    extern commands_sequences
     extern orders
     extern oscillators
     extern wavetables
     extern dsps
     extern channels
+    extern commands_channels
     extern buffer_offsets
+    extern targets
 
     %ifn DIRECT_MODE
     global buffer
@@ -43,6 +46,10 @@ initialize:
     call calculate_ticks_per_beat
 
     call reset_channels
+
+    %ifdef USED_COMMANDS
+    call reset_commands_channels
+    %endif
 
     %ifdef USED_DSP
     call initialize_dsp_buffers
@@ -66,6 +73,13 @@ initialize:
     popa
     ret
 
+frame:
+    %ifdef USED_COMMANDS
+    call commands
+    %endif
+    call mix
+    ret
+
     %include "core/utils.asm"
     %include "core/elements.asm"
     %include "core/vars.asm"
@@ -75,13 +89,13 @@ calculate:
     db 1
 
     SEGMENT_BSS
-    dividend resd 1
     output resd MAX_OUTPUT_CHANNELS
     %ifdef TRACKER
     dsp_buffer resd MAX_DSPS * MAX_DSP_BUFFER_SIZE
     %else
     dsp_buffer resd DSPS * MAX_DSP_BUFFER_SIZE
     %endif
+    dividend resd 1
 
     %ifdef BITS_16
     group dgroup bss data

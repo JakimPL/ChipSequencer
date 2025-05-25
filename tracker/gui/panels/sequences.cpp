@@ -1,8 +1,8 @@
 #include <algorithm>
 
 #include "../../general.hpp"
+#include "../../maps/keys.hpp"
 #include "../enums.hpp"
-#include "../mapping.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
 #include "sequences.hpp"
@@ -48,7 +48,7 @@ void GUISequencesPanel::from() {
 }
 
 void GUISequencesPanel::to() const {
-    if (!is_index_valid()) {
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || !is_index_valid()) {
         return;
     }
 

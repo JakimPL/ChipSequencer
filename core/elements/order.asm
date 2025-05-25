@@ -9,5 +9,5 @@ next_sequence:
     movzx ecx, byte [current_channel]
     mov byte [current_sequence + ecx], 0
 .done:
-    call load_offsets.load_sequence
+    call load_channel.load_sequence
     ret

@@ -1,5 +1,5 @@
     SEGMENT_CODE
-load_offsets:
+load_channel:
 .load_channel:
     movzx ebx, byte [current_channel]
     LOAD_ARRAY_ITEM channels, channel_offset, SIZE_CHANNEL
@@ -22,16 +22,16 @@ load_offsets:
     LOAD_VECTOR_ITEM oscillators, oscillator_offset
     ret
 
-reset_channels:
-    movzx bx, [num_channels]
-    mov esi, reset_channel
-    call reset
-    ret
-
 load_order_and_check_constant_pitch:
     LOAD_OFFSET ebx, channel_offset
     test byte [CHANNEL_FLAG + ebx], FLAG_CONSTANT_PITCH
     movzx ebx, byte [CHANNEL_ORDER_INDEX + ebx]
+    ret
+
+reset_channels:
+    movzx bx, [num_channels]
+    mov esi, reset_channel
+    call reset
     ret
 
 reset_channel:
@@ -56,7 +56,12 @@ load_channel_target:
     mov edx, [CHANNEL_SPLITTER + edi]
     mov cl, [CHANNEL_OUTPUT_FLAG + edi]
     mov ch, [CHANNEL_FLAG + edi]
-    mov edi, [CHANNEL_OUTPUT + edi]
+    movzx edi, byte [CHANNEL_TARGET + edi]
+    %ifdef BITS_16
+    mov edi, [targets + 2 * edi]
+    %else
+    mov edi, [targets + 4 * edi]
+    %endif
     ret
 
     SEGMENT_BSS

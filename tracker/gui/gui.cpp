@@ -12,7 +12,13 @@ GUI::GUI()
 }
 
 GUI::~GUI() {
+    stop();
     terminate();
+}
+
+void GUI::new_song() {
+    clear_input_buffers();
+    song.new_song();
 }
 
 void GUI::save(const std::string &filename) {
@@ -22,6 +28,7 @@ void GUI::save(const std::string &filename) {
 }
 
 void GUI::open(const std::string &filename) {
+    clear_input_buffers();
     song.load_from_file(filename);
     current_path = filename;
 
@@ -154,6 +161,7 @@ void GUI::set_audio_engine(AudioEngine *engine) {
 
 void GUI::set_index(const GUIElement element, const int index) {
     switch (element) {
+    case GUIElement::Count:
     case GUIElement::All:
     case GUIElement::Menu:
     case GUIElement::Editor:
@@ -162,6 +170,12 @@ void GUI::set_index(const GUIElement element, const int index) {
         break;
     case GUIElement::Channels:
         channels_panel.set_index(index);
+        break;
+    case GUIElement::CommandsChannel:
+        commands_channels_panel.set_index(index);
+        break;
+    case GUIElement::CommandsSequence:
+        commands_sequences_panel.set_index(index);
         break;
     case GUIElement::DSPs:
         dsps_panel.set_index(index);
@@ -192,6 +206,8 @@ void GUI::set_index(const GUIElement element, const int index) {
 
 void GUI::update(GUIElement element) {
     switch (element) {
+    case GUIElement::Count:
+        return;
     case GUIElement::All:
         return update_all();
     case GUIElement::Menu:
@@ -202,6 +218,10 @@ void GUI::update(GUIElement element) {
         return general_panel.update();
     case GUIElement::Channels:
         return channels_panel.update();
+    case GUIElement::CommandsChannel:
+        return commands_channels_panel.update();
+    case GUIElement::CommandsSequence:
+        return commands_sequences_panel.update();
     case GUIElement::DSPs:
         return dsps_panel.update();
     case GUIElement::Envelopes:
@@ -228,6 +248,8 @@ void GUI::update_all() {
     editor.update();
     general_panel.update();
     channels_panel.update();
+    commands_channels_panel.update();
+    commands_sequences_panel.update();
     dsps_panel.update();
     envelopes_panel.update();
     orders_panel.update();
@@ -273,6 +295,8 @@ void GUI::frame_all() {
     editor.frame();
     general_panel.frame();
     channels_panel.frame();
+    commands_channels_panel.frame();
+    commands_sequences_panel.frame();
     dsps_panel.frame();
     envelopes_panel.frame();
     orders_panel.frame();
@@ -289,6 +313,8 @@ void GUI::set_visibility_all(const bool visible) {
     editor.visible = visible;
     general_panel.visible = visible;
     channels_panel.visible = visible;
+    commands_channels_panel.visible = visible;
+    commands_sequences_panel.visible = visible;
     dsps_panel.visible = visible;
     envelopes_panel.visible = visible;
     orders_panel.visible = visible;
@@ -339,6 +365,7 @@ void GUI::deselect_all_rows() {
 
 void GUI::set_visibility(const GUIElement element, const bool visible) {
     switch (element) {
+    case GUIElement::Count:
     case GUIElement::All:
         break;
     case GUIElement::Menu:
@@ -352,6 +379,12 @@ void GUI::set_visibility(const GUIElement element, const bool visible) {
         break;
     case GUIElement::Channels:
         channels_panel.visible = visible;
+        break;
+    case GUIElement::CommandsChannel:
+        commands_channels_panel.visible = visible;
+        break;
+    case GUIElement::CommandsSequence:
+        commands_sequences_panel.visible = visible;
         break;
     case GUIElement::DSPs:
         dsps_panel.visible = visible;
@@ -385,6 +418,7 @@ void GUI::set_visibility(const GUIElement element, const bool visible) {
 
 bool GUI::get_visibility(const GUIElement element) const {
     switch (element) {
+    case GUIElement::Count:
     case GUIElement::All:
         return false;
     case GUIElement::Menu:
@@ -395,6 +429,10 @@ bool GUI::get_visibility(const GUIElement element) const {
         return general_panel.visible;
     case GUIElement::Channels:
         return channels_panel.visible;
+    case GUIElement::CommandsChannel:
+        return commands_channels_panel.visible;
+    case GUIElement::CommandsSequence:
+        return commands_sequences_panel.visible;
     case GUIElement::DSPs:
         return dsps_panel.visible;
     case GUIElement::Envelopes:
@@ -416,4 +454,8 @@ bool GUI::get_visibility(const GUIElement element) const {
     }
 
     return false;
+}
+
+void GUI::clear_input_buffers() {
+    commands_sequences_panel.clear_input_buffers();
 }

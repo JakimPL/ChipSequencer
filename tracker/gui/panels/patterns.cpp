@@ -34,7 +34,7 @@ void GUIPatternsPanel::draw_pages() {
 }
 
 void GUIPatternsPanel::draw_channels() {
-    size_t columns = current_pattern.patterns.size();
+    size_t columns = current_patterns.patterns.size() + current_patterns.commands_patterns.size();
     if (columns == 0) {
         ImGui::Text("No channels available.");
         return;
@@ -50,12 +50,15 @@ void GUIPatternsPanel::draw_channels() {
     ImGui::SetNextWindowContentSize(ImVec2(std::max(available, total_min), 0));
     ImGui::BeginChild("##PatternChannels", ImVec2(child_width, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 
-    if (ImGui::BeginTable("ChannelsTable", num_channels, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersOuter)) {
-        for (const auto &[index, pattern] : current_pattern.patterns) {
+    if (ImGui::BeginTable("ChannelsTable", columns, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersOuter)) {
+        for (const auto &[index, pattern] : current_patterns.patterns) {
             ImGui::TableNextColumn();
             draw_channel(index);
         }
-
+        for (const auto &[index, pattern] : current_patterns.commands_patterns) {
+            ImGui::TableNextColumn();
+            draw_commands_channel(index);
+        }
         ImGui::EndTable();
     }
 
@@ -70,11 +73,32 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
     const uint16_t start = page * gui.get_page_size();
     const uint16_t end = start + gui.get_page_size();
 
-    for (auto &pattern : current_pattern.patterns[channel_index]) {
-        const int playing_row = current_pattern.playing_rows[channel_index];
+    for (auto &pattern : current_patterns.patterns[channel_index]) {
+        const int playing_row = current_patterns.playing_rows[{false, channel_index}];
         auto [new_index, select] = draw_pattern(pattern, false, index, playing_row, start, end);
         if (select) {
-            current_channel = channel_index;
+            current_channel = {false, channel_index};
+            current_row = pattern.current_row + index;
+        }
+        index = new_index;
+    }
+
+    ImGui::PopID();
+}
+
+void GUIPatternsPanel::draw_commands_channel(size_t channel_index) {
+    ImGui::PushID(channel_index);
+    ImGui::Text("%s", commands_channel_names[channel_index].c_str());
+    size_t index = 0;
+
+    const uint16_t start = page * gui.get_page_size();
+    const uint16_t end = start + gui.get_page_size();
+
+    for (auto &pattern : current_patterns.commands_patterns[channel_index]) {
+        const int playing_row = current_patterns.playing_rows[{true, channel_index}];
+        auto [new_index, select] = draw_commands_pattern(pattern, false, index, playing_row, start, end);
+        if (select) {
+            current_channel = {true, channel_index};
             current_row = pattern.current_row + index;
         }
         index = new_index;
@@ -84,10 +108,15 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
 }
 
 void GUIPatternsPanel::from() {
-    current_pattern.total_rows = 0;
-    current_pattern.patterns.clear();
-    current_pattern.playing_rows.clear();
-    const bool is_playing = gui.is_playing() && ticks_per_beat > 0;
+    current_patterns.total_rows = 0;
+    current_patterns.playing_rows.clear();
+    from_sequences();
+    from_commands_sequences();
+}
+
+void GUIPatternsPanel::from_sequences() {
+    current_patterns.patterns.clear();
+    const bool playing = is_playing();
     for (size_t channel_index = 0; channel_index < channels.size(); ++channel_index) {
         const Channel *channel = channels[channel_index];
         const uint8_t order_index = channel->order_index;
@@ -100,29 +129,90 @@ void GUIPatternsPanel::from() {
 
         uint16_t row = 0;
         uint8_t playing_sequence = current_sequence[channel_index];
-        current_pattern.playing_rows[channel_index] = -1;
+        current_patterns.playing_rows[{false, channel_index}] = -1;
         for (size_t j = 0; j < order->order_length; ++j) {
             const uint8_t sequence_index = order_sequences[j];
             if (sequence_index >= sequences.size()) {
                 break;
             }
 
-            Pattern pattern = Pattern(sequence_index);
-            pattern.current_row = channel_index == current_channel ? current_row - row : -1;
-            current_pattern.patterns[channel_index].push_back(pattern);
-            if (is_playing && playing_sequence == j) {
+            current_patterns.patterns[channel_index].emplace_back(sequence_index);
+            Pattern &pattern = current_patterns.patterns[channel_index].back();
+            pattern.current_row = !current_channel.command && channel_index == current_channel.index ? current_row - row : -1;
+            if (playing && playing_sequence == j) {
                 const int playing_row = pattern.calculate_playing_row(channel_index);
-                current_pattern.playing_rows[channel_index] = row + playing_row;
+                current_patterns.playing_rows[{false, channel_index}] = row + playing_row;
             }
 
             row += pattern.steps;
         }
 
-        current_pattern.total_rows = std::max(current_pattern.total_rows, row);
+        current_patterns.total_rows = std::max(current_patterns.total_rows, row);
+    }
+}
+
+void GUIPatternsPanel::from_commands_sequences() {
+    const bool playing = is_playing();
+    for (size_t channel_index = 0; channel_index < commands_channels.size(); ++channel_index) {
+        const CommandsChannel *channel = commands_channels[channel_index];
+        const uint8_t order_index = channel->order_index;
+        if (order_index >= orders.size()) {
+            continue;
+        }
+
+        const Order *order = orders[order_index];
+        std::vector<uint8_t> order_sequences = std::vector<uint8_t>(order->sequences.begin(), order->sequences.begin() + order->order_length);
+
+        uint16_t row = 0;
+        uint8_t playing_sequence = current_commands_sequence[channel_index];
+        current_patterns.playing_rows[{true, channel_index}] = -1;
+        for (size_t j = 0; j < order->order_length; ++j) {
+            const uint8_t sequence_index = order_sequences[j];
+            if (sequence_index >= commands_sequences.size()) {
+                break;
+            }
+
+            if (j >= current_patterns.commands_patterns[channel_index].size()) {
+                current_patterns.commands_patterns[channel_index].emplace_back(sequence_index);
+            } else {
+                current_patterns.commands_patterns[channel_index][j].from_sequence(sequence_index);
+            }
+
+            CommandsPattern &pattern = current_patterns.commands_patterns[channel_index][j];
+            pattern.current_row = current_channel.command && channel_index == current_channel.index ? current_row - row : -1;
+            if (playing && playing_sequence == j) {
+                const int playing_row = pattern.calculate_playing_row(channel_index);
+                current_patterns.playing_rows[{true, channel_index}] = row + playing_row;
+            }
+
+            row += pattern.steps;
+        }
+
+        current_patterns.total_rows = std::max(current_patterns.total_rows, row);
+        if (current_patterns.commands_patterns[channel_index].size() > order->order_length) {
+            current_patterns.commands_patterns[channel_index].resize(order->order_length);
+        }
+    }
+
+    for (auto it = current_patterns.commands_patterns.begin(); it != current_patterns.commands_patterns.end();) {
+        if (it->first < 0 || it->first >= commands_channels.size()) {
+            it = current_patterns.commands_patterns.erase(it);
+        } else {
+            ++it;
+        }
     }
 }
 
 void GUIPatternsPanel::to() const {
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+        return;
+    }
+
+    to_sequences();
+    to_commands_sequences();
+}
+
+void GUIPatternsPanel::to_sequences() const {
     Pattern *pattern = find_pattern_by_current_row().first;
     if (pattern != nullptr) {
         size_t sequence_index = pattern->sequence_index;
@@ -132,17 +222,19 @@ void GUIPatternsPanel::to() const {
     }
 }
 
+void GUIPatternsPanel::to_commands_sequences() const {
+    CommandsPattern *pattern = find_commands_pattern_by_current_row().first;
+    if (pattern != nullptr) {
+        size_t sequence_index = pattern->sequence_index;
+        CommandsSequence *sequence = commands_sequences[sequence_index];
+        const std::vector<Command> command_vector = pattern->to_command_vector();
+        sequence->from_command_vector(command_vector);
+    }
+}
+
 void GUIPatternsPanel::check_keyboard_input() {
     if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
-    }
-
-    auto [pattern, index] = find_pattern_by_current_row();
-    if (pattern != nullptr) {
-        const int start = page * gui.get_page_size() - index;
-        const int end = start + gui.get_page_size();
-        pattern->handle_input(start, end);
-        current_row = pattern->current_row + index;
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_PageDown)) {
@@ -151,38 +243,101 @@ void GUIPatternsPanel::check_keyboard_input() {
     if (ImGui::IsKeyPressed(ImGuiKey_PageUp)) {
         page = std::max(page - 1, 0);
     }
-    if (!current_pattern.patterns.empty()) {
-        auto it = current_pattern.patterns.find(current_channel);
+
+    auto [pattern, index] = find_pattern_by_current_row();
+    auto [commands_pattern, commands_index] = find_commands_pattern_by_current_row();
+    if (pattern != nullptr) {
+        handle_pattern_input(pattern, index);
+    } else if (commands_pattern != nullptr) {
+        handle_commands_pattern_input(commands_pattern, commands_index);
+    }
+}
+
+void GUIPatternsPanel::handle_pattern_input(Pattern *pattern, const uint16_t index) {
+    const int start = page * gui.get_page_size() - index;
+    const int end = start + gui.get_page_size();
+    pattern->handle_input(start, end);
+    current_row = pattern->current_row + index;
+
+    if (!current_patterns.patterns.empty()) {
+        auto it = current_patterns.patterns.find(current_channel.index);
         if (ImGui::IsKeyPressed(ImGuiKey_LeftArrow)) {
-            if (it == current_pattern.patterns.end() || it == current_pattern.patterns.begin()) {
-                current_channel = current_pattern.patterns.rbegin()->first;
+            if (it == current_patterns.patterns.begin()) {
+                if (current_patterns.commands_patterns.empty()) {
+                    current_channel.index = current_patterns.patterns.rbegin()->first;
+                } else {
+                    current_channel.command = true;
+                    current_channel.index = current_patterns.commands_patterns.rbegin()->first;
+                }
             } else {
                 --it;
-                current_channel = it->first;
+                current_channel.index = it->first;
             }
         }
         if (ImGui::IsKeyPressed(ImGuiKey_RightArrow)) {
-            if (it == current_pattern.patterns.end()) {
-                current_channel = current_pattern.patterns.begin()->first;
+            if (it == current_patterns.patterns.end()) {
+                if (current_patterns.commands_patterns.empty()) {
+                    current_channel.index = current_patterns.patterns.begin()->first;
+                } else {
+                    current_channel.command = true;
+                    current_channel.index = current_patterns.commands_patterns.begin()->first;
+                }
             } else {
                 ++it;
-                if (it == current_pattern.patterns.end()) {
-                    current_channel = current_pattern.patterns.begin()->first;
+                current_channel.index = it->first;
+            }
+        }
+    }
+}
+
+void GUIPatternsPanel::handle_commands_pattern_input(CommandsPattern *pattern, const uint16_t index) {
+    const int start = page * gui.get_page_size() - index;
+    const int end = start + gui.get_page_size();
+    pattern->handle_input(start, end);
+    current_row = pattern->current_row + index;
+
+    if (!current_patterns.commands_patterns.empty()) {
+        auto it = current_patterns.commands_patterns.find(current_channel.index);
+        if (ImGui::IsKeyPressed(ImGuiKey_LeftArrow) && pattern->selection == CommandSelection::Command) {
+            if (it == current_patterns.commands_patterns.begin()) {
+                if (current_patterns.patterns.empty()) {
+                    current_channel.index = current_patterns.commands_patterns.rbegin()->first;
                 } else {
-                    current_channel = it->first;
+                    current_channel.command = false;
+                    current_channel.index = current_patterns.patterns.rbegin()->first;
                 }
+            } else {
+                --it;
+                current_channel.index = it->first;
+            }
+        }
+        if (ImGui::IsKeyPressed(ImGuiKey_RightArrow) && pattern->selection == CommandSelection::Value) {
+            if (it == current_patterns.commands_patterns.end()) {
+                if (current_patterns.patterns.empty()) {
+                    current_channel.index = current_patterns.commands_patterns.begin()->first;
+                } else {
+                    current_channel.command = false;
+                    current_channel.index = current_patterns.patterns.begin()->first;
+                }
+            } else {
+                ++it;
+                current_channel.index = it->first;
             }
         }
     }
 }
 
 std::pair<Pattern *, uint16_t> GUIPatternsPanel::find_pattern_by_current_row() const {
-    const auto it = current_pattern.patterns.find(current_channel);
-    if (it == current_pattern.patterns.end()) {
+    if (current_channel.command) {
         return {nullptr, 0};
     }
 
-    const auto &patterns = current_pattern.patterns.at(current_channel);
+    const auto it = current_patterns.patterns.find(current_channel.index);
+    if (it == current_patterns.patterns.end()) {
+        return {nullptr, 0};
+    }
+
+    const auto &patterns = current_patterns.patterns.at(current_channel.index);
     uint16_t rows = 0;
     size_t pattern_id;
     for (pattern_id = 0; pattern_id < patterns.size(); ++pattern_id) {
@@ -201,18 +356,57 @@ std::pair<Pattern *, uint16_t> GUIPatternsPanel::find_pattern_by_current_row() c
     return {pattern, rows};
 }
 
+std::pair<CommandsPattern *, uint16_t> GUIPatternsPanel::find_commands_pattern_by_current_row() const {
+    if (!current_channel.command) {
+        return {nullptr, 0};
+    }
+
+    const auto it = current_patterns.commands_patterns.find(current_channel.index);
+    if (it == current_patterns.commands_patterns.end()) {
+        return {nullptr, 0};
+    }
+
+    const auto &patterns = current_patterns.commands_patterns.at(current_channel.index);
+    uint16_t rows = 0;
+    size_t pattern_id;
+    for (pattern_id = 0; pattern_id < patterns.size(); ++pattern_id) {
+        rows += patterns[pattern_id].steps;
+        if (rows > current_row) {
+            rows -= patterns[pattern_id].steps;
+            break;
+        }
+    }
+
+    if (pattern_id >= patterns.size()) {
+        return {nullptr, 0};
+    }
+
+    CommandsPattern *pattern = const_cast<CommandsPattern *>(&patterns.at(pattern_id));
+    return {pattern, rows};
+}
+
 int GUIPatternsPanel::get_pages() const {
-    return std::ceil(static_cast<float>(current_pattern.total_rows) / gui.get_page_size());
+    return std::ceil(static_cast<float>(current_patterns.total_rows) / gui.get_page_size());
 }
 
 void GUIPatternsPanel::deselect_all_rows() {
-    for (auto &pattern : current_pattern.patterns) {
+    for (auto &pattern : current_patterns.patterns) {
         for (auto &p : pattern.second) {
             p.current_row = -1;
+        }
+    }
+    for (auto &pattern : current_patterns.commands_patterns) {
+        for (auto &p : pattern.second) {
+            p.current_row = -1;
+            p.selection = CommandSelection::None;
         }
     }
 }
 
 void GUIPatternsPanel::set_index(const int index) {
     current_index = static_cast<size_t>(index);
+}
+
+bool GUIPatternsPanel::is_playing() const {
+    return gui.is_playing() && ticks_per_beat > 0;
 }

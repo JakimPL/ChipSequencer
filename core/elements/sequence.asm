@@ -37,8 +37,14 @@ step:
     call set_release
     jmp .progress_sequence
 .note_on:
-    movzx ecx, byte [current_channel]
-    mov [pitch + ecx], al
+    movzx edx, byte [current_channel]
+    mov [pitch + edx], al
+.load_frequency:
+    shl ax, 2
+    mov ebx, frequencies
+    add ebx, eax
+    mov ebx, [ebx]
+    mov [frequency + 4 * edx], ebx
     call reset_envelope
 .progress_sequence:
     mov al, [esi + 1]
@@ -63,8 +69,7 @@ initialize_sample_rate:
 calculate_ticks_per_beat:
     fild dword [sample_rate]
     fmul dword [unit]
-    fild word [bpm]
-    fdivp st1, st0
+    fidiv word [bpm]
     fistp dword [ticks_per_beat]
     ret
 

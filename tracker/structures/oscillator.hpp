@@ -7,6 +7,15 @@
 
 #include "../constants.hpp"
 
+enum class Generator : uint8_t {
+    Square = GENERATOR_SQUARE,
+    Saw = GENERATOR_SAW,
+    Sine = GENERATOR_SINE,
+    Wavetable = GENERATOR_WAVETABLE,
+    Noise = GENERATOR_NOISE,
+    Count = GENERATOR_COUNT,
+};
+
 struct Oscillator {
     uint8_t oscillator_size;
     uint8_t generator_index;

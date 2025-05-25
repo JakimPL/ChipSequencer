@@ -7,6 +7,8 @@ enum class GUIElement {
     Editor,
     General,
     Channels,
+    CommandsChannel,
+    CommandsSequence,
     DSPs,
     Envelopes,
     Orders,
@@ -16,6 +18,7 @@ enum class GUIElement {
     Sequences,
     Wavetables,
     Summary,
+    Count,
 };
 
 enum class GUIScale {

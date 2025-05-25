@@ -3,7 +3,11 @@
 
 #include "../../general.hpp"
 #include "../../structures.hpp"
+#include "../../maps/commands.hpp"
+#include "../../maps/dsps.hpp"
+#include "../../maps/oscillators.hpp"
 #include "../init.hpp"
+#include "../names.hpp"
 #include "summary.hpp"
 
 GUISummaryPanel::GUISummaryPanel(const bool visible)
@@ -29,7 +33,7 @@ void GUISummaryPanel::draw_summary() {
         size_t total_size = 0;
 
         // Channels
-        size_t channels_count = channels.size();
+        const size_t channels_count = channels.size();
         size_t channels_size = channels_count * sizeof(Channel);
         total_size += channels_size;
         ImGui::TableNextRow();
@@ -41,31 +45,14 @@ void GUISummaryPanel::draw_summary() {
         ImGui::Text("%zu", channels_size);
 
         // DSPs
-        size_t dsps_count = dsps.size();
+        const size_t dsps_count = dsps.size();
         size_t dsps_size = 0;
         for (const auto *dsp : dsps) {
             const DSP *generic = static_cast<const DSP *>(dsp);
             const size_t effect = generic->effect_index;
-            dsps_size += 1 + sizeof(uint32_t);
-            switch (effect) {
-            case EFFECT_GAINER: {
-                dsps_size += SIZE_DSP_GAINER;
-                break;
-            }
-            case EFFECT_DISTORTION: {
-                dsps_size += SIZE_DSP_DISTORTION;
-                break;
-            }
-            case EFFECT_FILTER: {
-                dsps_size += SIZE_DSP_FILTER;
-                break;
-            }
-            case EFFECT_DELAY: {
-                dsps_size += SIZE_DSP_DELAY;
-                break;
-            }
-            }
+            dsps_size += 1 + sizeof(uint32_t) + dsps_sizes.at(effect);
         }
+
         total_size += dsps_size;
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
@@ -76,8 +63,8 @@ void GUISummaryPanel::draw_summary() {
         ImGui::Text("%zu", dsps_size);
 
         // Envelopes
-        size_t envelopes_count = envelopes.size();
-        size_t envelopes_size = envelopes_count * sizeof(Envelope);
+        const size_t envelopes_count = envelopes.size();
+        const size_t envelopes_size = envelopes_count * sizeof(Envelope);
         total_size += envelopes_size;
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
@@ -88,10 +75,10 @@ void GUISummaryPanel::draw_summary() {
         ImGui::Text("%zu", envelopes_size);
 
         // Sequences
+        const size_t sequences_count = sequences.size();
         size_t sequences_size = 0;
-        size_t sequences_count = sequences.size();
         for (const Sequence *sequence : sequences) {
-            const size_t sequence_size = sequence->data_size + 1;
+            const size_t sequence_size = sequence->size + 1;
             total_size += sequence_size;
             sequences_size += sequence_size;
         }
@@ -122,33 +109,11 @@ void GUISummaryPanel::draw_summary() {
         ImGui::Text("%zu", orders_size);
 
         // Oscillators
-        size_t oscillators_count = oscillators.size();
+        const size_t oscillators_count = oscillators.size();
         size_t oscillators_size = 0;
         for (const void *oscillator : oscillators) {
             const Oscillator *generic = static_cast<const Oscillator *>(oscillator);
-            oscillators_size += 1;
-            switch (generic->generator_index) {
-            case GENERATOR_SQUARE: {
-                oscillators_size += SIZE_OSCILLATOR_SQUARE;
-                break;
-            }
-            case GENERATOR_SAW: {
-                oscillators_size += SIZE_OSCILLATOR_SAW;
-                break;
-            }
-            case GENERATOR_SINE: {
-                oscillators_size += SIZE_OSCILLATOR_SINE;
-                break;
-            }
-            case GENERATOR_WAVETABLE: {
-                oscillators_size += SIZE_OSCILLATOR_WAVETABLE;
-                break;
-            }
-            case GENERATOR_NOISE: {
-                oscillators_size += SIZE_OSCILLATOR_NOISE;
-                break;
-            }
-            }
+            oscillators_size += 1 + oscillators_sizes.at(generic->generator_index);
         }
 
         total_size += oscillators_size;
@@ -161,7 +126,7 @@ void GUISummaryPanel::draw_summary() {
         ImGui::Text("%zu", oscillators_size);
 
         // Wavetables
-        size_t wavetables_count = wavetables.size();
+        const size_t wavetables_count = wavetables.size();
         size_t wavetables_size = 0;
         for (const Wavetable *wavetable : wavetables) {
             wavetables_size += wavetable->wavetable_size + 1;
@@ -176,7 +141,40 @@ void GUISummaryPanel::draw_summary() {
         ImGui::TableSetColumnIndex(2);
         ImGui::Text("%zu", wavetables_size);
 
-        // Total Row
+        // Commands channels
+        const size_t commands_channels_count = commands_channels.size();
+        const size_t commands_channels_size = commands_channels_count * sizeof(CommandsChannel);
+        total_size += commands_channels_size;
+
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+        ImGui::Text("Commands channels");
+        ImGui::TableSetColumnIndex(1);
+        ImGui::Text("%zu", commands_channels_count);
+        ImGui::TableSetColumnIndex(2);
+        ImGui::Text("%zu", commands_channels_size);
+
+        // Commands sequences
+        size_t commands_sequences_count = commands_sequences.size();
+        size_t commands_sequences_size = 0;
+        for (const CommandsSequence *sequence : commands_sequences) {
+            commands_sequences_size += COMMANDS_SEQUENCE_DATA;
+            const size_t sequence_size = sequence->length;
+            for (size_t i = 0; i < sequence_size; i++) {
+                const Command &command = sequence->commands[i];
+                commands_sequences_size += commands_sizes.at(command.instruction);
+            }
+        }
+
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+        ImGui::Text("Commands sequences");
+        ImGui::TableSetColumnIndex(1);
+        ImGui::Text("%zu", commands_sequences_count);
+        ImGui::TableSetColumnIndex(2);
+        ImGui::Text("%zu", commands_sequences_size);
+
+        // Total
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
         ImGui::Text("Total song size");
@@ -196,30 +194,30 @@ void GUISummaryPanel::draw_optimizations() {
     if (dsps.empty()) {
         ImGui::BulletText("Disabled all DSPs");
     } else {
-        if (song.calculate_dsps(EFFECT_GAINER) == 0) {
-            ImGui::BulletText("Disabled gainer effect");
-        }
-        if (song.calculate_dsps(EFFECT_DISTORTION) == 0) {
-            ImGui::BulletText("Disabled distortion effect");
-        }
-        if (song.calculate_dsps(EFFECT_FILTER) == 0) {
-            ImGui::BulletText("Disabled filter effect");
-        }
-        if (song.calculate_dsps(EFFECT_DELAY) == 0) {
-            ImGui::BulletText("Disabled delay effect");
+        for (size_t i = 0; i < effect_names.size(); ++i) {
+            const Effect effect = static_cast<Effect>(i);
+            const std::string &name = effect_names[i];
+            if (song.calculate_dsps(effect) == 0) {
+                ImGui::BulletText("Disabled effect: %s", name.c_str());
+            }
         }
     }
 
-    if (song.calculate_oscillators(GENERATOR_SQUARE) == 0) {
-        ImGui::BulletText("Disabled square oscillator");
+    for (size_t i = 0; generator_names.size() > i; ++i) {
+        const Generator generator = static_cast<Generator>(i);
+        const std::string &name = generator_names[i];
+        if (song.calculate_oscillators(generator) == 0) {
+            ImGui::BulletText("Disabled generator: %s", generator_names[i].c_str());
+        }
     }
-    if (song.calculate_oscillators(GENERATOR_SINE) == 0) {
-        ImGui::BulletText("Disabled sine oscillator");
-    }
-    if (song.calculate_oscillators(GENERATOR_SAW) == 0) {
-        ImGui::BulletText("Disabled saw oscillator");
-    }
-    if (song.calculate_oscillators(GENERATOR_NOISE) == 0) {
-        ImGui::BulletText("Disabled noise oscillator");
+
+    if (commands_channels.empty()) {
+        ImGui::BulletText("Disabled all commands");
+    } else {
+        for (const auto &[instruction, name] : instruction_names) {
+            if (song.calculate_commands(instruction) == 0) {
+                ImGui::BulletText("Disabled command: %s", name);
+            }
+        }
     }
 }

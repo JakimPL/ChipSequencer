@@ -15,6 +15,11 @@ class LinkManager {
   private:
     std::unordered_map<LinkKey, std::vector<Link *>> map;
     std::unordered_map<LinkKey, ParameterValue> snapshot;
+    std::vector<std::pair<void *, LinkKey>> pointers_map;
+
+    void set_channels_links();
+    void set_dsps_links();
+    void set_commands_links();
 
     void capture_parameter(const LinkKey key, const Link *link);
     void restore_parameter(const LinkKey key, const Link *link) const;
@@ -29,13 +34,18 @@ class LinkManager {
     void reset();
     void set_link(Link &link, void *item, const uint8_t i);
     void set_links();
+    void save_targets();
 
     void realign_links(const size_t index, const Target target, const ItemType type);
     void realign_links(const size_t index, const Target target);
 
     bool is_linked(const LinkKey key) const;
     std::vector<Link *> get_links(const LinkKey key) const;
+    std::string get_link_reference(const LinkKey key) const;
     std::string get_link_reference(const ItemType type, const size_t index) const;
+    std::vector<std::pair<void *, LinkKey>> get_pointers_map() const;
+    std::pair<void *, LinkKey> get_pointer_and_key(size_t index) const;
+    size_t find_pointer_id_by_key(const LinkKey key) const;
 
     void capture_parameters();
     void restore_parameters() const;

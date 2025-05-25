@@ -1,26 +1,35 @@
     bits 32
 
-    global output
-
     %define BIN
+
+    %ifdef DEBUG
+    global _start
+    %else
+    global output
     %define FILE_SIZE 0x1000
     %define MEMORY_SIZE 0xD00000
+    %endif
 
     %define SYS_EXIT 0x01
     %define SYS_FORK 0x02
+    %define SYS_READ 0x03
     %define SYS_WRITE 0x04
     %define SYS_CLOSE 0x06
     %define SYS_EXECVE 0x0B
     %define SYS_PIPE 0x2A
+    %define SYS_IOCTL 0x36
     %define SYS_DUP2 0x3F
 
-    org $00010000
+    %define TCSETS_CMD 0x5402
+
+    %ifndef DEBUG
+    org 0x10000
 program_start:
     db $7F, "ELF", 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0
     dw 2
     dw 3
     dd 1
-    dd entry
+    dd _start
     dd phdr - program_start
     dd 0
     dd 0
@@ -42,6 +51,7 @@ phdr:
     dd 7
     dd 4096
     phdr_size equ $ - phdr
+    %endif
 
 message:
     db "{message}", 10
@@ -61,44 +71,79 @@ cmd_format:
 cmd_dash_f:
     db "-f", 0
 
+sound_driver_initialize:
+    ret
+
+sound_driver_terminate:
+    ret
+
 print_message:
-    mov eax, 4
+    mov eax, SYS_WRITE
     mov ebx, 1
     mov ecx, message
     mov edx, message_len
     int 0x80
     ret
 
-sound_driver_initialize:
-    ret
-sound_driver_terminate:
-    ret
-
-entry:
+_start:
 .pipe:
     mov al, SYS_PIPE
-    mov ebx, esp
+    mov ebx, pipe_fds
     int 0x80
-    lea edx, [ebx + 12]
-    mov ebp, entry
+
 .fork:
     mov al, SYS_FORK
     int 0x80
-    dec eax
-    js child
 
+    test al, al
+    jz child
+
+    mov al, SYS_CLOSE
+    mov ebx, [pipe_fds]
+    int 0x80
+
+.parent:
     pusha
     call print_message
     call initialize
     popa
 
+.termios:
+    xor eax, eax
+    mov edi, termios
+    mov ecx, 4
+.clear_termios_loop:
+    stosd
+    loop .clear_termios_loop
+
+.sys_ioctl:
+    mov al, SYS_IOCTL
+    mov ebx, 0
+    mov ecx, TCSETS_CMD
+    lea edx, [termios]
+    int 0x80
+
 main_loop:
     pusha
 
-    call mix
+.read:
+    mov al, SYS_READ
+    xor ebx, ebx
+    mov ecx, key
+    mov edx, 1
+    int 0x80
 
+    cmp al, 1
+    jne .mix
+
+    call exit
+
+.mix:
+    call frame
+
+.write_stream:
     mov eax, SYS_WRITE
-    mov ebx, [esp + 36]
+    mov ebx, [pipe_fds + 4]
     mov ecx, output
     mov edx, 4 * {output_channels}
     int 0x80
@@ -106,25 +151,34 @@ main_loop:
     popa
     jmp main_loop
 
+exit:
+    mov eax, SYS_CLOSE
+    mov ebx, [pipe_fds + 4]
+    int 0x80
+
+    mov al, SYS_EXIT
+    xor ebx, ebx
+    int 0x80
+
 child:
 .child_close_write:
     mov eax, SYS_CLOSE
-    mov ebx, [esp + 4]
+    mov ebx, [pipe_fds + 4]
     int 0x80
 
 .dup2:
-    mov eax, SYS_DUP2
-    mov ebx, [esp]
+    mov al, SYS_DUP2
+    mov ebx, [pipe_fds]
     mov ecx, 0
     int 0x80
 
 .child_close_read:
-    mov eax, SYS_CLOSE
-    mov ebx, [esp]
+    mov al, SYS_CLOSE
+    mov ebx, [pipe_fds]
     int 0x80
 
 .execve:
-    mov eax, SYS_EXECVE
+    mov al, SYS_EXECVE
     mov ebx, cmd_aplay
 
     push 0
@@ -147,3 +201,8 @@ child:
 
     %include "core/player.asm"
     %include "core/song/data.asm"
+
+    section .bss
+    pipe_fds resd 2
+    termios resb 32
+    key resb 1

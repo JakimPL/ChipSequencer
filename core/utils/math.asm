@@ -123,6 +123,18 @@ load_eax_to_fpu_and_multiply_by_word_integer:
     call multiply_by_byte_integer
     ret
 
+power:
+    fld st0
+    frndint
+    fsub st1, st0
+    fxch
+    f2xm1
+    fld1
+    fadd
+    fscale
+    fstp st1
+    ret
+
     SEGMENT_DATA
 pi:
     dd __float32__(3.141592653589793238462)
@@ -130,10 +142,21 @@ pi:
 angle_constant:
     dd ANGLE_CONSTANT
     %endif
+
 half_range:
     dd __float32__(32767.5)
-two:
+
+f_65536:
+    dd 65536.0
+i_1000:
+    dw 1000
+i_255:
+    dw 255
+i_240:
+    dw 240
+i_2:
     dw 2
+
     %ifndef TRACKER
 sample_rate:
     dd SAMPLE_RATE

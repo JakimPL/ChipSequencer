@@ -2,10 +2,11 @@
 #include <cmath>
 
 #include "../general.hpp"
+#include "../maps/commands.hpp"
+#include "../maps/keys.hpp"
 #include "../maps/routing.hpp"
 #include "../utils/string.hpp"
 #include "constants.hpp"
-#include "mapping.hpp"
 #include "names.hpp"
 #include "utils.hpp"
 
@@ -188,132 +189,176 @@ std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t
     return {index + pattern.notes.size(), select};
 }
 
-bool draw_output(OutputType &output_type, const int dsp_index) {
-    push_secondary_style();
-    ImGui::Separator();
-    ImGui::Text("Output:");
-    const bool value_changed = prepare_combo(target_types, "##OutputTargetCombo", output_type.target).value_changed;
+std::pair<size_t, bool> draw_commands_pattern(CommandsPattern &pattern, const bool header, const size_t index, const int playing_row, const uint16_t start, const uint16_t end) {
+    bool select = false;
+    const int min = std::max(static_cast<int>(start) - static_cast<int>(index), 0);
+    const int max = std::min(static_cast<int>(end) - static_cast<int>(index), static_cast<int>(pattern.commands.size()));
+    if (max <= 0 || min >= pattern.commands.size()) {
+        return {index + pattern.commands.size(), false};
+    }
+
+    if (ImGui::BeginTable("CommandsPatternTable", 3, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg)) {
+        ImGui::BeginDisabled(gui.is_playing());
+        ImGui::TableSetupColumn("Index", ImGuiTableColumnFlags_WidthFixed, 40.0f);
+        ImGui::TableSetupColumn("Com", ImGuiTableColumnFlags_WidthFixed, 50.0f);
+        ImGui::TableSetupColumn("Value");
+        if (header) {
+            ImGui::TableHeadersRow();
+        }
+
+        for (int i = min; i < max; i++) {
+            const int j = i + index;
+            const bool is_command_selected = (pattern.current_row == i && pattern.selection == CommandSelection::Command);
+            const bool is_value_selected = (pattern.current_row == i && pattern.selection == CommandSelection::Value);
+            ImGui::TableNextRow();
+            if (playing_row == j) {
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, IM_COL32(128, 255, 128, 64));
+            }
+
+            if (is_command_selected) {
+                ImGui::PushStyleColor(ImGuiCol_Text, GUI_HIGHLIGHT_COLOR);
+            }
+
+            ImGui::TableSetColumnIndex(0);
+            const std::string index_string = std::to_string(j);
+            ImGui::Text("%s", index_string.c_str());
+
+            ImGui::PushID(i);
+            ImGui::TableSetColumnIndex(1);
+            const std::string command = pattern.commands[i].empty() ? "." : pattern.commands[i];
+            if (ImGui::Selectable(command.c_str(), is_command_selected)) {
+                pattern.set_selection(i, CommandSelection::Command);
+                select = true;
+            }
+
+            show_commands_pattern_tooltip(pattern, i);
+            ImGui::PopID();
+
+            if (is_command_selected) {
+                ImGui::PopStyleColor();
+            }
+
+            std::string value;
+            if (is_value_selected) {
+                ImGui::PushStyleColor(ImGuiCol_Text, GUI_HIGHLIGHT_COLOR);
+                value = pattern.values_handler.get_buffer();
+            } else {
+                value = pattern.values[i].empty() ? "" : pattern.values[i];
+            }
+
+            pad_string(value, '.', MAX_COMMAND_VALUE_SIZE);
+
+            ImGui::TableSetColumnIndex(2);
+            ImGui::PushID(MAX_STEPS + i);
+            if (ImGui::Selectable(value.c_str(), is_value_selected)) {
+                pattern.set_selection(i, CommandSelection::Value);
+                pattern.values_handler.set_buffer(pattern.values[i]);
+                select = true;
+            }
+            show_commands_pattern_tooltip(pattern, i);
+            ImGui::PopID();
+
+            if (is_value_selected) {
+                ImGui::PopStyleColor();
+            }
+        }
+
+        ImGui::EndDisabled();
+        ImGui::EndTable();
+    }
+
+    // realignment
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 4.0f);
+
+    return {index + pattern.commands.size(), select};
+}
+
+void draw_output_output_splitter(OutputType &output_type, const LinkKey key) {
     const size_t output_channels = song.get_output_channels();
-
-    switch (static_cast<OutputTarget>(output_type.target)) {
-    case OutputTarget::OutputSplitter: {
-        if (value_changed) {
-            output_type.operation = static_cast<int>(OutputOperation::Add);
-        }
-        ImGui::Text("Splitter:");
-        for (size_t i = 0; i < output_channels; ++i) {
-            const std::string label = "Channel " + std::to_string(i);
-            draw_float_slider(label.c_str(), output_type.splitter[i], {}, 0.0f, 1.0f);
-        }
-
-        break;
+    ImGui::Text("Splitter:");
+    for (size_t i = 0; i < output_channels; ++i) {
+        const LinkKey splitter_key = {key.target, key.index, static_cast<uint16_t>(key.offset + i)};
+        const std::string label = "Channel " + std::to_string(i);
+        draw_float_slider(label.c_str(), output_type.splitter[i], splitter_key, 0.0f, 1.0f);
     }
-    case OutputTarget::DSPSplitter: {
-        if (dsps.empty() || dsp_index >= static_cast<int>(dsps.size()) - 1) {
-            ImGui::Text("No DSPs available.");
-            break;
-        }
+}
 
-        if (value_changed) {
-            output_type.operation = static_cast<int>(OutputOperation::Add);
-        }
-
-        ImGui::Text("Initial DSP:");
-        draw_int_slider("DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
-        ImGui::Text("Splitter:");
-        int start = output_type.dsp_channel;
-        int end = start + std::clamp(static_cast<int>(dsps.size()) - start, 0, MAX_OUTPUT_CHANNELS);
-        for (int i = output_type.dsp_channel; i < end; ++i) {
-            const size_t j = i - output_type.dsp_channel;
-            const std::string label = dsp_names[i];
-            draw_float_slider(label.c_str(), output_type.splitter[j], {}, 0.0f, 1.0f);
-        }
-
-        break;
-    }
-    case OutputTarget::DirectOutput: {
-        if (value_changed) {
-            output_type.operation = static_cast<int>(OutputOperation::Add);
-        }
-
-        draw_int_slider("Channel", output_type.output_channel, {}, 0, output_channels - 1);
-        break;
-    }
-    case OutputTarget::DirectDSP: {
-        if (dsps.empty() || dsp_index >= static_cast<int>(dsps.size()) - 1) {
-            ImGui::Text("No DSPs available.");
-            break;
-        }
-
-        if (value_changed) {
-            output_type.operation = static_cast<int>(OutputOperation::Add);
-        }
-
-        draw_int_slider("DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
-        break;
-    }
-    case OutputTarget::Parameter: {
-        if (value_changed) {
-            output_type.operation = static_cast<int>(OutputOperation::Set);
-        }
-
-        ImGui::Separator();
-        prepare_combo(parameter_types, "##OutputParameterCombo", output_type.parameter_type);
-        const Target target = static_cast<Target>(output_type.parameter_type + static_cast<int>(OutputTarget::Parameter));
-        switch (target) {
-        case Target::ENVELOPE: {
-            draw_output_parameter(output_type, envelope_names, "Envelope");
-            break;
-        }
-        case Target::SEQUENCE: {
-            ImGui::Text("Not implemented yet.");
-            break;
-        }
-        case Target::ORDER: {
-            ImGui::Text("Not implemented yet.");
-            break;
-        }
-        case Target::OSCILLATOR: {
-            draw_output_parameter_oscillator(output_type);
-            break;
-        }
-        case Target::WAVETABLE: {
-            ImGui::Text("Not implemented yet.");
-            break;
-        }
-        case Target::DSP: {
-            draw_output_parameter_dsp(output_type);
-            break;
-        }
-        case Target::CHANNEL: {
-            draw_output_parameter(output_type, channel_names, "Channel");
-            break;
-        }
-        case Target::SPLITTER_OUTPUT:
-        case Target::SPLITTER_DSP:
-        case Target::DIRECT_OUTPUT:
-        case Target::DIRECT_DSP:
-        case Target::UNUSED: {
-            throw std::runtime_error("Invalid target type");
-        }
-        }
-    }
+void draw_output_dsp_splitter(OutputType &output_type, const int dsp_index, const LinkKey key) {
+    if (dsps.empty() || dsp_index >= static_cast<int>(dsps.size()) - 1) {
+        ImGui::Text("No DSP available.");
+        return;
     }
 
+    ImGui::Text("Initial DSP:");
+    draw_int_slider("DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
+    ImGui::Text("Splitter:");
+    int start = output_type.dsp_channel;
+    int end = start + std::clamp(static_cast<int>(dsps.size()) - start, 0, MAX_OUTPUT_CHANNELS);
+    for (int i = output_type.dsp_channel; i < end; ++i) {
+        const size_t j = i - output_type.dsp_channel;
+        const std::string label = dsp_names[i];
+        const LinkKey splitter_key = {key.target, key.index, static_cast<uint16_t>(key.offset + j)};
+        draw_float_slider(label.c_str(), output_type.splitter[j], splitter_key, 0.0f, 1.0f);
+    }
+}
+
+void draw_output_direct_output(OutputType &output_type, const LinkKey key) {
+    const size_t output_channels = song.get_output_channels();
+    draw_int_slider("Channel", output_type.output_channel, {}, 0, output_channels - 1);
+}
+
+void draw_output_direct_dsp(OutputType &output_type, const int dsp_index, const LinkKey key) {
+    if (dsps.empty() || dsp_index >= static_cast<int>(dsps.size()) - 1) {
+        ImGui::Text("No DSP available.");
+        return;
+    }
+
+    draw_int_slider("DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
+}
+
+bool draw_output_parameter(OutputType &output_type, const LinkKey key) {
     ImGui::Separator();
-    ImGui::Text("Operation:");
-    prepare_combo(operation_names, "##OutputTypeOperation", output_type.operation);
-    ImGui::Text("Variable:");
-    prepare_combo(variable_types, "##OutputTypeCombo", output_type.variable_type);
-    ImGui::BeginDisabled(output_type.variable_type == 0);
-    draw_int_slider("Shift", output_type.shift, {}, 0, 15);
-    ImGui::EndDisabled();
-    pop_secondary_style();
+    bool value_changed = prepare_combo(parameter_types, "##OutputParameterCombo", output_type.parameter_type).value_changed;
+    output_type.target = output_type.parameter_type + static_cast<int>(OutputTarget::Parameter);
+    switch (static_cast<Target>(output_type.target)) {
+    case Target::ENVELOPE: {
+        draw_output_parameter_generic(output_type, envelope_names, "Envelope");
+        break;
+    }
+    case Target::SEQUENCE:
+    case Target::COMMANDS_SEQUENCE:
+    case Target::ORDER:
+    case Target::WAVETABLE:
+    case Target::COMMANDS_CHANNEL: {
+        ImGui::Text("Not implemented yet.");
+        break;
+    }
+    case Target::OSCILLATOR: {
+        draw_output_parameter_oscillator(output_type);
+        break;
+    }
+    case Target::DSP: {
+        draw_output_parameter_dsp(output_type);
+        break;
+    }
+    case Target::CHANNEL: {
+        draw_output_parameter_generic(output_type, channel_names, "Channel");
+        break;
+    }
+    case Target::SPLITTER_OUTPUT:
+    case Target::SPLITTER_DSP:
+    case Target::DIRECT_OUTPUT:
+    case Target::DIRECT_DSP:
+    case Target::COUNT:
+    default: {
+        throw std::runtime_error("Invalid target type: " + std::to_string(output_type.target));
+    }
+    }
 
     return value_changed;
 }
 
-void draw_output_parameter(OutputType &output_type, const std::vector<std::string> &names, const std::string label) {
+void draw_output_parameter_generic(OutputType &output_type, const std::vector<std::string> &names, const std::string label) {
     if (names.empty()) {
         const std::string text = "No " + to_lower(label) + "s available.";
         ImGui::Text("%s", text.c_str());
@@ -392,6 +437,74 @@ void draw_output_parameter_dsp(OutputType &output_type) {
     }
 }
 
+bool draw_output(OutputType &output_type, const LinkKey key) {
+    push_secondary_style();
+    ImGui::Separator();
+    ImGui::Text("Output:");
+    bool value_changed = prepare_combo(target_types, "##OutputTargetCombo", output_type.target).value_changed;
+    const int dsp_index = key.target == Target::DSP ? key.index : -1;
+
+    switch (static_cast<OutputTarget>(output_type.target)) {
+    case OutputTarget::OutputSplitter: {
+        draw_output_output_splitter(output_type, key);
+
+        if (value_changed) {
+            output_type.operation = static_cast<int>(OutputOperation::Add);
+        }
+
+        break;
+    }
+    case OutputTarget::DSPSplitter: {
+        draw_output_dsp_splitter(output_type, dsp_index, key);
+
+        if (value_changed) {
+            output_type.operation = static_cast<int>(OutputOperation::Add);
+        }
+
+        break;
+    }
+    case OutputTarget::DirectOutput: {
+        draw_output_direct_output(output_type, key);
+
+        if (value_changed) {
+            output_type.operation = static_cast<int>(OutputOperation::Add);
+        }
+
+        break;
+    }
+    case OutputTarget::DirectDSP: {
+        draw_output_direct_dsp(output_type, dsp_index, key);
+
+        if (value_changed) {
+            output_type.operation = static_cast<int>(OutputOperation::Add);
+        }
+
+        break;
+    }
+    case OutputTarget::Parameter: {
+        value_changed |= draw_output_parameter(output_type, key);
+
+        if (value_changed) {
+            output_type.operation = static_cast<int>(OutputOperation::Set);
+        }
+
+        break;
+    }
+    }
+
+    ImGui::Separator();
+    ImGui::Text("Operation:");
+    prepare_combo(operation_names, "##OutputTypeOperation", output_type.operation);
+    ImGui::Text("Variable:");
+    prepare_combo(variable_types, "##OutputTypeCombo", output_type.variable_type);
+    ImGui::BeginDisabled(output_type.variable_type == 0);
+    draw_int_slider("Shift", output_type.shift, {}, 0, 15);
+    ImGui::EndDisabled();
+    pop_secondary_style();
+
+    return value_changed;
+}
+
 void show_dependency_tooltip(const std::string &label, std::vector<size_t> &dependencies) {
     if (ImGui::IsItemHovered() && !dependencies.empty()) {
         std::string tooltip = "Used by " + label + ": ";
@@ -402,6 +515,77 @@ void show_dependency_tooltip(const std::string &label, std::vector<size_t> &depe
             }
         }
         ImGui::SetTooltip("%s", tooltip.c_str());
+    }
+}
+
+void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t index) {
+    if (ImGui::IsItemHovered()) {
+        const std::string &command = pattern.commands[index];
+        const std::string &command_value = pattern.values[index];
+        if (command.empty()) {
+            return;
+        }
+
+        const char command_char = command[0];
+        const Instruction instruction = command_characters.at(command_char);
+        switch (instruction) {
+        case Instruction::Empty: {
+            return;
+        }
+        case Instruction::PortamentoUp:
+        case Instruction::PortamentoDown: {
+            uint8_t channel;
+            uint16_t value_portamento;
+            pattern.split_portamento_value(command_value, channel, value_portamento);
+            const double portamento = pattern.cast_portamento_to_double(value_portamento);
+            ImGui::SetTooltip("Portamento %s: channel %d, %.3f semitones", command_char == command_letters.at(Instruction::PortamentoUp) ? "up" : "down", channel, portamento);
+            break;
+        }
+        case Instruction::SetMasterGainer: {
+            ImGui::SetTooltip("Master gainer: %.4f", std::stod(command_value));
+            break;
+        }
+        case Instruction::SetBPM: {
+            ImGui::SetTooltip("BPM: %d", std::stoi(command_value));
+            break;
+        }
+        case Instruction::SetDivision: {
+            ImGui::SetTooltip("Division: %d", std::stoi(command_value));
+            break;
+        }
+        case Instruction::ChangeByteValue:
+        case Instruction::ChangeWordValue:
+        case Instruction::ChangeDwordValue:
+        case Instruction::ChangeFloatValue:
+        case Instruction::AddByteValue:
+        case Instruction::AddWordValue:
+        case Instruction::AddDwordValue:
+        case Instruction::AddFloatValue: {
+            const bool add = command_char == command_letters.at(Instruction::AddByteValue);
+            TargetVariableType target_variable_type;
+            Target target;
+            uint8_t index;
+            uint16_t offset;
+            uint32_t value;
+            pattern.split_change_value_parts(
+                command_value,
+                target_variable_type,
+                target,
+                index,
+                offset,
+                value
+            );
+
+            const std::string target_name = target_names.at(target);
+            const std::string variable_type_name = variable_types.at(static_cast<size_t>(target_variable_type));
+            ImGui::SetTooltip("%s %s: %s %d, offset %d, value %u", add ? "Add" : "Set", variable_type_name.c_str(), target_name.c_str(), index, offset, value);
+            break;
+        }
+        case Instruction::Count:
+        default: {
+            throw std::runtime_error("Invalid instruction: " + command);
+        }
+        }
     }
 }
 

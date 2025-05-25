@@ -125,6 +125,24 @@ Size=1251,500
 Collapsed=0
 DockId=0x0000000F,2
 
+[Window][Commands]
+Pos=0,731
+Size=234,278
+Collapsed=0
+DockId=0x0000000D,1
+
+[Window][Commands sequences]
+Pos=0,731
+Size=234,278
+Collapsed=0
+DockId=0x0000000D,1
+
+[Window][Commands channels]
+Pos=1489,192
+Size=359,430
+Collapsed=0
+DockId=0x00000011,1
+
 [Table][0x8E77C46A,2]
 Column 0  Weight=1.0000
 Column 1  Weight=1.0000

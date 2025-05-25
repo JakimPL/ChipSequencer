@@ -34,7 +34,7 @@ class LinuxCompiler(Compiler):
         args = [
             "bash",
             "-c",
-            "./compile.sh",
+            "./compile.sh" + " DEBUG" if not self.compress else "",
         ]
 
         subprocess.run(args, cwd=self.temp_dir)

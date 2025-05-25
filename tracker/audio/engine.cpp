@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "../song/data.hpp"
+#include "../song/core.hpp"
 #include "../song/functions.hpp"
 #include "engine.hpp"
 
@@ -84,9 +84,9 @@ void AudioEngine::playback_function() {
                 if (paused) {
                     std::fill_n(driver.pingpong_buffer.begin() + sample_offset, samples_per_half_buffer, 0.0f);
                 } else {
-                    for (unsigned long frame = 0; frame < frames_per_half_buffer; ++frame) {
-                        mix();
-                        size_t offset = sample_offset + frame * output_channels;
+                    for (unsigned long x = 0; x < frames_per_half_buffer; ++x) {
+                        frame();
+                        size_t offset = sample_offset + x * output_channels;
                         for (size_t i = 0; i < output_channels; ++i) {
                             driver.pingpong_buffer[offset + i] = output[i];
                         }

@@ -71,7 +71,7 @@ void GUIWavetablesPanel::from() {
 }
 
 void GUIWavetablesPanel::to() const {
-    if (!is_index_valid()) {
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || !is_index_valid()) {
         return;
     }
 

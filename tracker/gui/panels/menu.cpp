@@ -35,19 +35,19 @@ void GUIMenu::draw() {
             ImGui::Separator();
             if (ImGui::BeginMenu("Compile")) {
                 if (ImGui::MenuItem("DOS")) {
-                    file_compile(true, "dos");
+                    file_compile(true, CompilationTarget::DOS);
                 }
                 if (ImGui::MenuItem("Linux")) {
-                    file_compile(true, "linux");
+                    file_compile(true, CompilationTarget::Linux);
                 }
                 ImGui::EndMenu();
             }
             if (ImGui::BeginMenu("Compile uncompressed")) {
                 if (ImGui::MenuItem("DOS")) {
-                    file_compile(false, "dos");
+                    file_compile(false, CompilationTarget::DOS);
                 }
                 if (ImGui::MenuItem("Linux")) {
-                    file_compile(false, "linux");
+                    file_compile(false, CompilationTarget::Linux);
                 }
                 ImGui::EndMenu();
             }
@@ -99,12 +99,13 @@ void GUIMenu::draw() {
 
 void GUIMenu::file_new() {
     gui.stop();
-    song.new_song();
+    gui.new_song();
     current_path = std::filesystem::path();
     gui.update();
 }
 
 void GUIMenu::file_save() {
+    gui.stop();
     if (current_path.empty()) {
         file_save_as();
     } else {
@@ -119,6 +120,7 @@ void GUIMenu::file_save_as() {
         std::filesystem::path new_path(target_path);
         free(target_path);
         new_path = check_and_correct_path_by_extension(new_path, ".seq");
+        gui.stop();
         gui.save(new_path);
     } else if (result != NFD_CANCEL) {
         std::cerr << "Error: " << NFD_GetError() << std::endl;
@@ -170,8 +172,9 @@ void GUIMenu::file_render() {
     }
 }
 
-void GUIMenu::file_compile(const bool compress, const std::string &platform) {
+void GUIMenu::file_compile(const bool compress, const CompilationTarget compilation_target) {
     nfdchar_t *target_path = nullptr;
+    const std::string platform = (compilation_target == CompilationTarget::DOS) ? "dos" : "linux";
     nfdresult_t result = NFD_SaveDialog(platform == "linux" ? "" : "exe", nullptr, &target_path);
     if (result == NFD_OKAY) {
         std::filesystem::path new_path(target_path);
@@ -179,7 +182,7 @@ void GUIMenu::file_compile(const bool compress, const std::string &platform) {
 
         gui.stop();
         try {
-            song.compile(new_path, compress, platform);
+            song.compile(new_path, compress, compilation_target);
             compilation_status = std::filesystem::exists(new_path);
         } catch (std::runtime_error &exception) {
             compilation_status = false;

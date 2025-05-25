@@ -44,35 +44,36 @@ void GUIDSPsPanel::from() {
     const DSP *generic = static_cast<const DSP *>(dsp);
     current_dsp.output_type.from_flags(generic->output_flag, generic->flag);
     current_dsp.effect_index = generic->effect_index;
-    switch (current_dsp.effect_index) {
-    case EFFECT_GAINER: {
+    switch (static_cast<Effect>(current_dsp.effect_index)) {
+    case Effect::Gainer: {
         current_dsp.type = "Gainer";
         const DSPGainer *gainer = static_cast<const DSPGainer *>(dsp);
         current_dsp.gainer_gain = static_cast<float>(gainer->volume) / UINT16_MAX;
         break;
     }
-    case EFFECT_DISTORTION: {
+    case Effect::Distortion: {
         current_dsp.type = "Distortion";
         const DSPDistortion *distortion = static_cast<const DSPDistortion *>(dsp);
-        current_dsp.distortion_level = static_cast<float>(distortion->level) / UINT16_MAX;
+        current_dsp.distortion_level = 2.0f * static_cast<float>(distortion->level) / UINT16_MAX;
         break;
     }
-    case EFFECT_FILTER: {
+    case Effect::Filter: {
         current_dsp.type = "Filter";
         const DSPFilter *filter = static_cast<const DSPFilter *>(dsp);
         current_dsp.filter_cutoff = static_cast<float>(filter->frequency) / UINT16_MAX;
-        current_dsp.filter_mode = filter->mode;
+        current_dsp.filter_mode = filter->mode >= 0x80;
         break;
     }
-    case EFFECT_DELAY: {
+    case Effect::Delay: {
         current_dsp.type = "Delay";
         const DSPDelay *delay = static_cast<const DSPDelay *>(dsp);
         current_dsp.delay_dry = static_cast<float>(delay->dry) / UINT8_MAX;
         current_dsp.delay_wet = static_cast<float>(delay->wet) / UINT8_MAX;
         current_dsp.delay_feedback = static_cast<float>(delay->feedback) / UINT8_MAX;
-        current_dsp.delay_time = static_cast<float>(delay->delay_time) / UINT16_MAX * 20;
+        current_dsp.delay_time = static_cast<float>(delay->delay_time) / UINT16_MAX * 20.0f;
         break;
     }
+    case Effect::Count:
     default:
         throw std::runtime_error("Unknown DSP type: " + std::to_string(current_dsp.effect_index));
     }
@@ -83,44 +84,45 @@ void GUIDSPsPanel::from() {
 }
 
 void GUIDSPsPanel::to() const {
-    if (!is_index_valid() || gui.is_playing()) {
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || !is_index_valid() || gui.is_playing()) {
         return;
     }
 
     void *buffer = dsps[dsp_index];
-    switch (current_dsp.effect_index) {
-    case EFFECT_GAINER: {
+    switch (static_cast<Effect>(current_dsp.effect_index)) {
+    case Effect::Gainer: {
         static_cast<DSP *>(buffer)->~DSP();
         DSPGainer *dsp = new (buffer) DSPGainer();
         dsp->effect_index = EFFECT_GAINER;
         dsp->volume = static_cast<uint16_t>(std::round(current_dsp.gainer_gain * UINT16_MAX));
         break;
     }
-    case EFFECT_DISTORTION: {
+    case Effect::Distortion: {
         static_cast<DSP *>(buffer)->~DSP();
         DSPDistortion *dsp = new (buffer) DSPDistortion();
         dsp->effect_index = EFFECT_DISTORTION;
-        dsp->level = static_cast<uint16_t>(std::round(current_dsp.distortion_level * UINT16_MAX));
+        dsp->level = static_cast<uint16_t>(std::round(current_dsp.distortion_level * UINT16_MAX / 2.0f));
         break;
     }
-    case EFFECT_FILTER: {
+    case Effect::Filter: {
         static_cast<DSP *>(buffer)->~DSP();
         DSPFilter *dsp = new (buffer) DSPFilter();
         dsp->effect_index = EFFECT_FILTER;
         dsp->frequency = static_cast<uint16_t>(std::round(current_dsp.filter_cutoff * UINT16_MAX));
-        dsp->mode = current_dsp.filter_mode;
+        dsp->mode = current_dsp.filter_mode ? 0xFF : 0x00;
         break;
     }
-    case EFFECT_DELAY: {
+    case Effect::Delay: {
         static_cast<DSP *>(buffer)->~DSP();
         DSPDelay *dsp = new (buffer) DSPDelay();
         dsp->effect_index = EFFECT_DELAY;
         dsp->dry = static_cast<uint8_t>(std::round(current_dsp.delay_dry * UINT8_MAX));
         dsp->wet = static_cast<uint8_t>(std::round(current_dsp.delay_wet * UINT8_MAX));
         dsp->feedback = static_cast<uint8_t>(std::round(current_dsp.delay_feedback * UINT8_MAX));
-        dsp->delay_time = static_cast<uint16_t>(std::round(current_dsp.delay_time * UINT16_MAX / 20));
+        dsp->delay_time = static_cast<uint16_t>(std::round(current_dsp.delay_time * UINT16_MAX / 20.0f));
         break;
     }
+    case Effect::Count:
     default:
         throw std::runtime_error("Unknown DSP type: " + std::to_string(current_dsp.effect_index));
     }
@@ -132,6 +134,7 @@ void GUIDSPsPanel::to() const {
     current_dsp.output_type.set_output_flag(dsp->output_flag);
     current_dsp.output_type.set_item_flag(dsp->flag);
     link_manager.set_link(link, buffer, dsp_index);
+    link_manager.save_targets();
 }
 
 void GUIDSPsPanel::add() {
@@ -211,30 +214,30 @@ void GUIDSPsPanel::draw_dsp() {
     draw_effect();
     ImGui::NewLine();
 
-    draw_output(current_dsp.output_type, dsp_index);
+    draw_output(current_dsp.output_type, {Target::DSP, dsp_index, DSP_SPLITTER});
 }
 
 void GUIDSPsPanel::draw_effect() {
     ImGui::Checkbox("Bypass", &current_dsp.output_type.bypass);
     ImGui::Separator();
 
-    switch (current_dsp.effect_index) {
-    case EFFECT_GAINER: {
+    switch (static_cast<Effect>(current_dsp.effect_index)) {
+    case Effect::Gainer: {
         draw_knob("Gain", current_dsp.gainer_gain, {Target::DSP, dsp_index, DSP_GAINER_VOLUME}, 0.0f, 1.0f);
         break;
     }
-    case EFFECT_DISTORTION: {
+    case Effect::Distortion: {
         draw_knob("Level", current_dsp.distortion_level, {Target::DSP, dsp_index, DSP_DISTORTION_LEVEL}, 0.0f, 1.0f);
         ImGui::SameLine();
         break;
     }
-    case EFFECT_FILTER: {
+    case Effect::Filter: {
         ImGui::Checkbox("High-pass", &current_dsp.filter_mode);
         ImGui::NewLine();
         draw_knob("Frequency", current_dsp.filter_cutoff, {Target::DSP, dsp_index, DSP_FILTER_FREQUENCY}, 0.0f, 1.0f);
         break;
     }
-    case EFFECT_DELAY: {
+    case Effect::Delay: {
         draw_knob("Dry", current_dsp.delay_dry, {Target::DSP, dsp_index, DSP_DELAY_DRY}, 0.0f, 1.0f);
         ImGui::SameLine();
         draw_knob("Wet", current_dsp.delay_wet, {Target::DSP, dsp_index, DSP_DELAY_WET}, 0.0f, 1.0f);
@@ -243,6 +246,10 @@ void GUIDSPsPanel::draw_effect() {
         ImGui::SameLine();
         draw_knob("Time", current_dsp.delay_time, {Target::DSP, dsp_index, DSP_DELAY_TIME}, 0.01f, 10.0f);
         break;
+    }
+    case Effect::Count:
+    default: {
+        throw std::runtime_error("Unknown DSP type: " + std::to_string(current_dsp.effect_index));
     }
     }
 }
