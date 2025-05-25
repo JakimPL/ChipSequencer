@@ -21,6 +21,10 @@
 ; Sequence
     %define SEQUENCE_NOTES 1
 
+; Notes
+    %define NOTE_PITCH 0
+    %define NOTE_DURATION 1
+
 ; Order
     %define ORDER_LENGTH 0
     %define ORDER_SEQUENCES 1

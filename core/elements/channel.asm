@@ -39,6 +39,7 @@ reset_channel:
     movzx ecx, byte [current_channel]
     mov dword [envelope_timer + 4 * ecx], 0
     mov dword [sequence_timer + 4 * ecx], 0
+    mov dword [sequence_timer_row + ecx], 0
     mov dword [oscillator_timer + 4 * ecx], 0
     mov byte [pitch + ecx], 0
     mov byte [envelope_mode + ecx], 0
