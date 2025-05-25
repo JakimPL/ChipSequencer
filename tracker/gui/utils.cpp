@@ -1,4 +1,3 @@
-#include <iostream>
 #include <algorithm>
 #include <cmath>
 
@@ -252,6 +251,7 @@ std::pair<size_t, bool> draw_commands_pattern(CommandsPattern &pattern, const bo
             ImGui::PushID(MAX_STEPS + i);
             if (ImGui::Selectable(value.c_str(), is_value_selected)) {
                 pattern.set_selection(i, CommandSelection::Value);
+                pattern.values_handler.set_buffer(pattern.values[i]);
                 select = true;
             }
             show_commands_pattern_tooltip(pattern, i);
