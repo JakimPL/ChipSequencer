@@ -5,7 +5,7 @@ step:
     jz .done
 
     movzx ecx, byte [current_channel]
-    cmp dword [sequence_timer_row + 4 * ecx], 0
+    cmp byte [sequence_timer_row + ecx], 0
     jnz .decrease_timer
 
 .load_next_note:
@@ -48,11 +48,11 @@ step:
     call reset_envelope
 .progress_sequence:
     movzx ecx, byte [current_channel]
+    inc byte [sequence_current_note + ecx]
+    mov dword [sequence_timer + 4 * ecx], 1
     mov al, [NOTE_DURATION + esi]
     inc al
     mov [sequence_timer_row + ecx], al
-    inc byte [sequence_current_note + ecx]
-    mov dword [sequence_timer + 4 * ecx], 1
 
 .decrease_timer:
     dec dword [sequence_timer + 4 * ecx]

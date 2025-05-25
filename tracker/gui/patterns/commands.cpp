@@ -309,7 +309,7 @@ int CommandsPattern::calculate_playing_row(size_t channel_index) {
     command_index = std::min(command_index, indices.size() - 1);
     int playing_row = indices[command_index];
     playing_row += durations[command_index];
-    playing_row -= 1 + commands_sequence_timer[channel_index] / ticks_per_beat;
+    playing_row -= commands_sequence_timer_row[channel_index];
     return playing_row;
 }
 

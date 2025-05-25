@@ -13,7 +13,7 @@ commands:
 .check_commands_channel_bypass:
     movzx edx, byte [COMMANDS_CHANNEL_FLAG + ecx]
     test dl, FLAG_BYPASS
-    jnz .commands_channel_done
+    jnz .check_timer
 .load_order:
     movzx ebx, byte [COMMANDS_CHANNEL_ORDER_INDEX + ecx]
     LOAD_VECTOR_ITEM orders, commands_order_offset
@@ -21,9 +21,9 @@ commands:
     call load_commands_sequence
 
 .check_timer:
-    movzx ecx, byte [current_commands_channel]
-    cmp dword [commands_sequence_timer + 4 * ecx], 0
-    jne .commands_channel_done
+    movzx ebx, byte [current_commands_channel]
+    cmp byte [commands_sequence_timer_row + ebx], 0
+    jne .decrease_timer
 
 .load_command:
     LOAD_OFFSET edi, commands_sequence_offset
@@ -58,21 +58,25 @@ commands:
     movzx eax, byte [COMMAND_INSTRUCTION + edi]
     LOAD_FUNCTION instructions, eax
 
-.load_next_command:
-    movzx ecx, byte [current_commands_channel]
-    inc byte [commands_sequence_current_command + ecx]
-    add word [commands_sequence_current_offset + 2 * ecx], ax
-    jne .set_timer
-
-.set_timer:
-    movzx ebx, byte [COMMAND_DURATION + edi]
-    mov eax, [ticks_per_beat]
-    mul ebx
-    mov [commands_sequence_timer + 4 * ecx], eax
-
-.commands_channel_done:
+.progress_sequence:
     movzx ebx, byte [current_commands_channel]
+    inc byte [commands_sequence_current_command + ebx]
+    add word [commands_sequence_current_offset + 2 * ebx], ax
+    mov dword [commands_sequence_timer + 4 * ebx], 1
+    mov al, [COMMAND_DURATION + edi]
+    inc al
+    mov [commands_sequence_timer_row + ebx], al
+
+.decrease_timer:
     dec dword [commands_sequence_timer + 4 * ebx]
+    jnz .next_commands_channel
+
+.decrease_row:
+    dec byte [commands_sequence_timer_row + ebx]
+    mov eax, [ticks_per_beat]
+    mov [commands_sequence_timer + 4 * ebx], eax
+
+.next_commands_channel:
     inc bl
     jmp .commands_loop
 .done:
@@ -98,6 +102,7 @@ reset_commands_channel:
     mov byte [current_commands_channel], bl
     movzx ecx, byte [current_commands_channel]
     mov dword [commands_sequence_timer + 4 * ecx], 0
+    mov byte [commands_sequence_timer_row + ecx], 0
     mov byte [current_commands_sequence + ecx], 0
     mov byte [commands_sequence_current_command + ecx], 0
     mov word [commands_sequence_current_offset + 2 * ecx], 0
