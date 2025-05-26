@@ -37,14 +37,15 @@ reset_channels:
 reset_channel:
     mov byte [current_channel], bl
     movzx ecx, byte [current_channel]
-    mov dword [envelope_timer + 4 * ecx], 0
-    mov dword [sequence_timer + 4 * ecx], 0
-    mov byte [sequence_timer_row + ecx], 0
-    mov dword [oscillator_timer + 4 * ecx], 0
-    mov byte [pitch + ecx], 0
-    mov byte [envelope_mode + ecx], 0
-    mov byte [current_sequence + ecx], 0
-    mov byte [sequence_current_note + ecx], 0
+    xor eax, eax
+    mov [envelope_timer + 4 * ecx], eax
+    mov [sequence_timer + 4 * ecx], eax
+    mov [sequence_timer_row + ecx], al
+    mov [oscillator_timer + 4 * ecx], eax
+    mov [pitch + ecx], al
+    mov [envelope_mode + ecx], al
+    mov [current_sequence + ecx], al
+    mov [sequence_current_note + ecx], al
     ret
 
 play_channel:

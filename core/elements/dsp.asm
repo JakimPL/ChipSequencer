@@ -20,7 +20,8 @@ reset_dsps:
 
 reset_dsp:
     movzx ecx, bl
-    mov dword [dsp_timer + 4 * ecx], 0
+    xor eax, eax
+    mov [dsp_timer + 4 * ecx], eax
     ret
 
 clear_dsps:
@@ -31,7 +32,8 @@ clear_dsps:
 
 clear_dsp:
     movzx ecx, bl
-    mov dword [dsp_input + 4 * ecx], __float32__(0.0)
+    xor eax, eax
+    mov [dsp_input + 4 * ecx], eax
     ret
 
 initialize_dsp_buffers:
