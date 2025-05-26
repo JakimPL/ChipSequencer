@@ -84,6 +84,7 @@ target_link_libraries(nfd PUBLIC ${GTK_LIBRARIES})
 
 add_executable(ChipSequencer
     tracker/audio/engine.cpp
+    tracker/audio/wave.cpp
     tracker/driver/file.cpp
     tracker/driver/port.cpp
     tracker/general.cpp

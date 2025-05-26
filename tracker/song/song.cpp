@@ -113,10 +113,7 @@ void Song::compile(const std::string &filename, const CompilationScheme scheme, 
 
 void Song::render(const std::string &filename) {
     calculate_song_length();
-    file_driver.set_length(song_length);
-    file_driver.set_sample_rate(sample_rate);
-    file_driver.set_output_channels(output_channels);
-    file_driver.set_output_filename(filename);
+    file_driver.set(filename, sample_rate, output_channels, song_length);
     file_driver.play();
 }
 

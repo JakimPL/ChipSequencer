@@ -1,4 +1,8 @@
+#include <iostream>
+#include "nfd/src/include/nfd.h"
+
 #include "../../general.hpp"
+#include "../../utils/file.hpp"
 #include "../enums.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
@@ -149,6 +153,14 @@ void GUIWavetablesPanel::draw_waveform() {
         return;
     }
 
+    if (ImGui::Button("Save")) {
+        save_wavetable_to_file();
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Load")) {
+        load_wavetable_from_file();
+    }
+
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
     const ImVec2 p = ImGui::GetCursorScreenPos();
     const float width = std::max(45.0f, ImGui::GetContentRegionAvail().x - 35.0f);
@@ -227,3 +239,19 @@ void GUIWavetablesPanel::check_keyboard_input() {
 void GUIWavetablesPanel::set_index(const int index) {
     wavetable_index = clamp_index(index, wavetables.size());
 };
+
+void GUIWavetablesPanel::save_wavetable_to_file() const {
+    nfdchar_t *target_path = nullptr;
+    nfdresult_t result = NFD_SaveDialog("wav", nullptr, &target_path);
+    if (result == NFD_OKAY) {
+        std::filesystem::path wav_path(target_path);
+        wav_path = check_and_correct_path_by_extension(wav_path, ".wav");
+        std::cout << "Saving sample to: " << wav_path << std::endl;
+
+    } else if (result != NFD_CANCEL) {
+        std::cerr << "Error: " << NFD_GetError() << std::endl;
+    }
+}
+
+void GUIWavetablesPanel::load_wavetable_from_file() {
+}

@@ -25,6 +25,8 @@ class GUIWavetablesPanel : public GUIPanel {
     bool is_index_valid() const;
     void draw_wavetable_length();
     void draw_waveform();
+    void save_wavetable_to_file() const;
+    void load_wavetable_from_file();
 
     void from() override;
     void to() const override;
