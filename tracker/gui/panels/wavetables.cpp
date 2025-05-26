@@ -1,6 +1,7 @@
 #include <iostream>
 #include "nfd/src/include/nfd.h"
 
+#include "../../audio/wave.hpp"
 #include "../../general.hpp"
 #include "../../utils/file.hpp"
 #include "../enums.hpp"
@@ -34,6 +35,7 @@ void GUIWavetablesPanel::draw() {
 
     from();
     draw_waveform();
+    draw_status();
     check_keyboard_input();
     to();
 
@@ -228,6 +230,19 @@ void GUIWavetablesPanel::draw_waveform() {
     }
 }
 
+void GUIWavetablesPanel::draw_status() {
+    if (render_status.has_value()) {
+        ImGui::OpenPopup(render_status.value() ? "Success" : "Failure");
+        render_status = std::nullopt;
+    }
+
+    if (ImGui::BeginPopupModal("Success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Sample saved successfully!");
+    } else if (ImGui::BeginPopupModal("Render ", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Sample save failed!");
+    }
+}
+
 void GUIWavetablesPanel::update() {
     update_items(wavetable_names, wavetables.size(), "Wavetable ", wavetable_index);
     gui.update(GUIElement::Oscillators);
@@ -240,18 +255,31 @@ void GUIWavetablesPanel::set_index(const int index) {
     wavetable_index = clamp_index(index, wavetables.size());
 };
 
-void GUIWavetablesPanel::save_wavetable_to_file() const {
+void GUIWavetablesPanel::save_wavetable_to_file() {
     nfdchar_t *target_path = nullptr;
     nfdresult_t result = NFD_SaveDialog("wav", nullptr, &target_path);
     if (result == NFD_OKAY) {
         std::filesystem::path wav_path(target_path);
         wav_path = check_and_correct_path_by_extension(wav_path, ".wav");
         std::cout << "Saving sample to: " << wav_path << std::endl;
-
+        std::vector<std::vector<float>> current_wave = prepare_wave_to_save();
+        save_wave(wav_path.string(), current_wave, sample_rate, 1);
+        render_status = std::filesystem::exists(wav_path);
     } else if (result != NFD_CANCEL) {
+        render_status = false;
         std::cerr << "Error: " << NFD_GetError() << std::endl;
     }
 }
 
 void GUIWavetablesPanel::load_wavetable_from_file() {
+}
+
+std::vector<std::vector<float>> GUIWavetablesPanel::prepare_wave_to_save() const {
+    std::vector<std::vector<float>> current_wave;
+    current_wave.reserve(current_wavetable.size);
+    for (const float value : current_wavetable.wave) {
+        current_wave.push_back({value});
+    }
+
+    return current_wave;
 }
