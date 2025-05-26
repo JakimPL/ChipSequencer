@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "../../audio/wave.hpp"
 #include "../init.hpp"
 #include "panel.hpp"
 
@@ -19,6 +20,7 @@ class GUIWavetablesPanel : public GUIPanel {
     } current_wavetable;
 
     int wavetable_index = 0;
+    std::optional<bool> load_status;
     std::optional<bool> render_status;
 
     float cast_to_float(uint8_t value) const;
@@ -31,6 +33,7 @@ class GUIWavetablesPanel : public GUIPanel {
     void save_wavetable_to_file();
     void load_wavetable_from_file();
     std::vector<std::vector<float>> prepare_wave_to_save() const;
+    void prepare_wave_from_load(Samples samples);
 
     void from() override;
     void to() const override;

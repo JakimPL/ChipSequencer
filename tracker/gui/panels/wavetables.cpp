@@ -1,7 +1,6 @@
 #include <iostream>
 #include "nfd/src/include/nfd.h"
 
-#include "../../audio/wave.hpp"
 #include "../../general.hpp"
 #include "../../utils/file.hpp"
 #include "../enums.hpp"
@@ -232,14 +231,23 @@ void GUIWavetablesPanel::draw_waveform() {
 
 void GUIWavetablesPanel::draw_status() {
     if (render_status.has_value()) {
-        ImGui::OpenPopup(render_status.value() ? "Success" : "Failure");
+        ImGui::OpenPopup(render_status.value() ? "Save success" : "Save failure");
         render_status = std::nullopt;
     }
 
-    if (ImGui::BeginPopupModal("Success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+    if (load_status.has_value()) {
+        ImGui::OpenPopup(load_status.value() ? "Load success" : "Load failure");
+        load_status = std::nullopt;
+    }
+
+    if (ImGui::BeginPopupModal("Save success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         draw_popup("Sample saved successfully!");
-    } else if (ImGui::BeginPopupModal("Render ", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+    } else if (ImGui::BeginPopupModal("Save failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         draw_popup("Sample save failed!");
+    } else if (ImGui::BeginPopupModal("Load success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Sample loaded successfully!");
+    } else if (ImGui::BeginPopupModal("Load failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Sample load failed!");
     }
 }
 
@@ -263,8 +271,14 @@ void GUIWavetablesPanel::save_wavetable_to_file() {
         wav_path = check_and_correct_path_by_extension(wav_path, ".wav");
         std::cout << "Saving sample to: " << wav_path << std::endl;
         std::vector<std::vector<float>> current_wave = prepare_wave_to_save();
-        save_wave(wav_path.string(), current_wave, sample_rate, 1);
-        render_status = std::filesystem::exists(wav_path);
+
+        try {
+            save_wave(wav_path.string(), current_wave, sample_rate, 1);
+            render_status = std::filesystem::exists(wav_path);
+        } catch (const std::exception &exception) {
+            render_status = false;
+            std::cerr << "Error saving wavetable: " << exception.what() << std::endl;
+        }
     } else if (result != NFD_CANCEL) {
         render_status = false;
         std::cerr << "Error: " << NFD_GetError() << std::endl;
@@ -272,6 +286,24 @@ void GUIWavetablesPanel::save_wavetable_to_file() {
 }
 
 void GUIWavetablesPanel::load_wavetable_from_file() {
+    nfdchar_t *target_path = nullptr;
+    nfdresult_t result = NFD_OpenDialog("wav", nullptr, &target_path);
+    if (result == NFD_OKAY) {
+        std::filesystem::path wav_path(target_path);
+        free(target_path);
+        std::cout << "Loading sample from: " << wav_path << std::endl;
+        try {
+            Samples samples = load_wave(wav_path.string());
+            prepare_wave_from_load(samples);
+            load_status = true;
+        } catch (const std::exception &exception) {
+            load_status = false;
+            std::cerr << "Error loading wavetable: " << exception.what() << std::endl;
+        }
+    } else if (result != NFD_CANCEL) {
+        load_status = false;
+        std::cerr << "Error: " << NFD_GetError() << std::endl;
+    }
 }
 
 std::vector<std::vector<float>> GUIWavetablesPanel::prepare_wave_to_save() const {
@@ -282,4 +314,20 @@ std::vector<std::vector<float>> GUIWavetablesPanel::prepare_wave_to_save() const
     }
 
     return current_wave;
+}
+
+void GUIWavetablesPanel::prepare_wave_from_load(Samples samples) {
+    if (samples.output_channels == 0 || samples.data.empty()) {
+        std::cerr << "Invalid sample." << std::endl;
+        return;
+    }
+
+    const size_t size = std::min(samples.data.size(), static_cast<size_t>(MAX_WAVETABLE_POINTS));
+
+    current_wavetable.size = static_cast<int>(size);
+    current_wavetable.wave.clear();
+    current_wavetable.wave.reserve(size);
+    for (size_t i = 0; i < size; ++i) {
+        current_wavetable.wave.push_back(samples.data[i][0]);
+    }
 }
