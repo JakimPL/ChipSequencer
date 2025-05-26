@@ -82,7 +82,7 @@ target_include_directories(nfd PUBLIC
 )
 target_link_libraries(nfd PUBLIC ${GTK_LIBRARIES})
 
-add_executable(main
+add_executable(ChipSequencer
     tracker/audio/engine.cpp
     tracker/driver/file.cpp
     tracker/driver/port.cpp
@@ -131,18 +131,18 @@ add_executable(main
     tracker/utils/temp.cpp
 )
 
-target_compile_options(main PRIVATE
+target_compile_options(ChipSequencer PRIVATE
     $<$<COMPILE_LANGUAGE:C>:-Werror=switch-enum>
     $<$<COMPILE_LANGUAGE:CXX>:-Werror=switch-enum -fsanitize=address -g>
 )
 
-add_dependencies(main asm_objects)
-target_include_directories(main PRIVATE
+add_dependencies(ChipSequencer asm_objects)
+target_include_directories(ChipSequencer PRIVATE
     ${CMAKE_SOURCE_DIR}/imgui
     ${CMAKE_SOURCE_DIR}/imgui-knobs
     ${SDL2_INCLUDE_DIRS}
 )
-target_link_libraries(main
+target_link_libraries(ChipSequencer
     song
     imgui
     imgui_knobs
@@ -157,6 +157,6 @@ target_link_libraries(main
     ${SNDFILE_LIBRARIES}
 )
 
-set_target_properties(main PROPERTIES
+set_target_properties(ChipSequencer PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../bin"
 )
