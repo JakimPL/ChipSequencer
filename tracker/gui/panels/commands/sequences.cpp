@@ -1,5 +1,6 @@
 #include "../../../general.hpp"
 #include "../../../maps/commands.hpp"
+#include "../../../structures/commands/command.hpp"
 #include "../../names.hpp"
 #include "../../utils.hpp"
 #include "sequences.hpp"
@@ -225,17 +226,13 @@ void GUICommandsSequencesPanel::open_edit_dialog_box(const int item) {
         edit_dialog_box.output_type.index = index;
         edit_dialog_box.output_type.offset = offset;
 
-        if (instruction == Instruction::ChangeFloatValue ||
-            instruction == Instruction::AddFloatValue) {
+        if (is_instruction_float(instruction)) {
             edit_dialog_box.value_float = *reinterpret_cast<float *>(&value);
         } else {
             edit_dialog_box.value_integer = value;
         }
 
-        if (instruction == Instruction::AddByteValue ||
-            instruction == Instruction::AddWordValue ||
-            instruction == Instruction::AddDwordValue ||
-            instruction == Instruction::AddFloatValue) {
+        if (is_instruction_add(instruction)) {
             edit_dialog_box.output_type.operation = static_cast<int>(OutputOperation::Add);
         } else {
             edit_dialog_box.output_type.operation = static_cast<int>(OutputOperation::Set);
@@ -408,6 +405,7 @@ void GUICommandsSequencesPanel::set_current_command() {
     case Instruction::AddWordValue:
     case Instruction::AddDwordValue:
     case Instruction::AddFloatValue: {
+        command = edit_dialog_box.output_type.operation == static_cast<int>(OutputOperation::Add) ? command_letters.at(Instruction::AddFloatValue) : command_letters.at(Instruction::ChangeFloatValue);
         value = CommandsPattern::from_output_type(edit_dialog_box.output_type, edit_dialog_box.value_integer, edit_dialog_box.value_float);
         break;
     }
