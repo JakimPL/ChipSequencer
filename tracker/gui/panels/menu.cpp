@@ -35,13 +35,13 @@ void GUIMenu::draw() {
             ImGui::Separator();
             if (ImGui::BeginMenu("Compile")) {
                 if (ImGui::MenuItem("Compressed")) {
-                    file_compile(true, CompilationTarget::Linux);
+                    file_compile(CompilationScheme::Compressed, CompilationTarget::Linux);
                 }
                 if (ImGui::MenuItem("Uncompressed")) {
-                    file_compile(false, CompilationTarget::Linux);
+                    file_compile(CompilationScheme::Uncompressed, CompilationTarget::Linux);
                 }
                 if (ImGui::MenuItem("Debug")) {
-                    file_compile(true, CompilationTarget::Linux);
+                    file_compile(CompilationScheme::Debug, CompilationTarget::Linux);
                 }
                 ImGui::EndMenu();
             }
@@ -166,7 +166,7 @@ void GUIMenu::file_render() {
     }
 }
 
-void GUIMenu::file_compile(const bool compress, const CompilationTarget compilation_target) {
+void GUIMenu::file_compile(const CompilationScheme scheme, const CompilationTarget compilation_target) {
     nfdchar_t *target_path = nullptr;
     if (compilation_target != CompilationTarget::Linux) {
         std::cerr << "Unsupported compilation target!" << std::endl;
@@ -181,7 +181,7 @@ void GUIMenu::file_compile(const bool compress, const CompilationTarget compilat
 
         gui.stop();
         try {
-            song.compile(new_path, compress, compilation_target);
+            song.compile(new_path, scheme, compilation_target);
             compilation_status = std::filesystem::exists(new_path);
         } catch (std::runtime_error &exception) {
             compilation_status = false;

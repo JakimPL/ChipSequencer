@@ -89,7 +89,7 @@ void Song::load_from_file(const std::string &filename) {
     }
 }
 
-void Song::compile(const std::string &filename, bool compress, const CompilationTarget compilation_target) const {
+void Song::compile(const std::string &filename, const CompilationScheme scheme, const CompilationTarget compilation_target) const {
     if (compilation_target != CompilationTarget::Linux) {
         std::cerr << "Unsupported compilation target";
         return;
@@ -101,7 +101,7 @@ void Song::compile(const std::string &filename, bool compress, const Compilation
 
     try {
         export_all(directory, compilation_target);
-        compile_sources(temp_base.string(), filename, compress, platform);
+        compile_sources(temp_base.string(), filename, scheme, platform);
         std::filesystem::remove_all(temp_base);
     } catch (const std::exception &exception) {
         std::filesystem::remove_all(temp_base);
@@ -1043,10 +1043,20 @@ void Song::decompress_archive(const std::string &output_file, const std::string 
     }
 }
 
-void Song::compile_sources(const std::string &directory, const std::string &filename, const bool compress, const std::string platform) const {
+void Song::compile_sources(const std::string &directory, const std::string &filename, const CompilationScheme scheme, const std::string platform) const {
     std::string compile_command = "python scripts/compile.py " + platform + " \"" + directory + "\" \"" + filename + "\"";
-    if (!compress) {
+    switch (scheme) {
+    case CompilationScheme::Uncompressed: {
         compile_command += " --uncompressed";
+        break;
+    }
+    case CompilationScheme::Debug: {
+        compile_command += " --debug";
+        break;
+    }
+    case CompilationScheme::Compressed:
+    default:
+        break;
     }
 
     const int exit_code = run_command(compile_command);
