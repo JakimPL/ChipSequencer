@@ -122,21 +122,21 @@ store_single_output:
     MOV_FROM_DI edx
 
 .check_mode:
-    test cl, 0b01000000
+    test cl, MASK_OPERATION_ADD
     je .set_size
 .set_mode:
     xor edx, edx
 .set_size:
-    test cl, 0b00110000
+    test cl, MASK_VARIABLE_TYPE
     je .add_or_multiply_float
     jpe .add_32_bit
-    test cl, 0b00010000
+    test cl, MASK_VARIABLE_BYTE
     jne .add_8_bit
-    test cl, 0b00100000
+    test cl, MASK_VARIABLE_WORD
     jne .add_16_bit
 .add_or_multiply_float:
     call load_eax_to_fpu
-    test cl, 0b10000000
+    test cl, MASK_OPERATION_MULTIPLY
     jz .add_float
 .multiply_float:
     %ifndef BITS_16
@@ -182,7 +182,7 @@ store_single_output:
 
 shift:
     push cx
-    and cl, 0b00001111
+    and cl, MASK_SHIFT
     shr eax, cl
     pop cx
     ret
