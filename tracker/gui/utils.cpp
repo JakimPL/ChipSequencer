@@ -48,12 +48,23 @@ void draw_float_slider(const char *label, float &reference, const LinkKey key, f
     ImGui::PushID(label);
 
     float display_value = reference;
-    const bool log_scale = scale == GUIScale::Logarithmic;
-    if (log_scale) {
+    switch (scale) {
+    case GUIScale::Logarithmic: {
         display_value = std::log(reference / min) / std::log(max / min);
     }
+    case GUIScale::Quadratic: {
+        display_value = std::sqrt((reference - min) / (max - min));
+        break;
+    }
+    case GUIScale::Linear:
+    default: {
+        display_value = (reference - min) / (max - min);
+        break;
+    }
+    }
 
-    if (ImGui::SliderFloat(slider_id.c_str(), &display_value, log_scale ? 0.0f : min, log_scale ? 1.0f : max, label)) {
+    const bool non_linear_scale = scale != GUIScale::Linear;
+    if (ImGui::SliderFloat(slider_id.c_str(), &display_value, non_linear_scale ? 0.0f : min, non_linear_scale ? 1.0f : max, label)) {
         switch (scale) {
         case GUIScale::Linear: {
             reference = display_value;
@@ -64,7 +75,7 @@ void draw_float_slider(const char *label, float &reference, const LinkKey key, f
             break;
         }
         case GUIScale::Quadratic: {
-            reference = min + (max - min) * display_value * display_value;
+            reference = min + (max - min) * (display_value * display_value);
             break;
         }
         }
@@ -96,7 +107,7 @@ void draw_knob(const char *label, float &reference, const LinkKey key, float min
 void draw_link_tooltip(const LinkKey &key) {
     if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
         const std::vector<Link *> &link_vector = link_manager.get_links(key);
-        if (links.empty()) {
+        if (link_vector.empty()) {
             return;
         }
 

@@ -52,7 +52,7 @@ float GUIEnvelopesPanel::cast_to_float(int value, float scale) {
 }
 
 uint16_t GUIEnvelopesPanel::cast_to_int(float value, float scale) {
-    return static_cast<uint16_t>(value / scale * UINT16_MAX);
+    return static_cast<uint16_t>(std::round(value / scale * UINT16_MAX));
 }
 
 void GUIEnvelopesPanel::from() {
@@ -156,10 +156,10 @@ void GUIEnvelopesPanel::draw_levels() {
 
 void GUIEnvelopesPanel::draw_timers() {
     ImGui::Text("Timers");
-    draw_float_slider("Attack", current_envelope.attack, {Target::ENVELOPE, envelope_index, ENVELOPE_ATTACK}, 0.0f, GUI_ENVELOPE_MAX_TIMER);
-    draw_float_slider("Decay", current_envelope.decay, {Target::ENVELOPE, envelope_index, ENVELOPE_DECAY}, 0.0f, GUI_ENVELOPE_MAX_TIMER);
-    draw_float_slider("Hold", current_envelope.hold, {Target::ENVELOPE, envelope_index, ENVELOPE_HOLD}, 0.0f, GUI_ENVELOPE_MAX_TIMER);
-    draw_float_slider("Release", current_envelope.release, {Target::ENVELOPE, envelope_index, ENVELOPE_RELEASE}, 0.0f, GUI_ENVELOPE_MAX_TIMER);
+    draw_float_slider("Attack", current_envelope.attack, {Target::ENVELOPE, envelope_index, ENVELOPE_ATTACK}, 0.0f, GUI_ENVELOPE_MAX_TIMER, GUIScale::Quadratic);
+    draw_float_slider("Decay", current_envelope.decay, {Target::ENVELOPE, envelope_index, ENVELOPE_DECAY}, 0.0f, GUI_ENVELOPE_MAX_TIMER, GUIScale::Quadratic);
+    draw_float_slider("Hold", current_envelope.hold, {Target::ENVELOPE, envelope_index, ENVELOPE_HOLD}, 0.0f, GUI_ENVELOPE_MAX_TIMER, GUIScale::Quadratic);
+    draw_float_slider("Release", current_envelope.release, {Target::ENVELOPE, envelope_index, ENVELOPE_RELEASE}, 0.0f, GUI_ENVELOPE_MAX_TIMER, GUIScale::Quadratic);
 }
 
 void GUIEnvelopesPanel::draw_envelope_graph() {
