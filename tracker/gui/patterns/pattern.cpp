@@ -83,12 +83,16 @@ int Pattern::calculate_playing_row(size_t channel_index) {
         return -1;
     }
 
-    size_t note_index = sequence_current_note[channel_index] - 1;
+    size_t note_index = sequence_current_note.at(channel_index) - 1;
     note_index = std::min(note_index, indices.size() - 1);
-    int playing_row = indices[note_index];
-    playing_row += durations[note_index];
-    playing_row -= sequence_timer_row[channel_index];
-    return playing_row;
+    try {
+        int playing_row = indices.at(note_index);
+        playing_row += durations.at(note_index);
+        playing_row -= sequence_timer_row.at(channel_index);
+        return playing_row;
+    } catch (const std::out_of_range &) {
+        return -1;
+    }
 }
 
 void Pattern::jump(const int max_row) {

@@ -49,7 +49,6 @@ step:
 .progress_sequence:
     movzx ecx, byte [current_channel]
     inc byte [sequence_current_note + ecx]
-    mov dword [sequence_timer + 4 * ecx], 1
     mov al, [NOTE_DURATION + esi]
     mov ebx, [ticks_per_beat]
     mov [sequence_timer + 4 * ecx], ebx

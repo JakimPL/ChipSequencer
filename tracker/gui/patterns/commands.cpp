@@ -307,12 +307,16 @@ int CommandsPattern::calculate_playing_row(size_t channel_index) {
         return -1;
     }
 
-    size_t command_index = commands_sequence_current_command[channel_index] - 1;
+    size_t command_index = commands_sequence_current_command.at(channel_index) - 1;
     command_index = std::min(command_index, indices.size() - 1);
-    int playing_row = indices[command_index];
-    playing_row += durations[command_index];
-    playing_row -= commands_sequence_timer_row[channel_index];
-    return playing_row;
+    try {
+        int playing_row = indices.at(command_index);
+        playing_row += durations.at(command_index);
+        playing_row -= commands_sequence_timer_row[channel_index];
+        return playing_row;
+    } catch (const std::out_of_range &) {
+        return -1;
+    }
 }
 
 void CommandsPattern::set_selection(const int row, const CommandSelection item) {

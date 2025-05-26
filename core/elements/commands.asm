@@ -62,10 +62,10 @@ commands:
     movzx ebx, byte [current_commands_channel]
     inc byte [commands_sequence_current_command + ebx]
     add word [commands_sequence_current_offset + 2 * ebx], ax
-    mov dword [commands_sequence_timer + 4 * ebx], 1
     mov al, [COMMAND_DURATION + edi]
-    inc al
     mov [commands_sequence_timer_row + ebx], al
+    mov eax, [ticks_per_beat]
+    mov dword [commands_sequence_timer + 4 * ebx], eax
 
 .decrease_timer:
     dec dword [commands_sequence_timer + 4 * ebx]
