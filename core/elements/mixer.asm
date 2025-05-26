@@ -77,10 +77,6 @@ mix:
     fmul
 
     call save_eax_from_fpu
-
-    %ifdef BITS_16
-    call float_to_integer
-    %endif
     mov [output + 4 * ecx], eax
 
     cmp cl, 0
@@ -139,24 +135,12 @@ store_single_output:
     test cl, MASK_OPERATION_MULTIPLY
     jz .add_float
 .multiply_float:
-    %ifndef BITS_16
     fmul dword [edi]
-    %else
-    fmul dword [di]
-    %endif
     jmp .store_float
 .add_float:
-    %ifndef BITS_16
     fadd dword [edi]
-    %else
-    fadd dword [di]
-    %endif
 .store_float:
-    %ifndef BITS_16
     fstp dword [edi]
-    %else
-    fstp dword [di]
-    %endif
     fstp st0
     jmp .done
 .add_32_bit:

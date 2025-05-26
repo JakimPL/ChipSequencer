@@ -104,8 +104,12 @@ void draw_link_tooltip(const LinkKey &key) {
         tooltip_stream << "Linked by ";
         for (size_t i = 0; i < links.size(); ++i) {
             const Link *link = links[i];
-            const std::string name = link->type == ItemType::DSP ? dsp_names[link->id] : channel_names[link->id];
-            tooltip_stream << name;
+            try {
+                const std::string name = link->type == ItemType::DSP ? dsp_names.at(link->id) : channel_names.at(link->id);
+                tooltip_stream << name;
+            } catch (const std::out_of_range &) {
+            }
+
             if (i < links.size() - 1) {
                 tooltip_stream << ", ";
             }

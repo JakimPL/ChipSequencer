@@ -116,7 +116,6 @@ reset_commands_channel:
 
     SEGMENT_DATA
 instructions:
-    %ifndef BITS_16
     dd empty
     dd portamento_up
     dd portamento_down
@@ -131,32 +130,10 @@ instructions:
     dd add_word_value
     dd add_dword_value
     dd add_float_value
-    %else
-    dw empty
-    dw portamento_up
-    dw portamento_down
-    dw set_master_gainer
-    dw set_bpm
-    dw set_division
-    dw change_byte_value
-    dw change_word_value
-    dw change_dword_value
-    dw change_float_value
-    dw add_byte_value
-    dw add_word_value
-    dw add_dword_value
-    dw add_float_value
-    %endif
 
     SEGMENT_BSS
     current_commands_channel resb 1
-    %ifndef BITS_16
     commands_channel_offset resd 1
     commands_order_offset resd 1
     commands_sequence_offset resd 1
-    %else
-    commands_channel_offset resw 1
-    commands_order_offset resw 1
-    commands_sequence_offset resw 1
-    %endif
     %endif

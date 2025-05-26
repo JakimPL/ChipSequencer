@@ -31,11 +31,7 @@ class LinuxCompiler(Compiler):
         shutil.copy(self.song_dir / "data.asm", self.temp_dir / "core" / "song" / "data.asm")
 
     def compile(self):
-        args = [
-            "bash",
-            "-c",
-            "./compile.sh" + " DEBUG" if not self.compress else "",
-        ]
+        args = ["bash", "-c", "./compile.sh" + (" DEBUG" if not self.compress else "")]
 
         subprocess.run(args, cwd=self.temp_dir)
 

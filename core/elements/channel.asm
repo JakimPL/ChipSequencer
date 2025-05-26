@@ -59,27 +59,14 @@ load_channel_target:
     mov cl, [CHANNEL_OUTPUT_FLAG + edi]
     mov ch, [CHANNEL_FLAG + edi]
     movzx edi, byte [CHANNEL_TARGET + edi]
-    %ifdef BITS_16
-    mov edi, [targets + 2 * edi]
-    %else
     mov edi, [targets + 4 * edi]
-    %endif
     ret
 
     SEGMENT_BSS
     current_channel resb 1
-    %ifndef BITS_16
     channel_offset resd 1
     envelope_offset resd 1
     order_offset resd 1
     sequence_offset resd 1
     oscillator_offset resd 1
     wavetable_offset resd 1
-    %else
-    channel_offset resw 1
-    envelope_offset resw 1
-    order_offset resw 1
-    sequence_offset resw 1
-    oscillator_offset resw 1
-    wavetable_offset resw 1
-    %endif

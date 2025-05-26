@@ -78,19 +78,11 @@ note_divisor:
     %endif
 
 oscillators_table:
-    %ifndef BITS_16
     dd square
     dd saw
     dd sine
     dd wavetable
     dd noise
-    %else
-    dw square
-    dw saw
-    dw sine
-    dw wavetable
-    dw noise
-    %endif
 
     SEGMENT_BSS
     volume resw 1

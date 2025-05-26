@@ -34,20 +34,14 @@ void GUIMenu::draw() {
             }
             ImGui::Separator();
             if (ImGui::BeginMenu("Compile")) {
-                if (ImGui::MenuItem("DOS")) {
-                    file_compile(true, CompilationTarget::DOS);
-                }
-                if (ImGui::MenuItem("Linux")) {
+                if (ImGui::MenuItem("Compressed")) {
                     file_compile(true, CompilationTarget::Linux);
                 }
-                ImGui::EndMenu();
-            }
-            if (ImGui::BeginMenu("Compile uncompressed")) {
-                if (ImGui::MenuItem("DOS")) {
-                    file_compile(false, CompilationTarget::DOS);
-                }
-                if (ImGui::MenuItem("Linux")) {
+                if (ImGui::MenuItem("Uncompressed")) {
                     file_compile(false, CompilationTarget::Linux);
+                }
+                if (ImGui::MenuItem("Debug")) {
+                    file_compile(true, CompilationTarget::Linux);
                 }
                 ImGui::EndMenu();
             }
@@ -174,7 +168,12 @@ void GUIMenu::file_render() {
 
 void GUIMenu::file_compile(const bool compress, const CompilationTarget compilation_target) {
     nfdchar_t *target_path = nullptr;
-    const std::string platform = (compilation_target == CompilationTarget::DOS) ? "dos" : "linux";
+    if (compilation_target != CompilationTarget::Linux) {
+        std::cerr << "Unsupported compilation target!" << std::endl;
+        return;
+    }
+
+    const std::string platform = "linux";
     nfdresult_t result = NFD_SaveDialog(platform == "linux" ? "" : "exe", nullptr, &target_path);
     if (result == NFD_OKAY) {
         std::filesystem::path new_path(target_path);

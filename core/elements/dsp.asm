@@ -62,11 +62,7 @@ load_dsp_target:
     mov cl, [DSP_OUTPUT_FLAG + edi]
     mov ch, [DSP_FLAG + edi]
     movzx edi, byte [DSP_TARGET + edi]
-    %ifdef BITS_16
-    mov edi, [targets + 2 * edi]
-    %else
     mov edi, [targets + 4 * edi]
-    %endif
     ret
 
 load_dsp_buffer:
@@ -106,25 +102,13 @@ increment_dsp_timer:
 
     SEGMENT_DATA
 effects:
-    %ifndef BITS_16
     dd gainer
     dd distortion
     dd filter
     dd delay
-    %else
-    dw gainer
-    dw distortion
-    dw filter
-    dw delay
-    %endif
 
     SEGMENT_BSS
     current_dsp resb 1
     current_effect resb 1
-    %ifndef BITS_16
     dsp_offset resd 1
-    %else
-    dsp_offset resw 1
-    %endif
-
     %endif

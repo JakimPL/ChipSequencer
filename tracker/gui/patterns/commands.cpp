@@ -312,7 +312,7 @@ int CommandsPattern::calculate_playing_row(size_t channel_index) {
     try {
         int playing_row = indices.at(command_index);
         playing_row += durations.at(command_index);
-        playing_row -= commands_sequence_timer_row[channel_index];
+        playing_row -= commands_sequence_timer_row.at(channel_index);
         return playing_row;
     } catch (const std::out_of_range &) {
         return -1;
@@ -473,7 +473,7 @@ std::string CommandsPattern::from_portamento(const uint8_t channel, const double
 }
 
 std::string CommandsPattern::from_gainer(const uint16_t value) {
-    const double gainer_value = 2 * static_cast<double>(value) / UINT16_MAX;
+    const double gainer_value = 2.0 * static_cast<double>(value) / UINT16_MAX;
     return from_gainer(gainer_value);
 }
 

@@ -96,16 +96,8 @@ set_release:
 
     SEGMENT_DATA
 phases:
-    %ifndef BITS_16
     dd attack
     dd decay
     dd hold
     dd release
     dd note_cut
-    %else
-    dw attack
-    dw decay
-    dw hold
-    dw release
-    dw note_cut
-    %endif

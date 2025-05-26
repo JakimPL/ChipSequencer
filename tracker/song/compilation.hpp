@@ -4,7 +4,6 @@
 #include <cstdint>
 
 enum class CompilationTarget : uint8_t {
-    DOS,
     Linux,
 };
 

@@ -90,7 +90,12 @@ void Song::load_from_file(const std::string &filename) {
 }
 
 void Song::compile(const std::string &filename, bool compress, const CompilationTarget compilation_target) const {
-    const std::string platform = (compilation_target == CompilationTarget::DOS) ? "dos" : "linux";
+    if (compilation_target != CompilationTarget::Linux) {
+        std::cerr << "Unsupported compilation target";
+        return;
+    }
+
+    const std::string platform = "linux";
     const auto [temp_base, song_path] = prepare_temp_directory();
     const std::string directory = song_path.string();
 
@@ -831,11 +836,7 @@ void Song::generate_targets_asm(
     const auto pointers = link_manager.get_pointers_map();
     for (const auto &pair : pointers) {
         const LinkKey key = pair.second;
-        if (compilation_target == CompilationTarget::DOS) {
-            asm_content << "    dw ";
-        } else {
-            asm_content << "    dd ";
-        }
+        asm_content << "    dd ";
         asm_content << link_manager.get_link_reference(key) << "\n";
     }
 }
