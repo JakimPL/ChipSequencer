@@ -61,6 +61,13 @@ void CommandsPattern::from_sequence(const uint8_t index) {
             add_command(command_letter, command_value);
             break;
         }
+        case Instruction::ChangeFloatValue: {
+            const CommandChangeFloatValue change_value = reinterpret_cast<const CommandChangeFloatValue &>(command);
+            const LinkKey key = get_command_key(reinterpret_cast<const CommandChangeValue *>(&change_value));
+            const std::string command_value = from_change_value(TargetVariableType::Float, key, change_value.value);
+            add_command(command_letter, command_value);
+            break;
+        }
         case Instruction::ChangeByteValue: {
             const CommandChangeByteValue change_value = reinterpret_cast<const CommandChangeByteValue &>(command);
             const LinkKey key = get_command_key(reinterpret_cast<const CommandChangeValue *>(&change_value));
@@ -82,10 +89,10 @@ void CommandsPattern::from_sequence(const uint8_t index) {
             add_command(command_letter, command_value);
             break;
         }
-        case Instruction::ChangeFloatValue: {
-            const CommandChangeFloatValue change_value = reinterpret_cast<const CommandChangeFloatValue &>(command);
-            const LinkKey key = get_command_key(reinterpret_cast<const CommandChangeValue *>(&change_value));
-            const std::string command_value = from_change_value(TargetVariableType::Float, key, change_value.value);
+        case Instruction::AddFloatValue: {
+            const CommandAddFloatValue add_value = reinterpret_cast<const CommandAddFloatValue &>(command);
+            const LinkKey key = get_command_key(reinterpret_cast<const CommandChangeValue *>(&add_value));
+            const std::string command_value = from_change_value(TargetVariableType::Float, key, add_value.value);
             add_command(command_letter, command_value);
             break;
         }
@@ -107,13 +114,6 @@ void CommandsPattern::from_sequence(const uint8_t index) {
             const CommandAddDwordValue add_value = reinterpret_cast<const CommandAddDwordValue &>(command);
             const LinkKey key = get_command_key(reinterpret_cast<const CommandChangeValue *>(&add_value));
             const std::string command_value = from_change_value(TargetVariableType::Dword, key, add_value.value);
-            add_command(command_letter, command_value);
-            break;
-        }
-        case Instruction::AddFloatValue: {
-            const CommandAddFloatValue add_value = reinterpret_cast<const CommandAddFloatValue &>(command);
-            const LinkKey key = get_command_key(reinterpret_cast<const CommandChangeValue *>(&add_value));
-            const std::string command_value = from_change_value(TargetVariableType::Float, key, add_value.value);
             add_command(command_letter, command_value);
             break;
         }
@@ -205,14 +205,14 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
             command_vector.push_back(reinterpret_cast<Command &>(set_division));
             break;
         }
+        case Instruction::ChangeFloatValue:
         case Instruction::ChangeByteValue:
         case Instruction::ChangeWordValue:
         case Instruction::ChangeDwordValue:
-        case Instruction::ChangeFloatValue:
+        case Instruction::AddFloatValue:
         case Instruction::AddByteValue:
         case Instruction::AddWordValue:
-        case Instruction::AddDwordValue:
-        case Instruction::AddFloatValue: {
+        case Instruction::AddDwordValue: {
             const bool add = command[0] == command_letters.at(Instruction::AddByteValue);
             TargetVariableType target_variable_type;
             Target target;
@@ -430,6 +430,11 @@ void CommandsPattern::split_change_value_parts(
 
     if (size >= 5) {
         switch (target_variable_type) {
+        case TargetVariableType::Float: {
+            float numeric = string_to_double(value_parts[4], 0.0);
+            value = reinterpret_cast<uint32_t &>(numeric);
+            break;
+        }
         case TargetVariableType::Byte: {
             value = static_cast<uint8_t>(string_to_integer(value_parts[4], 0, 0, UINT8_MAX));
             break;
@@ -440,11 +445,6 @@ void CommandsPattern::split_change_value_parts(
         }
         case TargetVariableType::Dword: {
             value = static_cast<uint32_t>(string_to_integer(value_parts[4], 0, 0, UINT32_MAX));
-            break;
-        }
-        case TargetVariableType::Float: {
-            float numeric = string_to_double(value_parts[4], 0.0);
-            value = reinterpret_cast<uint32_t &>(numeric);
             break;
         }
         case TargetVariableType::Count:
@@ -489,15 +489,15 @@ std::string CommandsPattern::from_change_value(const TargetVariableType type, co
            << key.offset << ",";
 
     switch (type) {
+    case TargetVariableType::Float: {
+        const float numeric = reinterpret_cast<const float &>(value);
+        stream << convert_double_to_string(numeric);
+        break;
+    }
     case TargetVariableType::Byte:
     case TargetVariableType::Word:
     case TargetVariableType::Dword: {
         stream << static_cast<int>(value);
-        break;
-    }
-    case TargetVariableType::Float: {
-        const float numeric = reinterpret_cast<const float &>(value);
-        stream << convert_double_to_string(numeric);
         break;
     }
     case TargetVariableType::Count:
@@ -517,15 +517,15 @@ std::string CommandsPattern::from_output_type(const OutputType &output_type, con
            << output_type.offset << ",";
 
     switch (static_cast<TargetVariableType>(output_type.variable_type)) {
+    case TargetVariableType::Float: {
+        const float numeric = value_float;
+        stream << convert_double_to_string(numeric);
+        break;
+    }
     case TargetVariableType::Byte:
     case TargetVariableType::Word:
     case TargetVariableType::Dword: {
         stream << static_cast<int>(value_integer);
-        break;
-    }
-    case TargetVariableType::Float: {
-        const float numeric = value_float;
-        stream << convert_double_to_string(numeric);
         break;
     }
     case TargetVariableType::Count:

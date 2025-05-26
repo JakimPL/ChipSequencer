@@ -17,14 +17,14 @@ enum class Instruction : uint8_t {
     SetMasterGainer = INSTRUCTION_SET_MASTER_GAINER,
     SetBPM = INSTRUCTION_SET_BPM,
     SetDivision = INSTRUCTION_SET_DIVISION,
+    ChangeFloatValue = INSTRUCTION_CHANGE_FLOAT_VALUE,
     ChangeByteValue = INSTRUCTION_CHANGE_BYTE_VALUE,
     ChangeWordValue = INSTRUCTION_CHANGE_WORD_VALUE,
     ChangeDwordValue = INSTRUCTION_CHANGE_DWORD_VALUE,
-    ChangeFloatValue = INSTRUCTION_CHANGE_FLOAT_VALUE,
+    AddFloatValue = INSTRUCTION_ADD_FLOAT_VALUE,
     AddByteValue = INSTRUCTION_ADD_BYTE_VALUE,
     AddWordValue = INSTRUCTION_ADD_WORD_VALUE,
     AddDwordValue = INSTRUCTION_ADD_DWORD_VALUE,
-    AddFloatValue = INSTRUCTION_ADD_FLOAT_VALUE,
     Count = INSTRUCTION_COUNT,
 };
 
@@ -81,6 +81,17 @@ struct CommandChangeValue {
     uint16_t offset = 0;
 };
 
+struct CommandChangeFloatValue {
+    uint8_t instruction = INSTRUCTION_CHANGE_FLOAT_VALUE;
+    uint8_t duration;
+    uint16_t pointer;
+    _Float32 value;
+    uint8_t pad[0];
+    uint8_t target = static_cast<uint8_t>(Target::COUNT);
+    uint8_t index = -1;
+    uint16_t offset = 0;
+};
+
 struct CommandChangeByteValue {
     uint8_t instruction = INSTRUCTION_CHANGE_BYTE_VALUE;
     uint8_t duration;
@@ -114,8 +125,8 @@ struct CommandChangeDwordValue {
     uint16_t offset = 0;
 };
 
-struct CommandChangeFloatValue {
-    uint8_t instruction = INSTRUCTION_CHANGE_FLOAT_VALUE;
+struct CommandAddFloatValue {
+    uint8_t instruction = INSTRUCTION_ADD_FLOAT_VALUE;
     uint8_t duration;
     uint16_t pointer;
     _Float32 value;
@@ -158,17 +169,6 @@ struct CommandAddDwordValue {
     uint16_t offset = 0;
 };
 
-struct CommandAddFloatValue {
-    uint8_t instruction = INSTRUCTION_ADD_FLOAT_VALUE;
-    uint8_t duration;
-    uint16_t pointer;
-    _Float32 value;
-    uint8_t pad[0];
-    uint8_t target = static_cast<uint8_t>(Target::COUNT);
-    uint8_t index = -1;
-    uint16_t offset = 0;
-};
-
 typedef std::array<Command, MAX_COMMANDS_SEQUENCES> CommandsArray;
 
 constexpr size_t COMMAND_TYPE = offsetof(Command, instruction);
@@ -180,22 +180,22 @@ constexpr size_t COMMAND_PORTAMENTO_DOWN_VALUE = offsetof(CommandPortamentoDown,
 constexpr size_t COMMAND_SET_MASTER_GAINER_GAIN = offsetof(CommandSetMasterGainer, gain);
 constexpr size_t COMMAND_SET_BPM_BPM = offsetof(CommandSetBPM, bpm);
 constexpr size_t COMMAND_SET_DIVISION_DIVISION = offsetof(CommandSetDivision, division);
+constexpr size_t COMMAND_CHANGE_FLOAT_VALUE_POINTER = offsetof(CommandChangeFloatValue, pointer);
+constexpr size_t COMMAND_CHANGE_FLOAT_VALUE_VALUE = offsetof(CommandChangeFloatValue, value);
 constexpr size_t COMMAND_CHANGE_BYTE_VALUE_POINTER = offsetof(CommandChangeByteValue, pointer);
 constexpr size_t COMMAND_CHANGE_BYTE_VALUE_VALUE = offsetof(CommandChangeByteValue, value);
 constexpr size_t COMMAND_CHANGE_WORD_VALUE_POINTER = offsetof(CommandChangeWordValue, pointer);
 constexpr size_t COMMAND_CHANGE_WORD_VALUE_VALUE = offsetof(CommandChangeWordValue, value);
 constexpr size_t COMMAND_CHANGE_DWORD_VALUE_POINTER = offsetof(CommandChangeDwordValue, pointer);
 constexpr size_t COMMAND_CHANGE_DWORD_VALUE_VALUE = offsetof(CommandChangeDwordValue, value);
-constexpr size_t COMMAND_CHANGE_FLOAT_VALUE_POINTER = offsetof(CommandChangeFloatValue, pointer);
-constexpr size_t COMMAND_CHANGE_FLOAT_VALUE_VALUE = offsetof(CommandChangeFloatValue, value);
+constexpr size_t COMMAND_ADD_FLOAT_VALUE_POINTER = offsetof(CommandAddFloatValue, pointer);
+constexpr size_t COMMAND_ADD_FLOAT_VALUE_VALUE = offsetof(CommandAddFloatValue, value);
 constexpr size_t COMMAND_ADD_BYTE_VALUE_POINTER = offsetof(CommandAddByteValue, pointer);
 constexpr size_t COMMAND_ADD_BYTE_VALUE_VALUE = offsetof(CommandAddByteValue, value);
 constexpr size_t COMMAND_ADD_WORD_VALUE_POINTER = offsetof(CommandAddWordValue, pointer);
 constexpr size_t COMMAND_ADD_WORD_VALUE_VALUE = offsetof(CommandAddWordValue, value);
 constexpr size_t COMMAND_ADD_DWORD_VALUE_POINTER = offsetof(CommandAddDwordValue, pointer);
 constexpr size_t COMMAND_ADD_DWORD_VALUE_VALUE = offsetof(CommandAddDwordValue, value);
-constexpr size_t COMMAND_ADD_FLOAT_VALUE_POINTER = offsetof(CommandAddFloatValue, pointer);
-constexpr size_t COMMAND_ADD_FLOAT_VALUE_VALUE = offsetof(CommandAddFloatValue, value);
 
 static_assert(sizeof(Command) == SIZE_COMMAND_EMPTY + sizeof(Command::pad), "Command must be of 2 bytes.");
 static_assert(sizeof(CommandPortamentoUp) == SIZE_COMMAND_PORTAMENTO_UP + sizeof(CommandPortamentoUp::pad), "CommandPortamentoUp must be of 5 bytes.");
@@ -203,27 +203,27 @@ static_assert(sizeof(CommandPortamentoDown) == SIZE_COMMAND_PORTAMENTO_DOWN + si
 static_assert(sizeof(CommandSetMasterGainer) == SIZE_COMMAND_SET_MASTER_GAINER + sizeof(CommandSetMasterGainer::pad), "CommandSetMasterGainer must be of 4 bytes.");
 static_assert(sizeof(CommandSetBPM) == SIZE_COMMAND_SET_BPM + sizeof(CommandSetBPM::pad), "CommandSetBPM must be of 4 bytes.");
 static_assert(sizeof(CommandSetDivision) == SIZE_COMMAND_SET_DIVISION + sizeof(CommandSetDivision::pad), "CommandSetDivision must be of 3 bytes.");
+static_assert(sizeof(CommandChangeFloatValue) == SIZE_COMMAND_CHANGE_FLOAT_VALUE + sizeof(CommandChangeFloatValue::pad) + sizeof(CommandChangeFloatValue::target) + sizeof(CommandChangeFloatValue::index) + sizeof(CommandChangeFloatValue::offset), "CommandChangeFloatValue must be of 8 bytes.");
 static_assert(sizeof(CommandChangeByteValue) == SIZE_COMMAND_CHANGE_BYTE_VALUE + sizeof(CommandChangeByteValue::pad) + sizeof(CommandChangeByteValue::target) + sizeof(CommandChangeByteValue::index) + sizeof(CommandChangeByteValue::offset), "CommandChangeByteValue must be of 5 bytes.");
 static_assert(sizeof(CommandChangeWordValue) == SIZE_COMMAND_CHANGE_WORD_VALUE + sizeof(CommandChangeWordValue::pad) + sizeof(CommandChangeWordValue::target) + sizeof(CommandChangeWordValue::index) + sizeof(CommandChangeWordValue::offset), "CommandChangeWordValue must be of 6 bytes.");
 static_assert(sizeof(CommandChangeDwordValue) == SIZE_COMMAND_CHANGE_DWORD_VALUE + sizeof(CommandChangeDwordValue::pad) + sizeof(CommandChangeDwordValue::target) + sizeof(CommandChangeDwordValue::index) + sizeof(CommandChangeDwordValue::offset), "CommandChangeDwordValue must be of 8 bytes.");
-static_assert(sizeof(CommandChangeFloatValue) == SIZE_COMMAND_CHANGE_FLOAT_VALUE + sizeof(CommandChangeFloatValue::pad) + sizeof(CommandChangeFloatValue::target) + sizeof(CommandChangeFloatValue::index) + sizeof(CommandChangeFloatValue::offset), "CommandChangeFloatValue must be of 8 bytes.");
+static_assert(sizeof(CommandAddFloatValue) == SIZE_COMMAND_ADD_FLOAT_VALUE + sizeof(CommandAddFloatValue::pad) + sizeof(CommandAddFloatValue::target) + sizeof(CommandAddFloatValue::index) + sizeof(CommandAddFloatValue::offset), "CommandAddFloatValue must be of 8 bytes.");
 static_assert(sizeof(CommandAddByteValue) == SIZE_COMMAND_ADD_BYTE_VALUE + sizeof(CommandAddByteValue::pad) + sizeof(CommandAddByteValue::target) + sizeof(CommandAddByteValue::index) + sizeof(CommandAddByteValue::offset), "CommandAddByteValue must be of 5 bytes.");
 static_assert(sizeof(CommandAddWordValue) == SIZE_COMMAND_ADD_WORD_VALUE + sizeof(CommandAddWordValue::pad) + sizeof(CommandAddWordValue::target) + sizeof(CommandAddWordValue::index) + sizeof(CommandAddWordValue::offset), "CommandAddWordValue must be of 6 bytes.");
 static_assert(sizeof(CommandAddDwordValue) == SIZE_COMMAND_ADD_DWORD_VALUE + sizeof(CommandAddDwordValue::pad) + sizeof(CommandAddDwordValue::target) + sizeof(CommandAddDwordValue::index) + sizeof(CommandAddDwordValue::offset), "CommandAddDwordValue must be of 8 bytes.");
-static_assert(sizeof(CommandAddFloatValue) == SIZE_COMMAND_ADD_FLOAT_VALUE + sizeof(CommandAddFloatValue::pad) + sizeof(CommandAddFloatValue::target) + sizeof(CommandAddFloatValue::index) + sizeof(CommandAddFloatValue::offset), "CommandAddFloatValue must be of 8 bytes.");
 
 static_assert(sizeof(Command) == sizeof(CommandPortamentoUp), "Command and CommandPortamentoUp must be of the same size.");
 static_assert(sizeof(Command) == sizeof(CommandPortamentoDown), "Command and CommandPortamentoDown must be of the same size.");
 static_assert(sizeof(Command) == sizeof(CommandSetMasterGainer), "Command and CommandSetMasterGainer must be of the same size.");
 static_assert(sizeof(Command) == sizeof(CommandSetBPM), "Command and CommandSetBPM must be of the same size.");
 static_assert(sizeof(Command) == sizeof(CommandSetDivision), "Command and CommandSetDivision must be of the same size.");
+static_assert(sizeof(Command) == sizeof(CommandChangeFloatValue), "Command and CommandChangeFloatValue must be of the same size.");
 static_assert(sizeof(Command) == sizeof(CommandChangeByteValue), "Command and CommandChangeByteValue must be of the same size.");
 static_assert(sizeof(Command) == sizeof(CommandChangeWordValue), "Command and CommandChangeWordValue must be of the same size.");
 static_assert(sizeof(Command) == sizeof(CommandChangeDwordValue), "Command and CommandChangeDwordValue must be of the same size.");
-static_assert(sizeof(Command) == sizeof(CommandChangeFloatValue), "Command and CommandChangeFloatValue must be of the same size.");
+static_assert(sizeof(Command) == sizeof(CommandAddFloatValue), "Command and CommandAddFloatValue must be of the same size.");
 static_assert(sizeof(Command) == sizeof(CommandAddByteValue), "Command and CommandAddByteValue must be of the same size.");
 static_assert(sizeof(Command) == sizeof(CommandAddWordValue), "Command and CommandAddWordValue must be of the same size.");
 static_assert(sizeof(Command) == sizeof(CommandAddDwordValue), "Command and CommandAddDwordValue must be of the same size.");
-static_assert(sizeof(Command) == sizeof(CommandAddFloatValue), "Command and CommandAddFloatValue must be of the same size.");
 
 #endif // STRUCTURES_COMMANDS_COMMAND_HPP

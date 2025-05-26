@@ -1,4 +1,13 @@
     SEGMENT_CODE
+change_float_value:
+    %ifdef USED_COMMAND_CHANGE_FLOAT_VALUE
+    %define USED_COMMAND_LOAD_TARGET
+    %define USED_COMMAND_CHANGE_32BIT_VALUE
+    call change_32bit_value
+    SET_COMMAND_SIZE SIZE_COMMAND_CHANGE_FLOAT_VALUE
+    %endif
+    ret
+
 change_byte_value:
     %ifdef USED_COMMAND_CHANGE_BYTE_VALUE
     %define USED_COMMAND_LOAD_TARGET
@@ -28,12 +37,12 @@ change_dword_value:
     %endif
     ret
 
-change_float_value:
-    %ifdef USED_COMMAND_CHANGE_FLOAT_VALUE
+add_float_value:
+    %ifdef USED_COMMAND_ADD_FLOAT_VALUE
     %define USED_COMMAND_LOAD_TARGET
-    %define USED_COMMAND_CHANGE_32BIT_VALUE
-    call change_32bit_value
-    SET_COMMAND_SIZE SIZE_COMMAND_CHANGE_FLOAT_VALUE
+    %define USED_COMMAND_ADD_32BIT_VALUE
+    call add_32bit_value
+    SET_COMMAND_SIZE SIZE_COMMAND_ADD_FLOAT_VALUE
     %endif
     ret
 
@@ -63,15 +72,6 @@ add_dword_value:
     %define USED_COMMAND_ADD_32BIT_VALUE
     call add_32bit_value
     SET_COMMAND_SIZE SIZE_COMMAND_ADD_DWORD_VALUE
-    %endif
-    ret
-
-add_float_value:
-    %ifdef USED_COMMAND_ADD_FLOAT_VALUE
-    %define USED_COMMAND_LOAD_TARGET
-    %define USED_COMMAND_ADD_32BIT_VALUE
-    call add_32bit_value
-    SET_COMMAND_SIZE SIZE_COMMAND_ADD_FLOAT_VALUE
     %endif
     ret
 
