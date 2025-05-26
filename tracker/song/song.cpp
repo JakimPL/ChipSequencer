@@ -47,6 +47,7 @@ void Song::new_song() {
 
     change_tuning(tuning.edo, tuning.a4_frequency);
     link_manager.set_links();
+    calculate_song_length();
 }
 
 void Song::save_to_file(const std::string &filename) {
@@ -81,6 +82,7 @@ void Song::load_from_file(const std::string &filename) {
         update_sizes();
         change_tuning(tuning.edo, tuning.a4_frequency);
         link_manager.set_links();
+        calculate_song_length();
 
         std::filesystem::remove_all(temp_base);
     } catch (const std::exception &exception) {
@@ -748,6 +750,10 @@ std::vector<size_t> Song::find_commands_sequence_dependencies(const size_t seque
 
 float Song::calculate_real_bpm() const {
     return unit * static_cast<float>(sample_rate) / static_cast<float>(ticks_per_beat);
+}
+
+float Song::get_row_duration() const {
+    return static_cast<double>(ticks_per_beat) / static_cast<double>(sample_rate);
 }
 
 void Song::generate_header_vector(

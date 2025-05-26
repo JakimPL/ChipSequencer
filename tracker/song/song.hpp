@@ -174,6 +174,7 @@ class Song {
     size_t calculate_oscillators(const Generator generator) const;
     size_t calculate_commands(const Instruction instruction) const;
     float calculate_real_bpm() const;
+    float get_row_duration() const;
 };
 
 #endif // SONG_SONG_HPP
