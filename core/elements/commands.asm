@@ -122,14 +122,14 @@ instructions:
     dd set_master_gainer
     dd set_bpm
     dd set_division
+    dd change_float_value
     dd change_byte_value
     dd change_word_value
     dd change_dword_value
-    dd change_float_value
+    dd add_float_value
     dd add_byte_value
     dd add_word_value
     dd add_dword_value
-    dd add_float_value
 
     SEGMENT_BSS
     current_commands_channel resb 1

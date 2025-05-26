@@ -294,6 +294,8 @@ void GUICommandsSequencesPanel::draw_edit_dialog_box() {
             names.push_back(value);
         }
 
+        edit_dialog_box.instruction = clamp_index(edit_dialog_box.instruction, names.size());
+
         ImGui::Text("Command:");
         push_tertiary_style();
         prepare_combo(names, "##EditCommand", edit_dialog_box.instruction);

@@ -171,6 +171,9 @@ struct CommandAddDwordValue {
 
 typedef std::array<Command, MAX_COMMANDS_SEQUENCES> CommandsArray;
 
+bool is_command_linkable(const Instruction instruction);
+bool is_command_linkable(const uint8_t instruction);
+
 constexpr size_t COMMAND_TYPE = offsetof(Command, instruction);
 constexpr size_t COMMAND_DURATION = offsetof(Command, duration);
 constexpr size_t COMMAND_PORTAMENTO_UP_CHANNEL = offsetof(CommandPortamentoUp, channel);

@@ -548,10 +548,7 @@ void CommandsPattern::save_links(size_t sequence_index) const {
     CommandsSequence *sequence = commands_sequences[sequence_index];
     for (size_t i = 0; i < sequence->length; ++i) {
         const Command command = sequence->commands[i];
-        if (command.instruction == static_cast<uint8_t>(Instruction::ChangeByteValue) ||
-            command.instruction == static_cast<uint8_t>(Instruction::ChangeDwordValue) ||
-            command.instruction == static_cast<uint8_t>(Instruction::ChangeWordValue) ||
-            command.instruction == static_cast<uint8_t>(Instruction::ChangeFloatValue)) {
+        if (is_command_linkable(command.instruction)) {
             CommandChangeValue change_value = reinterpret_cast<const CommandChangeValue &>(command);
             const uint16_t id = (sequence_index << 8) + i;
             const LinkKey key = {static_cast<Target>(change_value.target), change_value.index, change_value.offset};

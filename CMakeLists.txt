@@ -120,6 +120,7 @@ add_executable(ChipSequencer
     tracker/song/output.cpp
     tracker/song/song.cpp
     tracker/structures/channel.cpp
+    tracker/structures/commands/command.cpp
     tracker/structures/commands/sequence.cpp
     tracker/structures/order.cpp
     tracker/structures/sequence.cpp
