@@ -1423,8 +1423,7 @@ void Song::import_links(const std::string &directory, const nlohmann::json &json
         Link link;
         link.deserialize(file);
         links[link_type].push_back(link);
-        const size_t sequence_index = link.id >> 8;
-        const size_t channel_index = link.id & 0xFF;
+        const auto [sequence_index, channel_index] = LinkManager::unpack_command_id(link.id);
         commands_links[sequence_index][channel_index] = link;
     }
 

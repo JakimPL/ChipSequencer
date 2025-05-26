@@ -94,23 +94,48 @@ void draw_knob(const char *label, float &reference, const LinkKey key, float min
 }
 
 void draw_link_tooltip(const LinkKey &key) {
-    const std::vector<Link *> &links = link_manager.get_links(key);
     if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+        const std::vector<Link *> &link_vector = link_manager.get_links(key);
         if (links.empty()) {
             return;
         }
 
-        std::ostringstream tooltip_stream;
-        tooltip_stream << "Linked by ";
-        for (size_t i = 0; i < links.size(); ++i) {
-            const Link *link = links[i];
+        std::set<std::string> item_names;
+        for (const Link *link : link_vector) {
+            std::string name;
             try {
-                const std::string name = link->type == ItemType::DSP ? dsp_names.at(link->id) : channel_names.at(link->id);
-                tooltip_stream << name;
+                switch (link->type) {
+                case ItemType::CHANNEL: {
+                    name = channel_names.at(link->id);
+                    break;
+                }
+                case ItemType::DSP: {
+                    name = dsp_names.at(link->id);
+                    break;
+                }
+                case ItemType::COMMANDS: {
+                    const auto [sequence_index, channel_index] = LinkManager::unpack_command_id(link->id);
+                    name = commands_sequence_names.at(sequence_index);
+                    break;
+                }
+                case ItemType::COUNT:
+                default:
+                    throw std::out_of_range("Invalid link type: " + std::to_string(static_cast<int>(link->type)));
+                }
             } catch (const std::out_of_range &) {
+                name = "?";
             }
 
-            if (i < links.size() - 1) {
+            if (!name.empty()) {
+                item_names.insert(name);
+            }
+        }
+
+        std::ostringstream tooltip_stream;
+        tooltip_stream << "Linked by ";
+        for (auto it = item_names.begin(); it != item_names.end(); ++it) {
+            tooltip_stream << *it;
+            if (std::next(it) != item_names.end()) {
                 tooltip_stream << ", ";
             }
         }

@@ -467,3 +467,7 @@ void LinkManager::clear() {
     map.clear();
     snapshot.clear();
 }
+
+std::pair<uint8_t, uint8_t> LinkManager::unpack_command_id(const uint16_t id) {
+    return {static_cast<uint8_t>(id >> 8), static_cast<uint8_t>(id & 0xFF)};
+}
