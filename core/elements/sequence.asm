@@ -53,6 +53,8 @@ step:
     mov ebx, [ticks_per_beat]
     mov [sequence_timer + 4 * ecx], ebx
     mov [sequence_timer_row + ecx], al
+    xor ebx, ebx
+    mov [oscillator_timer + 4 * ecx], ebx
     ret
 
 .decrease_timer:

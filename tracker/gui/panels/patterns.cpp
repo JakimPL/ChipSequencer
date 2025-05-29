@@ -254,11 +254,6 @@ void GUIPatternsPanel::check_keyboard_input() {
 }
 
 void GUIPatternsPanel::handle_pattern_input(Pattern *pattern, const uint16_t index) {
-    const int start = page * gui.get_page_size() - index;
-    const int end = start + gui.get_page_size();
-    pattern->handle_input(start, end);
-    current_row = pattern->current_row + index;
-
     if (!current_patterns.patterns.empty()) {
         auto it = current_patterns.patterns.find(current_channel.index);
         if (ImGui::IsKeyPressed(ImGuiKey_LeftArrow)) {
@@ -268,6 +263,8 @@ void GUIPatternsPanel::handle_pattern_input(Pattern *pattern, const uint16_t ind
                 } else {
                     current_channel.command = true;
                     current_channel.index = current_patterns.commands_patterns.rbegin()->first;
+                    CommandsPattern *commands_pattern = find_commands_pattern_by_current_row().first;
+                    commands_pattern->selection = CommandSelection::Value;
                 }
             } else {
                 --it;
@@ -275,12 +272,14 @@ void GUIPatternsPanel::handle_pattern_input(Pattern *pattern, const uint16_t ind
             }
         }
         if (ImGui::IsKeyPressed(ImGuiKey_RightArrow)) {
-            if (it == current_patterns.patterns.end()) {
+            if (std::next(it) == current_patterns.patterns.end()) {
                 if (current_patterns.commands_patterns.empty()) {
                     current_channel.index = current_patterns.patterns.begin()->first;
                 } else {
                     current_channel.command = true;
                     current_channel.index = current_patterns.commands_patterns.begin()->first;
+                    CommandsPattern *commands_pattern = find_commands_pattern_by_current_row().first;
+                    commands_pattern->selection = CommandSelection::Command;
                 }
             } else {
                 ++it;
@@ -288,14 +287,14 @@ void GUIPatternsPanel::handle_pattern_input(Pattern *pattern, const uint16_t ind
             }
         }
     }
-}
 
-void GUIPatternsPanel::handle_commands_pattern_input(CommandsPattern *pattern, const uint16_t index) {
     const int start = page * gui.get_page_size() - index;
     const int end = start + gui.get_page_size();
     pattern->handle_input(start, end);
     current_row = pattern->current_row + index;
+}
 
+void GUIPatternsPanel::handle_commands_pattern_input(CommandsPattern *pattern, const uint16_t index) {
     if (!current_patterns.commands_patterns.empty()) {
         auto it = current_patterns.commands_patterns.find(current_channel.index);
         if (ImGui::IsKeyPressed(ImGuiKey_LeftArrow) && pattern->selection == CommandSelection::Command) {
@@ -309,10 +308,12 @@ void GUIPatternsPanel::handle_commands_pattern_input(CommandsPattern *pattern, c
             } else {
                 --it;
                 current_channel.index = it->first;
+                CommandsPattern *commands_pattern = find_commands_pattern_by_current_row().first;
+                commands_pattern->selection = CommandSelection::Value;
             }
         }
         if (ImGui::IsKeyPressed(ImGuiKey_RightArrow) && pattern->selection == CommandSelection::Value) {
-            if (it == current_patterns.commands_patterns.end()) {
+            if (std::next(it) == current_patterns.commands_patterns.end()) {
                 if (current_patterns.patterns.empty()) {
                     current_channel.index = current_patterns.commands_patterns.begin()->first;
                 } else {
@@ -322,9 +323,16 @@ void GUIPatternsPanel::handle_commands_pattern_input(CommandsPattern *pattern, c
             } else {
                 ++it;
                 current_channel.index = it->first;
+                CommandsPattern *commands_pattern = find_commands_pattern_by_current_row().first;
+                commands_pattern->selection = CommandSelection::Command;
             }
         }
     }
+
+    const int start = page * gui.get_page_size() - index;
+    const int end = start + gui.get_page_size();
+    pattern->handle_input(start, end);
+    current_row = pattern->current_row + index;
 }
 
 std::pair<Pattern *, uint16_t> GUIPatternsPanel::find_pattern_by_current_row() const {
