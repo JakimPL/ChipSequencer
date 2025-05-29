@@ -1,8 +1,10 @@
+#include <cstring>
 #include <filesystem>
 #include <iostream>
 #include <memory>
 #include <stdexcept>
-#include <zlib.h>
+
+#include "miniz-cpp/zip_file.hpp"
 
 #include "../general.hpp"
 #include "../sizes.hpp"
@@ -1034,15 +1036,30 @@ int Song::run_command(const std::string &command) const {
 }
 
 void Song::compress_directory(const std::string &directory, const std::string &output_file) const {
-    std::string tar_command = "tar -cvf " + output_file + " -C \"" +
-                              std::filesystem::path(directory).string() + "\" .";
-    run_command(tar_command);
+    miniz_cpp::zip_file zip;
+
+    for (auto &entry : std::filesystem::recursive_directory_iterator(directory)) {
+        if (entry.is_regular_file()) {
+            std::string rel_path = std::filesystem::relative(entry.path(), directory).string();
+            zip.write(entry.path().string(), rel_path);
+        }
+    }
+
+    zip.save(output_file);
 }
 
 void Song::decompress_archive(const std::string &output_file, const std::string &directory) {
-    const std::string extract_command = "tar -xf \"" + output_file + "\" -C \"" + directory + "\"";
-    if (run_command(extract_command) != 0) {
-        throw std::runtime_error("Failed to extract song file: " + output_file);
+    miniz_cpp::zip_file zip(output_file);
+
+    for (const auto &info : zip.infolist()) {
+        std::filesystem::path out_path = std::filesystem::path(directory) / info.filename;
+        if (!info.filename.empty() && info.filename.back() == '/') {
+            std::filesystem::create_directories(out_path);
+        } else {
+            std::filesystem::create_directories(out_path.parent_path());
+            std::ofstream out_file(out_path, std::ios::binary);
+            out_file << zip.read(info.filename);
+        }
     }
 }
 
