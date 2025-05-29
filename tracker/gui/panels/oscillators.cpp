@@ -50,7 +50,7 @@ void GUIOscillatorsPanel::from() {
     case Generator::Square: {
         current_oscillator.type = "Square";
         const OscillatorSquare *square = static_cast<OscillatorSquare *>(oscillator);
-        current_oscillator.square_duty_cycle = static_cast<float>(square->duty_cycle) / UINT8_MAX;
+        current_oscillator.square_duty_cycle = static_cast<float>(square->duty_cycle) / UINT16_MAX;
         break;
     }
     case Generator::Saw: {
@@ -92,7 +92,7 @@ void GUIOscillatorsPanel::to() const {
         OscillatorSquare *square = reinterpret_cast<OscillatorSquare *>(buffer);
         square->generator_index = GENERATOR_SQUARE;
         square->oscillator_size = SIZE_OSCILLATOR_SQUARE;
-        square->duty_cycle = static_cast<uint8_t>(std::round(current_oscillator.square_duty_cycle * UINT8_MAX));
+        square->duty_cycle = static_cast<uint16_t>(std::round(current_oscillator.square_duty_cycle * UINT16_MAX));
         break;
     }
     case Generator::Saw: {
@@ -226,7 +226,7 @@ void GUIOscillatorsPanel::draw_oscillator() {
     case Generator::Square: {
         ImGui::Text("Duty Cycle");
         ImGui::NextColumn();
-        draw_float_slider("##DutyCycle", current_oscillator.square_duty_cycle, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_SQUARE_DUTY_CYCLE}, 0.0f, 1.0f);
+        draw_float_slider("##DutyCycle", current_oscillator.square_duty_cycle, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_SQUARE_DUTY_CYCLE}, 0.0f, 1.0f, GUIScale::Linear, "%.6f");
         break;
     }
     case Generator::Saw: {

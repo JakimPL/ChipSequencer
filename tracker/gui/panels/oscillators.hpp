@@ -14,7 +14,7 @@ class GUIOscillatorsPanel : public GUIPanel {
         std::string type = "";
 
         // square
-        float square_duty_cycle = 0.0f;
+        float square_duty_cycle = 0.5f;
 
         // saw
         bool saw_reverse = false;

@@ -23,7 +23,7 @@ const std::map<Target, RoutingItems> routing_variables = {
     {
         Target::OSCILLATOR,
         RoutingItems({
-            {"Duty cycle", OSCILLATOR_SQUARE_DUTY_CYCLE, TargetVariableType::Byte, GENERATOR_SQUARE},
+            {"Duty cycle", OSCILLATOR_SQUARE_DUTY_CYCLE, TargetVariableType::Word, GENERATOR_SQUARE},
             {"Reverse", OSCILLATOR_SAW_REVERSE, TargetVariableType::Byte, GENERATOR_SAW},
             {"Interpolation", OSCILLATOR_WAVETABLE_INTERPOLATION, TargetVariableType::Byte, GENERATOR_WAVETABLE},
         }),
