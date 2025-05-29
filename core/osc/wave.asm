@@ -6,10 +6,10 @@ wavetable:
     movzx dx, byte [OSCILLATOR_WAVETABLE_INTERPOLATION + ebx]
     push dx
     movzx ebx, byte [OSCILLATOR_WAVETABLE_WAVETABLE_INDEX + ebx]
-    LOAD_VECTOR_ITEM wavetables, wavetable_offset
+    LOAD_VECTOR_ITEM_16_BIT wavetables, wavetable_offset
     mov esi, [wavetable_offset]
-    inc esi
-    movzx ebx, byte [ecx]
+    movzx ebx, word [WAVETABLE_SIZE + ecx]
+    add esi, WAVETABLE_DATA
 .load_timer:
     call load_timer
 .load_wavetable_sample:
