@@ -56,7 +56,6 @@
 
     %define MAX_ORDER_ITEMS 64
     %define MAX_STEPS 64
-    %define MAX_WAVETABLE_POINTS 255
 
     %define MAX_COMMAND_COMMAND_SIZE 1
     %define MAX_COMMAND_VALUE_SIZE 20

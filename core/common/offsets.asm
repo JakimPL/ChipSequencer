@@ -30,7 +30,7 @@
     %define ORDER_SEQUENCES 1
 
 ; Wavetable
-    %define WAVETABLE_SIZE 1
+    %define WAVETABLE_SIZE 0
     %define WAVETABLE_DATA 2
 
 ; Oscillators

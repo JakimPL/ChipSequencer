@@ -67,7 +67,7 @@ void GUIWavetablesPanel::from() {
             current_wavetable.wave.push_back(buffer_value);
         }
     } else if (current_wavetable.wave.size() > current_wavetable.size) {
-        current_wavetable.wave.resize(std::min(current_wavetable.size, MAX_WAVETABLE_POINTS));
+        current_wavetable.wave.resize(std::min(current_wavetable.size, MAX_WAVETABLE_SIZE));
     }
 
     for (size_t i = 0; i < current_wavetable.wave.size(); ++i) {
@@ -126,7 +126,7 @@ void GUIWavetablesPanel::remove() {
 
 void GUIWavetablesPanel::draw_wavetable_length() {
     const size_t old_size = current_wavetable.size;
-    draw_number_of_items("Points", "##WavetableLength", current_wavetable.size, 1, MAX_WAVETABLE_POINTS);
+    draw_number_of_items("Points", "##WavetableLength", current_wavetable.size, 1, MAX_WAVETABLE_SIZE);
 
     if (old_size != current_wavetable.size) {
         current_wavetable.wave.resize(current_wavetable.size);
@@ -212,17 +212,22 @@ void GUIWavetablesPanel::draw_waveform() {
         return;
     }
 
+    const bool draw_points = (4 * data_size <= static_cast<size_t>(size.x));
     for (size_t i = 0; i < data_size; ++i) {
         const float x1 = canvas_p0.x + i * x_step;
         const float y1 = y_center - current_wavetable.wave[i] * (size.y / 2.0f);
         const float x2 = canvas_p0.x + (i + 1) * x_step;
         const float y2 = y_center - current_wavetable.wave[i + 1 == data_size ? 0 : i + 1] * (size.y / 2.0f);
 
-        draw_list->AddCircleFilled(ImVec2(x1, y1), 3.0f, IM_COL32(0, 255, 0, 255));
+        if (draw_points) {
+            draw_list->AddCircleFilled(ImVec2(x1, y1), 3.0f, IM_COL32(0, 255, 0, 255));
+        }
         if (current_wavetable.interpolation) {
             draw_list->AddLine(ImVec2(x1, y1), ImVec2(x2, y2), IM_COL32(0, 255, 0, 255), 1.0f);
         } else {
-            draw_list->AddCircleFilled(ImVec2(x2, y1), 3.0f, IM_COL32(0, 255, 0, 255));
+            if (draw_points) {
+                draw_list->AddCircleFilled(ImVec2(x2, y1), 3.0f, IM_COL32(0, 255, 0, 255));
+            }
             draw_list->AddLine(ImVec2(x1, y1), ImVec2(x2, y1), IM_COL32(0, 255, 0, 255), 1.0f);
             draw_list->AddLine(ImVec2(x2, y1), ImVec2(x2, y2), IM_COL32(0, 255, 0, 255), 1.0f);
         }
@@ -322,8 +327,7 @@ void GUIWavetablesPanel::prepare_wave_from_load(Samples samples) {
         return;
     }
 
-    const size_t size = std::min(samples.data.size(), static_cast<size_t>(MAX_WAVETABLE_POINTS));
-
+    const size_t size = std::min(samples.data.size(), static_cast<size_t>(MAX_WAVETABLE_SIZE));
     current_wavetable.size = static_cast<int>(size);
     current_wavetable.wave.clear();
     current_wavetable.wave.reserve(size);

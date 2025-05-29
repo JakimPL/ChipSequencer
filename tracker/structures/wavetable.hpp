@@ -7,10 +7,12 @@
 #include <fstream>
 #include <vector>
 
-typedef std::array<uint8_t, UINT8_MAX> WavetableData;
+#include "../constants.hpp"
+
+typedef std::array<uint8_t, MAX_WAVETABLE_SIZE> WavetableData;
 
 struct Wavetable {
-    uint8_t wavetable_size;
+    uint16_t wavetable_size;
     WavetableData data;
 
     void serialize(std::ofstream &file) const;
