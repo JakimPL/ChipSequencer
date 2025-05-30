@@ -33,7 +33,8 @@ increment_timer:
     ret
 
 initialize_frequencies:
-    mov ecx, NOTES
+    xor ecx, ecx
+    mov cl, NOTES
     lea edi, [frequencies + 4 * ecx]
     fild qword [reference_frequency]
     fdiv dword [f_65536]
