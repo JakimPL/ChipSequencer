@@ -143,6 +143,9 @@ void GUIGeneralPanel::draw_play_triangle() {
 
     ImGui::SetCursorScreenPos(p);
     ImGui::InvisibleButton("Play", ImVec2(sz, sz));
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+        ImGui::SetTooltip("Play (%s)", shortcut_manager.get_shortcut_display(ShortcutAction::SongPlayPause).c_str());
+    }
     if (ImGui::IsItemClicked()) {
         play();
     }
@@ -166,6 +169,9 @@ void GUIGeneralPanel::draw_pause_rectangles() {
 
     ImGui::SetCursorScreenPos(p);
     ImGui::InvisibleButton("Pause", ImVec2(sz, sz));
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+        ImGui::SetTooltip("Pause (%s)", shortcut_manager.get_shortcut_display(ShortcutAction::SongPlayPause).c_str());
+    }
     if (ImGui::IsItemClicked()) {
         play();
     }
@@ -181,6 +187,9 @@ void GUIGeneralPanel::draw_stop_square() const {
 
     ImGui::SetCursorScreenPos(p);
     ImGui::InvisibleButton("Stop", ImVec2(sz, sz));
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+        ImGui::SetTooltip("Stop (%s)", shortcut_manager.get_shortcut_display(ShortcutAction::SongStop).c_str());
+    }
     if (ImGui::IsItemClicked()) {
         gui.stop();
     }
