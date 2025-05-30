@@ -53,7 +53,7 @@ void Song::new_song() {
 }
 
 void Song::save_to_file(const std::string &filename) {
-    const auto [temp_base, song_path] = prepare_temp_directory();
+    const auto [temp_base, song_path] = prepare_temp_directory(clear_temp);
     const std::string directory = song_path.string();
 
     try {
@@ -61,9 +61,9 @@ void Song::save_to_file(const std::string &filename) {
         link_manager.set_links();
         export_all(directory, CompilationTarget::Linux);
         compress_directory(directory, filename);
-        std::filesystem::remove_all(temp_base);
+        remove_temp_directory(temp_base, clear_temp);
     } catch (const std::exception &exception) {
-        std::filesystem::remove_all(temp_base);
+        remove_temp_directory(temp_base, clear_temp);
         throw;
     }
 }
@@ -73,7 +73,7 @@ void Song::load_from_file(const std::string &filename) {
         throw std::runtime_error("File does not exist: " + filename);
     }
 
-    const auto [temp_base, song_path] = prepare_temp_directory();
+    const auto [temp_base, song_path] = prepare_temp_directory(clear_temp);
     const std::string directory = song_path.string();
 
     try {
@@ -85,10 +85,9 @@ void Song::load_from_file(const std::string &filename) {
         change_tuning(tuning.edo, tuning.a4_frequency);
         link_manager.set_links();
         calculate_song_length();
-
-        std::filesystem::remove_all(temp_base);
+        remove_temp_directory(temp_base, clear_temp);
     } catch (const std::exception &exception) {
-        std::filesystem::remove_all(temp_base);
+        remove_temp_directory(temp_base, clear_temp);
         throw;
     }
 }
@@ -100,15 +99,15 @@ void Song::compile(const std::string &filename, const CompilationScheme scheme, 
     }
 
     const std::string platform = "linux";
-    const auto [temp_base, song_path] = prepare_temp_directory();
+    const auto [temp_base, song_path] = prepare_temp_directory(clear_temp);
     const std::string directory = song_path.string();
 
     try {
         export_all(directory, compilation_target);
         compile_sources(temp_base.string(), filename, scheme, platform);
-        std::filesystem::remove_all(temp_base);
+        remove_temp_directory(temp_base, clear_temp);
     } catch (const std::exception &exception) {
-        std::filesystem::remove_all(temp_base);
+        remove_temp_directory(temp_base, clear_temp);
         throw;
     }
 }

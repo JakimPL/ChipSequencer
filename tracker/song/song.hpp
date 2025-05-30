@@ -35,6 +35,8 @@ class Song {
     uint64_t song_length = 0;
     uint16_t max_rows = 0;
 
+    bool clear_temp = false;
+
     void generate_offsets_asm(std::stringstream &asm_content, const char separator) const;
     void generate_targets_asm(
         std::stringstream &asm_content,
