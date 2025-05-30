@@ -9,12 +9,12 @@ class Compiler:
         self,
         temp_dir: Union[str, os.PathLike],
         target_path: Union[str, os.PathLike],
-        compress: bool = True,
+        compression: bool = True,
         debug: bool = False,
     ):
         self.temp_dir = Path(temp_dir)
         self.target_path = Path(target_path)
-        self.compress = False if debug else compress
+        self.compression = False if debug else compression
         self.debug = debug
         self.tools_dir = Path.cwd() / "tools"
         self.bin_dir = self.temp_dir / "bin"
