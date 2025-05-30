@@ -6,8 +6,9 @@
 class GUICommandsChannelsPanel : public GUIPanel {
   private:
     struct CurrentCommandsChannel {
-        bool bypass = false;
         int order_index = -1;
+        bool bypass = false;
+        bool hide = false;
     } current_channel;
 
     int channel_index = 0;

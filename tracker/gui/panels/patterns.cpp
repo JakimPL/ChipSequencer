@@ -121,7 +121,7 @@ void GUIPatternsPanel::from_sequences() {
     for (size_t channel_index = 0; channel_index < channels.size(); ++channel_index) {
         const Channel *channel = channels[channel_index];
         const uint8_t order_index = channel->order_index;
-        if (order_index >= orders.size()) {
+        if (order_index >= orders.size() || channel->flag & FLAG_HIDDEN) {
             continue;
         }
 
@@ -159,6 +159,11 @@ void GUIPatternsPanel::from_commands_sequences() {
     for (size_t channel_index = 0; channel_index < commands_channels.size(); ++channel_index) {
         const CommandsChannel *channel = commands_channels[channel_index];
         const uint8_t order_index = channel->order_index;
+        if (channel->flag & FLAG_HIDDEN) {
+            current_patterns.commands_patterns.erase(channel_index);
+            continue;
+        }
+
         if (order_index >= orders.size()) {
             continue;
         }

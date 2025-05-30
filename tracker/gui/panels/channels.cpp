@@ -50,7 +50,7 @@ void GUIChannelsPanel::from() {
     current_channel.output_type.from_flags(channel->output_flag, channel->flag);
 
     current_channel.constant_pitch = channel->flag & FLAG_CONSTANT_PITCH;
-    current_channel.hide = channel->flag & FLAG_HIDE;
+    current_channel.hide = channel->flag & FLAG_HIDDEN;
     if (current_channel.constant_pitch) {
         current_channel.sync = channel->flag & FLAG_SYNC;
         if (current_channel.sync) {
@@ -86,7 +86,7 @@ void GUIChannelsPanel::to() const {
     current_channel.output_type.set_output_flag(channel->output_flag);
 
     if (current_channel.hide) {
-        channel->flag |= FLAG_HIDE;
+        channel->flag |= FLAG_HIDDEN;
     }
 
     if (current_channel.constant_pitch) {
