@@ -37,17 +37,17 @@ GUIMenu::GUIMenu(const bool visible)
     );
     shortcut_manager.register_shortcut_and_action(
         ShortcutAction::FileCompileCompressed,
-        {true, false, false, ImGuiKey_C},
+        {true, false, false, ImGuiKey_E},
         [this]() { file_compile(CompilationScheme::Compressed, CompilationTarget::Linux); }
     );
     shortcut_manager.register_shortcut_and_action(
         ShortcutAction::FileCompileUncompressed,
-        {true, true, false, ImGuiKey_C},
+        {true, true, false, ImGuiKey_E},
         [this]() { file_compile(CompilationScheme::Uncompressed, CompilationTarget::Linux); }
     );
     shortcut_manager.register_shortcut_and_action(
         ShortcutAction::FileCompileDebug,
-        {true, true, false, ImGuiKey_D},
+        {true, true, false, ImGuiKey_E},
         [this]() { file_compile(CompilationScheme::Debug, CompilationTarget::Linux); }
     );
     shortcut_manager.register_shortcut_and_action(
