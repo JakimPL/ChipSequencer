@@ -58,7 +58,7 @@ void draw_float_slider(const char *label, float &reference, const LinkKey key, f
     }
     case GUIScale::Linear:
     default: {
-        display_value = (reference - min) / (max - min);
+        display_value = reference;
         break;
     }
     }
