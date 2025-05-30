@@ -285,6 +285,7 @@ void GUI::frame() {
 
     ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
 
+    shortcut_manager.process_shortcuts();
     frame_all();
 
     ImGui::End();
