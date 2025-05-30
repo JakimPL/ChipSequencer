@@ -67,6 +67,20 @@ class GUI {
     int get_current_wavetable_index() const;
     int get_current_commands_sequence_index() const;
 
+    void set_current_octave(const int octave);
+    void set_jump_step(const int step);
+    void set_page_size(const int size);
+
+    void set_current_channel_index(const int index);
+    void set_current_dsp_index(const int index);
+    void set_current_commands_channel_index(const int index);
+    void set_current_oscillator_index(const int index);
+    void set_current_envelope_index(const int index);
+    void set_current_sequence_index(const int index);
+    void set_current_order_index(const int index);
+    void set_current_wavetable_index(const int index);
+    void set_current_commands_sequence_index(const int index);
+
     void deselect_all_rows();
 
   private:

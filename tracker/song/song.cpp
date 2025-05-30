@@ -212,6 +212,7 @@ void Song::import_all(const std::string &directory, const nlohmann::json &json) 
     import_commands_sequences(directory, json);
     import_commands_channels(directory, json);
     import_links(directory, json);
+    import_gui_state(directory);
 }
 
 Envelope *Song::add_envelope() {
@@ -1479,6 +1480,26 @@ void Song::import_links(const std::string &directory, const nlohmann::json &json
 
     link_manager.set_links();
     file.close();
+}
+
+void Song::import_gui_state(const std::string &directory) {
+    const std::string gui_filename = directory + "/gui.json";
+    nlohmann::json json = read_json(gui_filename);
+    const auto &json_editor = json["editor"];
+    gui.set_current_octave(json_editor.value("current_octave", GUI_DEFAULT_CURRENT_OCTAVE));
+    gui.set_jump_step(json_editor.value("jump_step", GUI_DEFAULT_JUMP_STEP));
+    gui.set_page_size(json_editor.value("page_size", GUI_DEFAULT_PAGE_SIZE));
+
+    const auto &json_current = json["current"];
+    gui.set_current_channel_index(json_current.value("channel_index", 0));
+    gui.set_current_dsp_index(json_current.value("dsp_index", 0));
+    gui.set_current_commands_channel_index(json_current.value("commands_channel_index", 0));
+    gui.set_current_oscillator_index(json_current.value("oscillator_index", 0));
+    gui.set_current_envelope_index(json_current.value("envelope_index", 0));
+    gui.set_current_sequence_index(json_current.value("sequence_index", 0));
+    gui.set_current_order_index(json_current.value("order_index", 0));
+    gui.set_current_wavetable_index(json_current.value("wavetable_index", 0));
+    gui.set_current_commands_sequence_index(json_current.value("commands_sequence_index", 0));
 }
 
 void Song::update_sizes() {

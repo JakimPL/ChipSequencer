@@ -502,3 +502,51 @@ int GUI::get_current_wavetable_index() const {
 int GUI::get_current_commands_sequence_index() const {
     return commands_sequences_panel.sequence_index;
 }
+
+void GUI::set_current_octave(const int octave) {
+    current_octave = octave;
+}
+
+void GUI::set_jump_step(const int step) {
+    jump_step = step;
+}
+
+void GUI::set_page_size(const int size) {
+    page_size = size;
+}
+
+void GUI::set_current_channel_index(const int index) {
+    channels_panel.set_index(index);
+}
+
+void GUI::set_current_dsp_index(const int index) {
+    dsps_panel.set_index(index);
+}
+
+void GUI::set_current_commands_channel_index(const int index) {
+    commands_channels_panel.set_index(index);
+}
+
+void GUI::set_current_oscillator_index(const int index) {
+    oscillators_panel.set_index(index);
+}
+
+void GUI::set_current_envelope_index(const int index) {
+    envelopes_panel.set_index(index);
+}
+
+void GUI::set_current_sequence_index(const int index) {
+    sequences_panel.set_index(index);
+}
+
+void GUI::set_current_order_index(const int index) {
+    orders_panel.set_index(index);
+}
+
+void GUI::set_current_wavetable_index(const int index) {
+    wavetables_panel.set_index(index);
+}
+
+void GUI::set_current_commands_sequence_index(const int index) {
+    commands_sequences_panel.set_index(index);
+}
