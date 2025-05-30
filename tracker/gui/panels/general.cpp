@@ -10,7 +10,7 @@ GUIGeneralPanel::GUIGeneralPanel(const bool visible)
     shortcut_manager.register_shortcut_and_action(
         ShortcutAction::SongPlayPause,
         {false, false, false, ImGuiKey_Space},
-        [this]() { gui.play(); }
+        [this]() { this->play(); }
     );
     shortcut_manager.register_shortcut_and_action(
         ShortcutAction::SongStop,
@@ -97,39 +97,13 @@ void GUIGeneralPanel::to() const {
 }
 
 void GUIGeneralPanel::play() {
-    const auto [result, index] = song.validate();
+    const auto [result, index] = gui.play();
     if (result != ValidationResult::OK) {
         error = true;
-        std::ostringstream stream;
-        switch (result) {
-        case ValidationResult::OK:
-            break;
-        case ValidationResult::InvalidSongLength:
-            stream << "Song is empty!";
-            break;
-        case ValidationResult::OscillatorMissingWavetable:
-            stream << "Oscillator " << index << " is missing a wavetable.";
-            break;
-        case ValidationResult::OrderMissingSequence:
-            stream << "Order " << index << " is missing a sequence.";
-            break;
-        case ValidationResult::ChannelMissingOscillator:
-            stream << "Channel " << index << " is missing an oscillator.";
-            break;
-        case ValidationResult::ChannelMissingEnvelope:
-            stream << "Channel " << index << " is missing an envelope.";
-            break;
-        case ValidationResult::ChannelMissingOrder:
-            stream << "Channel " << index << " is missing order.";
-            break;
-        }
-
-        error_message = stream.str();
+        error_message = get_error_message(result, index);
     } else {
         error = false;
         error_message = "";
-        link_manager.capture_parameters();
-        gui.play();
     }
 }
 
@@ -209,7 +183,6 @@ void GUIGeneralPanel::draw_stop_square() const {
     ImGui::InvisibleButton("Stop", ImVec2(sz, sz));
     if (ImGui::IsItemClicked()) {
         gui.stop();
-        link_manager.restore_parameters();
     }
 }
 
@@ -250,4 +223,32 @@ void GUIGeneralPanel::draw_tuning_settings() {
         song.change_tuning(current_song.edo, current_song.a4_frequency);
         gui.update();
     }
+}
+
+std::string GUIGeneralPanel::get_error_message(const ValidationResult result, const int index) const {
+    std::ostringstream stream;
+    switch (result) {
+    case ValidationResult::OK:
+        break;
+    case ValidationResult::InvalidSongLength:
+        stream << "Song is empty!";
+        break;
+    case ValidationResult::OscillatorMissingWavetable:
+        stream << "Oscillator " << index << " is missing a wavetable.";
+        break;
+    case ValidationResult::OrderMissingSequence:
+        stream << "Order " << index << " is missing a sequence.";
+        break;
+    case ValidationResult::ChannelMissingOscillator:
+        stream << "Channel " << index << " is missing an oscillator.";
+        break;
+    case ValidationResult::ChannelMissingEnvelope:
+        stream << "Channel " << index << " is missing an envelope.";
+        break;
+    case ValidationResult::ChannelMissingOrder:
+        stream << "Channel " << index << " is missing order.";
+        break;
+    }
+
+    return stream.str();
 }

@@ -327,8 +327,10 @@ void GUI::set_visibility_all(const bool visible) {
     wavetables_panel.visible = visible;
 }
 
-void GUI::play() const {
-    if (audio_engine != nullptr) {
+std::pair<ValidationResult, int> GUI::play() const {
+    link_manager.capture_parameters();
+    const auto [result, index] = song.validate();
+    if (result == ValidationResult::OK && audio_engine != nullptr) {
         audio_engine->set_output_channels(song.get_output_channels());
         if (audio_engine->is_playing()) {
             audio_engine->pause();
@@ -336,12 +338,16 @@ void GUI::play() const {
             audio_engine->play();
         }
     }
+
+    return {result, index};
 }
 
 void GUI::stop() const {
     if (audio_engine) {
         audio_engine->stop();
     }
+
+    link_manager.restore_parameters();
 }
 
 bool GUI::is_playing() const {

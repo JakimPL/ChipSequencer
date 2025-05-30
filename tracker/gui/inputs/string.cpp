@@ -23,7 +23,7 @@ bool StringInputHandler::handle_input(std::vector<std::string> &strings, int &in
         if (!buffer.empty()) {
             buffer.pop_back();
         }
-    } else if (ImGui::IsKeyPressed(ImGuiKey_Space) || ImGui::IsKeyPressed(ImGuiKey_Delete)) {
+    } else if (ImGui::IsKeyPressed(ImGuiKey_Delete)) {
         buffer.clear();
     }
 

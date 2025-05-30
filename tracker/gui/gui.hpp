@@ -2,8 +2,10 @@
 #define GUI_GUI_HPP
 
 #include <functional>
+#include <string>
 
 #include "../audio/engine.hpp"
+#include "../song/validation.hpp"
 #include "enums.hpp"
 #include "init.hpp"
 #include "panels/channels.hpp"
@@ -34,7 +36,7 @@ class GUI {
     bool is_done();
 
     void frame();
-    void play() const;
+    std::pair<ValidationResult, int> play() const;
     void stop() const;
     bool is_playing() const;
     bool is_paused() const;

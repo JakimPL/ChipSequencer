@@ -134,7 +134,7 @@ void Pattern::handle_input(const int min_row, const int max_row) {
         }
     }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_Delete) || ImGui::IsKeyPressed(ImGuiKey_Space)) {
+    if (ImGui::IsKeyPressed(ImGuiKey_Delete)) {
         notes[current_row] = NOTE_REST;
         jump(max_row);
     }

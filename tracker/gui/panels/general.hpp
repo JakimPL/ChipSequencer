@@ -39,6 +39,7 @@ class GUIGeneralPanel : public GUIPanel {
     void draw_output();
     void draw_tuning_settings();
     void play();
+    std::string get_error_message(const ValidationResult result, const int index) const;
 
     void from() override;
     void to() const override;
