@@ -61,7 +61,7 @@ void GUIMenu::draw() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("File")) {
             if (get_menu_item("New", ShortcutAction::FileNew)) {
-                ImGui::OpenPopup("Confirm new song");
+                file_new_confirm();
             }
             if (get_menu_item("Save", ShortcutAction::FileSave)) {
                 file_save();
@@ -123,6 +123,11 @@ void GUIMenu::draw() {
         load_error = std::nullopt;
     }
 
+    if (open_confirmation_popup) {
+        ImGui::OpenPopup("Confirm new song");
+        open_confirmation_popup = false;
+    }
+
     if (ImGui::BeginPopupModal("Compilation success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         draw_popup("File compiled successfully!");
     } else if (ImGui::BeginPopupModal("Compilation failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
@@ -134,44 +139,13 @@ void GUIMenu::draw() {
     } else if (ImGui::BeginPopupModal("Load error", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         draw_popup("Failed to load file!");
     } else if (ImGui::BeginPopupModal("Confirm new song", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::Text("Do you want to create a new song?");
-        ImGui::Text("Any unsaved changes will be lost.");
-        ImGui::Text("\n");
-        ImGui::Separator();
-
-        const float button_width = 80.0f;
-        const float total_button_width = (button_width * 3) + ImGui::GetStyle().ItemSpacing.x * 2;
-        const float available_width = ImGui::GetContentRegionAvail().x;
-        const float offset_x = (available_width - total_button_width) * 0.5f;
-
-        if (offset_x > 0.0f) {
-            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset_x);
-        }
-
-        if (ImGui::Button("OK", ImVec2(button_width, 0))) {
-            file_new();
-            ImGui::CloseCurrentPopup();
-        }
-
-        ImGui::SameLine();
-        if (ImGui::Button("Save", ImVec2(button_width, 0))) {
-            file_save();
-            file_new();
-            ImGui::CloseCurrentPopup();
-        }
-
-        ImGui::SameLine();
-        if (ImGui::Button("Cancel", ImVec2(button_width, 0))) {
-            ImGui::CloseCurrentPopup();
-        }
-
-        ImGui::SetItemDefaultFocus();
-        ImGui::EndPopup();
+        const std::string message = "Do you want to create a new song?\nAny unsaved changes will be lost.";
+        draw_confirmation_popup(message, [this]() { file_new(); }, [this]() { file_save(); });
     }
 }
 
 void GUIMenu::file_new_confirm() {
-    ImGui::OpenPopup("Confirm new song");
+    open_confirmation_popup = true;
 }
 
 void GUIMenu::file_new() {

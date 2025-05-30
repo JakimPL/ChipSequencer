@@ -1,6 +1,7 @@
 #ifndef GUI_UTILS_HPP
 #define GUI_UTILS_HPP
 
+#include <functional>
 #include <optional>
 #include <string>
 #include <vector>
@@ -24,8 +25,13 @@ void draw_float_slider(const char *label, float &reference, const LinkKey = Link
 void draw_knob(const char *label, float &reference, const LinkKey key, float min = 0.0f, float max = 1.0f);
 void draw_link_tooltip(const LinkKey &key);
 
-void draw_popup(const std::string &message);
 bool draw_button(const char *label, const float button_padding = 0.0f);
+void draw_popup(const std::string &message);
+void draw_confirmation_popup(
+    const std::string &message,
+    std::function<void()> ok_action = nullptr,
+    std::function<void()> save_action = nullptr
+);
 
 void draw_output_output_splitter(OutputType &output_type, const LinkKey key);
 void draw_output_dsp_splitter(OutputType &output_type, const int dsp_index, const LinkKey key);

@@ -166,6 +166,51 @@ void draw_popup(const std::string &message) {
     ImGui::EndPopup();
 }
 
+void draw_confirmation_popup(
+    const std::string &message,
+    std::function<void()> ok_action,
+    std::function<void()> save_action
+) {
+    ImGui::Text("%s", message.c_str());
+    ImGui::Text("\n");
+    ImGui::Separator();
+
+    const float button_width = 80.0f;
+    const float total_button_width = (button_width * 3) + ImGui::GetStyle().ItemSpacing.x * 2;
+    const float available_width = ImGui::GetContentRegionAvail().x;
+    const float offset_x = (available_width - total_button_width) * 0.5f;
+
+    if (offset_x > 0.0f) {
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset_x);
+    }
+
+    if (ImGui::Button("OK", ImVec2(button_width, 0))) {
+        if (ok_action) {
+            ok_action();
+        }
+        ImGui::CloseCurrentPopup();
+    }
+
+    ImGui::SameLine();
+    if (ImGui::Button("Save", ImVec2(button_width, 0))) {
+        if (save_action) {
+            save_action();
+        }
+        if (ok_action) {
+            ok_action();
+        }
+        ImGui::CloseCurrentPopup();
+    }
+
+    ImGui::SameLine();
+    if (ImGui::Button("Cancel", ImVec2(button_width, 0))) {
+        ImGui::CloseCurrentPopup();
+    }
+
+    ImGui::SetItemDefaultFocus();
+    ImGui::EndPopup();
+}
+
 bool draw_button(const char *label, const float button_padding) {
     const float text_width = ImGui::CalcTextSize(label).x;
     const float button_width = text_width + button_padding;

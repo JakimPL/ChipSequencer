@@ -13,6 +13,7 @@ class GUIMenu : public GUIPanel {
     std::optional<bool> compilation_status;
     std::optional<bool> render_status;
     std::optional<bool> load_error;
+    bool open_confirmation_popup = false;
 
     void file_new_confirm();
     void file_new();
