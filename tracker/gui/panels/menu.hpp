@@ -6,6 +6,7 @@
 
 #include "../../song/compilation.hpp"
 #include "../init.hpp"
+#include "../shortcuts.hpp"
 
 class GUIMenu : public GUIPanel {
   private:

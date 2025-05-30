@@ -6,6 +6,17 @@
 
 GUIGeneralPanel::GUIGeneralPanel(const bool visible)
     : GUIPanel(visible) {
+
+    shortcut_manager.register_shortcut_and_action(
+        ShortcutAction::SongPlayPause,
+        {false, false, false, ImGuiKey_Space},
+        [this]() { gui.play(); }
+    );
+    shortcut_manager.register_shortcut_and_action(
+        ShortcutAction::SongStop,
+        {false, false, false, ImGuiKey_Escape},
+        [this]() { gui.stop(); }
+    );
 }
 
 void GUIGeneralPanel::update() {

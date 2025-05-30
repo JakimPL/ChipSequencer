@@ -1,12 +1,14 @@
 #ifndef GUI_UTILS_HPP
 #define GUI_UTILS_HPP
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "../song/links/key.hpp"
-#include "enums.hpp"
 #include "init.hpp"
+#include "enums.hpp"
+#include "shortcuts.hpp"
 #include "patterns/pattern.hpp"
 
 struct GUIState {
@@ -37,6 +39,8 @@ bool draw_output(OutputType &output_type, const LinkKey key);
 
 void show_dependency_tooltip(const std::string &label, std::vector<size_t> &dependencies);
 void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t index);
+
+bool get_menu_item(const std::string &name, const std::optional<ShortcutAction> action = std::nullopt, const bool checked = false);
 
 std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header = true, const size_t index = 0, const int playing_row = -1, const uint16_t start = 0, const uint16_t end = UINT16_MAX);
 std::pair<size_t, bool> draw_commands_pattern(CommandsPattern &pattern, const bool header = true, const size_t index = 0, const int playing_row = -1, const uint16_t start = 0, const uint16_t end = UINT16_MAX);

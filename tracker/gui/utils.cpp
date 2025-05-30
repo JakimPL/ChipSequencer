@@ -637,6 +637,13 @@ void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t 
     }
 }
 
+bool get_menu_item(const std::string &name, const std::optional<ShortcutAction> action, const bool checked) {
+    if (action.has_value()) {
+        return ImGui::MenuItem(name.c_str(), shortcut_manager.get_shortcut_display(action.value()).c_str(), checked);
+    }
+    return ImGui::MenuItem(name.c_str(), nullptr, checked);
+}
+
 GUIState prepare_combo(const std::vector<std::string> &names, std::string label, int &index, const bool error_if_empty) {
     std::vector<const char *> names_cstr;
     for (const auto &name : names) {
