@@ -46,7 +46,7 @@ class GUI {
     void open(const std::string &filename);
 
     void set_index(const GUIElement element, const int index);
-    void change_window_title(const std::string &title);
+    void change_window_title(const std::string &title = "");
     void set_visibility(const GUIElement element, const bool visible);
     bool get_visibility(const GUIElement element) const;
 

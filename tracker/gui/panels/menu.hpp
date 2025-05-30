@@ -14,6 +14,7 @@ class GUIMenu : public GUIPanel {
     std::optional<bool> render_status;
     std::optional<bool> load_error;
 
+    void file_new_confirm();
     void file_new();
     void file_save();
     void file_save_as();
