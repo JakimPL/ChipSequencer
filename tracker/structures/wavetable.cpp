@@ -2,7 +2,7 @@
 #include "wavetable.hpp"
 
 void Wavetable::serialize(std::ofstream &file) const {
-    write_data(file, &wavetable_size, 1);
+    write_data(file, &wavetable_size, sizeof(wavetable_size));
     for (size_t i = 0; i < wavetable_size; i++) {
         write_data(file, &data[i], sizeof(uint8_t));
     }
@@ -13,7 +13,7 @@ Wavetable *Wavetable::deserialize(std::ifstream &file) {
         throw std::runtime_error("Wavetable file stream is not good");
     }
 
-    uint8_t wavetable_size;
+    uint16_t wavetable_size;
     read_data(file, &wavetable_size, sizeof(wavetable_size));
 
     Wavetable *wavetable = new Wavetable;

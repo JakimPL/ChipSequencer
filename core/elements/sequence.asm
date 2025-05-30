@@ -5,8 +5,8 @@ step:
     jz .done
 
     movzx ecx, byte [current_channel]
-    cmp dword [sequence_timer + 4 * ecx], 0
-    jnz .done
+    cmp byte [sequence_timer_row + ecx], 0
+    jnz .decrease_timer
 
 .load_next_note:
     movzx ebx, byte [current_channel]
@@ -26,7 +26,7 @@ step:
 .next_note:
     LOAD_OFFSET ecx, sequence_offset
     lea esi, [ecx + SEQUENCE_NOTES + eax * 2]
-    mov al, [esi]
+    mov al, [NOTE_PITCH + esi]
 .check_note_rest:
     cmp al, NOTE_REST
     jz .progress_sequence
@@ -47,17 +47,26 @@ step:
     mov [frequency + 4 * edx], ebx
     call reset_envelope
 .progress_sequence:
-    mov al, [esi + 1]
-    movzx ax, al
-    mov ebx, [ticks_per_beat]
-    imul eax, ebx
     movzx ecx, byte [current_channel]
-    mov [sequence_timer + 4 * ecx], eax
     inc byte [sequence_current_note + ecx]
+    mov al, [NOTE_DURATION + esi]
+    mov ebx, [ticks_per_beat]
+    mov [sequence_timer + 4 * ecx], ebx
+    mov [sequence_timer_row + ecx], al
+    xor ebx, ebx
+    mov [oscillator_timer + 4 * ecx], ebx
+    ret
+
+.decrease_timer:
+    dec dword [sequence_timer + 4 * ecx]
+    jnz .done
+
+.decrease_row:
+    dec byte [sequence_timer_row + ecx]
+    mov ebx, [ticks_per_beat]
+    mov [sequence_timer + 4 * ecx], ebx
 
 .done:
-    movzx ecx, byte [current_channel]
-    dec dword [sequence_timer + 4 * ecx]
     ret
 
 initialize_sample_rate:

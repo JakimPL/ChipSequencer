@@ -33,7 +33,8 @@ increment_timer:
     ret
 
 initialize_frequencies:
-    mov ecx, NOTES
+    xor ecx, ecx
+    mov cl, NOTES
     lea edi, [frequencies + 4 * ecx]
     fild qword [reference_frequency]
     fdiv dword [f_65536]
@@ -78,19 +79,11 @@ note_divisor:
     %endif
 
 oscillators_table:
-    %ifndef BITS_16
     dd square
     dd saw
     dd sine
     dd wavetable
     dd noise
-    %else
-    dw square
-    dw saw
-    dw sine
-    dw wavetable
-    dw noise
-    %endif
 
     SEGMENT_BSS
     volume resw 1

@@ -29,13 +29,6 @@
     extern commands_channels
     extern buffer_offsets
     extern targets
-
-    %ifn DIRECT_MODE
-    global buffer
-    SEGMENT_BSS
-    align 2
-    buffer resb SB_BUFFER_SIZE * (1 + SB_16BIT)
-    %endif
     %endif
 
     SEGMENT_CODE
@@ -44,7 +37,6 @@ initialize:
     call initialize_frequencies
     call initialize_sample_rate
     call calculate_ticks_per_beat
-
     call reset_channels
 
     %ifdef USED_COMMANDS
@@ -62,11 +54,6 @@ initialize:
 
     %ifdef USED_OSCILLATOR_NOISE
     call initialize_seeds
-    %endif
-
-    %if PRECALCULATE
-.precalculate:
-    call precalculate
     %endif
 
     call sound_driver_initialize
@@ -96,7 +83,3 @@ calculate:
     dsp_buffer resd DSPS * MAX_DSP_BUFFER_SIZE
     %endif
     dividend resd 1
-
-    %ifdef BITS_16
-    group dgroup bss data
-    %endif

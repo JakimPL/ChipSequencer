@@ -15,6 +15,7 @@ class FileDriver : public Driver {
     void set_sample_rate(const int rate);
     void set_output_channels(const int channels);
     void set_output_filename(const std::string &filename);
+    void set(const std::string &filename, const int rate, const int channels, const size_t length);
 
   private:
     void save_output_to_file();

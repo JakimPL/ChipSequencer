@@ -74,17 +74,15 @@ void GUIGeneralPanel::to() const {
         return;
     }
 
-    sample_rate = 4 * std::round(static_cast<float>(current_song.sample_rate) / 4);
+    bpm = current_song.bpm;
     unit = 240.0f / current_song.division;
+    sample_rate = 4 * std::round(static_cast<float>(current_song.sample_rate) / 4);
     normalizer = current_song.normalizer;
     if (current_song.output_channels != song.get_output_channels()) {
         song.set_output_channels(current_song.output_channels);
     }
 
-    if (current_song.bpm != bpm) {
-        bpm = current_song.bpm;
-        calculate_ticks_per_beat();
-    }
+    calculate_ticks_per_beat();
 }
 
 void GUIGeneralPanel::play() {

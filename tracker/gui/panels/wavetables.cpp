@@ -1,4 +1,8 @@
+#include <iostream>
+#include "nfd/src/include/nfd.h"
+
 #include "../../general.hpp"
+#include "../../utils/file.hpp"
 #include "../enums.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
@@ -30,6 +34,7 @@ void GUIWavetablesPanel::draw() {
 
     from();
     draw_waveform();
+    draw_status();
     check_keyboard_input();
     to();
 
@@ -62,7 +67,7 @@ void GUIWavetablesPanel::from() {
             current_wavetable.wave.push_back(buffer_value);
         }
     } else if (current_wavetable.wave.size() > current_wavetable.size) {
-        current_wavetable.wave.resize(std::min(current_wavetable.size, MAX_WAVETABLE_POINTS));
+        current_wavetable.wave.resize(std::min(current_wavetable.size, MAX_WAVETABLE_SIZE));
     }
 
     for (size_t i = 0; i < current_wavetable.wave.size(); ++i) {
@@ -121,7 +126,7 @@ void GUIWavetablesPanel::remove() {
 
 void GUIWavetablesPanel::draw_wavetable_length() {
     const size_t old_size = current_wavetable.size;
-    draw_number_of_items("Points", "##WavetableLength", current_wavetable.size, 1, MAX_WAVETABLE_POINTS);
+    draw_number_of_items("Points", "##WavetableLength", current_wavetable.size, 1, MAX_WAVETABLE_SIZE);
 
     if (old_size != current_wavetable.size) {
         current_wavetable.wave.resize(current_wavetable.size);
@@ -147,6 +152,14 @@ void GUIWavetablesPanel::draw_waveform() {
     if (current_wavetable.wave.empty()) {
         ImGui::Text("No data to display.");
         return;
+    }
+
+    if (ImGui::Button("Save")) {
+        save_wavetable_to_file();
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Load")) {
+        load_wavetable_from_file();
     }
 
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
@@ -199,20 +212,47 @@ void GUIWavetablesPanel::draw_waveform() {
         return;
     }
 
+    const bool draw_points = (4 * data_size <= static_cast<size_t>(size.x));
     for (size_t i = 0; i < data_size; ++i) {
         const float x1 = canvas_p0.x + i * x_step;
         const float y1 = y_center - current_wavetable.wave[i] * (size.y / 2.0f);
         const float x2 = canvas_p0.x + (i + 1) * x_step;
         const float y2 = y_center - current_wavetable.wave[i + 1 == data_size ? 0 : i + 1] * (size.y / 2.0f);
 
-        draw_list->AddCircleFilled(ImVec2(x1, y1), 3.0f, IM_COL32(0, 255, 0, 255));
+        if (draw_points) {
+            draw_list->AddCircleFilled(ImVec2(x1, y1), 3.0f, IM_COL32(0, 255, 0, 255));
+        }
         if (current_wavetable.interpolation) {
             draw_list->AddLine(ImVec2(x1, y1), ImVec2(x2, y2), IM_COL32(0, 255, 0, 255), 1.0f);
         } else {
-            draw_list->AddCircleFilled(ImVec2(x2, y1), 3.0f, IM_COL32(0, 255, 0, 255));
+            if (draw_points) {
+                draw_list->AddCircleFilled(ImVec2(x2, y1), 3.0f, IM_COL32(0, 255, 0, 255));
+            }
             draw_list->AddLine(ImVec2(x1, y1), ImVec2(x2, y1), IM_COL32(0, 255, 0, 255), 1.0f);
             draw_list->AddLine(ImVec2(x2, y1), ImVec2(x2, y2), IM_COL32(0, 255, 0, 255), 1.0f);
         }
+    }
+}
+
+void GUIWavetablesPanel::draw_status() {
+    if (render_status.has_value()) {
+        ImGui::OpenPopup(render_status.value() ? "Save success" : "Save failure");
+        render_status = std::nullopt;
+    }
+
+    if (load_status.has_value()) {
+        ImGui::OpenPopup(load_status.value() ? "Load success" : "Load failure");
+        load_status = std::nullopt;
+    }
+
+    if (ImGui::BeginPopupModal("Save success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Sample saved successfully!");
+    } else if (ImGui::BeginPopupModal("Save failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Sample save failed!");
+    } else if (ImGui::BeginPopupModal("Load success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Sample loaded successfully!");
+    } else if (ImGui::BeginPopupModal("Load failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Sample load failed!");
     }
 }
 
@@ -227,3 +267,71 @@ void GUIWavetablesPanel::check_keyboard_input() {
 void GUIWavetablesPanel::set_index(const int index) {
     wavetable_index = clamp_index(index, wavetables.size());
 };
+
+void GUIWavetablesPanel::save_wavetable_to_file() {
+    nfdchar_t *target_path = nullptr;
+    nfdresult_t result = NFD_SaveDialog("wav", nullptr, &target_path);
+    if (result == NFD_OKAY) {
+        std::filesystem::path wav_path(target_path);
+        wav_path = check_and_correct_path_by_extension(wav_path, ".wav");
+        std::cout << "Saving sample to: " << wav_path << std::endl;
+        std::vector<std::vector<float>> current_wave = prepare_wave_to_save();
+
+        try {
+            save_wave(wav_path.string(), current_wave, sample_rate, 1);
+            render_status = std::filesystem::exists(wav_path);
+        } catch (const std::exception &exception) {
+            render_status = false;
+            std::cerr << "Error saving wavetable: " << exception.what() << std::endl;
+        }
+    } else if (result != NFD_CANCEL) {
+        render_status = false;
+        std::cerr << "Error: " << NFD_GetError() << std::endl;
+    }
+}
+
+void GUIWavetablesPanel::load_wavetable_from_file() {
+    nfdchar_t *target_path = nullptr;
+    nfdresult_t result = NFD_OpenDialog("wav", nullptr, &target_path);
+    if (result == NFD_OKAY) {
+        std::filesystem::path wav_path(target_path);
+        free(target_path);
+        std::cout << "Loading sample from: " << wav_path << std::endl;
+        try {
+            Samples samples = load_wave(wav_path.string());
+            prepare_wave_from_load(samples);
+            load_status = true;
+        } catch (const std::exception &exception) {
+            load_status = false;
+            std::cerr << "Error loading wavetable: " << exception.what() << std::endl;
+        }
+    } else if (result != NFD_CANCEL) {
+        load_status = false;
+        std::cerr << "Error: " << NFD_GetError() << std::endl;
+    }
+}
+
+std::vector<std::vector<float>> GUIWavetablesPanel::prepare_wave_to_save() const {
+    std::vector<std::vector<float>> current_wave;
+    current_wave.reserve(current_wavetable.size);
+    for (const float value : current_wavetable.wave) {
+        current_wave.push_back({value});
+    }
+
+    return current_wave;
+}
+
+void GUIWavetablesPanel::prepare_wave_from_load(Samples samples) {
+    if (samples.output_channels == 0 || samples.data.empty()) {
+        std::cerr << "Invalid sample." << std::endl;
+        return;
+    }
+
+    const size_t size = std::min(samples.data.size(), static_cast<size_t>(MAX_WAVETABLE_SIZE));
+    current_wavetable.size = static_cast<int>(size);
+    current_wavetable.wave.clear();
+    current_wavetable.wave.reserve(size);
+    for (size_t i = 0; i < size; ++i) {
+        current_wavetable.wave.push_back(samples.data[i][0]);
+    }
+}

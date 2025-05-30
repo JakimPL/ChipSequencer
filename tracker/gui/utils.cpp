@@ -48,12 +48,23 @@ void draw_float_slider(const char *label, float &reference, const LinkKey key, f
     ImGui::PushID(label);
 
     float display_value = reference;
-    const bool log_scale = scale == GUIScale::Logarithmic;
-    if (log_scale) {
+    switch (scale) {
+    case GUIScale::Logarithmic: {
         display_value = std::log(reference / min) / std::log(max / min);
     }
+    case GUIScale::Quadratic: {
+        display_value = std::sqrt((reference - min) / (max - min));
+        break;
+    }
+    case GUIScale::Linear:
+    default: {
+        display_value = (reference - min) / (max - min);
+        break;
+    }
+    }
 
-    if (ImGui::SliderFloat(slider_id.c_str(), &display_value, log_scale ? 0.0f : min, log_scale ? 1.0f : max, label)) {
+    const bool non_linear_scale = scale != GUIScale::Linear;
+    if (ImGui::SliderFloat(slider_id.c_str(), &display_value, non_linear_scale ? 0.0f : min, non_linear_scale ? 1.0f : max, label)) {
         switch (scale) {
         case GUIScale::Linear: {
             reference = display_value;
@@ -64,7 +75,7 @@ void draw_float_slider(const char *label, float &reference, const LinkKey key, f
             break;
         }
         case GUIScale::Quadratic: {
-            reference = min + (max - min) * display_value * display_value;
+            reference = min + (max - min) * (display_value * display_value);
             break;
         }
         }
@@ -94,19 +105,48 @@ void draw_knob(const char *label, float &reference, const LinkKey key, float min
 }
 
 void draw_link_tooltip(const LinkKey &key) {
-    const std::vector<Link *> &links = link_manager.get_links(key);
     if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
-        if (links.empty()) {
+        const std::vector<Link *> &link_vector = link_manager.get_links(key);
+        if (link_vector.empty()) {
             return;
+        }
+
+        std::set<std::string> item_names;
+        for (const Link *link : link_vector) {
+            std::string name;
+            try {
+                switch (link->type) {
+                case ItemType::CHANNEL: {
+                    name = channel_names.at(link->id);
+                    break;
+                }
+                case ItemType::DSP: {
+                    name = dsp_names.at(link->id);
+                    break;
+                }
+                case ItemType::COMMANDS: {
+                    const auto [sequence_index, channel_index] = LinkManager::unpack_command_id(link->id);
+                    name = commands_sequence_names.at(sequence_index);
+                    break;
+                }
+                case ItemType::COUNT:
+                default:
+                    throw std::out_of_range("Invalid link type: " + std::to_string(static_cast<int>(link->type)));
+                }
+            } catch (const std::out_of_range &) {
+                name = "?";
+            }
+
+            if (!name.empty()) {
+                item_names.insert(name);
+            }
         }
 
         std::ostringstream tooltip_stream;
         tooltip_stream << "Linked by ";
-        for (size_t i = 0; i < links.size(); ++i) {
-            const Link *link = links[i];
-            const std::string name = link->type == ItemType::DSP ? dsp_names[link->id] : channel_names[link->id];
-            tooltip_stream << name;
-            if (i < links.size() - 1) {
+        for (auto it = item_names.begin(); it != item_names.end(); ++it) {
+            tooltip_stream << *it;
+            if (std::next(it) != item_names.end()) {
                 tooltip_stream << ", ";
             }
         }
@@ -215,13 +255,21 @@ std::pair<size_t, bool> draw_commands_pattern(CommandsPattern &pattern, const bo
                 ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, IM_COL32(128, 255, 128, 64));
             }
 
-            if (is_command_selected) {
+            if (is_command_selected || is_value_selected) {
                 ImGui::PushStyleColor(ImGuiCol_Text, GUI_HIGHLIGHT_COLOR);
             }
 
             ImGui::TableSetColumnIndex(0);
             const std::string index_string = std::to_string(j);
             ImGui::Text("%s", index_string.c_str());
+
+            if (is_command_selected || is_value_selected) {
+                ImGui::PopStyleColor();
+            }
+
+            if (is_command_selected) {
+                ImGui::PushStyleColor(ImGuiCol_Text, GUI_HIGHLIGHT_COLOR);
+            }
 
             ImGui::PushID(i);
             ImGui::TableSetColumnIndex(1);

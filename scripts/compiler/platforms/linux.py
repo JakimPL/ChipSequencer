@@ -1,11 +1,14 @@
+import math
 import re
 import shutil
 import subprocess
 from distutils.dir_util import copy_tree
+from pathlib import Path
 
 from compiler.compiler import Compiler
 
 COMPRESSION_LEVEL = 1
+PAGE_SIZE = 0x1000
 
 
 class LinuxCompiler(Compiler):
@@ -18,9 +21,18 @@ class LinuxCompiler(Compiler):
         self.song_dir.mkdir(exist_ok=True)
 
         message, sample_rate, output_channels = self.get_song_info()
-        self.substitute_values(message, sample_rate, output_channels)
-
+        path = self.temp_dir / "core" / "platform" / "linux.asm"
+        self.substitute_values(path, message, sample_rate, output_channels)
         self.compile()
+
+        file_size = self.measure_file_size()
+        shutil.copy(self.temp_dir / "core" / "platform" / "linux.asm.temp", path)
+        self.substitute_values(path, message, sample_rate, output_channels, file_size)
+        self.compile()
+
+        if self.compression:
+            self.compress()
+
         self.copy_executable()
 
     def copy_source(self):
@@ -29,31 +41,29 @@ class LinuxCompiler(Compiler):
         shutil.copy("compile.sh", self.temp_dir / "compile.sh")
         shutil.copy(self.song_dir / "header.asm", self.temp_dir / "core" / "song" / "header.asm")
         shutil.copy(self.song_dir / "data.asm", self.temp_dir / "core" / "song" / "data.asm")
+        shutil.copy(
+            self.temp_dir / "core" / "platform" / "linux.asm", self.temp_dir / "core" / "platform" / "linux.asm.temp"
+        )
 
     def compile(self):
-        args = [
-            "bash",
-            "-c",
-            "./compile.sh" + " DEBUG" if not self.compress else "",
-        ]
-
+        args = ["bash", "-c", "./compile.sh" + (" DEBUG" if self.debug else "")]
         subprocess.run(args, cwd=self.temp_dir)
 
-        if self.compress:
-            args = [
-                "python",
-                "onekpaq.py",
-                "1",
-                str(COMPRESSION_LEVEL),
-                self.bin_dir / "main",
-                self.bin_dir / "player",
-            ]
-
-            subprocess.run(args, cwd=self.temp_dir / "tools" / "oneKpaq")
-
     def copy_executable(self):
-        source = "player" if self.compress else "main"
+        source = "player" if self.compression else "main"
         shutil.copy(self.bin_dir / source, self.target_path)
+
+    def compress(self):
+        args = [
+            "python",
+            "onekpaq.py",
+            "1",
+            str(COMPRESSION_LEVEL),
+            self.bin_dir / "main",
+            self.bin_dir / "player",
+        ]
+
+        subprocess.run(args, cwd=self.temp_dir / "tools" / "oneKpaq")
 
     def get_song_info(self):
         header_path = self.song_dir / "header.asm"
@@ -81,15 +91,22 @@ class LinuxCompiler(Compiler):
 
         return message, sample_rate, output_channels
 
-    def substitute_values(self, message: str, sample_rate: int, output_channels: int):
-        path = self.temp_dir / "core" / "platform" / "linux.asm"
+    def substitute_values(
+        self, path: Path, message: str, sample_rate: int, output_channels: int, file_size: int = PAGE_SIZE
+    ):
         with open(path, "r") as file:
             code = file.read()
             code = code.format(
                 message=message,
                 output_channels=output_channels,
                 sample_rate=sample_rate,
+                file_size=file_size,
             )
 
         with open(path, "w") as file:
             file.write(code)
+
+    def measure_file_size(self) -> int:
+        main_path = self.bin_dir / "main"
+        file_size = main_path.stat().st_size
+        return math.ceil(file_size / PAGE_SIZE) * PAGE_SIZE

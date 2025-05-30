@@ -7,3 +7,6 @@
 [submodule "nfd"]
 	path = nfd
 	url = https://github.com/mlabbe/nativefiledialog.git
+[submodule "miniz-cpp"]
+	path = miniz-cpp
+	url = https://github.com/tfussell/miniz-cpp

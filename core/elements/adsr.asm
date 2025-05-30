@@ -84,8 +84,9 @@ note_cut:
 
 reset_envelope:
     movzx ecx, byte [current_channel]
-    mov byte [envelope_mode + ecx], 0
-    mov dword [envelope_timer + 4 * ecx], 0
+    xor eax, eax
+    mov [envelope_mode + ecx], al
+    mov [envelope_timer + 4 * ecx], eax
     ret
 
 set_release:
@@ -95,16 +96,8 @@ set_release:
 
     SEGMENT_DATA
 phases:
-    %ifndef BITS_16
     dd attack
     dd decay
     dd hold
     dd release
     dd note_cut
-    %else
-    dw attack
-    dw decay
-    dw hold
-    dw release
-    dw note_cut
-    %endif

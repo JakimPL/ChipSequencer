@@ -23,7 +23,8 @@ const std::map<Target, RoutingItems> routing_variables = {
     {
         Target::OSCILLATOR,
         RoutingItems({
-            {"Duty cycle", OSCILLATOR_SQUARE_DUTY_CYCLE, TargetVariableType::Byte, GENERATOR_SQUARE},
+            {"Duty cycle", OSCILLATOR_SQUARE_DUTY_CYCLE, TargetVariableType::Word, GENERATOR_SQUARE},
+            {"Reverse", OSCILLATOR_SAW_REVERSE, TargetVariableType::Byte, GENERATOR_SAW},
             {"Interpolation", OSCILLATOR_WAVETABLE_INTERPOLATION, TargetVariableType::Byte, GENERATOR_WAVETABLE},
         }),
     },
@@ -51,6 +52,9 @@ const std::map<Target, RoutingItems> routing_variables = {
     {
         Target::CHANNEL,
         RoutingItems({
+            {"Envelope index", CHANNEL_ENVELOPE_INDEX, TargetVariableType::Byte},
+            {"Oscillator index", CHANNEL_OSCILLATOR_INDEX, TargetVariableType::Byte},
+            {"Order index", CHANNEL_ORDER_INDEX, TargetVariableType::Byte},
             {"Pitch", CHANNEL_PITCH, TargetVariableType::Dword},
             {"Splitter 0", CHANNEL_SPLITTER, TargetVariableType::Byte},
             {"Splitter 1", CHANNEL_SPLITTER + 1, TargetVariableType::Byte},

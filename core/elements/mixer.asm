@@ -77,10 +77,6 @@ mix:
     fmul
 
     call save_eax_from_fpu
-
-    %ifdef BITS_16
-    call float_to_integer
-    %endif
     mov [output + 4 * ecx], eax
 
     cmp cl, 0
@@ -122,41 +118,29 @@ store_single_output:
     MOV_FROM_DI edx
 
 .check_mode:
-    test cl, 0b01000000
+    test cl, MASK_OPERATION_ADD
     je .set_size
 .set_mode:
     xor edx, edx
 .set_size:
-    test cl, 0b00110000
+    test cl, MASK_VARIABLE_TYPE
     je .add_or_multiply_float
     jpe .add_32_bit
-    test cl, 0b00010000
+    test cl, MASK_VARIABLE_BYTE
     jne .add_8_bit
-    test cl, 0b00100000
+    test cl, MASK_VARIABLE_WORD
     jne .add_16_bit
 .add_or_multiply_float:
     call load_eax_to_fpu
-    test cl, 0b10000000
+    test cl, MASK_OPERATION_MULTIPLY
     jz .add_float
 .multiply_float:
-    %ifndef BITS_16
     fmul dword [edi]
-    %else
-    fmul dword [di]
-    %endif
     jmp .store_float
 .add_float:
-    %ifndef BITS_16
     fadd dword [edi]
-    %else
-    fadd dword [di]
-    %endif
 .store_float:
-    %ifndef BITS_16
     fstp dword [edi]
-    %else
-    fstp dword [di]
-    %endif
     fstp st0
     jmp .done
 .add_32_bit:
@@ -182,7 +166,7 @@ store_single_output:
 
 shift:
     push cx
-    and cl, 0b00001111
+    and cl, MASK_SHIFT
     shr eax, cl
     pop cx
     ret

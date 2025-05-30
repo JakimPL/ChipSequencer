@@ -1,13 +1,10 @@
 #include <fstream>
 #include <iostream>
-#include <sndfile.h>
 
+#include "../audio/wave.hpp"
 #include "../song/core.hpp"
 #include "../song/functions.hpp"
 #include "file.hpp"
-
-#define IEEE_FLOAT 3
-#define BITS_PER_SAMPLE 32
 
 FileDriver::FileDriver() {
 }
@@ -50,33 +47,12 @@ void FileDriver::set_output_filename(const std::string &filename) {
 }
 
 void FileDriver::save_output_to_file() {
-    SF_INFO sfinfo;
-    sfinfo.channels = output_channels;
-    sfinfo.samplerate = sample_rate;
-    sfinfo.format = SF_FORMAT_WAV | SF_FORMAT_FLOAT;
-    sfinfo.frames = samples.size();
-    sfinfo.sections = 0;
-    sfinfo.seekable = 0;
+    save_wave(filename, samples, sample_rate, output_channels);
+}
 
-    SNDFILE *sndfile = sf_open(filename.c_str(), SFM_WRITE, &sfinfo);
-    if (!sndfile) {
-        std::cerr << "Error opening output file: " << sf_strerror(sndfile) << std::endl;
-        return;
-    }
-
-    std::vector<float> interleaved;
-    interleaved.reserve(samples.size() * output_channels);
-
-    for (const auto &frame : samples) {
-        for (size_t c = 0; c < output_channels; ++c) {
-            interleaved.push_back(c < frame.size() ? frame[c] : 0.0f);
-        }
-    }
-
-    sf_count_t written = sf_writef_float(sndfile, interleaved.data(), samples.size());
-    if (written != static_cast<sf_count_t>(samples.size())) {
-        std::cerr << "Failed to write all frames!" << std::endl;
-    }
-
-    sf_close(sndfile);
+void FileDriver::set(const std::string &filename, const int rate, const int channels, const size_t length) {
+    set_length(length);
+    set_sample_rate(rate);
+    set_output_channels(channels);
+    set_output_filename(filename);
 }

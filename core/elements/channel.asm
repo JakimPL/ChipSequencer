@@ -37,13 +37,15 @@ reset_channels:
 reset_channel:
     mov byte [current_channel], bl
     movzx ecx, byte [current_channel]
-    mov dword [envelope_timer + 4 * ecx], 0
-    mov dword [sequence_timer + 4 * ecx], 0
-    mov dword [oscillator_timer + 4 * ecx], 0
-    mov byte [pitch + ecx], 0
-    mov byte [envelope_mode + ecx], 0
-    mov byte [current_sequence + ecx], 0
-    mov byte [sequence_current_note + ecx], 0
+    xor eax, eax
+    mov [envelope_timer + 4 * ecx], eax
+    mov [sequence_timer + 4 * ecx], eax
+    mov [sequence_timer_row + ecx], al
+    mov [oscillator_timer + 4 * ecx], eax
+    mov [pitch + ecx], al
+    mov [envelope_mode + ecx], al
+    mov [current_sequence + ecx], al
+    mov [sequence_current_note + ecx], al
     ret
 
 play_channel:
@@ -57,27 +59,14 @@ load_channel_target:
     mov cl, [CHANNEL_OUTPUT_FLAG + edi]
     mov ch, [CHANNEL_FLAG + edi]
     movzx edi, byte [CHANNEL_TARGET + edi]
-    %ifdef BITS_16
-    mov edi, [targets + 2 * edi]
-    %else
     mov edi, [targets + 4 * edi]
-    %endif
     ret
 
     SEGMENT_BSS
     current_channel resb 1
-    %ifndef BITS_16
     channel_offset resd 1
     envelope_offset resd 1
     order_offset resd 1
     sequence_offset resd 1
     oscillator_offset resd 1
     wavetable_offset resd 1
-    %else
-    channel_offset resw 1
-    envelope_offset resw 1
-    order_offset resw 1
-    sequence_offset resw 1
-    oscillator_offset resw 1
-    wavetable_offset resw 1
-    %endif

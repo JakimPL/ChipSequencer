@@ -35,11 +35,7 @@ reset:
     cmp bx, 0
     je .done
     dec bx
-    %ifndef BITS_16
     call esi
-    %else
-    call si
-    %endif
     jmp .reset_loop
 .done:
     ret

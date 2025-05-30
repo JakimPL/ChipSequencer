@@ -21,10 +21,10 @@ enum class Target : uint8_t {
 };
 
 enum class TargetVariableType : uint8_t {
+    Float,
     Byte,
     Word,
     Dword,
-    Float,
     Count,
 };
 

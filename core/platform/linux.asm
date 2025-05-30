@@ -6,8 +6,10 @@
     global _start
     %else
     global output
-    %define FILE_SIZE 0x1000
-    %define MEMORY_SIZE 0xD00000
+    %define PHDR_FILE_SIZE {file_size}
+    %define PHDR_MEMORY_SIZE 0xD00000
+    %define PHDR_PERMISSION 0x7
+    %define PHDR_ALIGN 0x1000
     %endif
 
     %define SYS_EXIT 0x01
@@ -46,10 +48,10 @@ phdr:
     dd 0
     dd program_start
     dd program_start
-    dd FILE_SIZE
-    dd MEMORY_SIZE
-    dd 7
-    dd 4096
+    dd PHDR_FILE_SIZE
+    dd PHDR_MEMORY_SIZE
+    dd PHDR_PERMISSION
+    dd PHDR_ALIGN
     phdr_size equ $ - phdr
     %endif
 

@@ -1,8 +1,10 @@
+#include <cstring>
 #include <filesystem>
 #include <iostream>
 #include <memory>
 #include <stdexcept>
-#include <zlib.h>
+
+#include "miniz-cpp/zip_file.hpp"
 
 #include "../general.hpp"
 #include "../sizes.hpp"
@@ -47,10 +49,11 @@ void Song::new_song() {
 
     change_tuning(tuning.edo, tuning.a4_frequency);
     link_manager.set_links();
+    calculate_song_length();
 }
 
 void Song::save_to_file(const std::string &filename) {
-    const auto [temp_base, song_path] = prepare_temp_directory();
+    const auto [temp_base, song_path] = prepare_temp_directory(clear_temp);
     const std::string directory = song_path.string();
 
     try {
@@ -58,9 +61,9 @@ void Song::save_to_file(const std::string &filename) {
         link_manager.set_links();
         export_all(directory, CompilationTarget::Linux);
         compress_directory(directory, filename);
-        std::filesystem::remove_all(temp_base);
+        remove_temp_directory(temp_base, clear_temp);
     } catch (const std::exception &exception) {
-        std::filesystem::remove_all(temp_base);
+        remove_temp_directory(temp_base, clear_temp);
         throw;
     }
 }
@@ -70,7 +73,7 @@ void Song::load_from_file(const std::string &filename) {
         throw std::runtime_error("File does not exist: " + filename);
     }
 
-    const auto [temp_base, song_path] = prepare_temp_directory();
+    const auto [temp_base, song_path] = prepare_temp_directory(clear_temp);
     const std::string directory = song_path.string();
 
     try {
@@ -81,35 +84,37 @@ void Song::load_from_file(const std::string &filename) {
         update_sizes();
         change_tuning(tuning.edo, tuning.a4_frequency);
         link_manager.set_links();
-
-        std::filesystem::remove_all(temp_base);
+        calculate_song_length();
+        remove_temp_directory(temp_base, clear_temp);
     } catch (const std::exception &exception) {
-        std::filesystem::remove_all(temp_base);
+        remove_temp_directory(temp_base, clear_temp);
         throw;
     }
 }
 
-void Song::compile(const std::string &filename, bool compress, const CompilationTarget compilation_target) const {
-    const std::string platform = (compilation_target == CompilationTarget::DOS) ? "dos" : "linux";
-    const auto [temp_base, song_path] = prepare_temp_directory();
+void Song::compile(const std::string &filename, const CompilationScheme scheme, const CompilationTarget compilation_target) const {
+    if (compilation_target != CompilationTarget::Linux) {
+        std::cerr << "Unsupported compilation target";
+        return;
+    }
+
+    const std::string platform = "linux";
+    const auto [temp_base, song_path] = prepare_temp_directory(clear_temp);
     const std::string directory = song_path.string();
 
     try {
         export_all(directory, compilation_target);
-        compile_sources(temp_base.string(), filename, compress, platform);
-        std::filesystem::remove_all(temp_base);
+        compile_sources(temp_base.string(), filename, scheme, platform);
+        remove_temp_directory(temp_base, clear_temp);
     } catch (const std::exception &exception) {
-        std::filesystem::remove_all(temp_base);
+        remove_temp_directory(temp_base, clear_temp);
         throw;
     }
 }
 
 void Song::render(const std::string &filename) {
     calculate_song_length();
-    file_driver.set_length(song_length);
-    file_driver.set_sample_rate(sample_rate);
-    file_driver.set_output_channels(output_channels);
-    file_driver.set_output_filename(filename);
+    file_driver.set(filename, sample_rate, output_channels, song_length);
     file_driver.play();
 }
 
@@ -745,6 +750,10 @@ float Song::calculate_real_bpm() const {
     return unit * static_cast<float>(sample_rate) / static_cast<float>(ticks_per_beat);
 }
 
+float Song::get_row_duration() const {
+    return static_cast<double>(ticks_per_beat) / static_cast<double>(sample_rate);
+}
+
 void Song::generate_header_vector(
     std::stringstream &asm_content,
     const std::string &name,
@@ -831,11 +840,7 @@ void Song::generate_targets_asm(
     const auto pointers = link_manager.get_pointers_map();
     for (const auto &pair : pointers) {
         const LinkKey key = pair.second;
-        if (compilation_target == CompilationTarget::DOS) {
-            asm_content << "    dw ";
-        } else {
-            asm_content << "    dd ";
-        }
+        asm_content << "    dd ";
         asm_content << link_manager.get_link_reference(key) << "\n";
     }
 }
@@ -1030,22 +1035,47 @@ int Song::run_command(const std::string &command) const {
 }
 
 void Song::compress_directory(const std::string &directory, const std::string &output_file) const {
-    std::string tar_command = "tar -cvf " + output_file + " -C \"" +
-                              std::filesystem::path(directory).string() + "\" .";
-    run_command(tar_command);
+    miniz_cpp::zip_file zip;
+
+    for (auto &entry : std::filesystem::recursive_directory_iterator(directory)) {
+        if (entry.is_regular_file()) {
+            std::string rel_path = std::filesystem::relative(entry.path(), directory).string();
+            zip.write(entry.path().string(), rel_path);
+        }
+    }
+
+    zip.save(output_file);
 }
 
 void Song::decompress_archive(const std::string &output_file, const std::string &directory) {
-    const std::string extract_command = "tar -xf \"" + output_file + "\" -C \"" + directory + "\"";
-    if (run_command(extract_command) != 0) {
-        throw std::runtime_error("Failed to extract song file: " + output_file);
+    miniz_cpp::zip_file zip(output_file);
+
+    for (const auto &info : zip.infolist()) {
+        std::filesystem::path out_path = std::filesystem::path(directory) / info.filename;
+        if (!info.filename.empty() && info.filename.back() == '/') {
+            std::filesystem::create_directories(out_path);
+        } else {
+            std::filesystem::create_directories(out_path.parent_path());
+            std::ofstream out_file(out_path, std::ios::binary);
+            out_file << zip.read(info.filename);
+        }
     }
 }
 
-void Song::compile_sources(const std::string &directory, const std::string &filename, const bool compress, const std::string platform) const {
+void Song::compile_sources(const std::string &directory, const std::string &filename, const CompilationScheme scheme, const std::string platform) const {
     std::string compile_command = "python scripts/compile.py " + platform + " \"" + directory + "\" \"" + filename + "\"";
-    if (!compress) {
+    switch (scheme) {
+    case CompilationScheme::Uncompressed: {
         compile_command += " --uncompressed";
+        break;
+    }
+    case CompilationScheme::Debug: {
+        compile_command += " --debug";
+        break;
+    }
+    case CompilationScheme::Compressed:
+    default:
+        break;
     }
 
     const int exit_code = run_command(compile_command);
@@ -1412,8 +1442,7 @@ void Song::import_links(const std::string &directory, const nlohmann::json &json
         Link link;
         link.deserialize(file);
         links[link_type].push_back(link);
-        const size_t sequence_index = link.id >> 8;
-        const size_t channel_index = link.id & 0xFF;
+        const auto [sequence_index, channel_index] = LinkManager::unpack_command_id(link.id);
         commands_links[sequence_index][channel_index] = link;
     }
 

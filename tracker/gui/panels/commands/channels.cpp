@@ -41,8 +41,9 @@ void GUICommandsChannelsPanel::from() {
     }
 
     const CommandsChannel *channel = commands_channels[channel_index];
-    current_channel.bypass = channel->flag & FLAG_BYPASS;
     current_channel.order_index = channel->order_index;
+    current_channel.bypass = channel->flag & FLAG_BYPASS;
+    current_channel.hide = channel->flag & FLAG_HIDDEN;
 }
 
 void GUICommandsChannelsPanel::to() const {
@@ -51,8 +52,9 @@ void GUICommandsChannelsPanel::to() const {
     }
 
     CommandsChannel *channel = commands_channels[channel_index];
-    channel->flag = current_channel.bypass ? FLAG_BYPASS : 0;
     channel->order_index = current_channel.order_index;
+    channel->flag = current_channel.bypass ? FLAG_BYPASS : 0;
+    channel->flag |= current_channel.hide ? FLAG_HIDDEN : 0;
 }
 
 void GUICommandsChannelsPanel::add() {
@@ -95,6 +97,7 @@ void GUICommandsChannelsPanel::draw_channel() {
     }
 
     ImGui::Checkbox("Bypass", &current_channel.bypass);
+    ImGui::Checkbox("Hide in pattern view", &current_channel.hide);
     ImGui::Separator();
 
     ImGui::Text("Order:");

@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "../constants.hpp"
+#include "../sizes.hpp"
 
 enum class Generator : uint8_t {
     Square = GENERATOR_SQUARE,
@@ -25,8 +26,8 @@ struct Oscillator {
 struct OscillatorSquare {
     uint8_t oscillator_size = SIZE_OSCILLATOR_SQUARE;
     uint8_t generator_index = GENERATOR_SQUARE;
-    uint8_t duty_cycle;
-    uint8_t pad[1];
+    uint16_t duty_cycle;
+    uint8_t pad[0];
 };
 
 struct OscillatorSaw {

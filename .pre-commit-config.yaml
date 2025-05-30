@@ -6,12 +6,6 @@ repos:
         types: [text]
   - repo: local
     hooks:
-      - id: make-config
-        name: make config
-        entry: make config
-        language: system
-        always_run: true
-        files: "core/common/config.asm"
       - id: make-consts
         name: make consts
         entry: make consts

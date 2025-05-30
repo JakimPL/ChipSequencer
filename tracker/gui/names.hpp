@@ -25,7 +25,7 @@ const std::vector<std::string> parameter_types = {"Envelope", "Sequence", "Comma
 const std::vector<std::string> target_types = {"Output splitter", "DSP splitter", "Direct output", "DSP", "Parameter"};
 const std::vector<std::string> simple_operation_names = {"Add", "Set"};
 const std::vector<std::string> operation_names = {"Add", "Set", "Multiply", "Zero"};
-const std::vector<std::string> variable_types = {"Int8", "Int16", "Int32", "Float"};
+const std::vector<std::string> variable_types = {"Float", "Int8", "Int16", "Int32"};
 const std::vector<std::string> generator_names = {"Square", "Saw", "Sine", "Wavetable", "Noise"};
 const std::map<Target, std::string> target_names = {
     {Target::SPLITTER_OUTPUT, "Output splitter"},

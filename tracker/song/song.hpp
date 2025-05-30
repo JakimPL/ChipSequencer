@@ -35,6 +35,8 @@ class Song {
     uint64_t song_length = 0;
     uint16_t max_rows = 0;
 
+    bool clear_temp = false;
+
     void generate_offsets_asm(std::stringstream &asm_content, const char separator) const;
     void generate_targets_asm(
         std::stringstream &asm_content,
@@ -94,7 +96,7 @@ class Song {
     void import_commands_channels(const std::string &directory, const nlohmann::json &json);
 
     int run_command(const std::string &command) const;
-    void compile_sources(const std::string &directory, const std::string &filename, const bool compress, const std::string platform = "linux") const;
+    void compile_sources(const std::string &directory, const std::string &filename, const CompilationScheme scheme, const std::string platform = "linux") const;
     void compress_directory(const std::string &directory, const std::string &output_file) const;
     void decompress_archive(const std::string &output_file, const std::string &directory);
 
@@ -113,7 +115,7 @@ class Song {
     void new_song();
     void load_from_file(const std::string &filename);
     void save_to_file(const std::string &filename);
-    void compile(const std::string &filename, bool compress = true, const CompilationTarget compilation_target = CompilationTarget::Linux) const;
+    void compile(const std::string &filename, const CompilationScheme scheme, const CompilationTarget compilation_target) const;
     void render(const std::string &filename);
 
     std::string get_title() const;
@@ -174,6 +176,7 @@ class Song {
     size_t calculate_oscillators(const Generator generator) const;
     size_t calculate_commands(const Instruction instruction) const;
     float calculate_real_bpm() const;
+    float get_row_duration() const;
 };
 
 #endif // SONG_SONG_HPP

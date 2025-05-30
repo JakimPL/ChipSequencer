@@ -23,6 +23,8 @@ class GUIPatternsPanel : public GUIPanel {
         uint16_t total_rows = 0;
         std::map<size_t, std::vector<Pattern>> patterns;
         std::map<size_t, std::vector<CommandsPattern>> commands_patterns;
+        std::map<size_t, uint16_t> patterns_max_rows;
+        std::map<size_t, uint16_t> commands_patterns_max_rows;
         std::map<VariantChannelIndex, int> playing_rows;
     } current_patterns;
 
@@ -37,8 +39,8 @@ class GUIPatternsPanel : public GUIPanel {
     void draw_commands_channel(size_t channel_index);
     std::pair<Pattern *, uint16_t> find_pattern_by_current_row() const;
     std::pair<CommandsPattern *, uint16_t> find_commands_pattern_by_current_row() const;
-    void handle_pattern_input(Pattern *pattern, const uint16_t index);
-    void handle_commands_pattern_input(CommandsPattern *pattern, const uint16_t index);
+    void handle_pattern_input(Pattern *pattern, uint16_t index);
+    void handle_commands_pattern_input(CommandsPattern *pattern, uint16_t index);
     int get_pages() const;
     bool is_playing() const;
 

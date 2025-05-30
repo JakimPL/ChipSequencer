@@ -215,6 +215,10 @@ void GUISummaryPanel::draw_optimizations() {
         ImGui::BulletText("Disabled all commands");
     } else {
         for (const auto &[instruction, name] : instruction_names) {
+            if (instruction == Instruction::Empty) {
+                continue;
+            }
+
             if (song.calculate_commands(instruction) == 0) {
                 ImGui::BulletText("Disabled command: %s", name);
             }

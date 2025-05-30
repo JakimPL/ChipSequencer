@@ -13,6 +13,9 @@
     global commands_sequence_offset
     global commands_sequence_current_command
 
+    global sequence_timer_row
+    global commands_sequence_timer_row
+
     global dsp_input
     global dsp_timer
     global output
@@ -33,6 +36,9 @@
     current_commands_sequence resb MAX_COMMANDS_CHANNELS
     commands_sequence_current_command resb MAX_COMMANDS_CHANNELS
     commands_sequence_current_offset resw MAX_COMMANDS_CHANNELS
+
+    sequence_timer_row resb MAX_CHANNELS
+    commands_sequence_timer_row resb MAX_COMMANDS_CHANNELS
 
     dsp_input resd MAX_DSPS
     dsp_timer resd MAX_DSPS

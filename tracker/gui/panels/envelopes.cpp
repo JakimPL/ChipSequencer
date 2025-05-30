@@ -52,7 +52,7 @@ float GUIEnvelopesPanel::cast_to_float(int value, float scale) {
 }
 
 uint16_t GUIEnvelopesPanel::cast_to_int(float value, float scale) {
-    return static_cast<uint16_t>(value / scale * UINT16_MAX);
+    return static_cast<uint16_t>(std::round(value / scale * UINT16_MAX));
 }
 
 void GUIEnvelopesPanel::from() {
@@ -156,10 +156,10 @@ void GUIEnvelopesPanel::draw_levels() {
 
 void GUIEnvelopesPanel::draw_timers() {
     ImGui::Text("Timers");
-    draw_float_slider("Attack", current_envelope.attack, {Target::ENVELOPE, envelope_index, ENVELOPE_ATTACK}, 0.0f, GUI_ENVELOPE_MAX_TIMER);
-    draw_float_slider("Decay", current_envelope.decay, {Target::ENVELOPE, envelope_index, ENVELOPE_DECAY}, 0.0f, GUI_ENVELOPE_MAX_TIMER);
-    draw_float_slider("Hold", current_envelope.hold, {Target::ENVELOPE, envelope_index, ENVELOPE_HOLD}, 0.0f, GUI_ENVELOPE_MAX_TIMER);
-    draw_float_slider("Release", current_envelope.release, {Target::ENVELOPE, envelope_index, ENVELOPE_RELEASE}, 0.0f, GUI_ENVELOPE_MAX_TIMER);
+    draw_float_slider("Attack", current_envelope.attack, {Target::ENVELOPE, envelope_index, ENVELOPE_ATTACK}, 0.0f, GUI_ENVELOPE_MAX_TIMER, GUIScale::Quadratic);
+    draw_float_slider("Decay", current_envelope.decay, {Target::ENVELOPE, envelope_index, ENVELOPE_DECAY}, 0.0f, GUI_ENVELOPE_MAX_TIMER, GUIScale::Quadratic);
+    draw_float_slider("Hold", current_envelope.hold, {Target::ENVELOPE, envelope_index, ENVELOPE_HOLD}, 0.0f, GUI_ENVELOPE_MAX_TIMER, GUIScale::Quadratic);
+    draw_float_slider("Release", current_envelope.release, {Target::ENVELOPE, envelope_index, ENVELOPE_RELEASE}, 0.0f, GUI_ENVELOPE_MAX_TIMER, GUIScale::Quadratic);
 }
 
 void GUIEnvelopesPanel::draw_envelope_graph() {
@@ -201,6 +201,39 @@ void GUIEnvelopesPanel::draw_envelope_graph() {
         const ImVec2 text_size = ImGui::CalcTextSize(label.c_str());
         draw_list->AddLine(ImVec2(x, canvas_p0.y), ImVec2(x, canvas_p1.y), IM_COL32(100, 100, 100, 255), 1.0f);
         draw_list->AddText(ImVec2(x - text_size.x / 2, canvas_p1.y + 5), IM_COL32(255, 255, 255, 255), label.c_str());
+    }
+
+    draw_list->AddLine(p0, p1, IM_COL32(255, 0, 0, 255), 2.0f);
+    draw_list->AddLine(p1, p2, IM_COL32(255, 165, 0, 255), 2.0f);
+    draw_list->AddLine(p2, p3, IM_COL32(75, 255, 130, 255), 2.0f);
+    draw_list->AddLine(p3, p4, IM_COL32(0, 144, 255, 255), 2.0f);
+    draw_list->AddCircleFilled(p1, 3.0f, IM_COL32(255, 0, 0, 255));
+    draw_list->AddCircleFilled(p2, 3.0f, IM_COL32(255, 165, 0, 255));
+    draw_list->AddCircleFilled(p3, 3.0f, IM_COL32(75, 255, 130, 255));
+    draw_list->AddCircleFilled(p4, 3.0f, IM_COL32(0, 144, 255, 255));
+
+    for (const float position : current_envelope.positions) {
+        const float x = canvas_p0.x + size.x * (position / static_cast<float>(total_time));
+        draw_list->AddLine(ImVec2(x, canvas_p0.y), ImVec2(x, canvas_p1.y), IM_COL32(255, 255, 0, 128), 1.0f);
+    }
+
+    const float tick_duration_base = song.get_row_duration();
+    float tick_duration_seconds = tick_duration_base;
+    int tick_label_multiplier = 1;
+    while ((total_time / tick_duration_seconds) > GUI_ENVELOPE_MAX_TICK_DURATION_COUNT) {
+        tick_duration_seconds *= 2.0f;
+        tick_label_multiplier *= 2;
+    }
+    const int tick_count = static_cast<int>(total_time / tick_duration_seconds);
+
+    for (int i = 1; i <= tick_count; ++i) {
+        float tick_time = tick_duration_seconds * i;
+        float x = canvas_p0.x + size.x * (tick_time / total_time);
+        int tick_label = i * tick_label_multiplier;
+        std::string tick_label_str = std::to_string(tick_label);
+        ImVec2 tick_text_size = ImGui::CalcTextSize(tick_label_str.c_str());
+        draw_list->AddLine(ImVec2(x, canvas_p0.y), ImVec2(x, canvas_p1.y), IM_COL32(0, 200, 255, 128), 1.0f);
+        draw_list->AddText(ImVec2(x - tick_text_size.x / 2, canvas_p0.y - tick_text_size.y - 2), IM_COL32(0, 200, 255, 255), tick_label_str.c_str());
     }
 
     draw_list->AddLine(p0, p1, IM_COL32(255, 0, 0, 255), 2.0f);
