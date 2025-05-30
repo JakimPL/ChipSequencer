@@ -550,3 +550,11 @@ void GUI::set_current_wavetable_index(const int index) {
 void GUI::set_current_commands_sequence_index(const int index) {
     commands_sequences_panel.set_index(index);
 }
+
+std::vector<std::pair<NodeIdentifier, ImVec2>> GUI::get_routing_nodes_positions() const {
+    return routing_panel.get_nodes_positions();
+}
+
+void GUI::set_routing_nodes_positions(const std::vector<std::pair<NodeIdentifier, ImVec2>> &nodes_positions) {
+    routing_panel.set_nodes_positions(nodes_positions);
+}

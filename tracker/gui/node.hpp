@@ -19,10 +19,12 @@ struct NodeIdentifier {
     Target type;
     size_t id;
 
+    NodeIdentifier();
+    NodeIdentifier(Target type, size_t id);
+    NodeIdentifier(const std::string &string);
     bool operator==(const NodeIdentifier &other) const;
     bool operator<(const NodeIdentifier &other) const;
-    std::string serialize(const NodeIdentifier &node) const;
-    static NodeIdentifier deserialize(const std::string &string);
+    std::string to_string() const;
 };
 
 template <>

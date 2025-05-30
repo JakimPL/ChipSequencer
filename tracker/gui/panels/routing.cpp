@@ -579,3 +579,25 @@ bool GUIRoutingPanel::get_splitter_bounds(const size_t j, size_t index, const Li
 
     return false;
 }
+
+std::vector<std::pair<NodeIdentifier, ImVec2>> GUIRoutingPanel::get_nodes_positions() const {
+    std::vector<std::pair<NodeIdentifier, ImVec2>> nodes_positions;
+    nodes_positions.reserve(nodes.size());
+
+    for (const RoutingNode &node : nodes) {
+        nodes_positions.emplace_back(node.identifier, node.position);
+    }
+
+    return nodes_positions;
+}
+
+void GUIRoutingPanel::set_nodes_positions(const std::vector<std::pair<NodeIdentifier, ImVec2>> &nodes_positions) {
+    for (const auto &[identifier, position] : nodes_positions) {
+        for (RoutingNode &node : nodes) {
+            if (node.identifier == identifier) {
+                node.position = position;
+                break;
+            }
+        }
+    }
+}

@@ -976,6 +976,17 @@ nlohmann::json Song::save_gui_state() const {
         {"commands_sequence_index", gui.get_current_commands_sequence_index()},
     };
 
+    json["routing"] = {};
+    const auto nodes_positions = gui.get_routing_nodes_positions();
+    for (const auto &pair : nodes_positions) {
+        const std::string &node_name = pair.first.to_string();
+        const auto &position = pair.second;
+        json["routing"][node_name] = {
+            {"x", position.x},
+            {"y", position.y}
+        };
+    }
+
     return json;
 }
 
@@ -1504,6 +1515,18 @@ void Song::import_gui_state(const std::string &directory) {
     gui.set_current_order_index(json_current.value("order_index", 0));
     gui.set_current_wavetable_index(json_current.value("wavetable_index", 0));
     gui.set_current_commands_sequence_index(json_current.value("commands_sequence_index", 0));
+
+    const auto &json_routing = json["routing"];
+    std::vector<std::pair<NodeIdentifier, ImVec2>> nodes_positions;
+    for (const auto &pair : json_routing.items()) {
+        const std::string &node_name = pair.key();
+        const auto &position = pair.value();
+        const NodeIdentifier node_identifier(node_name);
+        const ImVec2 node_position(position["x"], position["y"]);
+        nodes_positions.emplace_back(node_identifier, node_position);
+    }
+
+    gui.set_routing_nodes_positions(nodes_positions);
 }
 
 void Song::update_sizes() {
