@@ -53,7 +53,7 @@ GUIMenu::GUIMenu(const bool visible)
     shortcut_manager.register_shortcut_and_action(
         ShortcutAction::FileExit,
         {true, false, false, ImGuiKey_Q},
-        [this]() { file_exit(); }
+        [this]() { file_exit_confirm(); }
     );
 }
 
@@ -92,7 +92,7 @@ void GUIMenu::draw() {
             }
             ImGui::Separator();
             if (get_menu_item("Exit", ShortcutAction::FileExit)) {
-                file_exit();
+                file_exit_confirm();
             }
             ImGui::EndMenu();
         }
@@ -123,9 +123,14 @@ void GUIMenu::draw() {
         load_error = std::nullopt;
     }
 
-    if (open_confirmation_popup) {
+    if (open_new_song_confirmation_popup) {
         ImGui::OpenPopup("Confirm new song");
-        open_confirmation_popup = false;
+        open_new_song_confirmation_popup = false;
+    }
+
+    if (open_exit_confirmation_popup) {
+        ImGui::OpenPopup("Confirm exit");
+        open_exit_confirmation_popup = false;
     }
 
     if (ImGui::BeginPopupModal("Compilation success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
@@ -141,11 +146,14 @@ void GUIMenu::draw() {
     } else if (ImGui::BeginPopupModal("Confirm new song", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
         const std::string message = "Do you want to create a new song?\nAny unsaved changes will be lost.";
         draw_confirmation_popup(message, [this]() { file_new(); }, [this]() { file_save(); });
+    } else if (ImGui::BeginPopupModal("Confirm exit", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+        const std::string message = "Do you want to exit the program?\nAny unsaved changes will be lost.";
+        draw_confirmation_popup(message, [this]() { file_exit(); }, [this]() { file_save(); });
     }
 }
 
 void GUIMenu::file_new_confirm() {
-    open_confirmation_popup = true;
+    open_new_song_confirmation_popup = true;
 }
 
 void GUIMenu::file_new() {
@@ -254,4 +262,8 @@ void GUIMenu::file_compile(const CompilationScheme scheme, const CompilationTarg
 void GUIMenu::file_exit() {
     gui.stop();
     terminate();
+}
+
+void GUIMenu::file_exit_confirm() {
+    open_exit_confirmation_popup = true;
 }

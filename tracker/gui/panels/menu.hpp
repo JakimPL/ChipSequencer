@@ -13,7 +13,8 @@ class GUIMenu : public GUIPanel {
     std::optional<bool> compilation_status;
     std::optional<bool> render_status;
     std::optional<bool> load_error;
-    bool open_confirmation_popup = false;
+    bool open_new_song_confirmation_popup = false;
+    bool open_exit_confirmation_popup = false;
 
     void file_new_confirm();
     void file_new();
@@ -23,6 +24,7 @@ class GUIMenu : public GUIPanel {
     void file_render();
     void file_compile(const CompilationScheme scheme, const CompilationTarget compilation_target);
     void file_exit();
+    void file_exit_confirm();
 
     void from() override {};
     void to() const override {};
