@@ -50,6 +50,10 @@ void Song::new_song() {
     change_tuning(tuning.edo, tuning.a4_frequency);
     link_manager.set_links();
     calculate_song_length();
+
+    gui.set_current_octave();
+    gui.set_jump_step();
+    gui.set_page_size();
 }
 
 void Song::save_to_file(const std::string &filename) {

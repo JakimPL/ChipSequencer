@@ -89,6 +89,7 @@ add_executable(ChipSequencer
     tracker/driver/port.cpp
     tracker/general.cpp
     tracker/gui/gui.cpp
+    tracker/gui/node.cpp
     tracker/gui/shortcuts.cpp
     tracker/gui/inputs/input.cpp
     tracker/gui/inputs/numeric.cpp
