@@ -50,6 +50,7 @@ void GUIChannelsPanel::from() {
     current_channel.output_type.from_flags(channel->output_flag, channel->flag);
 
     current_channel.constant_pitch = channel->flag & FLAG_CONSTANT_PITCH;
+    current_channel.hide = channel->flag & FLAG_HIDE;
     if (current_channel.constant_pitch) {
         current_channel.sync = channel->flag & FLAG_SYNC;
         if (current_channel.sync) {
@@ -83,6 +84,10 @@ void GUIChannelsPanel::to() const {
     channel->flag = 0;
     current_channel.output_type.set_item_flag(channel->flag);
     current_channel.output_type.set_output_flag(channel->output_flag);
+
+    if (current_channel.hide) {
+        channel->flag |= FLAG_HIDE;
+    }
 
     if (current_channel.constant_pitch) {
         channel->flag |= FLAG_CONSTANT_PITCH;
@@ -185,6 +190,7 @@ void GUIChannelsPanel::draw_channel() {
     }
 
     ImGui::Checkbox("Bypass", &current_channel.output_type.bypass);
+    ImGui::Checkbox("Hide in pattern view", &current_channel.hide);
     ImGui::Separator();
 
     ImGui::Text("Envelope:");

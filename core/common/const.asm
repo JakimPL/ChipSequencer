@@ -96,6 +96,7 @@
     %define FLAG_SPLITTER 0b00000010
     %define FLAG_SYNC 0b00000100
     %define FLAG_CONSTANT_PITCH 0b00001000
+    %define FLAG_HIDE 0b00010000
 
 ; Generators
     %define GENERATOR_SQUARE 0
