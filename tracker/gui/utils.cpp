@@ -255,13 +255,21 @@ std::pair<size_t, bool> draw_commands_pattern(CommandsPattern &pattern, const bo
                 ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, IM_COL32(128, 255, 128, 64));
             }
 
-            if (is_command_selected) {
+            if (is_command_selected || is_value_selected) {
                 ImGui::PushStyleColor(ImGuiCol_Text, GUI_HIGHLIGHT_COLOR);
             }
 
             ImGui::TableSetColumnIndex(0);
             const std::string index_string = std::to_string(j);
             ImGui::Text("%s", index_string.c_str());
+
+            if (is_command_selected || is_value_selected) {
+                ImGui::PopStyleColor();
+            }
+
+            if (is_command_selected) {
+                ImGui::PushStyleColor(ImGuiCol_Text, GUI_HIGHLIGHT_COLOR);
+            }
 
             ImGui::PushID(i);
             ImGui::TableSetColumnIndex(1);

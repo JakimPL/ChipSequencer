@@ -299,7 +299,10 @@ void GUIPatternsPanel::handle_pattern_input(Pattern *pattern, uint16_t index) {
             }
         }
         if (ImGui::IsKeyPressed(ImGuiKey_DownArrow)) {
-            if (pattern->current_row == pattern->steps - 1 && index + pattern->steps < current_patterns.patterns_max_rows[current_channel.index]) {
+            if (
+                pattern->current_row == pattern->steps - 1 &&
+                index + pattern->steps < current_patterns.patterns_max_rows[current_channel.index]
+            ) {
                 index++;
                 current_row++;
                 Pattern *next_pattern = find_pattern_by_current_row().first;
@@ -315,6 +318,7 @@ void GUIPatternsPanel::handle_pattern_input(Pattern *pattern, uint16_t index) {
 }
 
 void GUIPatternsPanel::handle_commands_pattern_input(CommandsPattern *pattern, uint16_t index) {
+    const CommandSelection current_selection = pattern->selection;
     if (!current_patterns.commands_patterns.empty()) {
         auto it = current_patterns.commands_patterns.find(current_channel.index);
         if (ImGui::IsKeyPressed(ImGuiKey_LeftArrow) && pattern->selection == CommandSelection::Command) {
@@ -345,6 +349,27 @@ void GUIPatternsPanel::handle_commands_pattern_input(CommandsPattern *pattern, u
                 current_channel.index = it->first;
                 CommandsPattern *commands_pattern = find_commands_pattern_by_current_row().first;
                 commands_pattern->selection = CommandSelection::Command;
+            }
+        }
+        if (ImGui::IsKeyPressed(ImGuiKey_UpArrow)) {
+            if (pattern->current_row == 0 && index > 0) {
+                index--;
+                current_row--;
+                CommandsPattern *previous_pattern = find_commands_pattern_by_current_row().first;
+                previous_pattern->current_row = previous_pattern->steps - 1;
+                previous_pattern->selection = current_selection;
+            }
+        }
+        if (ImGui::IsKeyPressed(ImGuiKey_DownArrow)) {
+            if (
+                pattern->current_row == pattern->steps - 1 &&
+                index + pattern->steps < current_patterns.commands_patterns_max_rows[current_channel.index]
+            ) {
+                index++;
+                current_row++;
+                CommandsPattern *next_pattern = find_commands_pattern_by_current_row().first;
+                next_pattern->current_row = 0;
+                next_pattern->selection = current_selection;
             }
         }
     }
