@@ -19,7 +19,6 @@ class GUIWavetablesPanel : public GUIPanel {
         bool interpolation = false;
     } current_wavetable;
 
-    int wavetable_index = 0;
     std::optional<bool> load_status;
     std::optional<bool> render_status;
 
@@ -47,6 +46,8 @@ class GUIWavetablesPanel : public GUIPanel {
     GUIWavetablesPanel(const bool visible = true);
     void update();
     void set_index(const int index) override;
+
+    int wavetable_index = 0;
 };
 
 #endif // GUI_PANELS_WAVETABLES_HPP

@@ -47,7 +47,7 @@ void draw_float_slider(const char *label, float &reference, const LinkKey key, f
     const std::string input_id = std::string("##") + label + "Input";
     ImGui::PushID(label);
 
-    float display_value = reference;
+    float display_value;
     switch (scale) {
     case GUIScale::Logarithmic: {
         display_value = std::log(reference / min) / std::log(max / min);

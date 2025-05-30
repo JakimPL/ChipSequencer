@@ -29,7 +29,6 @@ class GUICommandsSequencesPanel : public GUIPanel {
     } edit_dialog_box;
 
     bool dialog_box_open = false;
-    int sequence_index = 0;
 
     bool is_index_valid() const;
     void draw_sequence();
@@ -52,6 +51,8 @@ class GUICommandsSequencesPanel : public GUIPanel {
     void update() override;
     void set_index(const int index) override;
     void clear_input_buffers();
+
+    int sequence_index = 0;
 };
 
 #endif // GUI_PANELS_COMMANDS_SEQUENCES_HPP

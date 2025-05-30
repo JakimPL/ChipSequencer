@@ -24,8 +24,6 @@ class GUIOscillatorsPanel : public GUIPanel {
         bool wavetable_interpolation = false;
     } current_oscillator;
 
-    int oscillator_index = 0;
-
     bool is_index_valid() const;
     void draw_oscillator_type();
     void draw_oscillator();
@@ -45,6 +43,8 @@ class GUIOscillatorsPanel : public GUIPanel {
     GUIOscillatorsPanel(const bool visible = true);
     void update() override;
     void set_index(const int index) override;
+
+    int oscillator_index = 0;
 };
 
 #endif // GUI_PANELS_OSCILLATORS_HPP

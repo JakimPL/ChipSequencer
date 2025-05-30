@@ -466,3 +466,39 @@ bool GUI::get_visibility(const GUIElement element) const {
 void GUI::clear_input_buffers() {
     commands_sequences_panel.clear_input_buffers();
 }
+
+int GUI::get_current_channel_index() const {
+    return channels_panel.channel_index;
+}
+
+int GUI::get_current_dsp_index() const {
+    return dsps_panel.dsp_index;
+}
+
+int GUI::get_current_commands_channel_index() const {
+    return commands_channels_panel.channel_index;
+}
+
+int GUI::get_current_oscillator_index() const {
+    return oscillators_panel.oscillator_index;
+}
+
+int GUI::get_current_envelope_index() const {
+    return envelopes_panel.envelope_index;
+}
+
+int GUI::get_current_sequence_index() const {
+    return sequences_panel.sequence_index;
+}
+
+int GUI::get_current_order_index() const {
+    return orders_panel.order_index;
+}
+
+int GUI::get_current_wavetable_index() const {
+    return wavetables_panel.wavetable_index;
+}
+
+int GUI::get_current_commands_sequence_index() const {
+    return commands_sequences_panel.sequence_index;
+}

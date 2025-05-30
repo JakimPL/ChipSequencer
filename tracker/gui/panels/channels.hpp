@@ -27,8 +27,6 @@ class GUIChannelsPanel : public GUIPanel {
         int sync_denominator = 1;
     } current_channel;
 
-    int channel_index = 0;
-
     bool is_index_valid() const;
     void draw_channel();
     void update_channel_name(const int index, const int target_id = -1);
@@ -46,6 +44,8 @@ class GUIChannelsPanel : public GUIPanel {
     GUIChannelsPanel(const bool visible = true);
     void update() override;
     void set_index(const int index) override;
+
+    int channel_index = 0;
 };
 
 #endif // GUI_PANELS_CHANNELS_HPP

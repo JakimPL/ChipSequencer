@@ -198,6 +198,7 @@ void Song::export_all(const std::string &directory, const CompilationTarget comp
     export_series(directory, "c_chan", commands_channels, {sizeof(CommandsChannel)});
     export_offsets(directory + "/offsets.bin");
     export_links(directory + "/links.bin");
+    export_gui_state(directory);
 }
 
 void Song::import_all(const std::string &directory, const nlohmann::json &json) {
@@ -950,6 +951,29 @@ nlohmann::json Song::import_header(const std::string &filename) {
     return json;
 }
 
+nlohmann::json Song::save_gui_state() const {
+    nlohmann::json json;
+    json["editor"] = {
+        {"current_octave", gui.get_current_octave()},
+        {"jump_step", gui.get_jump_step()},
+        {"page_size", gui.get_page_size()},
+    };
+
+    json["current"] = {
+        {"channel_index", gui.get_current_channel_index()},
+        {"dsp_index", gui.get_current_dsp_index()},
+        {"commands_channel_index", gui.get_current_commands_channel_index()},
+        {"oscillator_index", gui.get_current_oscillator_index()},
+        {"envelope_index", gui.get_current_envelope_index()},
+        {"sequence_index", gui.get_current_sequence_index()},
+        {"order_index", gui.get_current_order_index()},
+        {"wavetable_index", gui.get_current_wavetable_index()},
+        {"commands_sequence_index", gui.get_current_commands_sequence_index()},
+    };
+
+    return json;
+}
+
 void Song::calculate_song_length() {
     max_rows = 0;
     for (size_t channel_index = 0; channel_index < channels.size(); channel_index++) {
@@ -1233,6 +1257,13 @@ void Song::export_header(const std::string &directory) const {
     std::ofstream header_file(directory + "/header.json");
     header_file << header.dump(JSON_INDENTATION);
     header_file.close();
+}
+
+void Song::export_gui_state(const std::string &directory) const {
+    nlohmann::json gui_state = save_gui_state();
+    std::ofstream gui_file(directory + "/gui.json");
+    gui_file << gui_state.dump(JSON_INDENTATION);
+    gui_file.close();
 }
 
 template <typename T>

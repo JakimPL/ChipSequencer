@@ -11,8 +11,6 @@ class GUICommandsChannelsPanel : public GUIPanel {
         bool hide = false;
     } current_channel;
 
-    int channel_index = 0;
-
     bool is_index_valid() const;
     void draw_channel();
 
@@ -28,6 +26,8 @@ class GUICommandsChannelsPanel : public GUIPanel {
     GUICommandsChannelsPanel(const bool visible = true);
     void update() override;
     void set_index(const int index) override;
+
+    int channel_index = 0;
 };
 
 #endif // GUI_PANELS_COMMANDS_CHANNELS_HPP

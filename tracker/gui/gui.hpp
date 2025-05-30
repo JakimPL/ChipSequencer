@@ -57,6 +57,16 @@ class GUI {
     int get_jump_step() const;
     int get_page_size() const;
 
+    int get_current_channel_index() const;
+    int get_current_dsp_index() const;
+    int get_current_commands_channel_index() const;
+    int get_current_oscillator_index() const;
+    int get_current_envelope_index() const;
+    int get_current_sequence_index() const;
+    int get_current_order_index() const;
+    int get_current_wavetable_index() const;
+    int get_current_commands_sequence_index() const;
+
     void deselect_all_rows();
 
   private:

@@ -28,8 +28,6 @@ class GUIDSPsPanel : public GUIPanel {
         float delay_time = 1.0f;
     } current_dsp;
 
-    int dsp_index = 0;
-
     bool is_index_valid() const;
     void draw_dsp();
     void draw_dsp_type();
@@ -49,6 +47,8 @@ class GUIDSPsPanel : public GUIPanel {
     GUIDSPsPanel(const bool visible = true);
     void update() override;
     void set_index(const int index) override;
+
+    int dsp_index = 0;
 };
 
 #endif // GUI_PANELS_DSPS_HPP
