@@ -108,7 +108,8 @@ void OutputType::set_link(Link &link, const ItemType type, const uint8_t id) con
         link.offset = sizeof(_Float32) * dsp_channel;
         break;
     }
-    case OutputTarget::Parameter: {
+    case OutputTarget::Parameter:
+    default: {
         link.target = static_cast<Target>(parameter_type + static_cast<int>(OutputTarget::Parameter));
         link.index = index;
         link.offset = offset;
