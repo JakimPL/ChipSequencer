@@ -32,8 +32,6 @@ class GUIChannelsPanel : public GUIPanel {
     void update_channel_name(const int index, const int target_id = -1);
     void update_channel_names();
 
-    void from() override;
-    void to() const override;
     void add() override;
     void duplicate() override;
     void remove() override;
@@ -44,6 +42,9 @@ class GUIChannelsPanel : public GUIPanel {
     GUIChannelsPanel(const bool visible = true);
     void update() override;
     void set_index(const int index) override;
+
+    void from() override;
+    void to() const override;
 
     int channel_index = 0;
 };

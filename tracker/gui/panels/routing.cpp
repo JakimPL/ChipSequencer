@@ -580,6 +580,15 @@ bool GUIRoutingPanel::get_splitter_bounds(const size_t j, size_t index, const Li
     return false;
 }
 
+void GUIRoutingPanel::clear_nodes() {
+    nodes.clear();
+    input_pins.clear();
+    output_pins.clear();
+    nodes_links.clear();
+    dragging_node_id.reset();
+    link_dragging_source_key.reset();
+}
+
 std::vector<std::pair<NodeIdentifier, ImVec2>> GUIRoutingPanel::get_nodes_positions() const {
     std::vector<std::pair<NodeIdentifier, ImVec2>> nodes_positions;
     nodes_positions.reserve(nodes.size());

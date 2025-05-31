@@ -14,8 +14,6 @@ class GUIEditorPanel : public GUIPanel {
 
     void draw_panels();
 
-    void from() override {};
-    void to() const override {};
     void add() override {};
     void duplicate() override {};
     void remove() override {};
@@ -32,6 +30,9 @@ class GUIEditorPanel : public GUIPanel {
 
     void update() override {};
     void set_index(const int index) override {};
+
+    void from() override {};
+    void to() const override {};
 };
 
 #endif // GUI_PANELS_EDITOR_HPP

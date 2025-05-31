@@ -54,6 +54,7 @@ void Song::new_song() {
     gui.set_current_octave();
     gui.set_jump_step();
     gui.set_page_size();
+    gui.clear_routing_nodes();
 }
 
 void Song::save_to_file(const std::string &filename) {
@@ -1526,6 +1527,8 @@ void Song::import_gui_state(const std::string &directory) {
         nodes_positions.emplace_back(node_identifier, node_position);
     }
 
+    gui.update();
+    gui.from();
     gui.set_routing_nodes_positions(nodes_positions);
 }
 

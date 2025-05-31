@@ -35,8 +35,6 @@ class GUIDSPsPanel : public GUIPanel {
     void update_dsp_names();
     void update_dsp_name(const int index, const int effect_index = -1) const;
 
-    void from() override;
-    void to() const override;
     void add() override;
     void duplicate() override;
     void remove() override;
@@ -47,6 +45,9 @@ class GUIDSPsPanel : public GUIPanel {
     GUIDSPsPanel(const bool visible = true);
     void update() override;
     void set_index(const int index) override;
+
+    void from() override;
+    void to() const override;
 
     int dsp_index = 0;
 };

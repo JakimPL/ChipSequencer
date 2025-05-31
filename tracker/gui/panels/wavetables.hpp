@@ -34,8 +34,6 @@ class GUIWavetablesPanel : public GUIPanel {
     std::vector<std::vector<float>> prepare_wave_to_save() const;
     void prepare_wave_from_load(Samples samples);
 
-    void from() override;
-    void to() const override;
     void add() override;
     void duplicate() override;
     void remove() override;
@@ -46,6 +44,9 @@ class GUIWavetablesPanel : public GUIPanel {
     GUIWavetablesPanel(const bool visible = true);
     void update();
     void set_index(const int index) override;
+
+    void from() override;
+    void to() const override;
 
     int wavetable_index = 0;
 };

@@ -18,8 +18,6 @@ class GUISequencesPanel : public GUIPanel {
     void draw_sequence_length();
     void draw_sequence();
 
-    void from() override;
-    void to() const override;
     void add() override;
     void duplicate() override;
     void remove() override;
@@ -30,6 +28,9 @@ class GUISequencesPanel : public GUIPanel {
     GUISequencesPanel(const bool visible = true);
     void update() override;
     void set_index(const int index) override;
+
+    void from() override;
+    void to() const override;
 
     int sequence_index = 0;
 };

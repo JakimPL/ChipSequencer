@@ -47,7 +47,7 @@ GUIMenu::GUIMenu(const bool visible)
     );
     shortcut_manager.register_shortcut_and_action(
         ShortcutAction::FileCompileDebug,
-        {true, true, false, ImGuiKey_E},
+        {true, false, true, ImGuiKey_E},
         [this]() { file_compile(CompilationScheme::Debug, CompilationTarget::Linux); }
     );
     shortcut_manager.register_shortcut_and_action(

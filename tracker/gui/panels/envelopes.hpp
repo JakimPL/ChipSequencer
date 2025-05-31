@@ -33,8 +33,6 @@ class GUIEnvelopesPanel : public GUIPanel {
     void draw_envelope_graph();
     void gather_envelope_positions();
 
-    void from() override;
-    void to() const override;
     void add() override;
     void duplicate() override;
     void remove() override;
@@ -45,6 +43,9 @@ class GUIEnvelopesPanel : public GUIPanel {
     GUIEnvelopesPanel(const bool visible = true);
     void update() override;
     void set_index(const int index) override;
+
+    void from() override;
+    void to() const override;
 
     int envelope_index = 0;
 };

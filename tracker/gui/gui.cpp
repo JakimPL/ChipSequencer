@@ -309,6 +309,42 @@ void GUI::frame_all() {
     wavetables_panel.frame();
 }
 
+void GUI::from() {
+    menu.from();
+    editor.from();
+    general_panel.from();
+    channels_panel.from();
+    commands_channels_panel.from();
+    commands_sequences_panel.from();
+    dsps_panel.from();
+    envelopes_panel.from();
+    orders_panel.from();
+    oscillators_panel.from();
+    patterns_panel.from();
+    routing_panel.from();
+    sequences_panel.from();
+    summary_panel.from();
+    wavetables_panel.from();
+}
+
+void GUI::to() const {
+    menu.to();
+    editor.to();
+    general_panel.to();
+    channels_panel.to();
+    commands_channels_panel.to();
+    commands_sequences_panel.to();
+    dsps_panel.to();
+    envelopes_panel.to();
+    orders_panel.to();
+    oscillators_panel.to();
+    patterns_panel.to();
+    routing_panel.to();
+    sequences_panel.to();
+    summary_panel.to();
+    wavetables_panel.to();
+}
+
 void GUI::set_visibility_all(const bool visible) {
     menu.visible = visible;
     editor.visible = visible;
@@ -549,6 +585,10 @@ void GUI::set_current_wavetable_index(const int index) {
 
 void GUI::set_current_commands_sequence_index(const int index) {
     commands_sequences_panel.set_index(index);
+}
+
+void GUI::clear_routing_nodes() {
+    routing_panel.clear_nodes();
 }
 
 std::vector<std::pair<NodeIdentifier, ImVec2>> GUI::get_routing_nodes_positions() const {

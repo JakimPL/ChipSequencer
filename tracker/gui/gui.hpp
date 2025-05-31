@@ -34,6 +34,8 @@ class GUI {
     void set_font();
     void terminate();
     bool is_done();
+    void from();
+    void to() const;
 
     void frame();
     std::pair<ValidationResult, int> play() const;
@@ -81,6 +83,7 @@ class GUI {
     void set_current_wavetable_index(const int index);
     void set_current_commands_sequence_index(const int index);
 
+    void clear_routing_nodes();
     std::vector<std::pair<NodeIdentifier, ImVec2>> get_routing_nodes_positions() const;
     void set_routing_nodes_positions(const std::vector<std::pair<NodeIdentifier, ImVec2>> &nodes_positions);
 

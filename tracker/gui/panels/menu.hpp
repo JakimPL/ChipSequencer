@@ -26,8 +26,6 @@ class GUIMenu : public GUIPanel {
     void file_exit();
     void file_exit_confirm();
 
-    void from() override {};
-    void to() const override {};
     void add() override {};
     void duplicate() override {};
     void remove() override {};
@@ -38,6 +36,9 @@ class GUIMenu : public GUIPanel {
     GUIMenu(const bool visible = true);
     void update() override {};
     void set_index(const int index) override {};
+
+    void from() override {};
+    void to() const override {};
 };
 
 #endif // GUI_PANELS_MENU_HPP

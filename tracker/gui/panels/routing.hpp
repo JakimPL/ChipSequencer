@@ -47,8 +47,6 @@ class GUIRoutingPanel : public GUIPanel {
     void add() override {};
     void duplicate() override {};
     void remove() override {};
-    void from() override;
-    void to() const override;
     void draw() override;
     void check_keyboard_input() override;
 
@@ -57,6 +55,10 @@ class GUIRoutingPanel : public GUIPanel {
     void update() override;
     void set_index(const int index) override {};
 
+    void from() override;
+    void to() const override;
+
+    void clear_nodes();
     std::vector<std::pair<NodeIdentifier, ImVec2>> get_nodes_positions() const;
     void set_nodes_positions(const std::vector<std::pair<NodeIdentifier, ImVec2>> &nodes_positions);
 };

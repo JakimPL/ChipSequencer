@@ -38,8 +38,6 @@ class GUICommandsSequencesPanel : public GUIPanel {
     void draw_output_section();
     void set_current_command();
 
-    void from() override;
-    void to() const override;
     void add() override;
     void duplicate() override;
     void remove() override;
@@ -50,6 +48,10 @@ class GUICommandsSequencesPanel : public GUIPanel {
     GUICommandsSequencesPanel(const bool visible = true);
     void update() override;
     void set_index(const int index) override;
+
+    void from() override;
+    void to() const override;
+
     void clear_input_buffers();
 
     int sequence_index = 0;

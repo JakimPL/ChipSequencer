@@ -41,8 +41,6 @@ class GUIGeneralPanel : public GUIPanel {
     void play();
     std::string get_error_message(const ValidationResult result, const int index) const;
 
-    void from() override;
-    void to() const override;
     void add() override {};
     void duplicate() override {};
     void remove() override {};
@@ -53,6 +51,9 @@ class GUIGeneralPanel : public GUIPanel {
     GUIGeneralPanel(const bool visible = true);
     void update() override;
     void set_index(const int index) override {};
+
+    void from() override;
+    void to() const override;
 };
 
 #endif // GUI_PANELS_GENERAL_HPP
