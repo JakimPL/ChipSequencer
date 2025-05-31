@@ -19,9 +19,12 @@ struct NodeIdentifier {
     Target type;
     size_t id;
 
-    bool operator==(const NodeIdentifier &other) const {
-        return type == other.type && id == other.id;
-    }
+    NodeIdentifier();
+    NodeIdentifier(Target type, size_t id);
+    NodeIdentifier(const std::string &string);
+    bool operator==(const NodeIdentifier &other) const;
+    bool operator<(const NodeIdentifier &other) const;
+    std::string to_string() const;
 };
 
 template <>

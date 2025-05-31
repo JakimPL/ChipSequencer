@@ -18,7 +18,6 @@ class GUIOrdersPanel : public GUIPanel {
         std::vector<int> sequences = {};
     } current_order;
 
-    int order_index = 0;
     int selected_sequence = 0;
     NumericInputHandler input_handler;
 
@@ -26,8 +25,6 @@ class GUIOrdersPanel : public GUIPanel {
     void draw_order_length();
     void draw_order();
 
-    void from() override;
-    void to() const override;
     void add() override;
     void duplicate() override;
     void remove() override;
@@ -38,6 +35,11 @@ class GUIOrdersPanel : public GUIPanel {
     GUIOrdersPanel(const bool visible = true);
     void update() override;
     void set_index(const int index) override;
+
+    void from() override;
+    void to() const override;
+
+    int order_index = 0;
 };
 
 #endif // GUI_PANELS_ORDERS_HPP

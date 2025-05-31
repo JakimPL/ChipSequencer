@@ -55,4 +55,10 @@ struct OutputType {
     static std::array<uint8_t, MAX_OUTPUT_CHANNELS> unpack_splitter_data(uint32_t splitter_data);
 };
 
+static_assert(static_cast<uint8_t>(OutputTarget::OutputSplitter) == static_cast<uint8_t>(Target::SPLITTER_OUTPUT));
+static_assert(static_cast<uint8_t>(OutputTarget::DSPSplitter) == static_cast<uint8_t>(Target::SPLITTER_DSP));
+static_assert(static_cast<uint8_t>(OutputTarget::DirectOutput) == static_cast<uint8_t>(Target::DIRECT_OUTPUT));
+static_assert(static_cast<uint8_t>(OutputTarget::DirectDSP) == static_cast<uint8_t>(Target::DIRECT_DSP));
+static_assert(static_cast<uint8_t>(OutputTarget::Parameter) == static_cast<uint8_t>(Target::ENVELOPE));
+
 #endif // SONG_OUTPUT_HPP

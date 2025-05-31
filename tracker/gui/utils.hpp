@@ -1,12 +1,15 @@
 #ifndef GUI_UTILS_HPP
 #define GUI_UTILS_HPP
 
+#include <functional>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "../song/links/key.hpp"
-#include "enums.hpp"
 #include "init.hpp"
+#include "enums.hpp"
+#include "shortcuts.hpp"
 #include "patterns/pattern.hpp"
 
 struct GUIState {
@@ -22,8 +25,13 @@ void draw_float_slider(const char *label, float &reference, const LinkKey = Link
 void draw_knob(const char *label, float &reference, const LinkKey key, float min = 0.0f, float max = 1.0f);
 void draw_link_tooltip(const LinkKey &key);
 
-void draw_popup(const std::string &message);
 bool draw_button(const char *label, const float button_padding = 0.0f);
+void draw_popup(const std::string &message);
+void draw_confirmation_popup(
+    const std::string &message,
+    std::function<void()> ok_action = nullptr,
+    std::function<void()> save_action = nullptr
+);
 
 void draw_output_output_splitter(OutputType &output_type, const LinkKey key);
 void draw_output_dsp_splitter(OutputType &output_type, const int dsp_index, const LinkKey key);
@@ -37,6 +45,8 @@ bool draw_output(OutputType &output_type, const LinkKey key);
 
 void show_dependency_tooltip(const std::string &label, std::vector<size_t> &dependencies);
 void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t index);
+
+bool get_menu_item(const std::string &name, const std::optional<ShortcutAction> action = std::nullopt, const bool checked = false);
 
 std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header = true, const size_t index = 0, const int playing_row = -1, const uint16_t start = 0, const uint16_t end = UINT16_MAX);
 std::pair<size_t, bool> draw_commands_pattern(CommandsPattern &pattern, const bool header = true, const size_t index = 0, const int playing_row = -1, const uint16_t start = 0, const uint16_t end = UINT16_MAX);

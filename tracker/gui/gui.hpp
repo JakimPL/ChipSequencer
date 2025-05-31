@@ -2,8 +2,10 @@
 #define GUI_GUI_HPP
 
 #include <functional>
+#include <string>
 
 #include "../audio/engine.hpp"
+#include "../song/validation.hpp"
 #include "enums.hpp"
 #include "init.hpp"
 #include "panels/channels.hpp"
@@ -32,9 +34,11 @@ class GUI {
     void set_font();
     void terminate();
     bool is_done();
+    void from();
+    void to() const;
 
     void frame();
-    void play() const;
+    std::pair<ValidationResult, int> play() const;
     void stop() const;
     bool is_playing() const;
     bool is_paused() const;
@@ -44,7 +48,7 @@ class GUI {
     void open(const std::string &filename);
 
     void set_index(const GUIElement element, const int index);
-    void change_window_title(const std::string &title);
+    void change_window_title(const std::string &title = "");
     void set_visibility(const GUIElement element, const bool visible);
     bool get_visibility(const GUIElement element) const;
 
@@ -54,6 +58,34 @@ class GUI {
     int get_current_octave() const;
     int get_jump_step() const;
     int get_page_size() const;
+
+    int get_current_channel_index() const;
+    int get_current_dsp_index() const;
+    int get_current_commands_channel_index() const;
+    int get_current_oscillator_index() const;
+    int get_current_envelope_index() const;
+    int get_current_sequence_index() const;
+    int get_current_order_index() const;
+    int get_current_wavetable_index() const;
+    int get_current_commands_sequence_index() const;
+
+    void set_current_octave(const int octave = GUI_DEFAULT_CURRENT_OCTAVE);
+    void set_jump_step(const int step = GUI_DEFAULT_JUMP_STEP);
+    void set_page_size(const int size = GUI_DEFAULT_PAGE_SIZE);
+
+    void set_current_channel_index(const int index);
+    void set_current_dsp_index(const int index);
+    void set_current_commands_channel_index(const int index);
+    void set_current_oscillator_index(const int index);
+    void set_current_envelope_index(const int index);
+    void set_current_sequence_index(const int index);
+    void set_current_order_index(const int index);
+    void set_current_wavetable_index(const int index);
+    void set_current_commands_sequence_index(const int index);
+
+    void clear_routing_nodes();
+    std::vector<std::pair<NodeIdentifier, ImVec2>> get_routing_nodes_positions() const;
+    void set_routing_nodes_positions(const std::vector<std::pair<NodeIdentifier, ImVec2>> &nodes_positions);
 
     void deselect_all_rows();
 

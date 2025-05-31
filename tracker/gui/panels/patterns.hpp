@@ -49,8 +49,6 @@ class GUIPatternsPanel : public GUIPanel {
     void to_sequences() const;
     void to_commands_sequences() const;
 
-    void from() override;
-    void to() const override;
     void add() override {};
     void duplicate() override {};
     void remove() override {};
@@ -61,6 +59,9 @@ class GUIPatternsPanel : public GUIPanel {
     GUIPatternsPanel(const bool visible = true);
     void update() override;
     void set_index(const int index) override;
+
+    void from() override;
+    void to() const override;
 
     void deselect_all_rows();
 };

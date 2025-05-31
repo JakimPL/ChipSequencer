@@ -285,6 +285,7 @@ void GUI::frame() {
 
     ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
 
+    shortcut_manager.process_shortcuts();
     frame_all();
 
     ImGui::End();
@@ -308,6 +309,42 @@ void GUI::frame_all() {
     wavetables_panel.frame();
 }
 
+void GUI::from() {
+    menu.from();
+    editor.from();
+    general_panel.from();
+    channels_panel.from();
+    commands_channels_panel.from();
+    commands_sequences_panel.from();
+    dsps_panel.from();
+    envelopes_panel.from();
+    orders_panel.from();
+    oscillators_panel.from();
+    patterns_panel.from();
+    routing_panel.from();
+    sequences_panel.from();
+    summary_panel.from();
+    wavetables_panel.from();
+}
+
+void GUI::to() const {
+    menu.to();
+    editor.to();
+    general_panel.to();
+    channels_panel.to();
+    commands_channels_panel.to();
+    commands_sequences_panel.to();
+    dsps_panel.to();
+    envelopes_panel.to();
+    orders_panel.to();
+    oscillators_panel.to();
+    patterns_panel.to();
+    routing_panel.to();
+    sequences_panel.to();
+    summary_panel.to();
+    wavetables_panel.to();
+}
+
 void GUI::set_visibility_all(const bool visible) {
     menu.visible = visible;
     editor.visible = visible;
@@ -326,8 +363,10 @@ void GUI::set_visibility_all(const bool visible) {
     wavetables_panel.visible = visible;
 }
 
-void GUI::play() const {
-    if (audio_engine != nullptr) {
+std::pair<ValidationResult, int> GUI::play() const {
+    link_manager.capture_parameters();
+    const auto [result, index] = song.validate();
+    if (result == ValidationResult::OK && audio_engine != nullptr) {
         audio_engine->set_output_channels(song.get_output_channels());
         if (audio_engine->is_playing()) {
             audio_engine->pause();
@@ -335,12 +374,16 @@ void GUI::play() const {
             audio_engine->play();
         }
     }
+
+    return {result, index};
 }
 
 void GUI::stop() const {
     if (audio_engine) {
         audio_engine->stop();
     }
+
+    link_manager.restore_parameters();
 }
 
 bool GUI::is_playing() const {
@@ -458,4 +501,100 @@ bool GUI::get_visibility(const GUIElement element) const {
 
 void GUI::clear_input_buffers() {
     commands_sequences_panel.clear_input_buffers();
+}
+
+int GUI::get_current_channel_index() const {
+    return channels_panel.channel_index;
+}
+
+int GUI::get_current_dsp_index() const {
+    return dsps_panel.dsp_index;
+}
+
+int GUI::get_current_commands_channel_index() const {
+    return commands_channels_panel.channel_index;
+}
+
+int GUI::get_current_oscillator_index() const {
+    return oscillators_panel.oscillator_index;
+}
+
+int GUI::get_current_envelope_index() const {
+    return envelopes_panel.envelope_index;
+}
+
+int GUI::get_current_sequence_index() const {
+    return sequences_panel.sequence_index;
+}
+
+int GUI::get_current_order_index() const {
+    return orders_panel.order_index;
+}
+
+int GUI::get_current_wavetable_index() const {
+    return wavetables_panel.wavetable_index;
+}
+
+int GUI::get_current_commands_sequence_index() const {
+    return commands_sequences_panel.sequence_index;
+}
+
+void GUI::set_current_octave(const int octave) {
+    current_octave = octave;
+}
+
+void GUI::set_jump_step(const int step) {
+    jump_step = step;
+}
+
+void GUI::set_page_size(const int size) {
+    page_size = size;
+}
+
+void GUI::set_current_channel_index(const int index) {
+    channels_panel.set_index(index);
+}
+
+void GUI::set_current_dsp_index(const int index) {
+    dsps_panel.set_index(index);
+}
+
+void GUI::set_current_commands_channel_index(const int index) {
+    commands_channels_panel.set_index(index);
+}
+
+void GUI::set_current_oscillator_index(const int index) {
+    oscillators_panel.set_index(index);
+}
+
+void GUI::set_current_envelope_index(const int index) {
+    envelopes_panel.set_index(index);
+}
+
+void GUI::set_current_sequence_index(const int index) {
+    sequences_panel.set_index(index);
+}
+
+void GUI::set_current_order_index(const int index) {
+    orders_panel.set_index(index);
+}
+
+void GUI::set_current_wavetable_index(const int index) {
+    wavetables_panel.set_index(index);
+}
+
+void GUI::set_current_commands_sequence_index(const int index) {
+    commands_sequences_panel.set_index(index);
+}
+
+void GUI::clear_routing_nodes() {
+    routing_panel.clear_nodes();
+}
+
+std::vector<std::pair<NodeIdentifier, ImVec2>> GUI::get_routing_nodes_positions() const {
+    return routing_panel.get_nodes_positions();
+}
+
+void GUI::set_routing_nodes_positions(const std::vector<std::pair<NodeIdentifier, ImVec2>> &nodes_positions) {
+    routing_panel.set_nodes_positions(nodes_positions);
 }

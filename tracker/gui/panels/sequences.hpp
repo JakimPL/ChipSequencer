@@ -14,14 +14,10 @@ class GUISequencesPanel : public GUIPanel {
         Pattern pattern;
     } current_sequence;
 
-    int sequence_index = 0;
-
     bool is_index_valid() const;
     void draw_sequence_length();
     void draw_sequence();
 
-    void from() override;
-    void to() const override;
     void add() override;
     void duplicate() override;
     void remove() override;
@@ -32,6 +28,11 @@ class GUISequencesPanel : public GUIPanel {
     GUISequencesPanel(const bool visible = true);
     void update() override;
     void set_index(const int index) override;
+
+    void from() override;
+    void to() const override;
+
+    int sequence_index = 0;
 };
 
 #endif // GUI_PANELS_SEQUENCES_HPP

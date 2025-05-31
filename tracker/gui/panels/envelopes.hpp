@@ -22,7 +22,6 @@ class GUIEnvelopesPanel : public GUIPanel {
         std::vector<float> positions;
     } current_envelope;
 
-    int envelope_index = 0;
     const float timer_constant = static_cast<float>(MAX_ENVELOPE_TIMER_LENGTH);
 
     static float cast_to_float(int value, float scale = 1.0f);
@@ -34,8 +33,6 @@ class GUIEnvelopesPanel : public GUIPanel {
     void draw_envelope_graph();
     void gather_envelope_positions();
 
-    void from() override;
-    void to() const override;
     void add() override;
     void duplicate() override;
     void remove() override;
@@ -46,6 +43,11 @@ class GUIEnvelopesPanel : public GUIPanel {
     GUIEnvelopesPanel(const bool visible = true);
     void update() override;
     void set_index(const int index) override;
+
+    void from() override;
+    void to() const override;
+
+    int envelope_index = 0;
 };
 
 #endif // GUI_PANELS_ENVELOPES_HPP

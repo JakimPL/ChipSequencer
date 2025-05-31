@@ -47,7 +47,7 @@ void draw_float_slider(const char *label, float &reference, const LinkKey key, f
     const std::string input_id = std::string("##") + label + "Input";
     ImGui::PushID(label);
 
-    float display_value = reference;
+    float display_value;
     switch (scale) {
     case GUIScale::Logarithmic: {
         display_value = std::log(reference / min) / std::log(max / min);
@@ -58,7 +58,7 @@ void draw_float_slider(const char *label, float &reference, const LinkKey key, f
     }
     case GUIScale::Linear:
     default: {
-        display_value = (reference - min) / (max - min);
+        display_value = reference;
         break;
     }
     }
@@ -163,6 +163,51 @@ void draw_popup(const std::string &message) {
     if (ImGui::Button("Close", ImVec2(button_width, 0))) {
         ImGui::CloseCurrentPopup();
     }
+    ImGui::EndPopup();
+}
+
+void draw_confirmation_popup(
+    const std::string &message,
+    std::function<void()> ok_action,
+    std::function<void()> save_action
+) {
+    ImGui::Text("%s", message.c_str());
+    ImGui::Text("\n");
+    ImGui::Separator();
+
+    const float button_width = 80.0f;
+    const float total_button_width = (button_width * 3) + ImGui::GetStyle().ItemSpacing.x * 2;
+    const float available_width = ImGui::GetContentRegionAvail().x;
+    const float offset_x = (available_width - total_button_width) * 0.5f;
+
+    if (offset_x > 0.0f) {
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset_x);
+    }
+
+    if (ImGui::Button("OK", ImVec2(button_width, 0))) {
+        if (ok_action) {
+            ok_action();
+        }
+        ImGui::CloseCurrentPopup();
+    }
+
+    ImGui::SameLine();
+    if (ImGui::Button("Save", ImVec2(button_width, 0))) {
+        if (save_action) {
+            save_action();
+        }
+        if (ok_action) {
+            ok_action();
+        }
+        ImGui::CloseCurrentPopup();
+    }
+
+    ImGui::SameLine();
+    if (ImGui::Button("Cancel", ImVec2(button_width, 0))) {
+        ImGui::CloseCurrentPopup();
+    }
+
+    ImGui::SetItemDefaultFocus();
     ImGui::EndPopup();
 }
 
@@ -635,6 +680,13 @@ void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t 
         }
         }
     }
+}
+
+bool get_menu_item(const std::string &name, const std::optional<ShortcutAction> action, const bool checked) {
+    if (action.has_value()) {
+        return ImGui::MenuItem(name.c_str(), shortcut_manager.get_shortcut_display(action.value()).c_str(), checked);
+    }
+    return ImGui::MenuItem(name.c_str(), nullptr, checked);
 }
 
 GUIState prepare_combo(const std::vector<std::string> &names, std::string label, int &index, const bool error_if_empty) {
