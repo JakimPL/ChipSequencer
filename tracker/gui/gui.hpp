@@ -39,7 +39,7 @@ class GUI {
 
     void frame();
     std::pair<ValidationResult, int> play() const;
-    void stop() const;
+    void stop(const bool restore_parameters = true) const;
     bool is_playing() const;
     bool is_paused() const;
 

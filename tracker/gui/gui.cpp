@@ -12,7 +12,7 @@ GUI::GUI()
 }
 
 GUI::~GUI() {
-    stop();
+    stop(false);
     terminate();
 }
 
@@ -378,12 +378,14 @@ std::pair<ValidationResult, int> GUI::play() const {
     return {result, index};
 }
 
-void GUI::stop() const {
+void GUI::stop(const bool restore_parameters) const {
     if (audio_engine) {
         audio_engine->stop();
     }
 
-    link_manager.restore_parameters();
+    if (restore_parameters) {
+        link_manager.restore_parameters();
+    }
 }
 
 bool GUI::is_playing() const {
