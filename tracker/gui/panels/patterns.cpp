@@ -44,11 +44,10 @@ void GUIPatternsPanel::draw_channels() {
 
     const float available = ImGui::GetContentRegionAvail().x;
     const float total_min = columns * GUI_MINIMAL_CHANNEL_COLUMN_WIDTH;
-    const float child_width = (available >= total_min) ? available : total_min;
-    const float column_width = (available >= total_min) ? (available / columns) : GUI_MINIMAL_CHANNEL_COLUMN_WIDTH;
+    const float content_size = std::max(available, total_min);
 
-    ImGui::SetNextWindowContentSize(ImVec2(std::max(available, total_min), 0));
-    ImGui::BeginChild("##PatternChannels", ImVec2(child_width, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+    ImGui::SetNextWindowContentSize(ImVec2(content_size, 0));
+    ImGui::BeginChild("##PatternChannels", ImVec2(available, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 
     if (ImGui::BeginTable("ChannelsTable", columns, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersOuter)) {
         for (const auto &[index, pattern] : current_patterns.patterns) {
