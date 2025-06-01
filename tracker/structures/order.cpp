@@ -1,3 +1,4 @@
+#include "../general.hpp"
 #include "../utils/file.hpp"
 #include "order.hpp"
 
@@ -16,7 +17,7 @@ Order *Order::deserialize(std::ifstream &file) {
     uint8_t length;
     read_data(file, &length, sizeof(length));
 
-    Order *order = new Order;
+    Order *order = resource_manager.allocate<Order>();
     order->order_length = length;
 
     for (size_t i = 0; i < length; i++) {

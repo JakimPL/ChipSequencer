@@ -225,7 +225,7 @@ Envelope *Song::add_envelope() {
         return nullptr;
     }
 
-    Envelope *envelope = new Envelope();
+    Envelope *envelope = resource_manager.allocate<Envelope>();
     envelope->base_volume = DEFAULT_ENVELOPE_BASE_VOLUME;
     envelope->sustain_level = DEFAULT_ENVELOPE_SUSTAIN_LEVEL;
     envelope->attack = DEFAULT_ENVELOPE_ATTACK;
@@ -255,7 +255,7 @@ Sequence *Song::add_sequence() {
         return nullptr;
     }
 
-    Sequence *sequence = new Sequence();
+    Sequence *sequence = resource_manager.allocate<Sequence>();
     sequence->size = 0;
     sequences.push_back(sequence);
     return sequence;
@@ -280,7 +280,7 @@ Order *Song::add_order() {
         return nullptr;
     }
 
-    Order *order = new Order();
+    Order *order = resource_manager.allocate<Order>();
     order->order_length = 0;
     orders.push_back(order);
     return order;
@@ -305,7 +305,7 @@ Wavetable *Song::add_wavetable() {
         return nullptr;
     }
 
-    Wavetable *wavetable = new Wavetable();
+    Wavetable *wavetable = resource_manager.allocate<Wavetable>();
     wavetable->wavetable_size = 0;
     wavetables.push_back(wavetable);
     return wavetable;
@@ -330,7 +330,7 @@ void *Song::add_oscillator() {
         return nullptr;
     }
 
-    OscillatorSquare *oscillator = new OscillatorSquare();
+    OscillatorSquare *oscillator = resource_manager.allocate<OscillatorSquare>();
     oscillator->duty_cycle = DEFAULT_OSCILLATOR_DUTY_CYCLE;
     oscillators.push_back(oscillator);
     return oscillator;
@@ -356,7 +356,7 @@ Channel *Song::add_channel() {
         return nullptr;
     }
 
-    Channel *channel = new Channel();
+    Channel *channel = resource_manager.allocate<Channel>();
     channels.push_back(channel);
     num_channels = channels.size();
     links[static_cast<size_t>(ItemType::CHANNEL)].push_back(Link());
@@ -397,7 +397,7 @@ void *Song::add_dsp() {
         return nullptr;
     }
 
-    DSPGainer *dsp = new DSPGainer();
+    DSPGainer *dsp = resource_manager.allocate<DSPGainer>();
     dsps.push_back(dsp);
     num_dsps = dsps.size();
     links[static_cast<size_t>(ItemType::DSP)].push_back(Link());
@@ -445,7 +445,7 @@ CommandsSequence *Song::add_commands_sequence() {
         return nullptr;
     }
 
-    CommandsSequence *sequence = new CommandsSequence();
+    CommandsSequence *sequence = resource_manager.allocate<CommandsSequence>();
     sequence->size = 0;
     sequence->length = 1;
     commands_sequences.push_back(sequence);
@@ -471,7 +471,7 @@ CommandsChannel *Song::add_commands_channel() {
         return nullptr;
     }
 
-    CommandsChannel *channel = new CommandsChannel();
+    CommandsChannel *channel = resource_manager.allocate<CommandsChannel>();
     commands_channels.push_back(channel);
     num_commands_channels = commands_channels.size();
     return channel;
@@ -1176,7 +1176,7 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
 }
 
 void *Song::deserialize_dsp(std::ifstream &file) const {
-    DSP *generic = new DSP();
+    DSP *generic = resource_manager.allocate<DSP>();
     read_data(file, &generic->dsp_size, sizeof(generic->dsp_size));
     read_data(file, &generic->effect_index, sizeof(generic->effect_index));
     read_data(file, &generic->output_flag, sizeof(generic->output_flag));
@@ -1225,27 +1225,27 @@ void *Song::deserialize_oscillator(std::ifstream &file) const {
 
     switch (static_cast<Generator>(oscillator_type)) {
     case Generator::Square: {
-        OscillatorSquare *oscillator = new OscillatorSquare();
+        OscillatorSquare *oscillator = resource_manager.allocate<OscillatorSquare>();
         read_data(file, &oscillator->duty_cycle, sizeof(oscillator->duty_cycle));
         return reinterpret_cast<void *>(oscillator);
     }
     case Generator::Saw: {
-        OscillatorSaw *oscillator = new OscillatorSaw();
+        OscillatorSaw *oscillator = resource_manager.allocate<OscillatorSaw>();
         read_data(file, &oscillator->reverse, sizeof(oscillator->reverse));
         return reinterpret_cast<void *>(oscillator);
     }
     case Generator::Sine: {
-        OscillatorSine *oscillator = new OscillatorSine();
+        OscillatorSine *oscillator = resource_manager.allocate<OscillatorSine>();
         return reinterpret_cast<void *>(oscillator);
     }
     case Generator::Wavetable: {
-        OscillatorWavetable *oscillator = new OscillatorWavetable();
+        OscillatorWavetable *oscillator = resource_manager.allocate<OscillatorWavetable>();
         read_data(file, &oscillator->wavetable_index, sizeof(oscillator->wavetable_index));
         read_data(file, &oscillator->interpolation, sizeof(oscillator->interpolation));
         return reinterpret_cast<void *>(oscillator);
     }
     case Generator::Noise: {
-        OscillatorNoise *oscillator = new OscillatorNoise();
+        OscillatorNoise *oscillator = resource_manager.allocate<OscillatorNoise>();
         return reinterpret_cast<void *>(oscillator);
     }
     case Generator::Count:
@@ -1367,7 +1367,7 @@ void Song::import_envelopes(const std::string &directory, const nlohmann::json &
     const size_t envelope_count = json["data"]["envelopes"];
     for (size_t i = 0; i < envelope_count; i++) {
         const std::string filename = get_element_path(directory + "/envels", "envel", i);
-        Envelope *envelope = new Envelope();
+        Envelope *envelope = resource_manager.allocate<Envelope>();
         std::ifstream file(filename, std::ios::binary);
         read_data(file, envelope, sizeof(Envelope));
         envelopes.push_back(envelope);
@@ -1457,7 +1457,7 @@ void Song::import_commands_channels(const std::string &directory, const nlohmann
     for (size_t i = 0; i < channel_count; i++) {
         const std::string filename = get_element_path(directory + "/c_chans", "c_chan", i);
         std::ifstream file(filename, std::ios::binary);
-        CommandsChannel *channel = new CommandsChannel();
+        CommandsChannel *channel = resource_manager.allocate<CommandsChannel>();
         read_data(file, channel, sizeof(CommandsChannel));
         commands_channels.push_back(channel);
         file.close();
@@ -1551,6 +1551,7 @@ void Song::clear_data() {
     link_manager.reset();
     update_sizes();
     buffers.clear();
+    resource_manager.clear();
 }
 
 void Song::delete_oscillator(void *oscillator) {

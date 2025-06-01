@@ -1,3 +1,4 @@
+#include "../general.hpp"
 #include "../utils/file.hpp"
 #include "channel.hpp"
 
@@ -6,7 +7,7 @@ void Channel::serialize(std::ofstream &file) const {
 }
 
 Channel *Channel::deserialize(std::ifstream &file) {
-    Channel *channel = new Channel();
+    Channel *channel = resource_manager.allocate<Channel>();
     read_data(file, &channel->splitter, sizeof(channel->splitter));
     read_data(file, &channel->pitch, sizeof(channel->pitch));
     read_data(file, &channel->target, sizeof(channel->target));
