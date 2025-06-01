@@ -161,7 +161,7 @@ void GUIRoutingPanel::update_channel_node(size_t index, RoutingNode &channel_nod
     channel_node.bypass = channel->flag & FLAG_BYPASS;
 
     for (size_t j = 0; j < channel_routing.labels.size(); ++j) {
-        if (channel_routing.offsets[j] >= CHANNEL_SPLITTER && channel_routing.offsets[j] < CHANNEL_SPLITTER + 4) {
+        if (channel_routing.offsets[j] >= CHANNEL_SPLITTER && channel_routing.offsets[j] < CHANNEL_SPLITTER + MAX_OUTPUT_CHANNELS) {
             const int splitter_id = channel_routing.offsets[j] - CHANNEL_SPLITTER;
             if (get_splitter_bounds(splitter_id, index, link)) {
                 continue;
@@ -205,7 +205,7 @@ void GUIRoutingPanel::update_dsp_node(size_t index, RoutingNode &dsp_node) {
     dsp_node.bypass = dsp->flag & FLAG_BYPASS;
 
     for (size_t j = 0; j < labels.size(); ++j) {
-        if (offsets[j] >= DSP_SPLITTER && offsets[j] < DSP_SPLITTER + 4) {
+        if (offsets[j] >= DSP_SPLITTER && offsets[j] < DSP_SPLITTER + MAX_OUTPUT_CHANNELS) {
             const int splitter_id = offsets[j] - DSP_SPLITTER;
             if (get_splitter_bounds(splitter_id, index, link)) {
                 continue;

@@ -37,7 +37,15 @@ NodeIdentifier::NodeIdentifier(const std::string &string) {
 }
 
 bool NodeIdentifier::operator==(const NodeIdentifier &other) const {
-    return type == other.type && id == other.id;
+    if (id != other.id) {
+        return false;
+    }
+
+    bool same_target = type == other.type;
+    if (type == Target::DIRECT_DSP || type == Target::DSP) {
+        same_target |= other.type == Target::DIRECT_DSP || other.type == Target::DSP;
+    }
+    return same_target;
 }
 
 bool NodeIdentifier::operator<(const NodeIdentifier &other) const {
