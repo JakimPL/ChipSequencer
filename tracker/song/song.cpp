@@ -493,7 +493,7 @@ CommandsChannel *Song::duplicate_commands_channel(const size_t index) {
 
 void Song::remove_envelope(const size_t index) {
     if (index < envelopes.size()) {
-        delete envelopes[index];
+        resource_manager.deallocate(envelopes[index]);
         envelopes.erase(envelopes.begin() + index);
         link_manager.realign_links(index, Target::ENVELOPE);
         for (auto &channel : channels) {
@@ -506,7 +506,7 @@ void Song::remove_envelope(const size_t index) {
 
 void Song::remove_sequence(const size_t index) {
     if (index < sequences.size()) {
-        delete sequences[index];
+        resource_manager.deallocate(sequences[index]);
         sequences.erase(sequences.begin() + index);
         link_manager.realign_links(index, Target::SEQUENCE);
         for (auto &order : orders) {
@@ -521,7 +521,7 @@ void Song::remove_sequence(const size_t index) {
 
 void Song::remove_order(const size_t index) {
     if (index < orders.size()) {
-        delete orders[index];
+        resource_manager.deallocate(orders[index]);
         orders.erase(orders.begin() + index);
         link_manager.realign_links(index, Target::ORDER);
         for (auto &channel : channels) {
@@ -534,7 +534,7 @@ void Song::remove_order(const size_t index) {
 
 void Song::remove_wavetable(const size_t index) {
     if (index < wavetables.size()) {
-        delete wavetables[index];
+        resource_manager.deallocate(wavetables[index]);
         wavetables.erase(wavetables.begin() + index);
         link_manager.realign_links(index, Target::WAVETABLE);
         for (auto &oscillator : oscillators) {
@@ -551,7 +551,7 @@ void Song::remove_wavetable(const size_t index) {
 
 void Song::remove_oscillator(const size_t index) {
     if (index < oscillators.size()) {
-        delete_oscillator(oscillators[index]);
+        resource_manager.deallocate(oscillators[index]);
         oscillators.erase(oscillators.begin() + index);
         link_manager.realign_links(index, Target::OSCILLATOR);
         for (auto &channel : channels) {
@@ -565,7 +565,7 @@ void Song::remove_oscillator(const size_t index) {
 void Song::remove_channel(const size_t index) {
     if (index < channels.size()) {
         size_t link_type = static_cast<size_t>(ItemType::CHANNEL);
-        delete channels[index];
+        resource_manager.deallocate(channels[index]);
         channels.erase(channels.begin() + index);
         links[link_type].erase(links[link_type].begin() + index);
         num_channels = channels.size();
@@ -578,7 +578,7 @@ void Song::remove_channel(const size_t index) {
 void Song::remove_dsp(const size_t index) {
     if (index < dsps.size()) {
         size_t link_type = static_cast<size_t>(ItemType::DSP);
-        delete_dsp(dsps[index]);
+        resource_manager.deallocate(dsps[index]);
         dsps.erase(dsps.begin() + index);
         links[link_type].erase(links[link_type].begin() + index);
         num_dsps = dsps.size();
@@ -591,7 +591,7 @@ void Song::remove_dsp(const size_t index) {
 
 void Song::remove_commands_sequence(const size_t index) {
     if (index < commands_sequences.size()) {
-        delete commands_sequences[index];
+        resource_manager.deallocate(commands_sequences[index]);
         commands_sequences.erase(commands_sequences.begin() + index);
         link_manager.realign_links(index, Target::COMMANDS_SEQUENCE);
         for (auto &order : orders) {
@@ -606,7 +606,7 @@ void Song::remove_commands_sequence(const size_t index) {
 
 void Song::remove_commands_channel(const size_t index) {
     if (index < commands_channels.size()) {
-        delete commands_channels[index];
+        resource_manager.deallocate(commands_channels[index]);
         commands_channels.erase(commands_channels.begin() + index);
         num_commands_channels = commands_channels.size();
 
@@ -1552,70 +1552,6 @@ void Song::clear_data() {
     update_sizes();
     buffers.clear();
     resource_manager.clear();
-}
-
-void Song::delete_oscillator(void *oscillator) {
-    if (oscillator == nullptr) {
-        return;
-    }
-
-    const Oscillator *generic = reinterpret_cast<const Oscillator *>(oscillator);
-    const uint8_t generator = generic->generator_index;
-    switch (static_cast<Generator>(generator)) {
-    case Generator::Square: {
-        delete static_cast<OscillatorSquare *>(oscillator);
-        break;
-    }
-    case Generator::Saw: {
-        delete static_cast<OscillatorSaw *>(oscillator);
-        break;
-    }
-    case Generator::Sine: {
-        delete static_cast<OscillatorSine *>(oscillator);
-        break;
-    }
-    case Generator::Wavetable: {
-        delete static_cast<OscillatorWavetable *>(oscillator);
-        break;
-    }
-    case Generator::Noise: {
-        delete static_cast<OscillatorNoise *>(oscillator);
-        break;
-    }
-    case Generator::Count:
-    default:
-        throw std::runtime_error("Unknown oscillator type: " + std::to_string(generator));
-    }
-}
-
-void Song::delete_dsp(void *dsp) {
-    if (dsp == nullptr) {
-        return;
-    }
-
-    const DSP *generic = reinterpret_cast<const DSP *>(dsp);
-    const uint8_t effect = generic->effect_index;
-    switch (static_cast<Effect>(effect)) {
-    case Effect::Gainer: {
-        delete static_cast<DSPGainer *>(dsp);
-        return;
-    }
-    case Effect::Distortion: {
-        delete static_cast<DSPDistortion *>(dsp);
-        return;
-    }
-    case Effect::Filter: {
-        delete static_cast<DSPFilter *>(dsp);
-        return;
-    }
-    case Effect::Delay: {
-        delete static_cast<DSPFilter *>(dsp);
-        return;
-    }
-    case Effect::Count:
-    default:
-        throw std::runtime_error("Unknown DSP type: " + std::to_string(effect));
-    }
 }
 
 std::set<size_t> Song::get_channel_orders() const {

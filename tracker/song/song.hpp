@@ -105,8 +105,6 @@ class Song {
 
     void update_sizes();
     void clear_data();
-    void delete_oscillator(void *oscillator);
-    void delete_dsp(void *dsp);
 
     std::set<size_t> get_channel_orders() const;
     std::set<size_t> get_commands_channel_orders() const;
