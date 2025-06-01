@@ -25,6 +25,7 @@ class GUIRoutingPanel : public GUIPanel {
 
     void collect_links();
     void collect_nodes();
+    void draw_reset_button();
     void draw_node(RoutingNode &routing_node, const ImVec2 node_rect_min);
     void draw_nodes();
     void draw_link(const InputKey source, const OutputKey target, uint8_t alpha = UINT8_MAX);

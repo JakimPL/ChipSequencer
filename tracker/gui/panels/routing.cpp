@@ -28,13 +28,16 @@ void GUIRoutingPanel::update() {
 
 void GUIRoutingPanel::draw() {
     ImGui::Begin("Routings");
+    ImGui::Columns(1, "routings");
 
     from();
+    draw_reset_button();
     draw_nodes();
     draw_all_links();
     check_keyboard_input();
     to();
 
+    ImGui::Columns(1);
     ImGui::End();
 }
 
@@ -256,6 +259,16 @@ void GUIRoutingPanel::add_output_node(size_t index, std::vector<RoutingNode> &ne
     column_next_y[output_x] += estimated_height + vertical_padding;
 
     next_nodes.push_back(output_node);
+}
+
+void GUIRoutingPanel::draw_reset_button() {
+    if (ImGui::Button("Reset view", ImVec2(100.0f, 0))) {
+        clear_nodes();
+        collect_nodes();
+        collect_links();
+    }
+
+    ImGui::Separator();
 }
 
 void GUIRoutingPanel::draw_nodes() {
