@@ -29,6 +29,7 @@ class GUIRoutingPanel : public GUIPanel {
     void draw_nodes();
     void draw_link(const InputKey source, const OutputKey target, uint8_t alpha = UINT8_MAX);
     void draw_all_links();
+    ImVec2 calculate_content_size() const;
 
     bool is_linking_possible(const InputKey &source_key, const OutputKey &target_key) const;
     RoutingNode *handle_node_dragging(const ImVec2 &canvas_origin);

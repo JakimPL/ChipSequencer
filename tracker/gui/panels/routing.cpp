@@ -28,7 +28,6 @@ void GUIRoutingPanel::update() {
 
 void GUIRoutingPanel::draw() {
     ImGui::Begin("Routings");
-    ImGui::BeginChild("RoutingCanvas", ImVec2(0, 0), false, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
     from();
     draw_nodes();
@@ -36,7 +35,6 @@ void GUIRoutingPanel::draw() {
     check_keyboard_input();
     to();
 
-    ImGui::EndChild();
     ImGui::End();
 }
 
@@ -264,6 +262,11 @@ void GUIRoutingPanel::draw_nodes() {
     input_pins.clear();
     output_pins.clear();
 
+    ImVec2 content_size = calculate_content_size();
+
+    ImGui::SetNextWindowContentSize(content_size);
+    ImGui::BeginChild("RoutingCanvas", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+
     const ImVec2 canvas_origin = ImGui::GetCursorScreenPos();
     const ImVec2 canvas_sz = ImGui::GetContentRegionAvail();
     const ImVec2 canvas_p1 = ImVec2(canvas_origin.x + canvas_sz.x, canvas_origin.y + canvas_sz.y);
@@ -279,6 +282,7 @@ void GUIRoutingPanel::draw_nodes() {
     }
 
     draw_list->PopClipRect();
+    ImGui::EndChild();
 }
 
 void GUIRoutingPanel::draw_link(const InputKey source, const OutputKey target, uint8_t alpha) {
@@ -609,4 +613,25 @@ void GUIRoutingPanel::set_nodes_positions(const std::vector<std::pair<NodeIdenti
             }
         }
     }
+}
+
+ImVec2 GUIRoutingPanel::calculate_content_size() const {
+
+    ImVec2 min_pos(FLT_MAX, FLT_MAX);
+    ImVec2 max_pos(-FLT_MAX, -FLT_MAX);
+
+    for (const auto &node : nodes) {
+        min_pos.x = std::min(min_pos.x, node.position.x);
+        min_pos.y = std::min(min_pos.y, node.position.y);
+        max_pos.x = std::max(max_pos.x, node.position.x + node.size.x);
+        max_pos.y = std::max(max_pos.y, node.position.y + node.size.y);
+    }
+
+    min_pos.x = std::min(min_pos.x, 0.0f);
+    min_pos.y = std::min(min_pos.y, 0.0f);
+    max_pos.x = std::max(max_pos.x + 100.0f, ImGui::GetContentRegionAvail().x);
+    max_pos.y = std::max(max_pos.y + 100.0f, ImGui::GetContentRegionAvail().y);
+
+    const ImVec2 content_size(std::max(max_pos.x - min_pos.x, ImGui::GetContentRegionAvail().x), std::max(max_pos.y - min_pos.y, ImGui::GetContentRegionAvail().y));
+    return content_size;
 }
