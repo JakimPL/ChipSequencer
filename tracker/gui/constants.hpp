@@ -21,6 +21,8 @@
 
 #define GUI_MIN_TRANSPOSE -48.0f
 #define GUI_MAX_TRANSPOSE 48.0f
+#define GUI_MIN_PITCH 0.0002f
+#define GUI_MAX_PITCH 65535.0f
 
 #define GUI_MAX_JUMP_STEP 32
 

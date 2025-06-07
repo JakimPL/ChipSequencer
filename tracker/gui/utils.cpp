@@ -51,6 +51,7 @@ void draw_float_slider(const char *label, float &reference, const LinkKey key, f
     switch (scale) {
     case GUIScale::Logarithmic: {
         display_value = std::log(reference / min) / std::log(max / min);
+        break;
     }
     case GUIScale::Quadratic: {
         display_value = std::sqrt((reference - min) / (max - min));
@@ -66,16 +67,17 @@ void draw_float_slider(const char *label, float &reference, const LinkKey key, f
     const bool non_linear_scale = scale != GUIScale::Linear;
     if (ImGui::SliderFloat(slider_id.c_str(), &display_value, non_linear_scale ? 0.0f : min, non_linear_scale ? 1.0f : max, label)) {
         switch (scale) {
-        case GUIScale::Linear: {
-            reference = display_value;
-            break;
-        }
         case GUIScale::Logarithmic: {
             reference = min * std::pow(max / min, display_value);
             break;
         }
         case GUIScale::Quadratic: {
             reference = min + (max - min) * (display_value * display_value);
+            break;
+        }
+        case GUIScale::Linear:
+        default: {
+            reference = display_value;
             break;
         }
         }
