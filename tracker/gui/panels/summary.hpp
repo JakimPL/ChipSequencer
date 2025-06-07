@@ -1,11 +1,15 @@
 #ifndef GUI_PANELS_SUMMARY_HPP
 #define GUI_PANELS_SUMMARY_HPP
 
+#include <optional>
+
 #include "panel.hpp"
 
 class GUISummaryPanel : public GUIPanel {
   private:
     void draw_summary();
+    void draw_table_row(bool highlight, const char *label, size_t size);
+    void draw_table_row(bool highlight, const char *label, std::optional<size_t> count, size_t size);
     size_t draw_summary_components();
     size_t draw_summary_song_data();
     void draw_optimizations();

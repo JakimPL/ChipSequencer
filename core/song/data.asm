@@ -4,7 +4,7 @@ bpm:
 unit:
     dd 60.0
 normalizer:
-    dd 0.25
+    dd 0.5
 
 num_channels:
     db CHANNELS
@@ -22,6 +22,9 @@ wavetables:
 dsps:
 channels:
 commands_channels:
-buffer_offsets:
+
+    align 4
 targets:
     dd output
+
+buffer_offsets:
