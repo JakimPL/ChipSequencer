@@ -4,7 +4,7 @@ from distutils.dir_util import copy_tree
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-from utils import save_json
+from pyconf import COMPONENTS_SIZES_HPP_FILE
 
 TEMP_BASE = Path(tempfile.gettempdir()) / "chipsequencer"
 CATEGORIES = ["DSP", "Oscillator", "Command"]
@@ -27,9 +27,8 @@ class SizeChecker:
 
     def __call__(self) -> None:
         flags = self.gather_flags()
-        module_sizes, sizes = self.calculate_sizes(flags)
-        print(module_sizes)
-        print(sizes)
+        module_sizes, components_sizes = self.calculate_sizes(flags)
+        self.write_hpp_file(module_sizes, components_sizes, COMPONENTS_SIZES_HPP_FILE)
 
     def prepare_directory(self):
         self.temp_dir.mkdir(parents=True, exist_ok=True)
@@ -44,7 +43,7 @@ class SizeChecker:
 
     def calculate_sizes(self, flags: Dict[str, List[str]]) -> Tuple[Dict[str, int], Dict[str, Dict[str, int]]]:
         core_size = self.check_size()
-        sizes = {f"{category}s": {} for category in CATEGORIES}
+        components_sizes = {f"{category}s": {} for category in CATEGORIES}
         module_sizes = {"Core": core_size}
         for category, flags in flags.items():
             base_flag = f"USED_{category.upper()}"
@@ -54,11 +53,11 @@ class SizeChecker:
                 category_name = f"{category}s"
                 if flag != base_flag:
                     name = flag.replace(f"{base_flag}_", "").replace("_", " ").capitalize()
-                    sizes[category_name][name] = size - base_size
+                    components_sizes[category_name][name] = size - base_size
                 else:
                     module_sizes[category_name] = base_size - core_size
 
-        return module_sizes, sizes
+        return module_sizes, components_sizes
 
     def gather_flags(self) -> Dict[str, List[str]]:
         path = self.temp_dir / "core" / "common.asm"
@@ -69,3 +68,31 @@ class SizeChecker:
         return {
             category: [flag for flag in flags if flag.startswith(f"USED_{category.upper()}")] for category in CATEGORIES
         }
+
+    @staticmethod
+    def write_hpp_file(module_sizes: dict, components_sizes: dict, output_path: str) -> None:
+        with open(output_path, "w") as file:
+            file.write("#ifndef MAPS_SIZES_HPP\n")
+            file.write("#define MAPS_SIZES_HPP\n\n")
+            file.write("#include <unordered_map>\n\n")
+
+            # Write module_sizes
+            file.write("std::unordered_map<const char *, size_t> module_sizes = {\n")
+            for module, size in module_sizes.items():
+                file.write(f'    {{"{module}", {size}}},\n')
+            file.write("};\n\n")
+
+            file.write(
+                "std::unordered_map<const char *, std::unordered_map<const char *, size_t>> components_sizes = {\n"
+            )
+            for category, components in components_sizes.items():
+                file.write("    {\n")
+                file.write(f'        "{category}",\n')
+                file.write("         {\n")
+                for component, size in components.items():
+                    file.write(f'            {{"{component}", {size}}},\n')
+                file.write("        },\n")
+                file.write("    },\n")
+            file.write("};\n\n")
+
+            file.write("#endif // MAPS_SIZES_HPP\n")
