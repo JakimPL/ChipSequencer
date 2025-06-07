@@ -4,6 +4,7 @@ import shutil
 import subprocess
 from distutils.dir_util import copy_tree
 from pathlib import Path
+from typing import List, Optional
 
 from compiler.compiler import Compiler
 
@@ -12,7 +13,7 @@ PAGE_SIZE = 0x1000
 
 
 class LinuxCompiler(Compiler):
-    def __call__(self) -> None:
+    def __call__(self, flags: Optional[List[str]] = None) -> None:
         self.temp_dir.mkdir(exist_ok=True)
         self.bin_dir.mkdir(exist_ok=True)
         self.build_dir.mkdir(exist_ok=True)
@@ -28,7 +29,7 @@ class LinuxCompiler(Compiler):
         file_size = self.measure_file_size()
         shutil.copy(self.temp_dir / "core" / "platform" / "linux.asm.temp", path)
         self.substitute_values(path, message, sample_rate, output_channels, file_size)
-        self.compile()
+        self.compile(flags)
 
         if self.compression:
             self.compress()
@@ -36,17 +37,23 @@ class LinuxCompiler(Compiler):
         self.copy_executable()
 
     def copy_source(self):
+        compilation_script = Path("shell") / "linux" / "compile.sh"
         copy_tree("core", str(self.temp_dir / "core"))
         copy_tree("tools", str(self.temp_dir / "tools"))
-        shutil.copy("compile.sh", self.temp_dir / "compile.sh")
+        shutil.copy(compilation_script, self.temp_dir / "compile.sh")
         shutil.copy(self.song_dir / "header.asm", self.temp_dir / "core" / "song" / "header.asm")
         shutil.copy(self.song_dir / "data.asm", self.temp_dir / "core" / "song" / "data.asm")
         shutil.copy(
             self.temp_dir / "core" / "platform" / "linux.asm", self.temp_dir / "core" / "platform" / "linux.asm.temp"
         )
 
-    def compile(self):
-        args = ["bash", "-c", "./compile.sh" + (" DEBUG" if self.debug else "")]
+    def compile(self, flags: Optional[List[str]] = None):
+        flags = flags or []
+        command = "./compile.sh" + (" DEBUG" if self.debug else "")
+        for flag in flags:
+            command += f" --define={flag}"
+
+        args = ["bash", "-c", command]
         subprocess.run(args, cwd=self.temp_dir)
 
     def copy_executable(self):

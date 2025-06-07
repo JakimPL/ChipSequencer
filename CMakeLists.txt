@@ -40,7 +40,7 @@ set(ASM_OBJECT_FILE "${CMAKE_BINARY_DIR}/player.o")
 
 add_custom_target(asm_objects ALL
     COMMAND ${CMAKE_COMMAND} -E remove -f ${ASM_OBJECT_FILE}
-    COMMAND ${NASM_EXECUTABLE} -d EXE=1 -d TRACKER -f elf32 -Fdwarf -g ${ASM_SOURCE_FILE} -o ${ASM_OBJECT_FILE}
+    COMMAND ${NASM_EXECUTABLE} -d TRACKER -f elf32 -Fdwarf -g ${ASM_SOURCE_FILE} -o ${ASM_OBJECT_FILE}
     WORKING_DIRECTORY ${ASM_SOURCE_DIR}
     COMMENT "Assembling ${ASM_SOURCE_FILE}"
 )

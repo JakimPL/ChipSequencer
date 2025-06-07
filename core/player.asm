@@ -61,7 +61,7 @@ initialize:
     ret
 
 frame:
-    %ifdef USED_COMMANDS
+    %ifdef USED_COMMAND
     call commands
     %endif
     call mix

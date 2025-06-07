@@ -11,4 +11,4 @@ if __name__ == "__main__":
         raise ValueError(f"Unknown platform: {args.platform}, only 'linux' is supported.")
 
     size_checker = SizeChecker(args.platform)
-    size_checker.check_size()
+    size_checker()

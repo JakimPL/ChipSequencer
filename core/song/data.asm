@@ -15,10 +15,12 @@ num_commands_channels:
 
 envelopes:
 sequences:
+commands_sequences:
 orders:
 oscillators:
 wavetables:
 dsps:
 channels:
+commands_channels:
 buffer_offsets:
 targets:
