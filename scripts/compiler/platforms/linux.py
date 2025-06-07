@@ -91,9 +91,8 @@ class LinuxCompiler(Compiler):
 
         return message, sample_rate, output_channels
 
-    def substitute_values(
-        self, path: Path, message: str, sample_rate: int, output_channels: int, file_size: int = PAGE_SIZE
-    ):
+    @staticmethod
+    def substitute_values(path: Path, message: str, sample_rate: int, output_channels: int, file_size: int = PAGE_SIZE):
         with open(path, "r") as file:
             code = file.read()
             code = code.format(

@@ -798,7 +798,7 @@ void Song::set_used_flags(std::stringstream &asm_content) const {
     }
 
     if (!commands_channels.empty()) {
-        asm_content << "    \%define USED_COMMANDS\n";
+        asm_content << "    \%define USED_COMMAND\n";
         for (size_t i = 0; i < static_cast<size_t>(Instruction::Count); i++) {
             const Instruction instruction = static_cast<Instruction>(i);
             const std::string &command_name = header_instruction_names[i];
