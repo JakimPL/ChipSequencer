@@ -25,7 +25,7 @@ const std::vector<std::string> parameter_types = {"Envelope", "Sequence", "Comma
 const std::vector<std::string> target_types = {"Output splitter", "DSP splitter", "Direct output", "DSP", "Parameter"};
 const std::vector<std::string> simple_operation_names = {"Add", "Set"};
 const std::vector<std::string> operation_names = {"Add", "Set", "Multiply", "Zero"};
-const std::vector<std::string> variable_types = {"Float", "Int8", "Int16", "Int32"};
+const std::vector<std::string> variable_types = {"Float", "Byte (int8)", "Word (int16)", "Dword (int32)"};
 const std::vector<std::string> generator_names = {"Square", "Saw", "Sine", "Wavetable", "Noise"};
 const std::map<Target, std::string> target_names = {
     {Target::SPLITTER_OUTPUT, "Output splitter"},
@@ -70,13 +70,13 @@ const std::map<Instruction, const char *> instruction_names = {
     {Instruction::SetMasterGainer, "Set master gainer"},
     {Instruction::SetBPM, "Set BPM"},
     {Instruction::SetDivision, "Set division"},
-    {Instruction::ChangeByteValue, "Change Int8 value"},
-    {Instruction::ChangeWordValue, "Change Int16 value"},
-    {Instruction::ChangeDwordValue, "Change Int32 value"},
+    {Instruction::ChangeByteValue, "Change byte value"},
+    {Instruction::ChangeWordValue, "Change word value"},
+    {Instruction::ChangeDwordValue, "Change dword value"},
     {Instruction::ChangeFloatValue, "Change float value"},
-    {Instruction::AddByteValue, "Add Int8 value"},
-    {Instruction::AddWordValue, "Add Int16 value"},
-    {Instruction::AddDwordValue, "Add Int32 value"},
+    {Instruction::AddByteValue, "Add byte value"},
+    {Instruction::AddWordValue, "Add word value"},
+    {Instruction::AddDwordValue, "Add dword value"},
     {Instruction::AddFloatValue, "Add float value"},
 };
 const std::map<Instruction, const char *> simple_instruction_names = {

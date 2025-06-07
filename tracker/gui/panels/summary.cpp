@@ -1,11 +1,13 @@
 #include <numeric>
 #include <string>
+#include <iostream>
 
 #include "../../general.hpp"
 #include "../../structures.hpp"
 #include "../../maps/commands.hpp"
 #include "../../maps/dsps.hpp"
 #include "../../maps/oscillators.hpp"
+#include "../../maps/sizes.hpp"
 #include "../init.hpp"
 #include "../names.hpp"
 #include "summary.hpp"
@@ -30,7 +32,66 @@ void GUISummaryPanel::draw_summary() {
         ImGui::TableSetupColumn("Size (bytes)");
         ImGui::TableHeadersRow();
 
-        size_t total_size = 0;
+        const size_t core_size = module_sizes["Core"];
+        size_t total_size = core_size;
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+        ImGui::Text("Core");
+        ImGui::TableSetColumnIndex(2);
+        ImGui::TableSetColumnIndex(2);
+        ImGui::Text("%zu", core_size);
+
+        if (!dsps.empty()) {
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("DSP module");
+            ImGui::TableSetColumnIndex(2);
+
+            const size_t dsp_module_size = module_sizes.at("DSPs");
+            ImGui::Text("%zu", dsp_module_size);
+            total_size += dsp_module_size;
+
+            for (size_t i = 0; i < effect_names.size(); ++i) {
+                const Effect effect = static_cast<Effect>(i);
+                const std::string &name = effect_names[i];
+                if (song.calculate_dsps(effect) > 0) {
+                    ImGui::TableNextRow();
+                    ImGui::TableSetColumnIndex(0);
+                    ImGui::Text("%s", name.c_str());
+                    ImGui::TableSetColumnIndex(2);
+
+                    const size_t component_size = component_sizes.at("DSPs").at(name);
+                    ImGui::Text("%zu", component_size);
+                    total_size += component_size;
+                }
+            }
+        }
+
+        if (!commands_channels.empty()) {
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("Commands module");
+            ImGui::TableSetColumnIndex(2);
+
+            const size_t commands_module_size = module_sizes["Commands"];
+            ImGui::Text("%zu", commands_module_size);
+            total_size += commands_module_size;
+
+            for (size_t i = 0; i < instruction_names.size(); ++i) {
+                const Instruction instruction = static_cast<Instruction>(i);
+                const std::string &name = instruction_names.at(instruction);
+                if (song.calculate_commands(instruction) > 0) {
+                    ImGui::TableNextRow();
+                    ImGui::TableSetColumnIndex(0);
+                    ImGui::Text("%s", name.c_str());
+                    ImGui::TableSetColumnIndex(2);
+
+                    const size_t component_size = component_sizes.at("Commands").at(name);
+                    ImGui::Text("%zu", component_size);
+                    total_size += component_size;
+                }
+            }
+        }
 
         // Channels
         const size_t channels_count = channels.size();

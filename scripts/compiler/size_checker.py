@@ -27,8 +27,8 @@ class SizeChecker:
 
     def __call__(self) -> None:
         flags = self.gather_flags()
-        module_sizes, components_sizes = self.calculate_sizes(flags)
-        self.write_hpp_file(module_sizes, components_sizes, COMPONENTS_SIZES_HPP_FILE)
+        module_sizes, component_sizes = self.calculate_sizes(flags)
+        self.write_hpp_file(module_sizes, component_sizes, COMPONENTS_SIZES_HPP_FILE)
 
     def prepare_directory(self):
         self.temp_dir.mkdir(parents=True, exist_ok=True)
@@ -43,7 +43,7 @@ class SizeChecker:
 
     def calculate_sizes(self, flags: Dict[str, List[str]]) -> Tuple[Dict[str, int], Dict[str, Dict[str, int]]]:
         core_size = self.check_size()
-        components_sizes = {f"{category}s": {} for category in CATEGORIES}
+        component_sizes = {f"{category}s": {} for category in CATEGORIES}
         module_sizes = {"Core": core_size}
         for category, flags in flags.items():
             base_flag = f"USED_{category.upper()}"
@@ -53,11 +53,11 @@ class SizeChecker:
                 category_name = f"{category}s"
                 if flag != base_flag:
                     name = flag.replace(f"{base_flag}_", "").replace("_", " ").capitalize()
-                    components_sizes[category_name][name] = size - base_size
+                    component_sizes[category_name][name] = size - base_size
                 else:
                     module_sizes[category_name] = base_size - core_size
 
-        return module_sizes, components_sizes
+        return module_sizes, component_sizes
 
     def gather_flags(self) -> Dict[str, List[str]]:
         path = self.temp_dir / "core" / "common.asm"
@@ -70,7 +70,7 @@ class SizeChecker:
         }
 
     @staticmethod
-    def write_hpp_file(module_sizes: dict, components_sizes: dict, output_path: str) -> None:
+    def write_hpp_file(module_sizes: dict, component_sizes: dict, output_path: str) -> None:
         with open(output_path, "w") as file:
             file.write("#ifndef MAPS_SIZES_HPP\n")
             file.write("#define MAPS_SIZES_HPP\n\n")
@@ -83,9 +83,9 @@ class SizeChecker:
             file.write("};\n\n")
 
             file.write(
-                "std::unordered_map<const char *, std::unordered_map<const char *, size_t>> components_sizes = {\n"
+                "std::unordered_map<const char *, std::unordered_map<const char *, size_t>> component_sizes = {\n"
             )
-            for category, components in components_sizes.items():
+            for category, components in component_sizes.items():
                 file.write("    {\n")
                 file.write(f'        "{category}",\n')
                 file.write("         {\n")

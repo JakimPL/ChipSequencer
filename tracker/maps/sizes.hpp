@@ -1,15 +1,16 @@
 #ifndef MAPS_SIZES_HPP
 #define MAPS_SIZES_HPP
 
+#include <string>
 #include <unordered_map>
 
-std::unordered_map<const char *, size_t> module_sizes = {
+std::unordered_map<std::string, size_t> module_sizes = {
     {"Core", 2266},
     {"DSPs", 360},
     {"Commands", 488},
 };
 
-std::unordered_map<const char *, std::unordered_map<const char *, size_t>> components_sizes = {
+std::unordered_map<std::string, std::unordered_map<std::string, size_t>> component_sizes = {
     {
         "DSPs",
         {
