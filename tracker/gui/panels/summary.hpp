@@ -6,6 +6,8 @@
 class GUISummaryPanel : public GUIPanel {
   private:
     void draw_summary();
+    size_t draw_summary_components();
+    size_t draw_summary_song_data();
     void draw_optimizations();
 
     void add() override {};

@@ -26,77 +26,146 @@ void GUISummaryPanel::draw() {
 }
 
 void GUISummaryPanel::draw_summary() {
-    if (ImGui::BeginTable("SummaryTable", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
-        ImGui::TableSetupColumn("Element");
-        ImGui::TableSetupColumn("Count");
+    size_t player_size = draw_summary_components();
+    size_t song_data_size = draw_summary_song_data();
+    size_t total_size = player_size + song_data_size;
+
+    if (ImGui::BeginTable("SummaryTable", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
+        ImGui::TableSetupColumn("Item");
         ImGui::TableSetupColumn("Size (bytes)");
         ImGui::TableHeadersRow();
 
-        const size_t core_size = module_sizes["Core"];
-        size_t total_size = core_size;
+        // Player size
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+        ImGui::Text("Code size");
+        ImGui::TableSetColumnIndex(1);
+        ImGui::Text("%zu", player_size);
+
+        // Song data size
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+        ImGui::Text("Song data size");
+        ImGui::TableSetColumnIndex(1);
+        ImGui::Text("%zu", song_data_size);
+
+        // Total size
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+        ImGui::Text("Total size");
+        ImGui::TableSetColumnIndex(1);
+        ImGui::Text("%zu", total_size);
+
+        ImGui::EndTable();
+    }
+}
+
+size_t GUISummaryPanel::draw_summary_components() {
+    size_t player_size = 0;
+    if (ImGui::BeginTable("SummaryComponentsTable", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
+        ImGui::TableSetupColumn("Component");
+        ImGui::TableSetupColumn("Size (bytes)");
+        ImGui::TableHeadersRow();
+
+        const size_t core_size = module_sizes.at("Core");
+        player_size = core_size;
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
         ImGui::Text("Core");
-        ImGui::TableSetColumnIndex(2);
-        ImGui::TableSetColumnIndex(2);
+        ImGui::TableSetColumnIndex(1);
         ImGui::Text("%zu", core_size);
 
         if (!dsps.empty()) {
+            const size_t dsp_module_size = module_sizes.at("DSPs");
+            player_size += dsp_module_size;
+
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0);
             ImGui::Text("DSP module");
-            ImGui::TableSetColumnIndex(2);
-
-            const size_t dsp_module_size = module_sizes.at("DSPs");
+            ImGui::TableSetColumnIndex(1);
             ImGui::Text("%zu", dsp_module_size);
-            total_size += dsp_module_size;
 
             for (size_t i = 0; i < effect_names.size(); ++i) {
                 const Effect effect = static_cast<Effect>(i);
                 const std::string &name = effect_names[i];
                 if (song.calculate_dsps(effect) > 0) {
+                    const size_t component_size = component_sizes.at("DSPs").at(name);
+                    player_size += component_size;
+
                     ImGui::TableNextRow();
                     ImGui::TableSetColumnIndex(0);
                     ImGui::Text("%s", name.c_str());
-                    ImGui::TableSetColumnIndex(2);
-
-                    const size_t component_size = component_sizes.at("DSPs").at(name);
+                    ImGui::TableSetColumnIndex(1);
                     ImGui::Text("%zu", component_size);
-                    total_size += component_size;
                 }
             }
         }
 
+        for (size_t i = 0; i < generator_names.size(); ++i) {
+            const Generator generator = static_cast<Generator>(i);
+            const std::string &name = generator_names[i];
+            if (song.calculate_oscillators(generator) > 0) {
+                const size_t component_size = component_sizes.at("Oscillators").at(name);
+                player_size += component_size;
+                ImGui::TableNextRow();
+                ImGui::TableSetColumnIndex(0);
+                ImGui::Text("%s", name.c_str());
+                ImGui::TableSetColumnIndex(1);
+                ImGui::Text("%zu", component_size);
+            }
+        }
+
         if (!commands_channels.empty()) {
+            const size_t commands_module_size = module_sizes.at("Commands");
+            player_size += commands_module_size;
+
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0);
             ImGui::Text("Commands module");
-            ImGui::TableSetColumnIndex(2);
-
-            const size_t commands_module_size = module_sizes["Commands"];
+            ImGui::TableSetColumnIndex(1);
             ImGui::Text("%zu", commands_module_size);
-            total_size += commands_module_size;
 
             for (size_t i = 0; i < instruction_names.size(); ++i) {
                 const Instruction instruction = static_cast<Instruction>(i);
                 const std::string &name = instruction_names.at(instruction);
                 if (song.calculate_commands(instruction) > 0) {
+                    const size_t component_size = component_sizes.at("Commands").at(name);
+                    player_size += component_size;
+
                     ImGui::TableNextRow();
                     ImGui::TableSetColumnIndex(0);
                     ImGui::Text("%s", name.c_str());
-                    ImGui::TableSetColumnIndex(2);
-
-                    const size_t component_size = component_sizes.at("Commands").at(name);
+                    ImGui::TableSetColumnIndex(1);
                     ImGui::Text("%zu", component_size);
-                    total_size += component_size;
                 }
             }
         }
 
+        // Total
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+        ImGui::Text("Code size");
+        ImGui::TableSetColumnIndex(1);
+        ImGui::Text("%zu", player_size);
+
+        ImGui::EndTable();
+    }
+
+    return player_size;
+}
+
+size_t GUISummaryPanel::draw_summary_song_data() {
+    size_t song_data_size = 0;
+    if (ImGui::BeginTable("SummarySongDataTable", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
+        ImGui::TableSetupColumn("Element");
+        ImGui::TableSetupColumn("Count");
+        ImGui::TableSetupColumn("Size (bytes)");
+        ImGui::TableHeadersRow();
+
         // Channels
         const size_t channels_count = channels.size();
         size_t channels_size = channels_count * sizeof(Channel);
-        total_size += channels_size;
+        song_data_size += channels_size;
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
         ImGui::Text("Channels");
@@ -114,7 +183,7 @@ void GUISummaryPanel::draw_summary() {
             dsps_size += 1 + sizeof(uint32_t) + dsps_sizes.at(effect);
         }
 
-        total_size += dsps_size;
+        song_data_size += dsps_size;
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
         ImGui::Text("DSPs");
@@ -126,7 +195,7 @@ void GUISummaryPanel::draw_summary() {
         // Envelopes
         const size_t envelopes_count = envelopes.size();
         const size_t envelopes_size = envelopes_count * sizeof(Envelope);
-        total_size += envelopes_size;
+        song_data_size += envelopes_size;
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
         ImGui::Text("Envelopes");
@@ -139,8 +208,8 @@ void GUISummaryPanel::draw_summary() {
         const size_t sequences_count = sequences.size();
         size_t sequences_size = 0;
         for (const Sequence *sequence : sequences) {
-            const size_t sequence_size = sequence->size + 1;
-            total_size += sequence_size;
+            const size_t sequence_size = sequence->size + SEQUENCE_NOTES;
+            song_data_size += sequence_size;
             sequences_size += sequence_size;
         }
 
@@ -156,8 +225,8 @@ void GUISummaryPanel::draw_summary() {
         size_t orders_size = 0;
         size_t orders_count = orders.size();
         for (const Order *order : orders) {
-            const size_t order_size = order->order_length + 1;
-            total_size += order_size;
+            const size_t order_size = order->order_length + ORDER_SEQUENCES;
+            song_data_size += order_size;
             orders_size += order_size;
         }
 
@@ -177,7 +246,7 @@ void GUISummaryPanel::draw_summary() {
             oscillators_size += 1 + oscillators_sizes.at(generic->generator_index);
         }
 
-        total_size += oscillators_size;
+        song_data_size += oscillators_size;
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
         ImGui::Text("Oscillators");
@@ -190,10 +259,10 @@ void GUISummaryPanel::draw_summary() {
         const size_t wavetables_count = wavetables.size();
         size_t wavetables_size = 0;
         for (const Wavetable *wavetable : wavetables) {
-            wavetables_size += wavetable->wavetable_size + 1;
+            wavetables_size += wavetable->wavetable_size + WAVETABLE_DATA;
         }
 
-        total_size += wavetables_size;
+        song_data_size += wavetables_size;
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
         ImGui::Text("Wavetables");
@@ -205,7 +274,7 @@ void GUISummaryPanel::draw_summary() {
         // Commands channels
         const size_t commands_channels_count = commands_channels.size();
         const size_t commands_channels_size = commands_channels_count * sizeof(CommandsChannel);
-        total_size += commands_channels_size;
+        song_data_size += commands_channels_size;
 
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
@@ -227,6 +296,7 @@ void GUISummaryPanel::draw_summary() {
             }
         }
 
+        song_data_size += commands_sequences_size;
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
         ImGui::Text("Commands sequences");
@@ -235,17 +305,28 @@ void GUISummaryPanel::draw_summary() {
         ImGui::TableSetColumnIndex(2);
         ImGui::Text("%zu", commands_sequences_size);
 
+        // Message size
+        const size_t message_size = strlen(song.get_message().c_str()) + 1;
+        song_data_size += message_size;
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+        ImGui::Text("Song message");
+        ImGui::TableSetColumnIndex(2);
+        ImGui::Text("%zu", message_size);
+
         // Total
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
-        ImGui::Text("Total song size");
+        ImGui::Text("Song data size");
         ImGui::TableSetColumnIndex(1);
         ImGui::Text(" ");
         ImGui::TableSetColumnIndex(2);
-        ImGui::Text("%zu", total_size);
+        ImGui::Text("%zu", song_data_size);
 
         ImGui::EndTable();
     }
+
+    return song_data_size;
 }
 
 void GUISummaryPanel::draw_optimizations() {

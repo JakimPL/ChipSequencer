@@ -24,3 +24,4 @@ channels:
 commands_channels:
 buffer_offsets:
 targets:
+    dd output
