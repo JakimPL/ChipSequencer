@@ -17,7 +17,7 @@ int clamp_index(int index, const int size) {
 void draw_number_of_items(const std::string &label, const char *label_id, int &value, int min, int max, float label_length) {
     ImGui::PushID(label_id);
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - label_length);
-    ImGui::InputInt("Points", &value, min, max);
+    ImGui::InputInt("Items", &value, min, max);
     ImGui::PopID();
     value = std::clamp(value, min, max);
 }

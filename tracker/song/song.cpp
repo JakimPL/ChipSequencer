@@ -254,7 +254,9 @@ Sequence *Song::add_sequence() {
     }
 
     Sequence *sequence = resource_manager.allocate<Sequence>();
-    sequence->size = 0;
+    sequence->size = DEFAULT_SEQUENCE_LENGTH;
+    sequence->notes[0] = {NOTE_REST, DEFAULT_SEQUENCE_LENGTH};
+
     sequences.push_back(sequence);
     return sequence;
 }
@@ -279,7 +281,7 @@ Order *Song::add_order() {
     }
 
     Order *order = resource_manager.allocate<Order>();
-    order->order_length = 0;
+    order->order_length = DEFAULT_ORDER_LENGTH;
     orders.push_back(order);
     return order;
 }
@@ -304,7 +306,7 @@ Wavetable *Song::add_wavetable() {
     }
 
     Wavetable *wavetable = resource_manager.allocate<Wavetable>();
-    wavetable->wavetable_size = 16;
+    wavetable->wavetable_size = DEFAULT_WAVETABLE_SIZE;
     wavetable->data.fill(0x80);
     wavetables.push_back(wavetable);
     return wavetable;
