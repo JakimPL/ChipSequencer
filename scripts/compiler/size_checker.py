@@ -74,6 +74,7 @@ class SizeChecker:
         with open(output_path, "w") as file:
             file.write("#ifndef MAPS_SIZES_HPP\n")
             file.write("#define MAPS_SIZES_HPP\n\n")
+            file.write("#include <string>\n")
             file.write("#include <unordered_map>\n\n")
 
             # Write module_sizes
@@ -82,13 +83,11 @@ class SizeChecker:
                 file.write(f'    {{"{module}", {size}}},\n')
             file.write("};\n\n")
 
-            file.write(
-                "std::unordered_map<const char *, std::unordered_map<const char *, size_t>> component_sizes = {\n"
-            )
+            file.write("std::unordered_map<std::string, std::unordered_map<std::string, size_t>> component_sizes = {\n")
             for category, components in component_sizes.items():
                 file.write("    {\n")
                 file.write(f'        "{category}",\n')
-                file.write("         {\n")
+                file.write("        {\n")
                 for component, size in components.items():
                     file.write(f'            {{"{component}", {size}}},\n')
                 file.write("        },\n")

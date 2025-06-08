@@ -5,6 +5,7 @@ std::pair<std::filesystem::path, std::filesystem::path> prepare_temp_directory(c
     std::filesystem::path song_path = temp_base / "song";
 
     remove_temp_directory(temp_base, clear_temp);
+    remove_temp_directory(song_path, true);
     std::filesystem::create_directories(song_path);
 
     return {temp_base, song_path};

@@ -180,7 +180,7 @@ size_t GUISummaryPanel::draw_summary_song_data() {
         size_t oscillators_size = 0;
         for (const void *oscillator : oscillators) {
             const Oscillator *generic = static_cast<const Oscillator *>(oscillator);
-            oscillators_size += 1 + oscillators_sizes.at(generic->generator_index);
+            oscillators_size += sizeof(generic->generator_index) + oscillators_sizes.at(generic->generator_index);
         }
         song_data_size += oscillators_size;
         draw_table_row(false, "Oscillators", oscillators_count, oscillators_size);
@@ -211,7 +211,7 @@ size_t GUISummaryPanel::draw_summary_song_data() {
         song_data_size += commands_sequences_size;
         draw_table_row(false, "Commands sequences", commands_sequences_count, commands_sequences_size);
 
-        const size_t message_size = strlen(song.get_message().c_str()) + 1;
+        const size_t message_size = strlen(song.get_message().c_str());
         song_data_size += message_size;
         draw_table_row(false, "Song message", std::nullopt, message_size);
 

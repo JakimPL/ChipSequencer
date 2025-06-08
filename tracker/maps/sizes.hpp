@@ -4,8 +4,8 @@
 #include <string>
 #include <unordered_map>
 
-std::unordered_map<std::string, size_t> module_sizes = {
-    {"Core", 2266},
+std::unordered_map<const char *, size_t> module_sizes = {
+    {"Core", 2188},
     {"DSPs", 360},
     {"Commands", 488},
 };
@@ -15,7 +15,7 @@ std::unordered_map<std::string, std::unordered_map<std::string, size_t>> compone
         "DSPs",
         {
             {"Gainer", 16},
-            {"Distortion", 52},
+            {"Distortion", 56},
             {"Filter", 156},
             {"Delay", 80},
         },
@@ -23,19 +23,19 @@ std::unordered_map<std::string, std::unordered_map<std::string, size_t>> compone
     {
         "Oscillators",
         {
-            {"Square", 44},
-            {"Sine", 120},
+            {"Square", 48},
+            {"Sine", 156},
             {"Saw", 68},
-            {"Wavetable", 64},
-            {"Noise", 76},
+            {"Wavetable", 112},
+            {"Noise", 80},
         },
     },
     {
         "Commands",
         {
-            {"Portamento up", 64},
+            {"Portamento up", 68},
             {"Portamento down", 68},
-            {"Set master gainer", 24},
+            {"Set master gainer", 28},
             {"Set bpm", 20},
             {"Set division", 32},
             {"Change byte value", 28},
