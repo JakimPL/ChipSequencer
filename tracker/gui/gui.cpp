@@ -161,7 +161,7 @@ void GUI::set_audio_engine(AudioEngine *engine) {
 
 bool GUI::check_audio_error() const {
     if (audio_engine) {
-        return false; // to implement
+        return audio_engine->is_error();
     }
 
     return false;

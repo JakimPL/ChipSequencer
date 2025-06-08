@@ -17,6 +17,7 @@ class AudioEngine {
     void play();
     void pause();
     void stop();
+    bool is_error() const;
     bool is_playing() const;
     bool is_paused() const;
 
@@ -26,6 +27,7 @@ class AudioEngine {
     void playback_function();
 
     PortAudioDriver &driver;
+    std::atomic<bool> error;
     std::atomic<bool> playing;
     std::atomic<bool> paused;
     std::thread playback_thread;

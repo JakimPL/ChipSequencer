@@ -64,6 +64,10 @@ void AudioEngine::stop() {
     driver.reset_buffer();
 }
 
+bool AudioEngine::is_error() const {
+    return error;
+}
+
 bool AudioEngine::is_playing() const {
     return playing && !paused;
 }
@@ -107,6 +111,7 @@ void AudioEngine::playback_function() {
                         } else {
                             std::cerr << "Recovered from segfault in audio processing" << std::endl;
                             playing = false;
+                            error = true;
                             driver.stop_stream();
                             driver.close_stream();
                             break;
