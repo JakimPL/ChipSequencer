@@ -159,6 +159,14 @@ void GUI::set_audio_engine(AudioEngine *engine) {
     audio_engine = engine;
 }
 
+bool GUI::check_audio_error() const {
+    if (audio_engine) {
+        return false; // to implement
+    }
+
+    return false;
+}
+
 void GUI::set_index(const GUIElement element, const int index) {
     switch (element) {
     case GUIElement::Count:

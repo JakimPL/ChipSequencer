@@ -29,6 +29,14 @@ void GUIGeneralPanel::draw() {
     from();
     draw_play_button();
 
+    if (gui.is_playing()) {
+        if (gui.check_audio_error()) {
+            error = true;
+            error_message = "Audio error: segfault occurred during playback.";
+            ImGui::OpenPopup("Error");
+        }
+    }
+
     if (ImGui::BeginTabBar("GeneralTabs")) {
         if (ImGui::BeginTabItem("Song")) {
             draw_song_info();

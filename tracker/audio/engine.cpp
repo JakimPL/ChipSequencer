@@ -1,8 +1,18 @@
+#include <cstring>
 #include <iostream>
+#include <signal.h>
+#include <setjmp.h>
 
 #include "../song/core.hpp"
 #include "../song/functions.hpp"
 #include "engine.hpp"
+
+static thread_local sigjmp_buf jump_buffer;
+static thread_local bool segfault_occurred = false;
+static void segfault_handler(int signal) {
+    segfault_occurred = true;
+    siglongjmp(jump_buffer, 1);
+}
 
 AudioEngine::AudioEngine(PortAudioDriver &driver)
     : driver(driver), playing(false), paused(false) {
@@ -67,6 +77,12 @@ void AudioEngine::playback_function() {
     unsigned long frames_per_half_buffer = driver.get_frames_per_buffer();
     unsigned long samples_per_half_buffer = frames_per_half_buffer * output_channels;
 
+    struct sigaction sa;
+    memset(&sa, 0, sizeof(struct sigaction));
+    sa.sa_handler = segfault_handler;
+    sigemptyset(&sa.sa_mask);
+    sigaction(SIGSEGV, &sa, NULL);
+
     while (playing) {
         std::unique_lock<std::mutex> lock(driver.buffer_mutex);
         driver.buffer_cv.wait(lock, [&] {
@@ -85,7 +101,17 @@ void AudioEngine::playback_function() {
                     std::fill_n(driver.pingpong_buffer.begin() + sample_offset, samples_per_half_buffer, 0.0f);
                 } else {
                     for (unsigned long x = 0; x < frames_per_half_buffer; ++x) {
-                        frame();
+                        segfault_occurred = false;
+                        if (sigsetjmp(jump_buffer, 1) == 0) {
+                            frame();
+                        } else {
+                            std::cerr << "Recovered from segfault in audio processing" << std::endl;
+                            playing = false;
+                            driver.stop_stream();
+                            driver.close_stream();
+                            break;
+                        }
+
                         size_t offset = sample_offset + x * output_channels;
                         for (size_t i = 0; i < output_channels; ++i) {
                             driver.pingpong_buffer[offset + i] = output[i];

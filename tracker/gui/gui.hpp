@@ -53,6 +53,8 @@ class GUI {
     bool get_visibility(const GUIElement element) const;
 
     void set_audio_engine(AudioEngine *engine);
+    bool check_audio_error() const;
+
     void update(GUIElement element = GUIElement::All);
 
     int get_current_octave() const;
