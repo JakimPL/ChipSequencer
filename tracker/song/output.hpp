@@ -51,8 +51,6 @@ struct OutputType {
 
     void load_splitter(const uint8_t target[], const Link &link);
     void set_splitter(uint8_t target[]) const;
-    uint32_t get_splitter_data() const;
-    static std::array<uint8_t, MAX_OUTPUT_CHANNELS> unpack_splitter_data(uint32_t splitter_data);
 };
 
 static_assert(static_cast<uint8_t>(OutputTarget::OutputSplitter) == static_cast<uint8_t>(Target::SPLITTER_OUTPUT));

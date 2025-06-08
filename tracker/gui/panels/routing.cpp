@@ -11,6 +11,7 @@
 #include "../../general.hpp"
 #include "../../maps/routing.hpp"
 #include "../../song/links/link.hpp"
+#include "../../song/links/target.hpp"
 #include "../../song/song.hpp"
 #include "../../structures/channel.hpp"
 #include "../../structures/dsp.hpp"
@@ -339,19 +340,47 @@ void GUIRoutingPanel::draw_link(const InputKey source, const OutputKey target, u
     }
 }
 
+Splitter GUIRoutingPanel::get_splitter_from_input_key(const InputKey &source) const {
+    Splitter splitter;
+    switch (source.first) {
+    case ItemType::CHANNEL: {
+        std::copy(
+            std::begin(channels[source.second]->splitter),
+            std::end(channels[source.second]->splitter),
+            splitter.begin()
+        );
+        break;
+    }
+    case ItemType::DSP: {
+        DSP *dsp = reinterpret_cast<DSP *>(dsps[source.second]);
+        std::copy(
+            std::begin(dsp->splitter),
+            std::end(dsp->splitter),
+            splitter.begin()
+        );
+        break;
+    }
+    case ItemType::COMMANDS:
+    case ItemType::COUNT:
+    default:
+        throw std::runtime_error("Invalid source type for routing link: " + std::to_string(static_cast<int>(source.first)));
+    }
+
+    return splitter;
+}
+
 void GUIRoutingPanel::draw_all_links() {
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
     for (const auto &[source, target] : nodes_links) {
+        const Splitter splitter = get_splitter_from_input_key(source);
         if (target.target == Target::SPLITTER_OUTPUT) {
             const size_t output_channels = song.get_output_channels();
-            std::array<uint8_t, MAX_OUTPUT_CHANNELS> splitter = OutputType::unpack_splitter_data(target.index);
             for (size_t i = 0; i < output_channels; ++i) {
                 const uint16_t offset = sizeof(_Float32) * i;
                 const OutputKey target_key = {Target::DIRECT_OUTPUT, static_cast<int>(i), offset};
                 draw_link(source, target_key, splitter[i]);
             }
         } else if (target.target == Target::SPLITTER_DSP) {
-            std::array<uint8_t, MAX_OUTPUT_CHANNELS> splitter = OutputType::unpack_splitter_data(target.index);
             int start = target.offset / sizeof(_Float32);
             int end = std::clamp(static_cast<int>(dsps.size()) - start, 0, MAX_OUTPUT_CHANNELS);
             for (int i = 0; i < end; ++i) {
@@ -578,7 +607,7 @@ void GUIRoutingPanel::check_keyboard_input() {
 }
 
 bool GUIRoutingPanel::get_splitter_bounds(const size_t j, size_t index, const Link &link) const {
-    if (link.target != Target::SPLITTER_OUTPUT && link.target != Target::SPLITTER_DSP) {
+    if (!is_target_splitter(link.target)) {
         return true;
     }
 
@@ -587,8 +616,7 @@ bool GUIRoutingPanel::get_splitter_bounds(const size_t j, size_t index, const Li
             return true;
         }
     } else if (link.target == Target::SPLITTER_DSP) {
-        const size_t link_offset = link.offset / sizeof(uint32_t);
-        const size_t offset = link.type == ItemType::DSP ? std::max(index + 1, link_offset) : link_offset;
+        const size_t offset = link.type == ItemType::DSP ? std::max(index + 1, static_cast<size_t>(link.index)) : link.index;
         if (j + offset >= dsps.size()) {
             return true;
         }

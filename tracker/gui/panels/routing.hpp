@@ -12,6 +12,8 @@
 #include "../node.hpp"
 #include "panel.hpp"
 
+typedef std::array<uint8_t, MAX_OUTPUT_CHANNELS> Splitter;
+
 class GUIRoutingPanel : public GUIPanel {
   private:
     std::vector<RoutingNode> nodes;
@@ -45,6 +47,7 @@ class GUIRoutingPanel : public GUIPanel {
     void add_output_node(size_t index, std::vector<RoutingNode> &nodes, std::map<float, float> &column_next_y);
 
     bool get_splitter_bounds(const size_t j, size_t index, const Link &link) const;
+    Splitter get_splitter_from_input_key(const InputKey &source) const;
 
     void add() override {};
     void duplicate() override {};

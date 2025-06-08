@@ -2,6 +2,7 @@
 
 #include "../../general.hpp"
 #include "../../song/links/manager.hpp"
+#include "../../song/links/target.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
 #include "channels.hpp"
@@ -175,11 +176,7 @@ void GUIChannelsPanel::update_channel_name(const int index, const int target_id)
         target = static_cast<Target>(target_id);
     }
 
-    const bool modulator = target != Target::SPLITTER_OUTPUT &&
-                           target != Target::SPLITTER_DSP &&
-                           target != Target::DIRECT_OUTPUT &&
-                           target != Target::DIRECT_DSP;
-
+    const bool modulator = is_target_parameter(target);
     const std::string label = modulator ? "Modulator " : "Channel ";
     channel_names[index] = label + std::to_string(index);
 }

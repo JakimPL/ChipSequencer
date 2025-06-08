@@ -84,26 +84,16 @@ void OutputType::set_link(Link &link, const ItemType type, const uint8_t id) con
     link.id = id;
     OutputTarget label = static_cast<OutputTarget>(target);
     switch (label) {
+    case OutputTarget::DirectOutput:
     case OutputTarget::OutputSplitter: {
-        link.target = Target::SPLITTER_OUTPUT;
-        link.index = get_splitter_data();
-        link.offset = 0;
-        break;
-    }
-    case OutputTarget::DSPSplitter: {
-        link.target = Target::SPLITTER_DSP;
-        link.index = get_splitter_data();
-        link.offset = sizeof(_Float32) * dsp_channel;
-        break;
-    }
-    case OutputTarget::DirectOutput: {
-        link.target = Target::DIRECT_OUTPUT;
+        link.target = static_cast<Target>(target);
         link.index = output_channel;
         link.offset = sizeof(_Float32) * output_channel;
         break;
     }
-    case OutputTarget::DirectDSP: {
-        link.target = Target::DIRECT_DSP;
+    case OutputTarget::DirectDSP:
+    case OutputTarget::DSPSplitter: {
+        link.target = static_cast<Target>(target);
         link.index = dsp_channel;
         link.offset = sizeof(_Float32) * dsp_channel;
         break;
@@ -128,21 +118,4 @@ void OutputType::set_splitter(uint8_t target[]) const {
     for (size_t i = 0; i < MAX_OUTPUT_CHANNELS; ++i) {
         target[i] = static_cast<uint8_t>(std::round(splitter[i] * UINT8_MAX));
     }
-}
-
-uint32_t OutputType::get_splitter_data() const {
-    uint32_t splitter_data;
-    uint8_t data[MAX_OUTPUT_CHANNELS];
-    for (size_t i = 0; i < MAX_OUTPUT_CHANNELS; ++i) {
-        data[i] = std::round(splitter[i] * UINT8_MAX);
-    }
-
-    memcpy(&splitter_data, data, sizeof(uint32_t));
-    return splitter_data;
-}
-
-std::array<uint8_t, MAX_OUTPUT_CHANNELS> OutputType::unpack_splitter_data(uint32_t splitter_data) {
-    std::array<uint8_t, MAX_OUTPUT_CHANNELS> data;
-    memcpy(data.data(), &splitter_data, sizeof(uint32_t));
-    return data;
 }
