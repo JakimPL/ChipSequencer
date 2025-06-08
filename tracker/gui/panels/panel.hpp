@@ -18,8 +18,7 @@ class GUIPanel {
 
   protected:
     void draw_add_or_remove(
-        const std::string label = "",
-        const std::vector<size_t> &dependencies = {},
+        const std::vector<std::string> &dependencies = {},
         const std::vector<std::pair<ItemType, uint8_t>> &link_dependencies = {}
     );
 

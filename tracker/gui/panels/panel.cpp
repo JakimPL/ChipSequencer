@@ -6,8 +6,7 @@ GUIPanel::GUIPanel(const bool visible)
 }
 
 void GUIPanel::draw_add_or_remove(
-    const std::string label,
-    const std::vector<size_t> &dependencies,
+    const std::vector<std::string> &dependencies,
     const std::vector<std::pair<ItemType, uint8_t>> &link_dependencies
 ) {
     if (ImGui::Button("-")) {
@@ -40,11 +39,14 @@ void GUIPanel::draw_add_or_remove(
         ImGui::Text("Are you sure you want to remove this item?\nThis action cannot be undone.\n");
 
         if (!dependencies.empty()) {
-            ImGui::Text("\nThis item is used by the following %s:", label.c_str());
+            ImGui::Text("\nThis item is used by the following items:");
             for (size_t i = 0; i < dependencies.size(); ++i) {
-                ImGui::Text("%zu", dependencies[i]);
                 if (i < dependencies.size() - 1) {
+                    const std::string name = dependencies[i] + ",";
+                    ImGui::Text("%s", name.c_str());
                     ImGui::SameLine();
+                } else {
+                    ImGui::Text("%s", dependencies[i].c_str());
                 }
             }
         }

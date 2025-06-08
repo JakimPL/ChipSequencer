@@ -8,6 +8,7 @@
 
 #include "../general.hpp"
 #include "../sizes.hpp"
+#include "../gui/names.hpp"
 #include "../utils/file.hpp"
 #include "../utils/temp.hpp"
 #include "core.hpp"
@@ -676,82 +677,82 @@ std::pair<ValidationResult, int> Song::validate() {
     return {ValidationResult::OK, -1};
 }
 
-std::vector<size_t> Song::find_envelope_dependencies(const size_t envelope_index) const {
-    std::set<size_t> dependencies;
+std::vector<std::string> Song::find_envelope_dependencies(const size_t envelope_index) const {
+    std::set<std::string> dependencies;
     for (size_t i = 0; i < channels.size(); i++) {
         if (channels[i]->envelope_index == envelope_index) {
-            dependencies.insert(i);
+            dependencies.insert(envelope_names[i]);
         }
     }
 
-    return std::vector<size_t>(dependencies.begin(), dependencies.end());
+    return std::vector<std::string>(dependencies.begin(), dependencies.end());
 }
 
-std::vector<size_t> Song::find_sequence_dependencies(const size_t sequence_index) const {
-    std::set<size_t> dependencies;
+std::vector<std::string> Song::find_sequence_dependencies(const size_t sequence_index) const {
+    std::set<std::string> dependencies;
     std::set<size_t> channel_orders = get_channel_orders();
     for (const size_t order_index : channel_orders) {
         const Order *order = orders[order_index];
         for (size_t i = 0; i < order->order_length; i++) {
             if (order->sequences[i] == sequence_index) {
-                dependencies.insert(order_index);
+                dependencies.insert(order_names[order_index]);
             }
         }
     }
 
-    return std::vector<size_t>(dependencies.begin(), dependencies.end());
+    return std::vector<std::string>(dependencies.begin(), dependencies.end());
 }
 
-std::vector<size_t> Song::find_order_dependencies(const size_t order_index) const {
-    std::set<size_t> dependencies;
+std::vector<std::string> Song::find_order_dependencies(const size_t order_index) const {
+    std::set<std::string> dependencies;
     for (size_t i = 0; i < channels.size(); i++) {
         if (channels[i]->order_index == order_index) {
-            dependencies.insert(i);
+            dependencies.insert(channel_names[i]);
         }
     }
 
-    return std::vector<size_t>(dependencies.begin(), dependencies.end());
+    return std::vector<std::string>(dependencies.begin(), dependencies.end());
 }
 
-std::vector<size_t> Song::find_wavetable_dependencies(const size_t wavetable_index) const {
-    std::set<size_t> dependencies;
+std::vector<std::string> Song::find_wavetable_dependencies(const size_t wavetable_index) const {
+    std::set<std::string> dependencies;
     for (size_t i = 0; i < oscillators.size(); i++) {
         const Oscillator *oscillator = static_cast<const Oscillator *>(oscillators[i]);
         if (oscillator->generator_index == GENERATOR_WAVETABLE) {
             const OscillatorWavetable *wavetable = static_cast<const OscillatorWavetable *>(oscillators[i]);
             if (wavetable->wavetable_index == wavetable_index) {
-                dependencies.insert(i);
+                dependencies.insert(oscillator_names[i]);
             }
         }
     }
 
-    return std::vector<size_t>(dependencies.begin(), dependencies.end());
+    return std::vector<std::string>(dependencies.begin(), dependencies.end());
 }
 
-std::vector<size_t> Song::find_oscillator_dependencies(const size_t oscillator_index) const {
-    std::set<size_t> dependencies;
+std::vector<std::string> Song::find_oscillator_dependencies(const size_t oscillator_index) const {
+    std::set<std::string> dependencies;
     for (size_t i = 0; i < channels.size(); i++) {
         if (channels[i]->oscillator_index == oscillator_index) {
-            dependencies.insert(i);
+            dependencies.insert(channel_names[i]);
         }
     }
 
-    return std::vector<size_t>(dependencies.begin(), dependencies.end());
+    return std::vector<std::string>(dependencies.begin(), dependencies.end());
 }
 
-std::vector<size_t> Song::find_commands_sequence_dependencies(const size_t sequence_index) const {
-    std::set<size_t> dependencies;
+std::vector<std::string> Song::find_commands_sequence_dependencies(const size_t sequence_index) const {
+    std::set<std::string> dependencies;
     std::set<size_t> channel_orders = get_commands_channel_orders();
     for (const size_t order_index : channel_orders) {
         const Order *order = orders[order_index];
         for (size_t i = 0; i < order->order_length; i++) {
             if (order->sequences[i] == sequence_index) {
-                dependencies.insert(order_index);
+                dependencies.insert(order_names[order_index]);
             }
         }
     }
 
-    return std::vector<size_t>(dependencies.begin(), dependencies.end());
+    return std::vector<std::string>(dependencies.begin(), dependencies.end());
 }
 
 float Song::calculate_real_bpm() const {

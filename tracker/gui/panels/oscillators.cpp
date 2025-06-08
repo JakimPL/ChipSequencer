@@ -16,11 +16,11 @@ void GUIOscillatorsPanel::draw() {
     ImGui::Begin("Oscillators");
     ImGui::Columns(1, "oscillator_columns");
 
-    std::vector<size_t> dependencies = song.find_oscillator_dependencies(oscillator_index);
+    std::vector<std::string> dependencies = song.find_oscillator_dependencies(oscillator_index);
     push_tertiary_style();
-    draw_add_or_remove("channels", dependencies);
+    draw_add_or_remove(dependencies);
     prepare_combo(oscillator_names, "##OscillatorCombo", oscillator_index);
-    show_dependency_tooltip("channels", dependencies);
+    show_dependency_tooltip(dependencies);
 
     pop_tertiary_style();
 

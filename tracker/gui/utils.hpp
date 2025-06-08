@@ -43,7 +43,7 @@ void draw_output_parameter_oscillator(OutputType &output_type);
 void draw_output_parameter_dsp(OutputType &output_type);
 bool draw_output(OutputType &output_type, const LinkKey key);
 
-void show_dependency_tooltip(const std::string &label, std::vector<size_t> &dependencies);
+void show_dependency_tooltip(std::vector<std::string> &dependencies);
 void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t index);
 
 bool get_menu_item(const std::string &name, const std::optional<ShortcutAction> action = std::nullopt, const bool checked = false);

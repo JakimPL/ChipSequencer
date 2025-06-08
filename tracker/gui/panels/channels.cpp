@@ -19,7 +19,7 @@ void GUIChannelsPanel::draw() {
     ImGui::BeginDisabled(gui.is_playing());
     std::vector<std::pair<ItemType, uint8_t>> link_dependencies = link_manager.find_dependencies(Target::CHANNEL, channel_index);
     push_tertiary_style();
-    draw_add_or_remove("", {}, link_dependencies);
+    draw_add_or_remove({}, link_dependencies);
     prepare_combo(channel_names, "##ChannelCombo", channel_index);
     pop_tertiary_style();
 

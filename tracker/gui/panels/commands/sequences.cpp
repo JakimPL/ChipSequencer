@@ -16,14 +16,14 @@ void GUICommandsSequencesPanel::draw() {
     ImGui::Columns(1, "commands_sequence_columns");
     ImGui::BeginDisabled(gui.is_playing());
 
-    std::vector<size_t> dependencies = song.find_commands_sequence_dependencies(sequence_index);
+    std::vector<std::string> dependencies = song.find_commands_sequence_dependencies(sequence_index);
     push_tertiary_style();
-    draw_add_or_remove("orders", dependencies);
+    draw_add_or_remove(dependencies);
     if (prepare_combo(commands_sequence_names, "##CommandsSequenceCombo", sequence_index).value_changed) {
         current_sequence.pattern.values_handler.clear();
         current_sequence.pattern.commands_handler.clear();
     }
-    show_dependency_tooltip("orders", dependencies);
+    show_dependency_tooltip(dependencies);
     pop_tertiary_style();
 
     ImGui::Separator();

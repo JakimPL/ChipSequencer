@@ -162,12 +162,12 @@ class Song {
     void remove_commands_sequence(const size_t index);
 
     std::pair<ValidationResult, int> validate();
-    std::vector<size_t> find_envelope_dependencies(const size_t envelope_index) const;
-    std::vector<size_t> find_sequence_dependencies(const size_t sequence_index) const;
-    std::vector<size_t> find_order_dependencies(const size_t order_index) const;
-    std::vector<size_t> find_wavetable_dependencies(const size_t wavetable_index) const;
-    std::vector<size_t> find_oscillator_dependencies(const size_t oscillator_index) const;
-    std::vector<size_t> find_commands_sequence_dependencies(const size_t sequence_index) const;
+    std::vector<std::string> find_envelope_dependencies(const size_t envelope_index) const;
+    std::vector<std::string> find_sequence_dependencies(const size_t sequence_index) const;
+    std::vector<std::string> find_order_dependencies(const size_t order_index) const;
+    std::vector<std::string> find_wavetable_dependencies(const size_t wavetable_index) const;
+    std::vector<std::string> find_oscillator_dependencies(const size_t oscillator_index) const;
+    std::vector<std::string> find_commands_sequence_dependencies(const size_t sequence_index) const;
 
     size_t calculate_dsps(const Effect effect) const;
     size_t calculate_oscillators(const Generator generator) const;

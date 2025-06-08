@@ -600,11 +600,11 @@ bool draw_output(OutputType &output_type, const LinkKey key) {
     return value_changed;
 }
 
-void show_dependency_tooltip(const std::string &label, std::vector<size_t> &dependencies) {
+void show_dependency_tooltip(std::vector<std::string> &dependencies) {
     if (ImGui::IsItemHovered() && !dependencies.empty()) {
-        std::string tooltip = "Used by " + label + ": ";
+        std::string tooltip = "Used by: ";
         for (size_t i = 0; i < dependencies.size(); ++i) {
-            tooltip += std::to_string(dependencies[i]);
+            tooltip += dependencies[i];
             if (i < dependencies.size() - 1) {
                 tooltip += ", ";
             }
