@@ -15,10 +15,14 @@ void GUIDSPsPanel::draw() {
     ImGui::Columns(1, "dsp_columns");
 
     ImGui::BeginDisabled(gui.is_playing());
+    std::vector<std::string> dependencies = song.find_dsp_dependencies(dsp_index);
+    std::vector<std::pair<ItemType, uint8_t>> link_dependencies = link_manager.find_dependencies(Target::DSP, dsp_index);
     push_tertiary_style();
-    draw_add_or_remove();
+    draw_add_or_remove(dependencies, link_dependencies);
     prepare_combo(dsp_names, "##DSPCombo", dsp_index);
+    show_dependency_tooltip(dependencies);
     pop_tertiary_style();
+
     ImGui::Separator();
 
     from();

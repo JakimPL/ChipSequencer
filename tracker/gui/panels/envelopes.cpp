@@ -19,7 +19,6 @@ void GUIEnvelopesPanel::draw() {
     draw_add_or_remove(dependencies, link_dependencies);
     prepare_combo(envelope_names, "##EnvelopeCombo", envelope_index);
     show_dependency_tooltip(dependencies);
-
     pop_tertiary_style();
 
     ImGui::Separator();

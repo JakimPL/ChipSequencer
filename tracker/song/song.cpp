@@ -755,6 +755,37 @@ std::vector<std::string> Song::find_commands_sequence_dependencies(const size_t 
     return std::vector<std::string>(dependencies.begin(), dependencies.end());
 }
 
+void Song::add_dsp_dependencies(
+    std::set<std::string> &dependencies,
+    std::vector<std::string> &names,
+    const std::vector<Link> &links,
+    const size_t dsp_index
+) const {
+    for (size_t i = 0; i < links.size(); i++) {
+        const Link &link = links[i];
+        if (link.target == Target::DIRECT_DSP) {
+            if (link.index == dsp_index) {
+                dependencies.insert(names[i]);
+            }
+        } else if (link.target == Target::SPLITTER_DSP) {
+            if (dsp_index >= link.index && dsp_index < link.index + MAX_OUTPUT_CHANNELS) {
+                dependencies.insert(names[i]);
+            }
+        }
+    }
+}
+
+std::vector<std::string> Song::find_dsp_dependencies(const size_t dsp_index) const {
+    std::set<std::string> dependencies;
+    const auto &channel_links = links[static_cast<size_t>(ItemType::CHANNEL)];
+    add_dsp_dependencies(dependencies, channel_names, channel_links, dsp_index);
+
+    const auto &dsp_links = links[static_cast<size_t>(ItemType::DSP)];
+    add_dsp_dependencies(dependencies, dsp_names, dsp_links, dsp_index);
+
+    return std::vector<std::string>(dependencies.begin(), dependencies.end());
+}
+
 float Song::calculate_real_bpm() const {
     return unit * static_cast<float>(sample_rate) / static_cast<float>(ticks_per_beat);
 }

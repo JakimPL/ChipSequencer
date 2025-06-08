@@ -107,6 +107,13 @@ class Song {
     std::set<size_t> get_channel_orders() const;
     std::set<size_t> get_commands_channel_orders() const;
 
+    void add_dsp_dependencies(
+        std::set<std::string> &dependencies,
+        std::vector<std::string> &names,
+        const std::vector<Link> &links,
+        const size_t dsp_index
+    ) const;
+
   public:
     Song();
     ~Song();
@@ -168,6 +175,7 @@ class Song {
     std::vector<std::string> find_wavetable_dependencies(const size_t wavetable_index) const;
     std::vector<std::string> find_oscillator_dependencies(const size_t oscillator_index) const;
     std::vector<std::string> find_commands_sequence_dependencies(const size_t sequence_index) const;
+    std::vector<std::string> find_dsp_dependencies(const size_t dsp_index) const;
 
     size_t calculate_dsps(const Effect effect) const;
     size_t calculate_oscillators(const Generator generator) const;
