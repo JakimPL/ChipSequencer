@@ -18,7 +18,6 @@
 #define JSON_INDENTATION 4
 
 Song::Song() {
-    set_buffer_offsets();
     new_song();
 }
 
@@ -201,7 +200,6 @@ void Song::export_all(const std::string &directory, const CompilationTarget comp
     export_arrays(directory, "wave", wavetables);
     export_commands_sequences(directory);
     export_series(directory, "c_chan", commands_channels, {sizeof(CommandsChannel)});
-    export_offsets(directory + "/offsets.bin");
     export_links(directory + "/links.bin");
     export_gui_state(directory);
 }
@@ -853,11 +851,6 @@ void Song::generate_targets_asm(
     }
 }
 
-void Song::generate_offsets_asm(std::stringstream &asm_content, const char separator) const {
-    asm_content << "\n\nbuffer_offsets:\n";
-    asm_content << "incbin \"song" << separator << "offsets.bin\"\n";
-}
-
 std::string Song::generate_data_asm_file(const CompilationTarget compilation_target, const char separator) const {
     std::stringstream asm_content;
     asm_content << "SEGMENT_DATA\n";
@@ -890,7 +883,6 @@ std::string Song::generate_data_asm_file(const CompilationTarget compilation_tar
     generate_header_vector(asm_content, "commands_sequence", "c_seq", commands_sequences.size(), separator);
     generate_header_vector(asm_content, "commands_channel", "c_chan", commands_channels.size(), separator);
     generate_targets_asm(asm_content, compilation_target, separator);
-    generate_offsets_asm(asm_content, separator);
 
     return asm_content.str();
 }
@@ -1064,12 +1056,6 @@ size_t Song::calculate_commands(const Instruction instruction) const {
         }
     }
     return count;
-}
-
-void Song::set_buffer_offsets() {
-    for (size_t i = 0; i < MAX_DSPS; i++) {
-        buffer_offsets[i] = i * MAX_DSP_BUFFER_SIZE;
-    }
 }
 
 int Song::run_command(const std::string &command) const {
@@ -1342,15 +1328,6 @@ void Song::export_arrays(const std::string &directory, const std::string &prefix
         element->serialize(file);
         file.close();
     }
-}
-
-void Song::export_offsets(const std::string &filename) const {
-    std::ofstream file(filename, std::ios::binary);
-    for (size_t i = 0; i < dsps.size(); i++) {
-        const uint32_t offset = buffer_offsets[i];
-        write_data(file, &offset, sizeof(offset));
-    }
-    file.close();
 }
 
 void Song::export_links(const std::string &filename) const {

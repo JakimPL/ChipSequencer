@@ -27,7 +27,6 @@
     extern dsps
     extern channels
     extern commands_channels
-    extern buffer_offsets
     extern targets
     %endif
 

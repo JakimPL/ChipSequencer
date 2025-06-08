@@ -25,4 +25,3 @@ commands_channels:
 
     align 4
 targets:
-buffer_offsets:

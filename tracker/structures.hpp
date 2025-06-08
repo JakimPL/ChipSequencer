@@ -11,7 +11,6 @@
 #include "structures/wavetable.hpp"
 #include "structures/dsp.hpp"
 #include "structures/channel.hpp"
-#include "structures/offsets.hpp"
 #include "structures/targets.hpp"
 #pragma pack(pop)
 

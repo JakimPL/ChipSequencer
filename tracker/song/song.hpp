@@ -37,7 +37,6 @@ class Song {
 
     bool clear_temp = false;
 
-    void generate_offsets_asm(std::stringstream &asm_content, const char separator) const;
     void generate_targets_asm(
         std::stringstream &asm_content,
         const CompilationTarget compilation_target,
@@ -83,7 +82,6 @@ class Song {
     void export_dsps(const std::string &directory) const;
     void export_commands_sequences(const std::string &directory) const;
     void export_links(const std::string &filename) const;
-    void export_offsets(const std::string &filename) const;
 
     void import_channels(const std::string &directory, const nlohmann::json &json);
     void import_dsps(const std::string &directory, const nlohmann::json &json);
@@ -152,8 +150,6 @@ class Song {
     void *duplicate_dsp(const size_t index);
     CommandsChannel *duplicate_commands_channel(const size_t index);
     CommandsSequence *duplicate_commands_sequence(const size_t index);
-
-    void set_buffer_offsets();
 
     void remove_envelope(const size_t index);
     void remove_sequence(const size_t index);
