@@ -25,6 +25,4 @@ commands_channels:
 
     align 4
 targets:
-    dd output
-
 buffer_offsets:

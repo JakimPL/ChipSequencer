@@ -113,6 +113,10 @@ size_t GUISummaryPanel::draw_summary_components() {
 
             for (size_t i = 0; i < instruction_names.size(); ++i) {
                 const Instruction instruction = static_cast<Instruction>(i);
+                if (instruction == Instruction::Empty) {
+                    continue;
+                }
+
                 const std::string &name = instruction_names.at(instruction);
                 if (song.calculate_commands(instruction) > 0) {
                     const size_t component_size = component_sizes.at("Commands").at(name);
@@ -148,7 +152,7 @@ size_t GUISummaryPanel::draw_summary_song_data() {
         for (const auto *dsp : dsps) {
             const DSP *generic = static_cast<const DSP *>(dsp);
             const size_t effect = generic->effect_index;
-            dsps_size += sizeof(uint8_t) + sizeof(uint32_t) + dsps_sizes.at(effect);
+            dsps_size += sizeof(uint8_t) + dsps_sizes.at(effect);
         }
         song_data_size += dsps_size;
         draw_table_row(false, "DSPs", dsps_count, dsps_size);
@@ -210,6 +214,11 @@ size_t GUISummaryPanel::draw_summary_song_data() {
         }
         song_data_size += commands_sequences_size;
         draw_table_row(false, "Commands sequences", commands_sequences_count, commands_sequences_size);
+
+        const size_t links_count = link_manager.get_pointers_map().size();
+        const size_t targets_size = links_count * sizeof(void *);
+        song_data_size += targets_size;
+        draw_table_row(false, "Link targets", links_count, targets_size);
 
         const size_t message_size = strlen(song.get_message().c_str());
         song_data_size += message_size;

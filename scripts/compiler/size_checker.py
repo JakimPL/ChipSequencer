@@ -8,6 +8,9 @@ from pyconf import COMPONENTS_SIZES_HPP_FILE
 
 TEMP_BASE = Path(tempfile.gettempdir()) / "chipsequencer"
 CATEGORIES = ["DSP", "Oscillator", "Command"]
+NAME_EXCEPTIONS = {
+    "Set bpm": "Set BPM",
+}
 
 
 class SizeChecker:
@@ -89,6 +92,7 @@ class SizeChecker:
                 file.write(f'        "{category}",\n')
                 file.write("        {\n")
                 for component, size in components.items():
+                    component = NAME_EXCEPTIONS.get(component, component)
                     file.write(f'            {{"{component}", {size}}},\n')
                 file.write("        },\n")
                 file.write("    },\n")

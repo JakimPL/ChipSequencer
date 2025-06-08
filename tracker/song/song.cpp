@@ -306,7 +306,8 @@ Wavetable *Song::add_wavetable() {
     }
 
     Wavetable *wavetable = resource_manager.allocate<Wavetable>();
-    wavetable->wavetable_size = 0;
+    wavetable->wavetable_size = 16;
+    wavetable->data.fill(0x80);
     wavetables.push_back(wavetable);
     return wavetable;
 }

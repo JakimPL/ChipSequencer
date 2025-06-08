@@ -5,7 +5,7 @@
 #include <unordered_map>
 
 std::unordered_map<const char *, size_t> module_sizes = {
-    {"Core", 2188},
+    {"Core", 2184},
     {"DSPs", 360},
     {"Commands", 488},
 };
@@ -36,7 +36,7 @@ std::unordered_map<std::string, std::unordered_map<std::string, size_t>> compone
             {"Portamento up", 68},
             {"Portamento down", 68},
             {"Set master gainer", 28},
-            {"Set bpm", 20},
+            {"Set BPM", 20},
             {"Set division", 32},
             {"Change byte value", 28},
             {"Change word value", 28},
