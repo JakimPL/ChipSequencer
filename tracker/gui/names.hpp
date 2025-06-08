@@ -46,6 +46,7 @@ const std::map<Target, std::string> target_names = {
 const std::map<ItemType, std::string> item_types_names = {
     {ItemType::CHANNEL, "Channel"},
     {ItemType::DSP, "DSP"},
+    {ItemType::COMMANDS, "Command"},
 };
 const std::vector<std::pair<GUIElement, const char *>> menu_items = {
     {GUIElement::Editor, "Editor"},

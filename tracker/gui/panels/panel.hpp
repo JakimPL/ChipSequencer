@@ -17,7 +17,11 @@ class GUIPanel {
     virtual void to() const = 0;
 
   protected:
-    void draw_add_or_remove(const std::string label = "", std::vector<size_t> dependencies = {});
+    void draw_add_or_remove(
+        const std::string label = "",
+        const std::vector<size_t> &dependencies = {},
+        const std::vector<std::pair<ItemType, uint8_t>> &link_dependencies = {}
+    );
 
     virtual void add() = 0;
     virtual void duplicate() = 0;

@@ -46,6 +46,7 @@ class LinkManager {
     std::vector<std::pair<void *, LinkKey>> get_pointers_map() const;
     std::pair<void *, LinkKey> get_pointer_and_key(size_t index) const;
     size_t find_pointer_id_by_key(const LinkKey key) const;
+    std::vector<std::pair<ItemType, uint8_t>> find_dependencies(const Target target, const int index) const;
 
     void capture_parameters();
     void restore_parameters() const;

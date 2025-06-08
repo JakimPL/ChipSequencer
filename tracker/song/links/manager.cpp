@@ -318,6 +318,19 @@ size_t LinkManager::find_pointer_id_by_key(const LinkKey key) const {
     return 0;
 }
 
+std::vector<std::pair<ItemType, uint8_t>> LinkManager::find_dependencies(const Target target, const int index) const {
+    std::set<std::pair<ItemType, uint8_t>> dependencies;
+    for (const auto &array : links) {
+        for (const Link &link : array) {
+            if (link.target == target && link.index == index) {
+                dependencies.insert({link.type, link.id});
+            }
+        }
+    }
+
+    return std::vector<std::pair<ItemType, uint8_t>>(dependencies.begin(), dependencies.end());
+}
+
 void LinkManager::remove_key(Link &link) {
     const auto map_it = map.find(link.key);
     if (map_it != map.end()) {

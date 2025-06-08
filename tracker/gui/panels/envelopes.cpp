@@ -14,8 +14,9 @@ void GUIEnvelopesPanel::draw() {
     ImGui::Begin("Envelopes");
 
     std::vector<size_t> dependencies = song.find_envelope_dependencies(envelope_index);
+    std::vector<std::pair<ItemType, uint8_t>> link_dependencies = link_manager.find_dependencies(Target::ENVELOPE, envelope_index);
     push_tertiary_style();
-    draw_add_or_remove("channels", dependencies);
+    draw_add_or_remove("channels", dependencies, link_dependencies);
     prepare_combo(envelope_names, "##EnvelopeCombo", envelope_index);
     show_dependency_tooltip("channels", dependencies);
 

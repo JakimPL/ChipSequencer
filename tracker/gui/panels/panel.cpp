@@ -1,12 +1,17 @@
+#include "../names.hpp"
 #include "panel.hpp"
 
 GUIPanel::GUIPanel(const bool visible)
     : visible(visible) {
 }
 
-void GUIPanel::draw_add_or_remove(const std::string label, std::vector<size_t> dependencies) {
+void GUIPanel::draw_add_or_remove(
+    const std::string label,
+    const std::vector<size_t> &dependencies,
+    const std::vector<std::pair<ItemType, uint8_t>> &link_dependencies
+) {
     if (ImGui::Button("-")) {
-        if (dependencies.empty()) {
+        if (dependencies.empty() && link_dependencies.empty()) {
             remove();
         } else {
             ImGui::OpenPopup("Confirm item removal");
@@ -32,14 +37,30 @@ void GUIPanel::draw_add_or_remove(const std::string label, std::vector<size_t> d
     ImGui::SameLine();
 
     if (ImGui::BeginPopupModal("Confirm item removal", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::Text("Are you sure you want to remove this item?\nThis action cannot be undone.\n\n");
-        ImGui::Text("This item is used by the following %s:", label.c_str());
-        for (size_t i = 0; i < dependencies.size(); ++i) {
-            ImGui::Text("%zu", dependencies[i]);
-            if (i < dependencies.size() - 1) {
-                ImGui::SameLine();
+        ImGui::Text("Are you sure you want to remove this item?\nThis action cannot be undone.\n");
+
+        if (!dependencies.empty()) {
+            ImGui::Text("\nThis item is used by the following %s:", label.c_str());
+            for (size_t i = 0; i < dependencies.size(); ++i) {
+                ImGui::Text("%zu", dependencies[i]);
+                if (i < dependencies.size() - 1) {
+                    ImGui::SameLine();
+                }
             }
         }
+
+        if (!link_dependencies.empty()) {
+            ImGui::Text("\nThis item is linked to the following items:");
+            for (const auto &link : link_dependencies) {
+                const std::string &name = item_types_names.at(link.first);
+                ImGui::Text("%s %d", name.c_str(), link.second);
+                if (&link != &link_dependencies.back()) {
+                    ImGui::SameLine();
+                }
+            }
+            ImGui::Text("\nAll links are going to be destroyed.");
+        }
+
         ImGui::Separator();
 
         const float button_width = 120.0f;
