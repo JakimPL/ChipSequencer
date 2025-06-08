@@ -12,6 +12,19 @@ NAME_EXCEPTIONS = {
     "Set bpm": "Set BPM",
 }
 
+DEPENDENCIES = {
+    "USED_COMMAND_PORTAMENTO_UP": ["USED_COMMAND_PORTAMENTO"],
+    "USED_COMMAND_PORTAMENTO_DOWN": ["USED_COMMAND_PORTAMENTO"],
+    "USED_COMMAND_CHANGE_FLOAT_VALUE": ["USED_COMMAND_CHANGE_32BIT_VALUE"],
+    "USED_COMMAND_CHANGE_BYTE_VALUE": ["USED_COMMAND_LOAD_TARGET"],
+    "USED_COMMAND_CHANGE_WORD_VALUE": ["USED_COMMAND_LOAD_TARGET"],
+    "USED_COMMAND_CHANGE_DWORD_VALUE": ["USED_COMMAND_CHANGE_32BIT_VALUE"],
+    "USED_COMMAND_ADD_FLOAT_VALUE": ["USED_COMMAND_ADD_32BIT_VALUE"],
+    "USED_COMMAND_ADD_BYTE_VALUE": ["USED_COMMAND_LOAD_TARGET"],
+    "USED_COMMAND_ADD_WORD_VALUE": ["USED_COMMAND_LOAD_TARGET"],
+    "USED_COMMAND_ADD_DWORD_VALUE": ["USED_COMMAND_ADD_32BIT_VALUE"],
+}
+
 
 class SizeChecker:
     def __init__(self, platform: str):
@@ -41,7 +54,12 @@ class SizeChecker:
         shutil.copy(Path("core") / "song" / "header.asm", self.song_dir / "header.asm")
 
     def check_size(self, flags: Optional[List[str]] = None) -> int:
-        self.compiler(flags)
+        try:
+            self.compiler(flags)
+        except Exception as exception:
+            print(f"Error during compilation of: {flags}")
+            raise exception
+
         return self.target_path.stat().st_size
 
     def calculate_sizes(self, flags: Dict[str, List[str]]) -> Tuple[Dict[str, int], Dict[str, Dict[str, int]]]:
@@ -57,6 +75,10 @@ class SizeChecker:
                 if flag != base_flag:
                     name = flag.replace(f"{base_flag}_", "").replace("_", " ").capitalize()
                     component_sizes[category_name][name] = size - base_size
+                    if flag in DEPENDENCIES:
+                        for dependency in DEPENDENCIES[flag]:
+                            dep_size = self.check_size([base_flag, dependency])
+                            component_sizes[category_name][name] -= dep_size - base_size
                 else:
                     module_sizes[category_name] = base_size - core_size
 

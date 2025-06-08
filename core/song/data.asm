@@ -22,6 +22,4 @@ wavetables:
 dsps:
 channels:
 commands_channels:
-
-    align 4
 targets:

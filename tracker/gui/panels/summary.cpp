@@ -63,7 +63,7 @@ void GUISummaryPanel::draw_summary() {
 
         draw_table_row(false, "Player size", player_size);
         draw_table_row(false, "Song data size", song_data_size);
-        draw_table_row(true, "Total size", total_size);
+        draw_table_row(true, "Total size (estimated)", total_size);
 
         ImGui::EndTable();
     }
@@ -111,6 +111,10 @@ size_t GUISummaryPanel::draw_summary_components() {
             player_size += commands_module_size;
             draw_table_row(false, "Commands module", commands_module_size);
 
+            bool portamento = false;
+            bool load_target = false;
+            bool change_32bit_value = false;
+            bool add_32bit_value = false;
             for (size_t i = 0; i < instruction_names.size(); ++i) {
                 const Instruction instruction = static_cast<Instruction>(i);
                 if (instruction == Instruction::Empty) {
@@ -119,6 +123,33 @@ size_t GUISummaryPanel::draw_summary_components() {
 
                 const std::string &name = instruction_names.at(instruction);
                 if (song.calculate_commands(instruction) > 0) {
+                    /* dependencies */
+                    if (!portamento && (instruction == Instruction::PortamentoUp || instruction == Instruction::PortamentoDown)) {
+                        portamento = true;
+                        const std::string portamento_name = "Portamento";
+                        const size_t component_size = component_sizes.at("Commands").at(portamento_name);
+                        player_size += component_size;
+                        draw_table_row(false, portamento_name.c_str(), component_size);
+                    } else if (!load_target && is_instruction_linkable(instruction)) {
+                        load_target = true;
+                        const std::string load_target_name = "Load target";
+                        const size_t component_size = component_sizes.at("Commands").at(load_target_name);
+                        player_size += component_size;
+                        draw_table_row(false, load_target_name.c_str(), component_size);
+                    } else if (!change_32bit_value && (instruction == Instruction::ChangeDwordValue || instruction == Instruction::ChangeFloatValue)) {
+                        change_32bit_value = true;
+                        const std::string change_32bit_value_name = "Change 32bit value";
+                        const size_t component_size = component_sizes.at("Commands").at(change_32bit_value_name);
+                        player_size += component_size;
+                        draw_table_row(false, change_32bit_value_name.c_str(), component_size);
+                    } else if (!add_32bit_value && (instruction == Instruction::AddDwordValue || instruction == Instruction::AddFloatValue)) {
+                        add_32bit_value = true;
+                        const std::string add_32bit_value_name = "Add 32bit value";
+                        const size_t component_size = component_sizes.at("Commands").at(add_32bit_value_name);
+                        player_size += component_size;
+                        draw_table_row(false, add_32bit_value_name.c_str(), component_size);
+                    }
+
                     const size_t component_size = component_sizes.at("Commands").at(name);
                     player_size += component_size;
                     draw_table_row(false, name.c_str(), component_size);

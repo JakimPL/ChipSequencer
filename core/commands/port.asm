@@ -1,7 +1,7 @@
     SEGMENT_CODE
 portamento_up:
     %ifdef USED_COMMAND_PORTAMENTO_UP
-    %define USED_LOAD_PORTAMENTO_VALUE
+    %define USED_COMMAND_PORTAMENTO
     call load_portamenento_value
     fmul
     fistp dword [frequency + 4 * ecx]
@@ -12,7 +12,7 @@ portamento_up:
 
 portamento_down:
     %ifdef USED_COMMAND_PORTAMENTO_DOWN
-    %define USED_LOAD_PORTAMENTO_VALUE
+    %define USED_COMMAND_PORTAMENTO
     call load_portamenento_value
     fxch
     fdiv
@@ -22,7 +22,7 @@ portamento_down:
     %endif
     ret
 
-    %ifdef USED_LOAD_PORTAMENTO_VALUE
+    %ifdef USED_COMMAND_PORTAMENTO
 load_portamenento_value:
     movzx ecx, byte [COMMAND_PORTAMENTO_CHANNEL + edi]
     movzx eax, word [COMMAND_PORTAMENTO_VALUE + edi]
