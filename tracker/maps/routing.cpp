@@ -17,6 +17,10 @@ const std::map<Target, RoutingItems> routing_variables = {
         RoutingItems({}),
     },
     {
+        Target::COMMANDS_SEQUENCE,
+        RoutingItems({}),
+    },
+    {
         Target::ORDER,
         RoutingItems({}),
     },
@@ -60,6 +64,12 @@ const std::map<Target, RoutingItems> routing_variables = {
             {"Splitter 1", CHANNEL_SPLITTER + 1, TargetVariableType::Byte},
             {"Splitter 2", CHANNEL_SPLITTER + 2, TargetVariableType::Byte},
             {"Splitter 3", CHANNEL_SPLITTER + 3, TargetVariableType::Byte},
+        }),
+    },
+    {
+        Target::COMMANDS_CHANNEL,
+        RoutingItems({
+            {"Order index", COMMANDS_CHANNEL_ORDER_INDEX, TargetVariableType::Byte, ROUTING_HIDDEN},
         }),
     },
 };

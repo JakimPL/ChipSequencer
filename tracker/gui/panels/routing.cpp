@@ -396,6 +396,15 @@ void GUIRoutingPanel::draw_all_links() {
             draw_link(source, target);
         }
     }
+
+    const bool dragging = link_dragging_source_key.has_value();
+    if (dragging) {
+        draw_link(
+            link_dragging_source_key.value(),
+            OutputKey{Target::DIRECT_OUTPUT, 0, 0},
+            150
+        );
+    }
 }
 
 void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rect_min) {
