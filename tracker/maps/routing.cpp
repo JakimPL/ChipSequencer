@@ -52,9 +52,9 @@ const std::map<Target, RoutingItems> routing_variables = {
     {
         Target::CHANNEL,
         RoutingItems({
-            {"Envelope index", CHANNEL_ENVELOPE_INDEX, TargetVariableType::Byte},
-            {"Oscillator index", CHANNEL_OSCILLATOR_INDEX, TargetVariableType::Byte},
-            {"Order index", CHANNEL_ORDER_INDEX, TargetVariableType::Byte},
+            {"Envelope index", CHANNEL_ENVELOPE_INDEX, TargetVariableType::Byte, ROUTING_HIDDEN},
+            {"Oscillator index", CHANNEL_OSCILLATOR_INDEX, TargetVariableType::Byte, ROUTING_HIDDEN},
+            {"Order index", CHANNEL_ORDER_INDEX, TargetVariableType::Byte, ROUTING_HIDDEN},
             {"Pitch", CHANNEL_PITCH, TargetVariableType::Dword},
             {"Splitter 0", CHANNEL_SPLITTER, TargetVariableType::Byte},
             {"Splitter 1", CHANNEL_SPLITTER + 1, TargetVariableType::Byte},
@@ -75,13 +75,15 @@ RoutingItems::RoutingItems(std::vector<RoutingItem> items) {
     }
 }
 
-RoutingTuple RoutingItems::filter_items(const int index) const {
+RoutingTuple RoutingItems::filter_items(const int index, const bool allow_hidden) const {
     std::vector<size_t> indices;
     std::vector<std::string> filtered_labels;
     std::vector<uint16_t> filtered_offsets;
     std::vector<TargetVariableType> filtered_types;
     for (size_t i = 0; i < labels.size(); ++i) {
-        if (constraints[i] == -1 || constraints[i] == index) {
+        if (constraints[i] == ROUTING_NO_CONSTRAINTS ||
+            constraints[i] == index ||
+            (allow_hidden && constraints[i] == ROUTING_HIDDEN)) {
             indices.push_back(i);
             filtered_labels.push_back(labels[i]);
             filtered_offsets.push_back(offsets[i]);

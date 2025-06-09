@@ -64,8 +64,13 @@ void AudioEngine::stop() {
     driver.reset_buffer();
 }
 
-bool AudioEngine::is_error() const {
-    return error;
+bool AudioEngine::is_error() {
+    if (error) {
+        error = false;
+        return true;
+    }
+
+    return false;
 }
 
 bool AudioEngine::is_playing() const {

@@ -160,18 +160,21 @@ void GUIRoutingPanel::update_channel_node(size_t index, RoutingNode &channel_nod
     const Channel *channel = channels[index];
     const Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][index];
     const auto &channel_routing = routing_variables.at(Target::CHANNEL);
+    const auto filtered_items = channel_routing.filter_items(-1);
+    const auto labels = std::get<1>(filtered_items);
+    const auto offsets = std::get<2>(filtered_items);
     channel_node.bypass = channel->flag & FLAG_BYPASS;
 
-    for (size_t j = 0; j < channel_routing.labels.size(); ++j) {
-        if (channel_routing.offsets[j] >= CHANNEL_SPLITTER && channel_routing.offsets[j] < CHANNEL_SPLITTER + MAX_OUTPUT_CHANNELS) {
-            const int splitter_id = channel_routing.offsets[j] - CHANNEL_SPLITTER;
+    for (size_t j = 0; j < labels.size(); ++j) {
+        if (offsets[j] >= CHANNEL_SPLITTER && offsets[j] < CHANNEL_SPLITTER + MAX_OUTPUT_CHANNELS) {
+            const int splitter_id = offsets[j] - CHANNEL_SPLITTER;
             if (get_splitter_bounds(splitter_id, index, link)) {
                 continue;
             }
         }
 
-        const OutputKey key = {Target::CHANNEL, static_cast<int>(index), channel_routing.offsets[j]};
-        channel_node.parameters.push_back({key, channel_routing.labels[j]});
+        const OutputKey key = {Target::CHANNEL, static_cast<int>(index), offsets[j]};
+        channel_node.parameters.push_back({key, labels[j]});
         channel_node.lines += 1;
     }
 }

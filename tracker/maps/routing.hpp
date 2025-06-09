@@ -10,13 +10,19 @@
 #include "../structures.hpp"
 #include "../song/links/target.hpp"
 
-typedef std::tuple<std::vector<size_t>, std::vector<std::string>, std::vector<uint16_t>, std::vector<TargetVariableType>> RoutingTuple;
+enum RoutingConstraints {
+    ROUTING_HIDDEN = -2,
+    ROUTING_NO_CONSTRAINTS = -1,
+};
+
+typedef std::tuple<std::vector<size_t>, std::vector<std::string>, std::vector<uint16_t>, std::vector<TargetVariableType>>
+    RoutingTuple;
 
 struct RoutingItem {
     std::string label;
     uint16_t offset;
     TargetVariableType type;
-    int constraint = -1;
+    int constraint = ROUTING_NO_CONSTRAINTS;
     int default_shift = 0;
 };
 
@@ -29,7 +35,7 @@ struct RoutingItems {
     std::vector<int> constraints;
     std::map<uint16_t, size_t> offset_to_index;
 
-    RoutingTuple filter_items(const int index) const;
+    RoutingTuple filter_items(const int index, const bool allow_hidden = false) const;
 };
 
 extern const std::map<Target, RoutingItems> routing_variables;
