@@ -22,6 +22,16 @@ void draw_number_of_items(const std::string &label, const char *label_id, int &v
     value = std::clamp(value, min, max);
 }
 
+void draw_checkbox(const char *label, bool &reference, const LinkKey key) {
+    ImGui::BeginDisabled(link_manager.is_linked(key));
+
+    ImGui::PushID(label);
+    ImGui::Checkbox(label, &reference);
+    draw_link_tooltip(key);
+    ImGui::PopID();
+    ImGui::EndDisabled();
+}
+
 void draw_int_slider(const char *label, int &reference, const LinkKey key, int min, int max) {
     ImGui::BeginDisabled(link_manager.is_linked(key));
 

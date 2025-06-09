@@ -236,7 +236,7 @@ void GUIDSPsPanel::draw_effect() {
         break;
     }
     case Effect::Filter: {
-        ImGui::Checkbox("High-pass", &current_dsp.filter_mode);
+        draw_checkbox("High-pass", current_dsp.filter_mode, {Target::DSP, dsp_index, DSP_FILTER_MODE});
         ImGui::NewLine();
         draw_knob("Frequency", current_dsp.filter_cutoff, {Target::DSP, dsp_index, DSP_FILTER_FREQUENCY}, 0.0f, 1.0f);
         break;

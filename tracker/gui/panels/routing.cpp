@@ -86,11 +86,11 @@ void GUIRoutingPanel::collect_nodes() {
     next_nodes.reserve(channels.size() + dsps.size() + song.get_output_channels());
 
     std::map<float, float> column_next_y;
-    const float channel_x = 50.0f;
-    const float dsp_x = channel_x + GUI_ROUTING_NODE_WIDTH + 50.0f;
-    const float output_x = dsp_x + GUI_ROUTING_NODE_WIDTH + 50.0f;
-    const float vertical_padding = 20.0f;
-    const float initial_y_offset = 20.0f;
+    const float channel_x = GUI_ROUTING_NODE_HORIZONTAL_PADDING;
+    const float dsp_x = channel_x + GUI_ROUTING_NODE_WIDTH + GUI_ROUTING_NODE_HORIZONTAL_PADDING;
+    const float output_x = dsp_x + GUI_ROUTING_NODE_WIDTH + GUI_ROUTING_NODE_HORIZONTAL_PADDING;
+    const float vertical_padding = GUI_ROUTING_NODE_VERTICAL_PADDING;
+    const float initial_y_offset = GUI_ROUTING_NODE_VERTICAL_PADDING;
     column_next_y[channel_x] = initial_y_offset;
     column_next_y[dsp_x] = initial_y_offset;
     column_next_y[output_x] = initial_y_offset;
@@ -102,9 +102,9 @@ void GUIRoutingPanel::collect_nodes() {
         }
     }
 
-    column_next_y[channel_x] = std::max(column_next_y[channel_x], 25.0f);
+    column_next_y[channel_x] = std::max(column_next_y[channel_x], GUI_ROUTING_NODE_VERTICAL_PADDING);
     column_next_y[dsp_x] = std::max(column_next_y[dsp_x], 0.0f);
-    column_next_y[output_x] = std::max(column_next_y[output_x], 25.0f);
+    column_next_y[output_x] = std::max(column_next_y[output_x], GUI_ROUTING_NODE_VERTICAL_PADDING);
 
     for (size_t i = 0; i < channels.size(); ++i) {
         NodeIdentifier current_id = {Target::CHANNEL, i};
@@ -180,8 +180,8 @@ void GUIRoutingPanel::update_channel_node(size_t index, RoutingNode &channel_nod
 }
 
 void GUIRoutingPanel::add_channel_node(size_t index, std::vector<RoutingNode> &next_nodes, std::map<float, float> &column_next_y) {
-    const float channel_x = 50.0f;
-    const float vertical_padding = 20.0f;
+    const float channel_x = GUI_ROUTING_NODE_HORIZONTAL_PADDING;
+    const float vertical_padding = GUI_ROUTING_NODE_VERTICAL_PADDING;
 
     RoutingNode channel_node;
     NodeIdentifier current_id = {Target::CHANNEL, index};
@@ -224,9 +224,9 @@ void GUIRoutingPanel::update_dsp_node(size_t index, RoutingNode &dsp_node) {
 }
 
 void GUIRoutingPanel::add_dsp_node(size_t index, std::vector<RoutingNode> &next_nodes, std::map<float, float> &column_next_y) {
-    const float channel_x = 50.0f;
-    const float dsp_x = channel_x + GUI_ROUTING_NODE_WIDTH + 50.0f;
-    const float vertical_padding = 20.0f;
+    const float channel_x = GUI_ROUTING_NODE_HORIZONTAL_PADDING;
+    const float dsp_x = channel_x + GUI_ROUTING_NODE_WIDTH + GUI_ROUTING_NODE_HORIZONTAL_PADDING;
+    const float vertical_padding = GUI_ROUTING_NODE_VERTICAL_PADDING;
 
     RoutingNode dsp_node;
     NodeIdentifier current_id = {Target::DSP, index};
@@ -248,10 +248,10 @@ void GUIRoutingPanel::update_output_node(size_t index, RoutingNode &output_node)
 }
 
 void GUIRoutingPanel::add_output_node(size_t index, std::vector<RoutingNode> &next_nodes, std::map<float, float> &column_next_y) {
-    const float channel_x = 50.0f;
-    const float dsp_x = channel_x + GUI_ROUTING_NODE_WIDTH + 50.0f;
-    const float output_x = dsp_x + GUI_ROUTING_NODE_WIDTH + 50.0f;
-    const float vertical_padding = 20.0f;
+    const float channel_x = GUI_ROUTING_NODE_HORIZONTAL_PADDING;
+    const float dsp_x = channel_x + GUI_ROUTING_NODE_WIDTH + GUI_ROUTING_NODE_HORIZONTAL_PADDING;
+    const float output_x = dsp_x + GUI_ROUTING_NODE_WIDTH + GUI_ROUTING_NODE_HORIZONTAL_PADDING;
+    const float vertical_padding = GUI_ROUTING_NODE_VERTICAL_PADDING;
 
     RoutingNode output_node;
     NodeIdentifier current_id = {Target::DIRECT_OUTPUT, index};
@@ -303,7 +303,7 @@ void GUIRoutingPanel::draw_nodes() {
 }
 
 void GUIRoutingPanel::draw_link(const InputKey source, const OutputKey target, uint8_t alpha) {
-    const float line_thickness = 1.5f;
+    const float line_thickness = GUI_ROUTING_LINK_THICKNESS;
     const ImU32 audio_color = IM_COL32(0, 200, 0, alpha);
     const ImU32 parameter_color = IM_COL32(200, 150, 0, alpha);
     const ImU32 dragging_color = IM_COL32(150, 150, 150, 255);

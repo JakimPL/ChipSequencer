@@ -44,9 +44,10 @@ void AudioEngine::play() {
         return;
     }
 
-    initialize();
     playing = true;
     paused = false;
+    error = false;
+    initialize();
     join_thread();
     playback_thread = std::thread(&AudioEngine::playback_function, this);
 }
