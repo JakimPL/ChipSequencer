@@ -45,6 +45,8 @@ struct OutputType {
 
     uint8_t set_output_flag(uint8_t &output_flag) const;
     uint8_t set_item_flag(uint8_t &item_flag) const;
+
+    void update_routing_item(const Target target);
     void from_flags(const uint8_t output_flag, const uint8_t item_flag);
     void from_link(const Link &link);
     void set_link(Link &link, const ItemType type, const uint8_t id) const;

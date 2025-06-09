@@ -469,11 +469,13 @@ void draw_output_parameter_generic(OutputType &output_type, const std::vector<st
     }
 
     prepare_combo(routing.labels, "##OutputParameter" + label + "ParameterCombo", item);
-    if (item < routing.labels.size()) {
-        output_type.routing_index = item;
-        output_type.offset = routing.offsets[item];
-        output_type.variable_type = static_cast<int>(routing.types[item]);
+    if (item >= routing.labels.size()) {
+        item = 0;
     }
+
+    output_type.routing_index = item;
+    output_type.offset = routing.offsets[item];
+    output_type.variable_type = static_cast<int>(routing.types[item]);
 }
 
 void draw_output_parameter_oscillator(OutputType &output_type) {
@@ -483,25 +485,28 @@ void draw_output_parameter_oscillator(OutputType &output_type) {
     }
 
     const RoutingItems &routing = routing_variables.at(Target::OSCILLATOR);
-    const Oscillator *oscillator = static_cast<Oscillator *>(oscillators[output_type.index]);
-    const auto [indices, labels, offsets, types] = routing.filter_items(oscillator->generator_index);
     int &item = output_type.routing_item;
-
-    if (labels.empty()) {
-        ImGui::Text("No parameters available.");
-        return;
-    }
 
     if (prepare_combo(oscillator_names, "##OutputParameterOscillatorCombo", output_type.index, true).value_changed) {
         item = 0;
     }
 
-    prepare_combo(labels, "##OutputParameterOscillatorParameterCombo", item);
-    if (item < labels.size()) {
-        output_type.routing_index = indices[item];
-        output_type.offset = routing.offsets[output_type.routing_index];
-        output_type.variable_type = static_cast<int>(routing.types[output_type.routing_index]);
+    output_type.index = clamp_index(output_type.index, static_cast<int>(oscillators.size()));
+    const Oscillator *oscillator = reinterpret_cast<Oscillator *>(oscillators[output_type.index]);
+    const auto [indices, labels, offsets, types] = routing.filter_items(oscillator->generator_index);
+    if (labels.empty()) {
+        ImGui::Text("No parameters available.");
+        return;
     }
+
+    prepare_combo(labels, "##OutputParameterOscillatorParameterCombo", item);
+    if (item >= labels.size()) {
+        item = 0;
+    }
+
+    output_type.routing_index = indices[item];
+    output_type.offset = routing.offsets[output_type.routing_index];
+    output_type.variable_type = static_cast<int>(routing.types[output_type.routing_index]);
 }
 
 void draw_output_parameter_dsp(OutputType &output_type) {
@@ -511,25 +516,29 @@ void draw_output_parameter_dsp(OutputType &output_type) {
     }
 
     const RoutingItems &routing = routing_variables.at(Target::DSP);
+    int &item = output_type.routing_item;
+
+    if (prepare_combo(dsp_names, "##OutputParameterDSPCombo", output_type.index, true).value_changed) {
+        item = 0;
+    }
+
+    output_type.index = clamp_index(output_type.index, static_cast<int>(dsps.size()));
     const DSP *dsp = static_cast<DSP *>(dsps[output_type.index]);
     const auto [indices, labels, offsets, types] = routing.filter_items(dsp->effect_index);
-    int &item = output_type.routing_item;
 
     if (labels.empty()) {
         ImGui::Text("No parameters available.");
         return;
     }
 
-    if (prepare_combo(dsp_names, "##OutputParameterDSPCombo", output_type.index, true).value_changed) {
+    prepare_combo(labels, "##OutputParameterDSPParameterCombo", item);
+    if (item >= labels.size()) {
         item = 0;
     }
 
-    prepare_combo(labels, "##OutputParameterDSPParameterCombo", item);
-    if (item < labels.size()) {
-        output_type.routing_index = indices[item];
-        output_type.offset = routing.offsets[output_type.routing_index];
-        output_type.variable_type = static_cast<int>(routing.types[output_type.routing_index]);
-    }
+    output_type.routing_index = indices[item];
+    output_type.offset = routing.offsets[output_type.routing_index];
+    output_type.variable_type = static_cast<int>(routing.types[output_type.routing_index]);
 }
 
 bool draw_output(OutputType &output_type, const LinkKey key) {
