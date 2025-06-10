@@ -1,5 +1,7 @@
-#include "../song/core.hpp"
 #include "routing.hpp"
+
+extern std::vector<DSP *> dsps;
+extern std::vector<Oscillator *> oscillators;
 
 const std::map<Target, RoutingItems> routing_variables = {
     {
