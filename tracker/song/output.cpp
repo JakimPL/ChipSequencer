@@ -140,7 +140,7 @@ void OutputType::set_link(Link &link, const ItemType type, const uint8_t id) con
     }
 }
 
-void OutputType::load_splitter(const uint8_t target[], const Link &link) {
+void OutputType::load_splitter(const uint8_t target[]) {
     for (size_t i = 0; i < MAX_OUTPUT_CHANNELS; ++i) {
         splitter[i] = static_cast<float>(target[i]) / UINT8_MAX;
     }
@@ -148,6 +148,6 @@ void OutputType::load_splitter(const uint8_t target[], const Link &link) {
 
 void OutputType::set_splitter(uint8_t target[]) const {
     for (size_t i = 0; i < MAX_OUTPUT_CHANNELS; ++i) {
-        target[i] = static_cast<uint8_t>(std::round(splitter[i] * UINT8_MAX));
+        std::cout << "Set: " << splitter[i] << " -> " << static_cast<int>(target[i]) << std::endl;
     }
 }

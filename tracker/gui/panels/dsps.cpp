@@ -84,7 +84,7 @@ void GUIDSPsPanel::from() {
 
     const Link &link = links[static_cast<size_t>(ItemType::DSP)][dsp_index];
     current_dsp.output_type.from_link(link);
-    current_dsp.output_type.load_splitter(generic->splitter, link);
+    current_dsp.output_type.load_splitter(generic->splitter);
 }
 
 void GUIDSPsPanel::to() const {

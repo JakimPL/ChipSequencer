@@ -34,6 +34,10 @@
     %define DEFAULT_WAVETABLE_SIZE 16
 
     %define DEFAULT_GAINER_VOLUME 0x8000
+    %define DEFAULT_SPLITTER_0 0x80
+    %define DEFAULT_SPLITTER_1 0x80
+    %define DEFAULT_SPLITTER_2 0x00
+    %define DEFAULT_SPLITTER_3 0x00
 
 ; Notes
     %define NOTES 250

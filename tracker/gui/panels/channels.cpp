@@ -70,7 +70,7 @@ void GUIChannelsPanel::from() {
 
     const Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][channel_index];
     current_channel.output_type.from_link(link);
-    current_channel.output_type.load_splitter(channel->splitter, link);
+    current_channel.output_type.load_splitter(channel->splitter);
 }
 
 void GUIChannelsPanel::to() const {

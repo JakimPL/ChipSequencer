@@ -51,7 +51,7 @@ struct OutputType {
     void from_link(const Link &link);
     void set_link(Link &link, const ItemType type, const uint8_t id) const;
 
-    void load_splitter(const uint8_t target[], const Link &link);
+    void load_splitter(const uint8_t target[]);
     void set_splitter(uint8_t target[]) const;
 };
 

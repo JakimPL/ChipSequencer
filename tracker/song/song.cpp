@@ -370,10 +370,10 @@ Channel *Song::add_channel() {
     channel->output_flag = DEFAULT_OUTPUT_FLAG;
     channel->pitch = DEFAULT_CHANNEL_PITCH;
     channel->target = 0;
-    channel->splitter[0] = 0x80;
-    channel->splitter[1] = 0x80;
-    channel->splitter[2] = 0x00;
-    channel->splitter[3] = 0x00;
+    channel->splitter[0] = DEFAULT_SPLITTER_0;
+    channel->splitter[1] = DEFAULT_SPLITTER_1;
+    channel->splitter[2] = DEFAULT_SPLITTER_2;
+    channel->splitter[3] = DEFAULT_SPLITTER_3;
     return channel;
 }
 
@@ -407,10 +407,10 @@ void *Song::add_dsp() {
 
     dsp->dsp_size = SIZE_DSP_GAINER;
     dsp->output_flag = DEFAULT_OUTPUT_FLAG;
-    dsp->splitter[0] = 0x80;
-    dsp->splitter[1] = 0x80;
-    dsp->splitter[2] = 0x00;
-    dsp->splitter[3] = 0x00;
+    dsp->splitter[0] = DEFAULT_SPLITTER_0;
+    dsp->splitter[1] = DEFAULT_SPLITTER_1;
+    dsp->splitter[2] = DEFAULT_SPLITTER_2;
+    dsp->splitter[3] = DEFAULT_SPLITTER_3;
     dsp->effect_index = EFFECT_GAINER;
     dsp->volume = DEFAULT_GAINER_VOLUME;
 
