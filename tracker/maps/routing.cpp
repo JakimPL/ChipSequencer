@@ -1,3 +1,4 @@
+#include "../song/core.hpp"
 #include "routing.hpp"
 
 const std::map<Target, RoutingItems> routing_variables = {
@@ -81,18 +82,18 @@ RoutingItems::RoutingItems(std::vector<RoutingItem> items) {
         offsets.push_back(item.offset);
         types.push_back(item.type);
         constraints.push_back(item.constraint);
-        offset_to_index[item.offset] = i;
+        offset_to_index[{item.constraint, item.offset}] = i;
     }
 }
 
-RoutingTuple RoutingItems::filter_items(const int index, const bool allow_hidden) const {
+RoutingTuple RoutingItems::filter_items(const int constraint, const bool allow_hidden) const {
     std::vector<size_t> indices;
     std::vector<std::string> filtered_labels;
     std::vector<uint16_t> filtered_offsets;
     std::vector<TargetVariableType> filtered_types;
     for (size_t i = 0; i < labels.size(); ++i) {
         if (constraints[i] == ROUTING_NO_CONSTRAINTS ||
-            constraints[i] == index ||
+            constraints[i] == constraint ||
             (allow_hidden && constraints[i] == ROUTING_HIDDEN)) {
             indices.push_back(i);
             filtered_labels.push_back(labels[i]);
@@ -102,4 +103,31 @@ RoutingTuple RoutingItems::filter_items(const int index, const bool allow_hidden
     }
 
     return {indices, filtered_labels, filtered_offsets, filtered_types};
+}
+
+size_t RoutingItems::get_index_from_offset(const LinkKey key) const {
+    if (offset_to_index.empty()) {
+        return -1;
+    }
+
+    int constraint = ROUTING_NO_CONSTRAINTS;
+    if (key.target == Target::DSP) {
+        const DSP *dsp = static_cast<DSP *>(dsps[key.index]);
+        constraint = dsp->effect_index;
+    } else if (key.target == Target::OSCILLATOR) {
+        const Oscillator *oscillator = static_cast<Oscillator *>(oscillators[key.index]);
+        constraint = oscillator->generator_index;
+    }
+
+    for (const auto &[key_constraint, index] : offset_to_index) {
+        const auto &[item_constraint, item_offset] = key_constraint;
+        if (key.offset == item_offset) {
+            if (constraint == ROUTING_NO_CONSTRAINTS ||
+                constraint == item_constraint) {
+                return index;
+            }
+        }
+    }
+
+    return -1;
 }

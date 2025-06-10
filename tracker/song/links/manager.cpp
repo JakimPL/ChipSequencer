@@ -420,7 +420,7 @@ TargetVariableType LinkManager::get_type(const LinkKey key) const {
     case Target::DSP:
     case Target::CHANNEL: {
         try {
-            const size_t index = routing_variables.at(key.target).offset_to_index.at(key.offset);
+            const size_t index = routing_variables.at(key.target).get_index_from_offset(key);
             return routing_variables.at(key.target).types[index];
         } catch (const std::out_of_range &exception) {
             return TargetVariableType::Byte;

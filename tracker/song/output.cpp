@@ -103,17 +103,9 @@ void OutputType::from_link(const Link &link) {
         target = target_offset;
         const auto &routing = routing_variables.at(link.target);
         index = link.index;
-        try {
-            offset = link.offset;
-            routing_index = routing.offset_to_index.at(link.offset);
-            update_routing_item(link.target);
-        } catch (const std::out_of_range &exception) {
-            if (!routing.offset_to_index.empty()) {
-                const auto &it = routing.offset_to_index.begin();
-                routing_index = it->first;
-                offset = it->second;
-            }
-        }
+        offset = link.offset;
+        routing_index = routing.get_index_from_offset(link.key);
+        update_routing_item(link.target);
         break;
     }
     }
