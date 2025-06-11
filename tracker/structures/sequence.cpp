@@ -1,3 +1,4 @@
+#include "../general.hpp"
 #include "../utils/file.hpp"
 #include "sequence.hpp"
 
@@ -23,7 +24,7 @@ Sequence *Sequence::deserialize(std::ifstream &file) {
     uint8_t size;
     read_data(file, &size, sizeof(size));
 
-    Sequence *sequence = new Sequence;
+    Sequence *sequence = resource_manager.allocate<Sequence>();
     sequence->size = size;
 
     for (size_t i = 0; i < size / 2; i++) {

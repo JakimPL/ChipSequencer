@@ -199,7 +199,7 @@ void LinkManager::save_targets() {
     }
 }
 
-void LinkManager::realign_links(const size_t index, const Target target, const ItemType type) {
+void LinkManager::realign_links(const Target target, const size_t index, const ItemType type) {
     size_t link_type = static_cast<size_t>(type);
     for (Link &link : links[link_type]) {
         if (link.target == target && link.index >= index) {
@@ -210,10 +210,11 @@ void LinkManager::realign_links(const size_t index, const Target target, const I
     }
 }
 
-void LinkManager::realign_links(const size_t index, const Target target) {
-    realign_links(index, target, ItemType::CHANNEL);
-    realign_links(index, target, ItemType::DSP);
-    realign_links(index, target, ItemType::COMMANDS);
+void LinkManager::realign_links(const Target target, const size_t index) {
+    remove_dependencies(target, index);
+    realign_links(target, index, ItemType::CHANNEL);
+    realign_links(target, index, ItemType::DSP);
+    realign_links(target, index, ItemType::COMMANDS);
 }
 
 bool LinkManager::is_linked(const LinkKey key) const {
@@ -318,6 +319,47 @@ size_t LinkManager::find_pointer_id_by_key(const LinkKey key) const {
     return 0;
 }
 
+std::vector<std::pair<ItemType, uint8_t>> LinkManager::find_dependencies(const Target target, const size_t index) const {
+    std::set<std::pair<ItemType, uint8_t>> dependencies;
+    for (const auto &array : links) {
+        for (const Link &link : array) {
+            if (link.target == target && link.index == index) {
+                dependencies.insert({link.type, link.id});
+            }
+        }
+    }
+
+    return std::vector<std::pair<ItemType, uint8_t>>(dependencies.begin(), dependencies.end());
+}
+
+void LinkManager::remove_dependencies(const Target target, const size_t index) {
+    const std::vector<std::pair<ItemType, uint8_t>> dependencies = find_dependencies(target, index);
+    for (const auto &[type, id] : dependencies) {
+        size_t link_type = static_cast<size_t>(type);
+        Link &link = links[link_type][id];
+        link.target = Target::SPLITTER_OUTPUT;
+        link.index = 0;
+        link.offset = 0;
+        void *item = nullptr;
+        switch (type) {
+        case ItemType::CHANNEL: {
+            item = channels[id];
+            break;
+        }
+        case ItemType::DSP: {
+            item = dsps[id];
+            break;
+        }
+        case ItemType::COMMANDS:
+        case ItemType::COUNT:
+        default: {
+            break;
+        }
+        }
+        set_link(link, item, id);
+    }
+}
+
 void LinkManager::remove_key(Link &link) {
     const auto map_it = map.find(link.key);
     if (map_it != map.end()) {
@@ -378,7 +420,7 @@ TargetVariableType LinkManager::get_type(const LinkKey key) const {
     case Target::DSP:
     case Target::CHANNEL: {
         try {
-            const size_t index = routing_variables.at(key.target).offset_to_index.at(key.offset);
+            const size_t index = routing_variables.at(key.target).get_index_from_offset(key);
             return routing_variables.at(key.target).types[index];
         } catch (const std::out_of_range &exception) {
             return TargetVariableType::Byte;

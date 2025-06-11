@@ -27,7 +27,6 @@
     extern dsps
     extern channels
     extern commands_channels
-    extern buffer_offsets
     extern targets
     %endif
 
@@ -39,7 +38,7 @@ initialize:
     call calculate_ticks_per_beat
     call reset_channels
 
-    %ifdef USED_COMMANDS
+    %ifdef USED_COMMAND
     call reset_commands_channels
     %endif
 
@@ -61,7 +60,7 @@ initialize:
     ret
 
 frame:
-    %ifdef USED_COMMANDS
+    %ifdef USED_COMMAND
     call commands
     %endif
     call mix

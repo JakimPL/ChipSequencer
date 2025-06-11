@@ -37,7 +37,6 @@ class Song {
 
     bool clear_temp = false;
 
-    void generate_offsets_asm(std::stringstream &asm_content, const char separator) const;
     void generate_targets_asm(
         std::stringstream &asm_content,
         const CompilationTarget compilation_target,
@@ -83,7 +82,6 @@ class Song {
     void export_dsps(const std::string &directory) const;
     void export_commands_sequences(const std::string &directory) const;
     void export_links(const std::string &filename) const;
-    void export_offsets(const std::string &filename) const;
 
     void import_channels(const std::string &directory, const nlohmann::json &json);
     void import_dsps(const std::string &directory, const nlohmann::json &json);
@@ -105,11 +103,16 @@ class Song {
 
     void update_sizes();
     void clear_data();
-    void delete_oscillator(void *oscillator);
-    void delete_dsp(void *dsp);
 
     std::set<size_t> get_channel_orders() const;
     std::set<size_t> get_commands_channel_orders() const;
+
+    void add_dsp_dependencies(
+        std::set<std::string> &dependencies,
+        std::vector<std::string> &names,
+        const std::vector<Link> &links,
+        const size_t dsp_index
+    ) const;
 
   public:
     Song();
@@ -155,8 +158,6 @@ class Song {
     CommandsChannel *duplicate_commands_channel(const size_t index);
     CommandsSequence *duplicate_commands_sequence(const size_t index);
 
-    void set_buffer_offsets();
-
     void remove_envelope(const size_t index);
     void remove_sequence(const size_t index);
     void remove_order(const size_t index);
@@ -168,12 +169,13 @@ class Song {
     void remove_commands_sequence(const size_t index);
 
     std::pair<ValidationResult, int> validate();
-    std::vector<size_t> find_envelope_dependencies(const size_t envelope_index) const;
-    std::vector<size_t> find_sequence_dependencies(const size_t sequence_index) const;
-    std::vector<size_t> find_order_dependencies(const size_t order_index) const;
-    std::vector<size_t> find_wavetable_dependencies(const size_t wavetable_index) const;
-    std::vector<size_t> find_oscillator_dependencies(const size_t oscillator_index) const;
-    std::vector<size_t> find_commands_sequence_dependencies(const size_t sequence_index) const;
+    std::vector<std::string> find_envelope_dependencies(const size_t envelope_index) const;
+    std::vector<std::string> find_sequence_dependencies(const size_t sequence_index) const;
+    std::vector<std::string> find_order_dependencies(const size_t order_index) const;
+    std::vector<std::string> find_wavetable_dependencies(const size_t wavetable_index) const;
+    std::vector<std::string> find_oscillator_dependencies(const size_t oscillator_index) const;
+    std::vector<std::string> find_commands_sequence_dependencies(const size_t sequence_index) const;
+    std::vector<std::string> find_dsp_dependencies(const size_t dsp_index) const;
 
     size_t calculate_dsps(const Effect effect) const;
     size_t calculate_oscillators(const Generator generator) const;

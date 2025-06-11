@@ -1,3 +1,4 @@
+#include "../../general.hpp"
 #include "../../maps/commands.hpp"
 #include "../../utils/file.hpp"
 #include "sequence.hpp"
@@ -22,7 +23,7 @@ void CommandsSequence::serialize(std::ofstream &file) const {
 }
 
 CommandsSequence *CommandsSequence::deserialize(std::ifstream &file) {
-    CommandsSequence *commands_sequence = new CommandsSequence();
+    CommandsSequence *commands_sequence = resource_manager.allocate<CommandsSequence>();
     read_data(file, &commands_sequence->size, sizeof(commands_sequence->size));
     read_data(file, &commands_sequence->length, sizeof(commands_sequence->length));
     for (uint8_t i = 0; i < commands_sequence->length; i++) {

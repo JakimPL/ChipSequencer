@@ -15,10 +15,14 @@ void GUIDSPsPanel::draw() {
     ImGui::Columns(1, "dsp_columns");
 
     ImGui::BeginDisabled(gui.is_playing());
+    std::vector<std::string> dependencies = song.find_dsp_dependencies(dsp_index);
+    std::vector<std::pair<ItemType, uint8_t>> link_dependencies = link_manager.find_dependencies(Target::DSP, dsp_index);
     push_tertiary_style();
-    draw_add_or_remove();
+    draw_add_or_remove(dependencies, link_dependencies);
     prepare_combo(dsp_names, "##DSPCombo", dsp_index);
+    show_dependency_tooltip(dependencies);
     pop_tertiary_style();
+
     ImGui::Separator();
 
     from();
@@ -80,7 +84,7 @@ void GUIDSPsPanel::from() {
 
     const Link &link = links[static_cast<size_t>(ItemType::DSP)][dsp_index];
     current_dsp.output_type.from_link(link);
-    current_dsp.output_type.load_splitter(generic->splitter, link);
+    current_dsp.output_type.load_splitter(generic->splitter);
 }
 
 void GUIDSPsPanel::to() const {
@@ -232,7 +236,7 @@ void GUIDSPsPanel::draw_effect() {
         break;
     }
     case Effect::Filter: {
-        ImGui::Checkbox("High-pass", &current_dsp.filter_mode);
+        draw_checkbox("High-pass", current_dsp.filter_mode, {Target::DSP, dsp_index, DSP_FILTER_MODE});
         ImGui::NewLine();
         draw_knob("Frequency", current_dsp.filter_cutoff, {Target::DSP, dsp_index, DSP_FILTER_FREQUENCY}, 0.0f, 1.0f);
         break;

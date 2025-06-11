@@ -67,9 +67,10 @@ load_dsp_target:
 
 load_dsp_buffer:
     movzx ecx, byte [current_dsp]
-    mov esi, [dsp_timer + 4 * ecx]
-    shl esi, 2
-    add esi, [buffer_offsets + 4 * ecx]
+    mov ebx, [dsp_timer + 4 * ecx]
+    mov esi, ecx
+    shl esi, LOG2_MAX_DSP_BUFFER_SIZE + 2
+    lea esi, [esi + 4 * ebx]
     add esi, dsp_buffer
     ret
 

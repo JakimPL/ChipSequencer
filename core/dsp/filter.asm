@@ -2,15 +2,7 @@
 filter:
     %ifdef USED_DSP_FILTER
 .load_buffer:
-    %ifdef TRACKER
-    movzx esi, byte [current_dsp]
-    shl esi, 8
-    add esi, dsp_buffer
-    %else
-    movzx ecx, byte [current_dsp]
-    mov esi, [buffer_offsets + 4 * ecx]
-    add esi, dsp_buffer
-    %endif
+    call load_dsp_buffer
 
     MOV_FROM_SI ebx
 .load_frequency:

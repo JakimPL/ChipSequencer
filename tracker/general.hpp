@@ -11,6 +11,7 @@ class GUI;
 #include "song/buffers.hpp"
 #include "song/song.hpp"
 #include "song/links/manager.hpp"
+#include "structures/resources/manager.hpp"
 #include "tuning/frequencies.hpp"
 #include "tuning/scale.hpp"
 
@@ -19,6 +20,7 @@ extern FrequencyTable frequency_table;
 extern LinkManager link_manager;
 extern FileDriver file_driver;
 extern ShortcutManager shortcut_manager;
+extern ResourceManager resource_manager;
 extern Buffers buffers;
 
 extern Song song;

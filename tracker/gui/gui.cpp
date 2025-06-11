@@ -12,7 +12,7 @@ GUI::GUI()
 }
 
 GUI::~GUI() {
-    stop();
+    stop(false);
     terminate();
 }
 
@@ -157,6 +157,14 @@ bool GUI::is_done() {
 
 void GUI::set_audio_engine(AudioEngine *engine) {
     audio_engine = engine;
+}
+
+bool GUI::check_audio_error() const {
+    if (audio_engine) {
+        return audio_engine->is_error();
+    }
+
+    return false;
 }
 
 void GUI::set_index(const GUIElement element, const int index) {
@@ -378,12 +386,14 @@ std::pair<ValidationResult, int> GUI::play() const {
     return {result, index};
 }
 
-void GUI::stop() const {
+void GUI::stop(const bool restore_parameters) const {
     if (audio_engine) {
         audio_engine->stop();
     }
 
-    link_manager.restore_parameters();
+    if (restore_parameters) {
+        link_manager.restore_parameters();
+    }
 }
 
 bool GUI::is_playing() const {

@@ -2,6 +2,7 @@
 #include <cstring>
 
 #include "../constants.hpp"
+#include "../song/core.hpp"
 #include "output.hpp"
 
 uint8_t OutputType::set_output_flag(uint8_t &output_flag) const {
@@ -36,6 +37,39 @@ void OutputType::from_flags(const uint8_t output_flag, const uint8_t item_flag) 
     shift = variable_type == 0 ? 0 : output_flag & MASK_SHIFT;
 }
 
+void OutputType::update_routing_item(const Target target) {
+    routing_item = 0;
+    if (routing_index < 0) {
+        return;
+    }
+
+    if (target == Target::OSCILLATOR) {
+        const Oscillator *oscillator = static_cast<Oscillator *>(oscillators[index]);
+        const auto &routing = routing_variables.at(Target::OSCILLATOR);
+        const auto [indices, _, __, ___] = routing.filter_items(oscillator->generator_index);
+
+        for (size_t i = 0; i < indices.size(); ++i) {
+            if (indices[i] == routing_index) {
+                routing_item = static_cast<int>(i);
+                break;
+            }
+        }
+    } else if (target == Target::DSP) {
+        const DSP *dsp = static_cast<DSP *>(dsps[index]);
+        const auto &routing = routing_variables.at(Target::DSP);
+        const auto [indices, _, __, ___] = routing.filter_items(dsp->effect_index);
+
+        for (size_t i = 0; i < indices.size(); ++i) {
+            if (indices[i] == routing_index) {
+                routing_item = static_cast<int>(i);
+                break;
+            }
+        }
+    } else {
+        routing_item = routing_index;
+    }
+}
+
 void OutputType::from_link(const Link &link) {
     target = static_cast<int>(link.target);
     const int max_parameter = static_cast<int>(OutputTarget::Parameter);
@@ -45,37 +79,35 @@ void OutputType::from_link(const Link &link) {
     dsp_channel = 0;
     splitter_on = false;
     switch (output_target) {
-    case OutputTarget::OutputSplitter:
-        output_channel = link.offset / sizeof(_Float32);
+    case OutputTarget::OutputSplitter: {
+        output_channel = link.index;
         splitter_on = true;
         break;
-    case OutputTarget::DSPSplitter:
-        dsp_channel = link.offset / sizeof(_Float32);
+    }
+    case OutputTarget::DSPSplitter: {
+        dsp_channel = link.index;
         splitter_on = true;
         break;
-    case OutputTarget::DirectOutput:
+    }
+    case OutputTarget::DirectOutput: {
         output_channel = link.index;
         break;
-    case OutputTarget::DirectDSP:
+    }
+    case OutputTarget::DirectDSP: {
         dsp_channel = link.index;
         break;
-    case OutputTarget::Parameter:
+    }
+    case OutputTarget::Parameter: {
         const int target_offset = max_parameter;
         parameter_type = target - target_offset;
         target = target_offset;
         const auto &routing = routing_variables.at(link.target);
         index = link.index;
-        try {
-            routing_index = routing.offset_to_index.at(link.offset);
-            offset = link.offset;
-        } catch (const std::out_of_range &exception) {
-            if (!routing.offset_to_index.empty()) {
-                const auto &it = routing.offset_to_index.begin();
-                routing_index = it->first;
-                offset = it->second;
-            }
-        }
+        offset = link.offset;
+        routing_index = routing.get_index_from_offset(link.key);
+        update_routing_item(link.target);
         break;
+    }
     }
 }
 
@@ -84,26 +116,16 @@ void OutputType::set_link(Link &link, const ItemType type, const uint8_t id) con
     link.id = id;
     OutputTarget label = static_cast<OutputTarget>(target);
     switch (label) {
+    case OutputTarget::DirectOutput:
     case OutputTarget::OutputSplitter: {
-        link.target = Target::SPLITTER_OUTPUT;
-        link.index = get_splitter_data();
-        link.offset = 0;
-        break;
-    }
-    case OutputTarget::DSPSplitter: {
-        link.target = Target::SPLITTER_DSP;
-        link.index = get_splitter_data();
-        link.offset = sizeof(_Float32) * dsp_channel;
-        break;
-    }
-    case OutputTarget::DirectOutput: {
-        link.target = Target::DIRECT_OUTPUT;
+        link.target = static_cast<Target>(target);
         link.index = output_channel;
         link.offset = sizeof(_Float32) * output_channel;
         break;
     }
-    case OutputTarget::DirectDSP: {
-        link.target = Target::DIRECT_DSP;
+    case OutputTarget::DirectDSP:
+    case OutputTarget::DSPSplitter: {
+        link.target = static_cast<Target>(target);
         link.index = dsp_channel;
         link.offset = sizeof(_Float32) * dsp_channel;
         break;
@@ -118,31 +140,16 @@ void OutputType::set_link(Link &link, const ItemType type, const uint8_t id) con
     }
 }
 
-void OutputType::load_splitter(const uint8_t target[], const Link &link) {
+void OutputType::load_splitter(const uint8_t target[]) {
     for (size_t i = 0; i < MAX_OUTPUT_CHANNELS; ++i) {
-        splitter[i] = static_cast<float>(target[i]) / UINT8_MAX;
+        const uint8_t value = target[i];
+        splitter[i] = static_cast<float>(value) / UINT8_MAX;
     }
 }
 
 void OutputType::set_splitter(uint8_t target[]) const {
     for (size_t i = 0; i < MAX_OUTPUT_CHANNELS; ++i) {
-        target[i] = static_cast<uint8_t>(std::round(splitter[i] * UINT8_MAX));
+        const float value = splitter[i];
+        target[i] = static_cast<uint8_t>(std::round(value * UINT8_MAX));
     }
-}
-
-uint32_t OutputType::get_splitter_data() const {
-    uint32_t splitter_data;
-    uint8_t data[MAX_OUTPUT_CHANNELS];
-    for (size_t i = 0; i < MAX_OUTPUT_CHANNELS; ++i) {
-        data[i] = std::round(splitter[i] * UINT8_MAX);
-    }
-
-    memcpy(&splitter_data, data, sizeof(uint32_t));
-    return splitter_data;
-}
-
-std::array<uint8_t, MAX_OUTPUT_CHANNELS> OutputType::unpack_splitter_data(uint32_t splitter_data) {
-    std::array<uint8_t, MAX_OUTPUT_CHANNELS> data;
-    memcpy(data.data(), &splitter_data, sizeof(uint32_t));
-    return data;
 }

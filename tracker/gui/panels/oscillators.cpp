@@ -16,11 +16,11 @@ void GUIOscillatorsPanel::draw() {
     ImGui::Begin("Oscillators");
     ImGui::Columns(1, "oscillator_columns");
 
-    std::vector<size_t> dependencies = song.find_oscillator_dependencies(oscillator_index);
+    std::vector<std::string> dependencies = song.find_oscillator_dependencies(oscillator_index);
     push_tertiary_style();
-    draw_add_or_remove("channels", dependencies);
+    draw_add_or_remove(dependencies);
     prepare_combo(oscillator_names, "##OscillatorCombo", oscillator_index);
-    show_dependency_tooltip("channels", dependencies);
+    show_dependency_tooltip(dependencies);
 
     pop_tertiary_style();
 
@@ -230,7 +230,7 @@ void GUIOscillatorsPanel::draw_oscillator() {
         break;
     }
     case Generator::Saw: {
-        ImGui::Checkbox("Reverse", &current_oscillator.saw_reverse);
+        draw_checkbox("Bypass", current_oscillator.saw_reverse, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_SAW_REVERSE});
         break;
     }
     case Generator::Wavetable: {
@@ -241,7 +241,7 @@ void GUIOscillatorsPanel::draw_oscillator() {
         }
 
         ImGui::NextColumn();
-        ImGui::Checkbox("Interpolation", &current_oscillator.wavetable_interpolation);
+        draw_checkbox("Interpolation", current_oscillator.wavetable_interpolation, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_WAVETABLE_INTERPOLATION});
         break;
     }
     case Generator::Count:

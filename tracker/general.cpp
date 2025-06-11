@@ -6,6 +6,7 @@ FrequencyTable frequency_table = FrequencyTable(scale_composer, DEFAULT_A4_FREQU
 LinkManager link_manager;
 FileDriver file_driver;
 ShortcutManager shortcut_manager;
+ResourceManager resource_manager;
 Buffers buffers;
 
 Song song;

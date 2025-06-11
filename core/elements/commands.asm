@@ -1,4 +1,4 @@
-    %ifdef USED_COMMANDS
+    %ifdef USED_COMMAND
     SEGMENT_CODE
 commands:
     pusha

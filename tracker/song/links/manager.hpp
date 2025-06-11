@@ -2,9 +2,9 @@
 #define SONG_LINKS_MANAGER_HPP
 
 #include <cstdint>
+#include <unordered_map>
 #include <variant>
 #include <vector>
-#include <unordered_map>
 
 #include "key.hpp"
 #include "link.hpp"
@@ -36,9 +36,6 @@ class LinkManager {
     void set_links();
     void save_targets();
 
-    void realign_links(const size_t index, const Target target, const ItemType type);
-    void realign_links(const size_t index, const Target target);
-
     bool is_linked(const LinkKey key) const;
     std::vector<Link *> get_links(const LinkKey key) const;
     std::string get_link_reference(const LinkKey key) const;
@@ -46,6 +43,11 @@ class LinkManager {
     std::vector<std::pair<void *, LinkKey>> get_pointers_map() const;
     std::pair<void *, LinkKey> get_pointer_and_key(size_t index) const;
     size_t find_pointer_id_by_key(const LinkKey key) const;
+
+    std::vector<std::pair<ItemType, uint8_t>> find_dependencies(const Target target, const size_t index) const;
+    void remove_dependencies(const Target target, const size_t index);
+    void realign_links(const Target target, const size_t index, const ItemType type);
+    void realign_links(const Target target, const size_t index);
 
     void capture_parameters();
     void restore_parameters() const;

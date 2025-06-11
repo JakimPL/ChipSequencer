@@ -15,7 +15,6 @@
     global channels
     global commands_sequences
     global commands_channels
-    global buffer_offsets
 
     extern dsp_input
     extern output

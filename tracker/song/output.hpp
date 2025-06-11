@@ -4,7 +4,6 @@
 #include <cstdint>
 
 #include "../maps/routing.hpp"
-#include "../structures/channel.hpp"
 #include "links/link.hpp"
 
 enum class OutputTarget {
@@ -41,18 +40,23 @@ struct OutputType {
     int offset;
 
     bool splitter_on = true;
-    std::array<float, MAX_OUTPUT_CHANNELS> splitter = {0.5f, 0.5f, 0.0f, 0.0f};
+    std::array<float, MAX_OUTPUT_CHANNELS> splitter = {
+        static_cast<float>(DEFAULT_SPLITTER_0) / UINT8_MAX,
+        static_cast<float>(DEFAULT_SPLITTER_1) / UINT8_MAX,
+        static_cast<float>(DEFAULT_SPLITTER_2) / UINT8_MAX,
+        static_cast<float>(DEFAULT_SPLITTER_3) / UINT8_MAX,
+    };
 
     uint8_t set_output_flag(uint8_t &output_flag) const;
     uint8_t set_item_flag(uint8_t &item_flag) const;
+
+    void update_routing_item(const Target target);
     void from_flags(const uint8_t output_flag, const uint8_t item_flag);
     void from_link(const Link &link);
     void set_link(Link &link, const ItemType type, const uint8_t id) const;
 
-    void load_splitter(const uint8_t target[], const Link &link);
+    void load_splitter(const uint8_t target[]);
     void set_splitter(uint8_t target[]) const;
-    uint32_t get_splitter_data() const;
-    static std::array<uint8_t, MAX_OUTPUT_CHANNELS> unpack_splitter_data(uint32_t splitter_data);
 };
 
 static_assert(static_cast<uint8_t>(OutputTarget::OutputSplitter) == static_cast<uint8_t>(Target::SPLITTER_OUTPUT));

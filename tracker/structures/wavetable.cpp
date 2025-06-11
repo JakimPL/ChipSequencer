@@ -1,3 +1,4 @@
+#include "../general.hpp"
 #include "../utils/file.hpp"
 #include "wavetable.hpp"
 
@@ -16,7 +17,7 @@ Wavetable *Wavetable::deserialize(std::ifstream &file) {
     uint16_t wavetable_size;
     read_data(file, &wavetable_size, sizeof(wavetable_size));
 
-    Wavetable *wavetable = new Wavetable;
+    Wavetable *wavetable = resource_manager.allocate<Wavetable>();
     wavetable->wavetable_size = wavetable_size;
 
     for (size_t i = 0; i < wavetable_size; i++) {

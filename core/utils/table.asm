@@ -40,6 +40,7 @@ reset:
 .done:
     ret
 
+    %ifdef USED_OSCILLATOR_SINE
 load_table_16bit_item:
 ; EBX - table size
 ; ECX - divisor
@@ -58,7 +59,9 @@ load_table_16bit_item:
     mov ax, [esi + 2 * eax]
 .done:
     ret
+    %endif
 
+    %ifdef USED_OSCILLATOR_WAVETABLE
 load_table_8bit_item:
 ; EBX - table size
 ; ECX - divisor
@@ -79,6 +82,7 @@ load_table_8bit_item:
     mov al, [esi + eax]
 .done:
     ret
+    %endif
 
 load_table_item:
     mul ebx

@@ -34,12 +34,6 @@ install:
 	make onekpaq
 	make pre-commit
 
-config:
-	python scripts/config.py
-
-song:
-	python scripts/song.py
-
 consts:
 	python scripts/constants.py
 

@@ -4,7 +4,7 @@ bpm:
 unit:
     dd 60.0
 normalizer:
-    dd 0.25
+    dd 0.5
 
 num_channels:
     db CHANNELS
@@ -15,10 +15,11 @@ num_commands_channels:
 
 envelopes:
 sequences:
+commands_sequences:
 orders:
 oscillators:
 wavetables:
 dsps:
 channels:
-buffer_offsets:
-tagets:
+commands_channels:
+targets:

@@ -2,6 +2,7 @@
 
 #include "../../general.hpp"
 #include "../../song/links/manager.hpp"
+#include "../../song/links/target.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
 #include "channels.hpp"
@@ -17,8 +18,9 @@ void GUIChannelsPanel::draw() {
     ImGui::Columns(1, "channel_columns");
 
     ImGui::BeginDisabled(gui.is_playing());
+    std::vector<std::pair<ItemType, uint8_t>> link_dependencies = link_manager.find_dependencies(Target::CHANNEL, channel_index);
     push_tertiary_style();
-    draw_add_or_remove();
+    draw_add_or_remove({}, link_dependencies);
     prepare_combo(channel_names, "##ChannelCombo", channel_index);
     pop_tertiary_style();
 
@@ -68,7 +70,7 @@ void GUIChannelsPanel::from() {
 
     const Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][channel_index];
     current_channel.output_type.from_link(link);
-    current_channel.output_type.load_splitter(channel->splitter, link);
+    current_channel.output_type.load_splitter(channel->splitter);
 }
 
 void GUIChannelsPanel::to() const {
@@ -174,11 +176,7 @@ void GUIChannelsPanel::update_channel_name(const int index, const int target_id)
         target = static_cast<Target>(target_id);
     }
 
-    const bool modulator = target != Target::SPLITTER_OUTPUT &&
-                           target != Target::SPLITTER_DSP &&
-                           target != Target::DIRECT_OUTPUT &&
-                           target != Target::DIRECT_DSP;
-
+    const bool modulator = is_target_parameter(target);
     const std::string label = modulator ? "Modulator " : "Channel ";
     channel_names[index] = label + std::to_string(index);
 }
@@ -230,7 +228,7 @@ void GUIChannelsPanel::draw_channel() {
             current_channel.sync_numerator = std::clamp(current_channel.sync_numerator, 1, 16);
             current_channel.sync_denominator = std::clamp(current_channel.sync_denominator, 1, 16);
         } else {
-            draw_float_slider("Pitch (Hz)", current_channel.pitch, key, 0.0002f, 65535.0f, GUIScale::Logarithmic);
+            draw_float_slider("Pitch (Hz)", current_channel.pitch, key, GUI_MIN_PITCH, GUI_MAX_PITCH, GUIScale::Logarithmic);
         }
     } else {
         draw_float_slider("Transpose", current_channel.transpose, key, GUI_MIN_TRANSPOSE, GUI_MAX_TRANSPOSE);

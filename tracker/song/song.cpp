@@ -8,6 +8,7 @@
 
 #include "../general.hpp"
 #include "../sizes.hpp"
+#include "../gui/names.hpp"
 #include "../utils/file.hpp"
 #include "../utils/temp.hpp"
 #include "core.hpp"
@@ -18,7 +19,6 @@
 #define JSON_INDENTATION 4
 
 Song::Song() {
-    set_buffer_offsets();
     new_song();
 }
 
@@ -201,7 +201,6 @@ void Song::export_all(const std::string &directory, const CompilationTarget comp
     export_arrays(directory, "wave", wavetables);
     export_commands_sequences(directory);
     export_series(directory, "c_chan", commands_channels, {sizeof(CommandsChannel)});
-    export_offsets(directory + "/offsets.bin");
     export_links(directory + "/links.bin");
     export_gui_state(directory);
 }
@@ -225,7 +224,7 @@ Envelope *Song::add_envelope() {
         return nullptr;
     }
 
-    Envelope *envelope = new Envelope();
+    Envelope *envelope = resource_manager.allocate<Envelope>();
     envelope->base_volume = DEFAULT_ENVELOPE_BASE_VOLUME;
     envelope->sustain_level = DEFAULT_ENVELOPE_SUSTAIN_LEVEL;
     envelope->attack = DEFAULT_ENVELOPE_ATTACK;
@@ -255,8 +254,10 @@ Sequence *Song::add_sequence() {
         return nullptr;
     }
 
-    Sequence *sequence = new Sequence();
-    sequence->size = 0;
+    Sequence *sequence = resource_manager.allocate<Sequence>();
+    sequence->size = DEFAULT_SEQUENCE_LENGTH;
+    sequence->notes[0] = {NOTE_REST, DEFAULT_SEQUENCE_LENGTH};
+
     sequences.push_back(sequence);
     return sequence;
 }
@@ -280,8 +281,8 @@ Order *Song::add_order() {
         return nullptr;
     }
 
-    Order *order = new Order();
-    order->order_length = 0;
+    Order *order = resource_manager.allocate<Order>();
+    order->order_length = DEFAULT_ORDER_LENGTH;
     orders.push_back(order);
     return order;
 }
@@ -305,8 +306,9 @@ Wavetable *Song::add_wavetable() {
         return nullptr;
     }
 
-    Wavetable *wavetable = new Wavetable();
-    wavetable->wavetable_size = 0;
+    Wavetable *wavetable = resource_manager.allocate<Wavetable>();
+    wavetable->wavetable_size = DEFAULT_WAVETABLE_SIZE;
+    wavetable->data.fill(0x80);
     wavetables.push_back(wavetable);
     return wavetable;
 }
@@ -330,7 +332,7 @@ void *Song::add_oscillator() {
         return nullptr;
     }
 
-    OscillatorSquare *oscillator = new OscillatorSquare();
+    OscillatorSquare *oscillator = resource_manager.allocate<OscillatorSquare>();
     oscillator->duty_cycle = DEFAULT_OSCILLATOR_DUTY_CYCLE;
     oscillators.push_back(oscillator);
     return oscillator;
@@ -356,7 +358,7 @@ Channel *Song::add_channel() {
         return nullptr;
     }
 
-    Channel *channel = new Channel();
+    Channel *channel = resource_manager.allocate<Channel>();
     channels.push_back(channel);
     num_channels = channels.size();
     links[static_cast<size_t>(ItemType::CHANNEL)].push_back(Link());
@@ -368,10 +370,10 @@ Channel *Song::add_channel() {
     channel->output_flag = DEFAULT_OUTPUT_FLAG;
     channel->pitch = DEFAULT_CHANNEL_PITCH;
     channel->target = 0;
-    channel->splitter[0] = 0x80;
-    channel->splitter[1] = 0x80;
-    channel->splitter[2] = 0x00;
-    channel->splitter[3] = 0x00;
+    channel->splitter[0] = DEFAULT_SPLITTER_0;
+    channel->splitter[1] = DEFAULT_SPLITTER_1;
+    channel->splitter[2] = DEFAULT_SPLITTER_2;
+    channel->splitter[3] = DEFAULT_SPLITTER_3;
     return channel;
 }
 
@@ -397,7 +399,7 @@ void *Song::add_dsp() {
         return nullptr;
     }
 
-    DSPGainer *dsp = new DSPGainer();
+    DSPGainer *dsp = resource_manager.allocate<DSPGainer>();
     dsps.push_back(dsp);
     num_dsps = dsps.size();
     links[static_cast<size_t>(ItemType::DSP)].push_back(Link());
@@ -405,10 +407,10 @@ void *Song::add_dsp() {
 
     dsp->dsp_size = SIZE_DSP_GAINER;
     dsp->output_flag = DEFAULT_OUTPUT_FLAG;
-    dsp->splitter[0] = 0x80;
-    dsp->splitter[1] = 0x80;
-    dsp->splitter[2] = 0x00;
-    dsp->splitter[3] = 0x00;
+    dsp->splitter[0] = DEFAULT_SPLITTER_0;
+    dsp->splitter[1] = DEFAULT_SPLITTER_1;
+    dsp->splitter[2] = DEFAULT_SPLITTER_2;
+    dsp->splitter[3] = DEFAULT_SPLITTER_3;
     dsp->effect_index = EFFECT_GAINER;
     dsp->volume = DEFAULT_GAINER_VOLUME;
 
@@ -445,7 +447,7 @@ CommandsSequence *Song::add_commands_sequence() {
         return nullptr;
     }
 
-    CommandsSequence *sequence = new CommandsSequence();
+    CommandsSequence *sequence = resource_manager.allocate<CommandsSequence>();
     sequence->size = 0;
     sequence->length = 1;
     commands_sequences.push_back(sequence);
@@ -471,7 +473,7 @@ CommandsChannel *Song::add_commands_channel() {
         return nullptr;
     }
 
-    CommandsChannel *channel = new CommandsChannel();
+    CommandsChannel *channel = resource_manager.allocate<CommandsChannel>();
     commands_channels.push_back(channel);
     num_commands_channels = commands_channels.size();
     return channel;
@@ -493,9 +495,9 @@ CommandsChannel *Song::duplicate_commands_channel(const size_t index) {
 
 void Song::remove_envelope(const size_t index) {
     if (index < envelopes.size()) {
-        delete envelopes[index];
+        resource_manager.deallocate(envelopes[index]);
         envelopes.erase(envelopes.begin() + index);
-        link_manager.realign_links(index, Target::ENVELOPE);
+        link_manager.realign_links(Target::ENVELOPE, index);
         for (auto &channel : channels) {
             if (channel->envelope_index >= index) {
                 channel->envelope_index = std::max(0, channel->envelope_index - 1);
@@ -506,9 +508,9 @@ void Song::remove_envelope(const size_t index) {
 
 void Song::remove_sequence(const size_t index) {
     if (index < sequences.size()) {
-        delete sequences[index];
+        resource_manager.deallocate(sequences[index]);
         sequences.erase(sequences.begin() + index);
-        link_manager.realign_links(index, Target::SEQUENCE);
+        link_manager.realign_links(Target::SEQUENCE, index);
         for (auto &order : orders) {
             for (size_t i = 0; i < order->order_length; i++) {
                 if (order->sequences[i] >= index) {
@@ -521,9 +523,9 @@ void Song::remove_sequence(const size_t index) {
 
 void Song::remove_order(const size_t index) {
     if (index < orders.size()) {
-        delete orders[index];
+        resource_manager.deallocate(orders[index]);
         orders.erase(orders.begin() + index);
-        link_manager.realign_links(index, Target::ORDER);
+        link_manager.realign_links(Target::ORDER, index);
         for (auto &channel : channels) {
             if (channel->order_index >= index) {
                 channel->order_index = std::max(0, channel->order_index - 1);
@@ -534,9 +536,9 @@ void Song::remove_order(const size_t index) {
 
 void Song::remove_wavetable(const size_t index) {
     if (index < wavetables.size()) {
-        delete wavetables[index];
+        resource_manager.deallocate(wavetables[index]);
         wavetables.erase(wavetables.begin() + index);
-        link_manager.realign_links(index, Target::WAVETABLE);
+        link_manager.realign_links(Target::WAVETABLE, index);
         for (auto &oscillator : oscillators) {
             Oscillator *generic = static_cast<Oscillator *>(oscillator);
             if (generic->generator_index == GENERATOR_WAVETABLE) {
@@ -551,9 +553,9 @@ void Song::remove_wavetable(const size_t index) {
 
 void Song::remove_oscillator(const size_t index) {
     if (index < oscillators.size()) {
-        delete_oscillator(oscillators[index]);
+        resource_manager.deallocate(oscillators[index]);
         oscillators.erase(oscillators.begin() + index);
-        link_manager.realign_links(index, Target::OSCILLATOR);
+        link_manager.realign_links(Target::OSCILLATOR, index);
         for (auto &channel : channels) {
             if (channel->oscillator_index >= index) {
                 channel->oscillator_index = std::max(0, channel->oscillator_index - 1);
@@ -565,12 +567,12 @@ void Song::remove_oscillator(const size_t index) {
 void Song::remove_channel(const size_t index) {
     if (index < channels.size()) {
         size_t link_type = static_cast<size_t>(ItemType::CHANNEL);
-        delete channels[index];
+        resource_manager.deallocate(channels[index]);
         channels.erase(channels.begin() + index);
         links[link_type].erase(links[link_type].begin() + index);
         num_channels = channels.size();
 
-        link_manager.realign_links(index, Target::CHANNEL);
+        link_manager.realign_links(Target::CHANNEL, index);
         link_manager.set_links();
     }
 }
@@ -578,22 +580,22 @@ void Song::remove_channel(const size_t index) {
 void Song::remove_dsp(const size_t index) {
     if (index < dsps.size()) {
         size_t link_type = static_cast<size_t>(ItemType::DSP);
-        delete_dsp(dsps[index]);
+        resource_manager.deallocate(dsps[index]);
         dsps.erase(dsps.begin() + index);
         links[link_type].erase(links[link_type].begin() + index);
         num_dsps = dsps.size();
 
-        link_manager.realign_links(index, Target::DIRECT_DSP);
-        link_manager.realign_links(index, Target::DSP);
+        link_manager.realign_links(Target::DIRECT_DSP, index);
+        link_manager.realign_links(Target::DSP, index);
         link_manager.set_links();
     }
 }
 
 void Song::remove_commands_sequence(const size_t index) {
     if (index < commands_sequences.size()) {
-        delete commands_sequences[index];
+        resource_manager.deallocate(commands_sequences[index]);
         commands_sequences.erase(commands_sequences.begin() + index);
-        link_manager.realign_links(index, Target::COMMANDS_SEQUENCE);
+        link_manager.realign_links(Target::COMMANDS_SEQUENCE, index);
         for (auto &order : orders) {
             for (size_t i = 0; i < order->order_length; i++) {
                 if (order->sequences[i] >= index) {
@@ -606,11 +608,11 @@ void Song::remove_commands_sequence(const size_t index) {
 
 void Song::remove_commands_channel(const size_t index) {
     if (index < commands_channels.size()) {
-        delete commands_channels[index];
+        resource_manager.deallocate(commands_channels[index]);
         commands_channels.erase(commands_channels.begin() + index);
         num_commands_channels = commands_channels.size();
 
-        link_manager.realign_links(index, Target::COMMANDS_CHANNEL);
+        link_manager.realign_links(Target::COMMANDS_CHANNEL, index);
         link_manager.set_links();
     }
 }
@@ -675,82 +677,113 @@ std::pair<ValidationResult, int> Song::validate() {
     return {ValidationResult::OK, -1};
 }
 
-std::vector<size_t> Song::find_envelope_dependencies(const size_t envelope_index) const {
-    std::set<size_t> dependencies;
+std::vector<std::string> Song::find_envelope_dependencies(const size_t envelope_index) const {
+    std::set<std::string> dependencies;
     for (size_t i = 0; i < channels.size(); i++) {
         if (channels[i]->envelope_index == envelope_index) {
-            dependencies.insert(i);
+            dependencies.insert(envelope_names[i]);
         }
     }
 
-    return std::vector<size_t>(dependencies.begin(), dependencies.end());
+    return std::vector<std::string>(dependencies.begin(), dependencies.end());
 }
 
-std::vector<size_t> Song::find_sequence_dependencies(const size_t sequence_index) const {
-    std::set<size_t> dependencies;
+std::vector<std::string> Song::find_sequence_dependencies(const size_t sequence_index) const {
+    std::set<std::string> dependencies;
     std::set<size_t> channel_orders = get_channel_orders();
     for (const size_t order_index : channel_orders) {
         const Order *order = orders[order_index];
         for (size_t i = 0; i < order->order_length; i++) {
             if (order->sequences[i] == sequence_index) {
-                dependencies.insert(order_index);
+                dependencies.insert(order_names[order_index]);
             }
         }
     }
 
-    return std::vector<size_t>(dependencies.begin(), dependencies.end());
+    return std::vector<std::string>(dependencies.begin(), dependencies.end());
 }
 
-std::vector<size_t> Song::find_order_dependencies(const size_t order_index) const {
-    std::set<size_t> dependencies;
+std::vector<std::string> Song::find_order_dependencies(const size_t order_index) const {
+    std::set<std::string> dependencies;
     for (size_t i = 0; i < channels.size(); i++) {
         if (channels[i]->order_index == order_index) {
-            dependencies.insert(i);
+            dependencies.insert(channel_names[i]);
         }
     }
 
-    return std::vector<size_t>(dependencies.begin(), dependencies.end());
+    return std::vector<std::string>(dependencies.begin(), dependencies.end());
 }
 
-std::vector<size_t> Song::find_wavetable_dependencies(const size_t wavetable_index) const {
-    std::set<size_t> dependencies;
+std::vector<std::string> Song::find_wavetable_dependencies(const size_t wavetable_index) const {
+    std::set<std::string> dependencies;
     for (size_t i = 0; i < oscillators.size(); i++) {
         const Oscillator *oscillator = static_cast<const Oscillator *>(oscillators[i]);
         if (oscillator->generator_index == GENERATOR_WAVETABLE) {
             const OscillatorWavetable *wavetable = static_cast<const OscillatorWavetable *>(oscillators[i]);
             if (wavetable->wavetable_index == wavetable_index) {
-                dependencies.insert(i);
+                dependencies.insert(oscillator_names[i]);
             }
         }
     }
 
-    return std::vector<size_t>(dependencies.begin(), dependencies.end());
+    return std::vector<std::string>(dependencies.begin(), dependencies.end());
 }
 
-std::vector<size_t> Song::find_oscillator_dependencies(const size_t oscillator_index) const {
-    std::set<size_t> dependencies;
+std::vector<std::string> Song::find_oscillator_dependencies(const size_t oscillator_index) const {
+    std::set<std::string> dependencies;
     for (size_t i = 0; i < channels.size(); i++) {
         if (channels[i]->oscillator_index == oscillator_index) {
-            dependencies.insert(i);
+            dependencies.insert(channel_names[i]);
         }
     }
 
-    return std::vector<size_t>(dependencies.begin(), dependencies.end());
+    return std::vector<std::string>(dependencies.begin(), dependencies.end());
 }
 
-std::vector<size_t> Song::find_commands_sequence_dependencies(const size_t sequence_index) const {
-    std::set<size_t> dependencies;
+std::vector<std::string> Song::find_commands_sequence_dependencies(const size_t sequence_index) const {
+    std::set<std::string> dependencies;
     std::set<size_t> channel_orders = get_commands_channel_orders();
     for (const size_t order_index : channel_orders) {
         const Order *order = orders[order_index];
         for (size_t i = 0; i < order->order_length; i++) {
             if (order->sequences[i] == sequence_index) {
-                dependencies.insert(order_index);
+                dependencies.insert(order_names[order_index]);
             }
         }
     }
 
-    return std::vector<size_t>(dependencies.begin(), dependencies.end());
+    return std::vector<std::string>(dependencies.begin(), dependencies.end());
+}
+
+void Song::add_dsp_dependencies(
+    std::set<std::string> &dependencies,
+    std::vector<std::string> &names,
+    const std::vector<Link> &links,
+    const size_t dsp_index
+) const {
+    for (size_t i = 0; i < links.size(); i++) {
+        const Link &link = links[i];
+        if (link.target == Target::DIRECT_DSP) {
+            if (link.index == dsp_index) {
+                dependencies.insert(names[i]);
+            }
+        } else if (link.target == Target::SPLITTER_DSP) {
+            if (dsp_index >= link.index && dsp_index < link.index + MAX_OUTPUT_CHANNELS) {
+                dependencies.insert(names[i]);
+            }
+        }
+    }
+}
+
+std::vector<std::string> Song::find_dsp_dependencies(const size_t dsp_index) const {
+    std::set<std::string> dependencies;
+    const auto &channel_links = links[static_cast<size_t>(ItemType::CHANNEL)];
+    add_dsp_dependencies(dependencies, channel_names, channel_links, dsp_index);
+
+    const auto &dsp_links = links[static_cast<size_t>(ItemType::DSP)];
+    add_dsp_dependencies(dependencies, dsp_names, dsp_links, dsp_index);
+
+    return std::vector<std::string>(dependencies.begin(), dependencies.end());
 }
 
 float Song::calculate_real_bpm() const {
@@ -798,7 +831,7 @@ void Song::set_used_flags(std::stringstream &asm_content) const {
     }
 
     if (!commands_channels.empty()) {
-        asm_content << "    \%define USED_COMMANDS\n";
+        asm_content << "    \%define USED_COMMAND\n";
         for (size_t i = 0; i < static_cast<size_t>(Instruction::Count); i++) {
             const Instruction instruction = static_cast<Instruction>(i);
             const std::string &command_name = header_instruction_names[i];
@@ -852,11 +885,6 @@ void Song::generate_targets_asm(
     }
 }
 
-void Song::generate_offsets_asm(std::stringstream &asm_content, const char separator) const {
-    asm_content << "\n\nbuffer_offsets:\n";
-    asm_content << "incbin \"song" << separator << "offsets.bin\"\n";
-}
-
 std::string Song::generate_data_asm_file(const CompilationTarget compilation_target, const char separator) const {
     std::stringstream asm_content;
     asm_content << "SEGMENT_DATA\n";
@@ -889,7 +917,6 @@ std::string Song::generate_data_asm_file(const CompilationTarget compilation_tar
     generate_header_vector(asm_content, "commands_sequence", "c_seq", commands_sequences.size(), separator);
     generate_header_vector(asm_content, "commands_channel", "c_chan", commands_channels.size(), separator);
     generate_targets_asm(asm_content, compilation_target, separator);
-    generate_offsets_asm(asm_content, separator);
 
     return asm_content.str();
 }
@@ -1065,12 +1092,6 @@ size_t Song::calculate_commands(const Instruction instruction) const {
     return count;
 }
 
-void Song::set_buffer_offsets() {
-    for (size_t i = 0; i < MAX_DSPS; i++) {
-        buffer_offsets[i] = i * MAX_DSP_BUFFER_SIZE;
-    }
-}
-
 int Song::run_command(const std::string &command) const {
     return system(command.c_str());
 }
@@ -1176,7 +1197,7 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
 }
 
 void *Song::deserialize_dsp(std::ifstream &file) const {
-    DSP *generic = new DSP();
+    DSP *generic = resource_manager.allocate<DSP>();
     read_data(file, &generic->dsp_size, sizeof(generic->dsp_size));
     read_data(file, &generic->effect_index, sizeof(generic->effect_index));
     read_data(file, &generic->output_flag, sizeof(generic->output_flag));
@@ -1225,27 +1246,27 @@ void *Song::deserialize_oscillator(std::ifstream &file) const {
 
     switch (static_cast<Generator>(oscillator_type)) {
     case Generator::Square: {
-        OscillatorSquare *oscillator = new OscillatorSquare();
+        OscillatorSquare *oscillator = resource_manager.allocate<OscillatorSquare>();
         read_data(file, &oscillator->duty_cycle, sizeof(oscillator->duty_cycle));
         return reinterpret_cast<void *>(oscillator);
     }
     case Generator::Saw: {
-        OscillatorSaw *oscillator = new OscillatorSaw();
+        OscillatorSaw *oscillator = resource_manager.allocate<OscillatorSaw>();
         read_data(file, &oscillator->reverse, sizeof(oscillator->reverse));
         return reinterpret_cast<void *>(oscillator);
     }
     case Generator::Sine: {
-        OscillatorSine *oscillator = new OscillatorSine();
+        OscillatorSine *oscillator = resource_manager.allocate<OscillatorSine>();
         return reinterpret_cast<void *>(oscillator);
     }
     case Generator::Wavetable: {
-        OscillatorWavetable *oscillator = new OscillatorWavetable();
+        OscillatorWavetable *oscillator = resource_manager.allocate<OscillatorWavetable>();
         read_data(file, &oscillator->wavetable_index, sizeof(oscillator->wavetable_index));
         read_data(file, &oscillator->interpolation, sizeof(oscillator->interpolation));
         return reinterpret_cast<void *>(oscillator);
     }
     case Generator::Noise: {
-        OscillatorNoise *oscillator = new OscillatorNoise();
+        OscillatorNoise *oscillator = resource_manager.allocate<OscillatorNoise>();
         return reinterpret_cast<void *>(oscillator);
     }
     case Generator::Count:
@@ -1343,15 +1364,6 @@ void Song::export_arrays(const std::string &directory, const std::string &prefix
     }
 }
 
-void Song::export_offsets(const std::string &filename) const {
-    std::ofstream file(filename, std::ios::binary);
-    for (size_t i = 0; i < dsps.size(); i++) {
-        const uint32_t offset = buffer_offsets[i];
-        write_data(file, &offset, sizeof(offset));
-    }
-    file.close();
-}
-
 void Song::export_links(const std::string &filename) const {
     std::ofstream file(filename, std::ios::binary);
     for (const ItemType &type : {ItemType::CHANNEL, ItemType::DSP, ItemType::COMMANDS}) {
@@ -1367,7 +1379,7 @@ void Song::import_envelopes(const std::string &directory, const nlohmann::json &
     const size_t envelope_count = json["data"]["envelopes"];
     for (size_t i = 0; i < envelope_count; i++) {
         const std::string filename = get_element_path(directory + "/envels", "envel", i);
-        Envelope *envelope = new Envelope();
+        Envelope *envelope = resource_manager.allocate<Envelope>();
         std::ifstream file(filename, std::ios::binary);
         read_data(file, envelope, sizeof(Envelope));
         envelopes.push_back(envelope);
@@ -1457,7 +1469,7 @@ void Song::import_commands_channels(const std::string &directory, const nlohmann
     for (size_t i = 0; i < channel_count; i++) {
         const std::string filename = get_element_path(directory + "/c_chans", "c_chan", i);
         std::ifstream file(filename, std::ios::binary);
-        CommandsChannel *channel = new CommandsChannel();
+        CommandsChannel *channel = resource_manager.allocate<CommandsChannel>();
         read_data(file, channel, sizeof(CommandsChannel));
         commands_channels.push_back(channel);
         file.close();
@@ -1551,70 +1563,7 @@ void Song::clear_data() {
     link_manager.reset();
     update_sizes();
     buffers.clear();
-}
-
-void Song::delete_oscillator(void *oscillator) {
-    if (oscillator == nullptr) {
-        return;
-    }
-
-    const Oscillator *generic = reinterpret_cast<const Oscillator *>(oscillator);
-    const uint8_t generator = generic->generator_index;
-    switch (static_cast<Generator>(generator)) {
-    case Generator::Square: {
-        delete static_cast<OscillatorSquare *>(oscillator);
-        break;
-    }
-    case Generator::Saw: {
-        delete static_cast<OscillatorSaw *>(oscillator);
-        break;
-    }
-    case Generator::Sine: {
-        delete static_cast<OscillatorSine *>(oscillator);
-        break;
-    }
-    case Generator::Wavetable: {
-        delete static_cast<OscillatorWavetable *>(oscillator);
-        break;
-    }
-    case Generator::Noise: {
-        delete static_cast<OscillatorNoise *>(oscillator);
-        break;
-    }
-    case Generator::Count:
-    default:
-        throw std::runtime_error("Unknown oscillator type: " + std::to_string(generator));
-    }
-}
-
-void Song::delete_dsp(void *dsp) {
-    if (dsp == nullptr) {
-        return;
-    }
-
-    const DSP *generic = reinterpret_cast<const DSP *>(dsp);
-    const uint8_t effect = generic->effect_index;
-    switch (static_cast<Effect>(effect)) {
-    case Effect::Gainer: {
-        delete static_cast<DSPGainer *>(dsp);
-        return;
-    }
-    case Effect::Distortion: {
-        delete static_cast<DSPDistortion *>(dsp);
-        return;
-    }
-    case Effect::Filter: {
-        delete static_cast<DSPFilter *>(dsp);
-        return;
-    }
-    case Effect::Delay: {
-        delete static_cast<DSPFilter *>(dsp);
-        return;
-    }
-    case Effect::Count:
-    default:
-        throw std::runtime_error("Unknown DSP type: " + std::to_string(effect));
-    }
+    resource_manager.clear();
 }
 
 std::set<size_t> Song::get_channel_orders() const {

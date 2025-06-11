@@ -17,9 +17,19 @@ int clamp_index(int index, const int size) {
 void draw_number_of_items(const std::string &label, const char *label_id, int &value, int min, int max, float label_length) {
     ImGui::PushID(label_id);
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - label_length);
-    ImGui::InputInt("Points", &value, min, max);
+    ImGui::InputInt("Items", &value, min, max);
     ImGui::PopID();
     value = std::clamp(value, min, max);
+}
+
+void draw_checkbox(const char *label, bool &reference, const LinkKey key) {
+    ImGui::BeginDisabled(link_manager.is_linked(key));
+
+    ImGui::PushID(label);
+    ImGui::Checkbox(label, &reference);
+    draw_link_tooltip(key);
+    ImGui::PopID();
+    ImGui::EndDisabled();
 }
 
 void draw_int_slider(const char *label, int &reference, const LinkKey key, int min, int max) {
@@ -51,6 +61,7 @@ void draw_float_slider(const char *label, float &reference, const LinkKey key, f
     switch (scale) {
     case GUIScale::Logarithmic: {
         display_value = std::log(reference / min) / std::log(max / min);
+        break;
     }
     case GUIScale::Quadratic: {
         display_value = std::sqrt((reference - min) / (max - min));
@@ -66,16 +77,17 @@ void draw_float_slider(const char *label, float &reference, const LinkKey key, f
     const bool non_linear_scale = scale != GUIScale::Linear;
     if (ImGui::SliderFloat(slider_id.c_str(), &display_value, non_linear_scale ? 0.0f : min, non_linear_scale ? 1.0f : max, label)) {
         switch (scale) {
-        case GUIScale::Linear: {
-            reference = display_value;
-            break;
-        }
         case GUIScale::Logarithmic: {
             reference = min * std::pow(max / min, display_value);
             break;
         }
         case GUIScale::Quadratic: {
             reference = min + (max - min) * (display_value * display_value);
+            break;
+        }
+        case GUIScale::Linear:
+        default: {
+            reference = display_value;
             break;
         }
         }
@@ -467,11 +479,13 @@ void draw_output_parameter_generic(OutputType &output_type, const std::vector<st
     }
 
     prepare_combo(routing.labels, "##OutputParameter" + label + "ParameterCombo", item);
-    if (item < routing.labels.size()) {
-        output_type.routing_index = item;
-        output_type.offset = routing.offsets[item];
-        output_type.variable_type = static_cast<int>(routing.types[item]);
+    if (item >= routing.labels.size()) {
+        item = 0;
     }
+
+    output_type.routing_index = item;
+    output_type.offset = routing.offsets[item];
+    output_type.variable_type = static_cast<int>(routing.types[item]);
 }
 
 void draw_output_parameter_oscillator(OutputType &output_type) {
@@ -481,25 +495,28 @@ void draw_output_parameter_oscillator(OutputType &output_type) {
     }
 
     const RoutingItems &routing = routing_variables.at(Target::OSCILLATOR);
-    const Oscillator *oscillator = static_cast<Oscillator *>(oscillators[output_type.index]);
-    const auto [indices, labels, offsets, types] = routing.filter_items(oscillator->generator_index);
     int &item = output_type.routing_item;
-
-    if (labels.empty()) {
-        ImGui::Text("No parameters available.");
-        return;
-    }
 
     if (prepare_combo(oscillator_names, "##OutputParameterOscillatorCombo", output_type.index, true).value_changed) {
         item = 0;
     }
 
-    prepare_combo(labels, "##OutputParameterOscillatorParameterCombo", item);
-    if (item < labels.size()) {
-        output_type.routing_index = indices[item];
-        output_type.offset = routing.offsets[output_type.routing_index];
-        output_type.variable_type = static_cast<int>(routing.types[output_type.routing_index]);
+    output_type.index = clamp_index(output_type.index, static_cast<int>(oscillators.size()));
+    const Oscillator *oscillator = reinterpret_cast<Oscillator *>(oscillators[output_type.index]);
+    const auto [indices, labels, offsets, types] = routing.filter_items(oscillator->generator_index);
+    if (labels.empty()) {
+        ImGui::Text("No parameters available.");
+        return;
     }
+
+    prepare_combo(labels, "##OutputParameterOscillatorParameterCombo", item);
+    if (item >= labels.size()) {
+        item = 0;
+    }
+
+    output_type.routing_index = indices[item];
+    output_type.offset = routing.offsets[output_type.routing_index];
+    output_type.variable_type = static_cast<int>(routing.types[output_type.routing_index]);
 }
 
 void draw_output_parameter_dsp(OutputType &output_type) {
@@ -509,25 +526,29 @@ void draw_output_parameter_dsp(OutputType &output_type) {
     }
 
     const RoutingItems &routing = routing_variables.at(Target::DSP);
+    int &item = output_type.routing_item;
+
+    if (prepare_combo(dsp_names, "##OutputParameterDSPCombo", output_type.index, true).value_changed) {
+        item = 0;
+    }
+
+    output_type.index = clamp_index(output_type.index, static_cast<int>(dsps.size()));
     const DSP *dsp = static_cast<DSP *>(dsps[output_type.index]);
     const auto [indices, labels, offsets, types] = routing.filter_items(dsp->effect_index);
-    int &item = output_type.routing_item;
 
     if (labels.empty()) {
         ImGui::Text("No parameters available.");
         return;
     }
 
-    if (prepare_combo(dsp_names, "##OutputParameterDSPCombo", output_type.index, true).value_changed) {
+    prepare_combo(labels, "##OutputParameterDSPParameterCombo", item);
+    if (item >= labels.size()) {
         item = 0;
     }
 
-    prepare_combo(labels, "##OutputParameterDSPParameterCombo", item);
-    if (item < labels.size()) {
-        output_type.routing_index = indices[item];
-        output_type.offset = routing.offsets[output_type.routing_index];
-        output_type.variable_type = static_cast<int>(routing.types[output_type.routing_index]);
-    }
+    output_type.routing_index = indices[item];
+    output_type.offset = routing.offsets[output_type.routing_index];
+    output_type.variable_type = static_cast<int>(routing.types[output_type.routing_index]);
 }
 
 bool draw_output(OutputType &output_type, const LinkKey key) {
@@ -598,11 +619,11 @@ bool draw_output(OutputType &output_type, const LinkKey key) {
     return value_changed;
 }
 
-void show_dependency_tooltip(const std::string &label, std::vector<size_t> &dependencies) {
+void show_dependency_tooltip(std::vector<std::string> &dependencies) {
     if (ImGui::IsItemHovered() && !dependencies.empty()) {
-        std::string tooltip = "Used by " + label + ": ";
+        std::string tooltip = "Used by: ";
         for (size_t i = 0; i < dependencies.size(); ++i) {
-            tooltip += std::to_string(dependencies[i]);
+            tooltip += dependencies[i];
             if (i < dependencies.size() - 1) {
                 tooltip += ", ";
             }

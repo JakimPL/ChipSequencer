@@ -39,7 +39,7 @@ class GUI {
 
     void frame();
     std::pair<ValidationResult, int> play() const;
-    void stop() const;
+    void stop(const bool restore_parameters = true) const;
     bool is_playing() const;
     bool is_paused() const;
 
@@ -53,6 +53,8 @@ class GUI {
     bool get_visibility(const GUIElement element) const;
 
     void set_audio_engine(AudioEngine *engine);
+    bool check_audio_error() const;
+
     void update(GUIElement element = GUIElement::All);
 
     int get_current_octave() const;
