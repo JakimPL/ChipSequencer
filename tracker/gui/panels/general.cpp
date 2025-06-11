@@ -73,9 +73,9 @@ void GUIGeneralPanel::draw() {
 }
 
 void GUIGeneralPanel::from() {
-    string_copy_to_buffer(song.get_title(), current_song.title, GUI_MAX_STRING_LENGTH);
-    string_copy_to_buffer(song.get_author(), current_song.author, GUI_MAX_STRING_LENGTH);
-    string_copy_to_buffer(song.get_message(), current_song.message, GUI_MAX_STRING_LENGTH);
+    copy_string_to_buffer(song.get_title(), current_song.title, GUI_MAX_STRING_LENGTH);
+    copy_string_to_buffer(song.get_author(), current_song.author, GUI_MAX_STRING_LENGTH);
+    copy_string_to_buffer(song.get_message(), current_song.message, GUI_MAX_STRING_LENGTH);
 
     current_song.bpm = bpm;
     current_song.division = 240.0f / unit;
