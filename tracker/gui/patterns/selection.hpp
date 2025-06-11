@@ -14,6 +14,7 @@ struct PatternSelection {
     bool is_row_selected(const size_t channel_index, const int row) const;
     void form(const size_t channel_index, const int row);
     void reset();
+    bool is_active() const;
 };
 
 #endif // GUI_PATTERNS_SELECTION_HPP

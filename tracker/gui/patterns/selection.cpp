@@ -50,3 +50,7 @@ void PatternSelection::reset() {
     channel_start = -1;
     channel_end = -1;
 }
+
+bool PatternSelection::is_active() const {
+    return start != -1 && end != -1 && channel_start != -1 && channel_end != -1;
+}

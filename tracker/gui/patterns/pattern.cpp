@@ -21,7 +21,7 @@ void Pattern::from_sequence(const uint8_t index) {
     notes.clear();
     indices.clear();
     durations.clear();
-    for (size_t i = 0; i < sequence->size / 2; ++i) {
+    for (size_t i = 0; i < sequence->size / sizeof(Note); ++i) {
         uint16_t duration = sequence->notes[i].duration;
         durations.push_back(duration);
         indices.push_back(total_length);
@@ -41,7 +41,7 @@ void Pattern::to_buffer(const size_t sequence_index) const {
     }
 
     const Sequence *sequence = sequences[sequence_index];
-    const size_t sequence_length = sequence->size / 2;
+    const size_t sequence_length = sequence->size / sizeof(Note);
     for (size_t i = 0; i < sequence_length; ++i) {
         const uint8_t pitch = notes[i];
         if (pitch == NOTE_OFF) {
@@ -95,6 +95,10 @@ int Pattern::calculate_playing_row(size_t channel_index) {
     }
 }
 
+bool Pattern::is_current_row_valid() const {
+    return current_row >= 0 && current_row < static_cast<int>(notes.size());
+}
+
 void Pattern::jump(const int max_row) {
     const int max = max_row == -1 ? steps : std::min(steps, max_row);
     current_row = std::min(current_row + gui.get_jump_step(), max - 1);
@@ -111,9 +115,16 @@ void Pattern::set_note(const int note_index, const int edo, const int max_row) {
     jump(max_row);
 }
 
+void Pattern::transpose(const int value) {
+    if (!is_current_row_valid()) {
+        return;
+    }
+
+    notes[current_row] += value;
+}
+
 void Pattern::handle_input(const int min_row, const int max_row) {
-    const bool valid = current_row >= 0 && current_row < notes.size();
-    if (!valid) {
+    if (!is_current_row_valid()) {
         return;
     }
 

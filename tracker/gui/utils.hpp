@@ -51,6 +51,8 @@ void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t 
 
 bool get_menu_item(const std::string &name, const std::optional<ShortcutAction> action = std::nullopt, const bool checked = false);
 
+void transpose(Pattern &pattern, PatternSelection &selection, const int value);
+
 std::pair<size_t, bool> draw_pattern(
     Pattern &pattern,
     PatternSelection &selection,

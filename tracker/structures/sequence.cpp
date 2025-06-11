@@ -11,7 +11,7 @@ void Sequence::from_note_vector(const std::vector<Note> &note_vector) {
 
 void Sequence::serialize(std::ofstream &file) const {
     write_data(file, &size, 1);
-    for (size_t i = 0; i < size / 2; i++) {
+    for (size_t i = 0; i < size / sizeof(Note); i++) {
         write_data(file, &notes[i], sizeof(Note));
     }
 }
@@ -27,7 +27,7 @@ Sequence *Sequence::deserialize(std::ifstream &file) {
     Sequence *sequence = resource_manager.allocate<Sequence>();
     sequence->size = size;
 
-    for (size_t i = 0; i < size / 2; i++) {
+    for (size_t i = 0; i < size / sizeof(Note); i++) {
         read_data(file, &sequence->notes[i], sizeof(Note));
     }
 

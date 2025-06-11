@@ -232,6 +232,14 @@ bool draw_button(const char *label, const float button_padding) {
     return ImGui::Button(label, ImVec2(button_width, 0));
 }
 
+void transpose(Pattern &pattern, PatternSelection &selection, const int value) {
+    if (selection.is_active()) {
+
+    } else {
+        pattern.transpose(value);
+    }
+}
+
 std::pair<size_t, bool> draw_pattern(
     Pattern &pattern,
     PatternSelection &selection,
@@ -250,7 +258,20 @@ std::pair<size_t, bool> draw_pattern(
         return {index + pattern.notes.size(), false};
     }
 
+    shortcut_manager.register_shortcut_and_action(
+        ShortcutAction::PatternTransposeUp,
+        {true, false, false, ImGuiKey_Q},
+        [&]() {
+            transpose(pattern, selection, 1);
+        }
+    );
+
+    const std::string popup_id = "PatternContext##" + std::to_string(channel_index) + "_" + std::to_string(index);
     if (ImGui::BeginTable("PatternTable", 3, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg)) {
+        if (ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_AllowWhenBlockedByPopup) && ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+            ImGui::OpenPopup(popup_id.c_str());
+        }
+
         ImGui::TableSetupColumn("Index", ImGuiTableColumnFlags_WidthFixed, 50.0f);
         ImGui::TableSetupColumn("Note");
         ImGui::TableSetupColumn("Octave");
@@ -292,6 +313,22 @@ std::pair<size_t, bool> draw_pattern(
             if (is_current) {
                 ImGui::PopStyleColor();
             }
+        }
+
+        if (ImGui::BeginPopup(popup_id.c_str())) {
+            if (get_menu_item("Transpose +1", ShortcutAction::PatternTransposeUp)) {
+                transpose(pattern, selection, 1);
+            }
+            if (get_menu_item("Transpose -1", ShortcutAction::PatternTransposeDown)) {
+                transpose(pattern, selection, -1);
+            }
+            if (get_menu_item("Transpose Octave +1", ShortcutAction::PatternTransposeOctaveUp)) {
+                transpose(pattern, selection, scale_composer.get_edo());
+            }
+            if (get_menu_item("Transpose Octave -1", ShortcutAction::PatternTransposeOctaveDown)) {
+                transpose(pattern, selection, -scale_composer.get_edo());
+            }
+            ImGui::EndPopup();
         }
 
         ImGui::EndTable();

@@ -52,7 +52,7 @@ GUIMenu::GUIMenu(const bool visible)
     );
     shortcut_manager.register_shortcut_and_action(
         ShortcutAction::FileExit,
-        {true, false, false, ImGuiKey_Q},
+        {false, false, true, ImGuiKey_F4},
         [this]() { file_exit_confirm(); }
     );
 }
