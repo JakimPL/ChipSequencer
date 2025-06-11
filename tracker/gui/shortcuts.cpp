@@ -66,3 +66,10 @@ void ShortcutManager::process_shortcuts() const {
         }
     }
 }
+
+void ShortcutManager::execute_action(const ShortcutAction id) const {
+    auto it = actions.find(id);
+    if (it != actions.end()) {
+        it->second();
+    }
+}

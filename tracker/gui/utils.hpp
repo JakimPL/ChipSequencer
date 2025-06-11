@@ -49,9 +49,10 @@ bool draw_output(OutputType &output_type, const LinkKey key);
 void show_dependency_tooltip(std::vector<std::string> &dependencies);
 void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t index);
 
+bool draw_menu_item(const std::string &name, const std::optional<ShortcutAction> action = std::nullopt, const bool checked = false);
 bool get_menu_item(const std::string &name, const std::optional<ShortcutAction> action = std::nullopt, const bool checked = false);
 
-void transpose(Pattern &pattern, PatternSelection &selection, const int value);
+void transpose(Pattern &pattern, PatternSelection &selection, const int &row, const int value);
 
 std::pair<size_t, bool> draw_pattern(
     Pattern &pattern,

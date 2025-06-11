@@ -95,8 +95,8 @@ int Pattern::calculate_playing_row(size_t channel_index) {
     }
 }
 
-bool Pattern::is_current_row_valid() const {
-    return current_row >= 0 && current_row < static_cast<int>(notes.size());
+bool Pattern::is_row_valid(const int row) const {
+    return row >= 0 && row < static_cast<int>(notes.size());
 }
 
 void Pattern::jump(const int max_row) {
@@ -115,39 +115,47 @@ void Pattern::set_note(const int note_index, const int edo, const int max_row) {
     jump(max_row);
 }
 
-void Pattern::transpose(const int value) {
-    if (!is_current_row_valid()) {
+void Pattern::transpose(const int value, std::optional<int> row) {
+    if (!row.has_value()) {
+        row = current_row;
+    }
+
+    if (!is_row_valid(row.value())) {
         return;
     }
 
-    notes[current_row] += value;
+    notes[row.value()] += value;
 }
 
 void Pattern::handle_input(const int min_row, const int max_row) {
-    if (!is_current_row_valid()) {
+    if (!is_row_valid(current_row)) {
         return;
     }
 
     const int edo = scale_composer.get_edo();
-    if (edo == DEFAULT_EDO) {
-        for (const auto &m : key_note_12_edo_mapping) {
-            if (ImGui::IsKeyPressed(m.key)) {
-                set_note(m.note_index, edo, max_row);
-                break;
+    if (!ImGui::GetIO().KeyCtrl &&
+        !ImGui::GetIO().KeyShift &&
+        !ImGui::GetIO().KeyAlt) {
+        if (edo == DEFAULT_EDO) {
+            for (const auto &m : key_note_12_edo_mapping) {
+                if (ImGui::IsKeyPressed(m.key)) {
+                    set_note(m.note_index, edo, max_row);
+                    break;
+                }
+            }
+        } else {
+            for (const auto &m : key_note_linear_mapping) {
+                if (ImGui::IsKeyPressed(m.key)) {
+                    set_note(m.note_index, edo, max_row);
+                    break;
+                }
             }
         }
-    } else {
-        for (const auto &m : key_note_linear_mapping) {
-            if (ImGui::IsKeyPressed(m.key)) {
-                set_note(m.note_index, edo, max_row);
-                break;
-            }
-        }
-    }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_Delete)) {
-        notes[current_row] = NOTE_REST;
-        jump(max_row);
+        if (ImGui::IsKeyPressed(ImGuiKey_Delete)) {
+            notes[current_row] = NOTE_REST;
+            jump(max_row);
+        }
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_Apostrophe) || ImGui::IsKeyPressed(ImGuiKey_Equal)) {

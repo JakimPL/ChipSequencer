@@ -232,11 +232,11 @@ bool draw_button(const char *label, const float button_padding) {
     return ImGui::Button(label, ImVec2(button_width, 0));
 }
 
-void transpose(Pattern &pattern, PatternSelection &selection, const int value) {
+void transpose(Pattern &pattern, PatternSelection &selection, const int &row, const int value) {
     if (selection.is_active()) {
 
     } else {
-        pattern.transpose(value);
+        pattern.transpose(value, row);
     }
 }
 
@@ -262,7 +262,7 @@ std::pair<size_t, bool> draw_pattern(
         ShortcutAction::PatternTransposeUp,
         {true, false, false, ImGuiKey_Q},
         [&]() {
-            transpose(pattern, selection, 1);
+            transpose(pattern, selection, pattern.current_row, 1);
         }
     );
 
@@ -316,18 +316,10 @@ std::pair<size_t, bool> draw_pattern(
         }
 
         if (ImGui::BeginPopup(popup_id.c_str())) {
-            if (get_menu_item("Transpose +1", ShortcutAction::PatternTransposeUp)) {
-                transpose(pattern, selection, 1);
-            }
-            if (get_menu_item("Transpose -1", ShortcutAction::PatternTransposeDown)) {
-                transpose(pattern, selection, -1);
-            }
-            if (get_menu_item("Transpose Octave +1", ShortcutAction::PatternTransposeOctaveUp)) {
-                transpose(pattern, selection, scale_composer.get_edo());
-            }
-            if (get_menu_item("Transpose Octave -1", ShortcutAction::PatternTransposeOctaveDown)) {
-                transpose(pattern, selection, -scale_composer.get_edo());
-            }
+            draw_menu_item("Transpose +1", ShortcutAction::PatternTransposeUp);
+            draw_menu_item("Transpose -1", ShortcutAction::PatternTransposeDown);
+            draw_menu_item("Transpose Octave +1", ShortcutAction::PatternTransposeOctaveUp);
+            draw_menu_item("Transpose Octave -1", ShortcutAction::PatternTransposeOctaveDown);
             ImGui::EndPopup();
         }
 
@@ -763,6 +755,15 @@ void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t 
             throw std::runtime_error("Invalid instruction: " + command);
         }
         }
+    }
+}
+
+bool draw_menu_item(const std::string &name, const std::optional<ShortcutAction> action, const bool checked) {
+    if (get_menu_item(name, action, checked)) {
+        if (action.has_value()) {
+            shortcut_manager.execute_action(action.value());
+        }
+        return true;
     }
 }
 

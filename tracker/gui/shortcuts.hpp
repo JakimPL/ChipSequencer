@@ -54,6 +54,7 @@ class ShortcutManager {
     const Shortcut &get_shortcut(const ShortcutAction id) const;
     std::string get_shortcut_display(const ShortcutAction id) const;
     void process_shortcuts() const;
+    void execute_action(const ShortcutAction id) const;
 
   private:
     std::unordered_map<ShortcutAction, Shortcut> shortcuts;
