@@ -4,8 +4,8 @@ project(ChipSequencer)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32 -Wno-pointer-arith")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -fsanitize=address -g -Wno-pointer-arith")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32 -Wno-pointer-arith -Wno-address-of-packed-member")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -fsanitize=address -g -Wno-pointer-arith -Wno-address-of-packed-member")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 

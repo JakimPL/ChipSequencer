@@ -4,7 +4,6 @@
 #include <cstdint>
 
 #include "../maps/routing.hpp"
-#include "../structures/channel.hpp"
 #include "links/link.hpp"
 
 enum class OutputTarget {
@@ -41,7 +40,12 @@ struct OutputType {
     int offset;
 
     bool splitter_on = true;
-    std::array<float, MAX_OUTPUT_CHANNELS> splitter = {0.5f, 0.5f, 0.0f, 0.0f};
+    std::array<float, MAX_OUTPUT_CHANNELS> splitter = {
+        static_cast<float>(DEFAULT_SPLITTER_0) / UINT8_MAX,
+        static_cast<float>(DEFAULT_SPLITTER_1) / UINT8_MAX,
+        static_cast<float>(DEFAULT_SPLITTER_2) / UINT8_MAX,
+        static_cast<float>(DEFAULT_SPLITTER_3) / UINT8_MAX,
+    };
 
     uint8_t set_output_flag(uint8_t &output_flag) const;
     uint8_t set_item_flag(uint8_t &item_flag) const;
