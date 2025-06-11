@@ -2,9 +2,13 @@
 #include "selection.hpp"
 
 bool PatternSelection::is_row_selected(const size_t channel_index, const int row) const {
+    const int min = std::min(start, end);
+    const int max = std::max(start, end);
+    const int channel_min = std::min(channel_start, channel_end);
+    const int channel_max = std::max(channel_start, channel_end);
     return (
-        row >= start && row <= end &&
-        channel_index >= channel_start && channel_index <= channel_end
+        row >= min && row <= max &&
+        channel_index >= channel_min && channel_index <= channel_max
     );
 };
 
@@ -23,20 +27,19 @@ void PatternSelection::form(const size_t channel_index, const int row) {
             }
         } else if (ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
             selecting = false;
+            if (channel_start == channel_end && start == end) {
+                reset();
+                return;
+            }
+
+            if (start > end) {
+                std::swap(start, end);
+            }
+
+            if (channel_start > channel_end) {
+                std::swap(channel_start, channel_end);
+            }
         }
-    }
-
-    if (!selecting && channel_start == channel_end && start == end) {
-        reset();
-        return;
-    }
-
-    if (start > end) {
-        std::swap(start, end);
-    }
-
-    if (channel_start > channel_end) {
-        std::swap(channel_start, channel_end);
     }
 }
 

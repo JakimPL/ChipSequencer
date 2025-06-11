@@ -21,6 +21,13 @@ enum class ShortcutAction {
     SongStop,
     EditUndo,
     EditRedo,
+    PatternTransposeUp,
+    PatternTransposeDown,
+    PatternTransposeOctaveUp,
+    PatternTransposeOctaveDown,
+    PatternSelectAll,
+    PatternSelectNone,
+    PatternClear,
 };
 
 struct Shortcut {

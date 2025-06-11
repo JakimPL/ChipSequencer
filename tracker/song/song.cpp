@@ -681,7 +681,7 @@ std::vector<std::string> Song::find_envelope_dependencies(const size_t envelope_
     std::set<std::string> dependencies;
     for (size_t i = 0; i < channels.size(); i++) {
         if (channels[i]->envelope_index == envelope_index) {
-            dependencies.insert(envelope_names[i]);
+            dependencies.insert(channel_names[i]);
         }
     }
 
