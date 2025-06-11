@@ -165,6 +165,6 @@ void PortAudioDriver::set_output_channels(const int channels) {
         return;
     }
 
-    pingpong_buffer.resize(2 * frames_per_buffer * output_channels, 0);
     output_channels = channels;
+    pingpong_buffer.resize(2 * frames_per_buffer * output_channels, 0);
 }
