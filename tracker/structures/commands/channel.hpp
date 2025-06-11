@@ -9,7 +9,7 @@
 struct CommandsChannel {
     uint8_t flag;
     uint8_t order_index;
-};
+} __attribute__((packed));
 
 typedef std::vector<CommandsChannel *> CommandsChannels;
 

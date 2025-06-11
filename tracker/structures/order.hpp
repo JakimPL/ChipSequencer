@@ -15,7 +15,7 @@ struct Order {
 
     void serialize(std::ofstream &file) const;
     static Order *deserialize(std::ifstream &file);
-};
+} __attribute__((packed));
 
 typedef std::vector<Order *> Orders;
 

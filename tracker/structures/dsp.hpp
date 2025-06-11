@@ -26,7 +26,7 @@ struct DSP {
     uint8_t target;
     uint8_t pad[3];
     uint32_t alignment[1];
-};
+} __attribute__((packed));
 
 struct DSPGainer {
     uint8_t dsp_size = SIZE_DSP_GAINER;
@@ -38,7 +38,7 @@ struct DSPGainer {
     uint16_t volume;
     uint8_t pad[1];
     uint32_t alignment[1];
-};
+} __attribute__((packed));
 
 struct DSPDistortion {
     uint8_t dsp_size = SIZE_DSP_DISTORTION;
@@ -50,7 +50,7 @@ struct DSPDistortion {
     uint16_t level;
     uint8_t pad[1];
     uint32_t alignment[1];
-};
+} __attribute__((packed));
 
 struct DSPFilter {
     uint8_t dsp_size = SIZE_DSP_FILTER;
@@ -63,7 +63,7 @@ struct DSPFilter {
     uint8_t mode;
     uint8_t pad[0];
     uint32_t alignment[1];
-};
+} __attribute__((packed));
 
 struct DSPDelay {
     uint8_t dsp_size = SIZE_DSP_DELAY;
@@ -78,7 +78,7 @@ struct DSPDelay {
     uint16_t delay_time;
     uint8_t pad[2];
     uint32_t alignment[0];
-};
+} __attribute__((packed));
 
 typedef std::vector<void *> DSPs;
 

@@ -1,6 +1,5 @@
 #include <cmath>
 #include <cstring>
-#include <thread>
 
 #include "../constants.hpp"
 #include "../song/core.hpp"

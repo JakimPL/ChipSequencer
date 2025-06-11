@@ -21,27 +21,27 @@ struct Oscillator {
     uint8_t oscillator_size;
     uint8_t generator_index;
     uint8_t pad[2];
-};
+} __attribute__((packed));
 
 struct OscillatorSquare {
     uint8_t oscillator_size = SIZE_OSCILLATOR_SQUARE;
     uint8_t generator_index = GENERATOR_SQUARE;
     uint16_t duty_cycle;
     uint8_t pad[0];
-};
+} __attribute__((packed));
 
 struct OscillatorSaw {
     uint8_t oscillator_size = SIZE_OSCILLATOR_SAW;
     uint8_t generator_index = GENERATOR_SAW;
     uint8_t reverse;
     uint8_t pad[1];
-};
+} __attribute__((packed));
 
 struct OscillatorSine {
     uint8_t oscillator_size = SIZE_OSCILLATOR_SINE;
     uint8_t generator_index = GENERATOR_SINE;
     uint8_t pad[2];
-};
+} __attribute__((packed));
 
 struct OscillatorWavetable {
     uint8_t oscillator_size = SIZE_OSCILLATOR_WAVETABLE;
@@ -49,13 +49,13 @@ struct OscillatorWavetable {
     uint8_t wavetable_index;
     uint8_t interpolation;
     uint8_t pad[0];
-};
+} __attribute__((packed));
 
 struct OscillatorNoise {
     uint8_t oscillator_size = SIZE_OSCILLATOR_NOISE;
     uint8_t generator_index = GENERATOR_NOISE;
     uint8_t pad[2];
-};
+} __attribute__((packed));
 
 typedef std::vector<void *> Oscillators;
 

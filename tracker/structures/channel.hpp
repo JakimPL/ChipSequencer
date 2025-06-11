@@ -23,7 +23,7 @@ struct Channel {
 
     void serialize(std::ofstream &file) const;
     static Channel *deserialize(std::ifstream &file);
-};
+} __attribute__((packed));
 
 typedef std::vector<Channel *> Channels;
 

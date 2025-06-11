@@ -165,14 +165,18 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
         case Instruction::PortamentoUp: {
             CommandPortamentoUp portamento_up;
             portamento_up.duration = duration;
-            split_portamento_value(value, portamento_up.channel, portamento_up.value);
+            uint16_t portamento_up_value;
+            split_portamento_value(value, portamento_up.channel, portamento_up_value);
+            portamento_up.value = portamento_up_value;
             command_vector.push_back(reinterpret_cast<Command &>(portamento_up));
             break;
         }
         case Instruction::PortamentoDown: {
             CommandPortamentoDown portamento_down;
             portamento_down.duration = duration;
-            split_portamento_value(value, portamento_down.channel, portamento_down.value);
+            uint16_t portamento_down_value;
+            split_portamento_value(value, portamento_down.channel, portamento_down_value);
+            portamento_down.value = portamento_down_value;
             command_vector.push_back(reinterpret_cast<Command &>(portamento_down));
             break;
         }

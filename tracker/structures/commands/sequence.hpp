@@ -15,7 +15,7 @@ struct CommandsSequence {
     void from_command_vector(const std::vector<Command> &command_vector);
     void serialize(std::ofstream &file) const;
     static CommandsSequence *deserialize(std::ifstream &file);
-};
+} __attribute__((packed));
 
 typedef std::vector<CommandsSequence *> CommandsSequences;
 

@@ -32,7 +32,7 @@ struct Command {
     uint8_t instruction = INSTRUCTION_EMPTY;
     uint8_t duration;
     uint8_t pad[10] = {0, 0, 0, 0, 0, 0, static_cast<uint8_t>(Target::COUNT), 0, 0, 0};
-};
+} __attribute__((packed));
 
 struct CommandPortamentoUp {
     uint8_t instruction = INSTRUCTION_PORTAMENTO_UP;
@@ -40,7 +40,7 @@ struct CommandPortamentoUp {
     uint16_t value;
     uint8_t channel;
     uint8_t pad[7];
-};
+} __attribute__((packed));
 
 struct CommandPortamentoDown {
     uint8_t instruction = INSTRUCTION_PORTAMENTO_DOWN;
@@ -48,28 +48,28 @@ struct CommandPortamentoDown {
     uint16_t value;
     uint8_t channel;
     uint8_t pad[7];
-};
+} __attribute__((packed));
 
 struct CommandSetMasterGainer {
     uint8_t instruction = INSTRUCTION_SET_MASTER_GAINER;
     uint8_t duration;
     uint16_t gain;
     uint8_t pad[8];
-};
+} __attribute__((packed));
 
 struct CommandSetBPM {
     uint8_t instruction = INSTRUCTION_SET_BPM;
     uint8_t duration;
     uint16_t bpm;
     uint8_t pad[8];
-};
+} __attribute__((packed));
 
 struct CommandSetDivision {
     uint8_t instruction = INSTRUCTION_SET_DIVISION;
     uint8_t duration;
     uint8_t division;
     uint8_t pad[9];
-};
+} __attribute__((packed));
 
 struct CommandChangeValue {
     uint8_t instruction = INSTRUCTION_EMPTY;
@@ -79,7 +79,7 @@ struct CommandChangeValue {
     uint8_t target = static_cast<uint8_t>(Target::COUNT);
     uint8_t index = -1;
     uint16_t offset = 0;
-};
+} __attribute__((packed));
 
 struct CommandChangeFloatValue {
     uint8_t instruction = INSTRUCTION_CHANGE_FLOAT_VALUE;
@@ -90,7 +90,7 @@ struct CommandChangeFloatValue {
     uint8_t target = static_cast<uint8_t>(Target::COUNT);
     uint8_t index = -1;
     uint16_t offset = 0;
-};
+} __attribute__((packed));
 
 struct CommandChangeByteValue {
     uint8_t instruction = INSTRUCTION_CHANGE_BYTE_VALUE;
@@ -101,7 +101,7 @@ struct CommandChangeByteValue {
     uint8_t target = static_cast<uint8_t>(Target::COUNT);
     uint8_t index = -1;
     uint16_t offset = 0;
-};
+} __attribute__((packed));
 
 struct CommandChangeWordValue {
     uint8_t instruction = INSTRUCTION_CHANGE_WORD_VALUE;
@@ -112,7 +112,7 @@ struct CommandChangeWordValue {
     uint8_t target = static_cast<uint8_t>(Target::COUNT);
     uint8_t index = -1;
     uint16_t offset = 0;
-};
+} __attribute__((packed));
 
 struct CommandChangeDwordValue {
     uint8_t instruction = INSTRUCTION_CHANGE_DWORD_VALUE;
@@ -123,7 +123,7 @@ struct CommandChangeDwordValue {
     uint8_t target = static_cast<uint8_t>(Target::COUNT);
     uint8_t index = -1;
     uint16_t offset = 0;
-};
+} __attribute__((packed));
 
 struct CommandAddFloatValue {
     uint8_t instruction = INSTRUCTION_ADD_FLOAT_VALUE;
@@ -134,7 +134,7 @@ struct CommandAddFloatValue {
     uint8_t target = static_cast<uint8_t>(Target::COUNT);
     uint8_t index = -1;
     uint16_t offset = 0;
-};
+} __attribute__((packed));
 
 struct CommandAddByteValue {
     uint8_t instruction = INSTRUCTION_ADD_BYTE_VALUE;
@@ -145,7 +145,7 @@ struct CommandAddByteValue {
     uint8_t target = static_cast<uint8_t>(Target::COUNT);
     uint8_t index = -1;
     uint16_t offset = 0;
-};
+} __attribute__((packed));
 
 struct CommandAddWordValue {
     uint8_t instruction = INSTRUCTION_ADD_WORD_VALUE;
@@ -156,7 +156,7 @@ struct CommandAddWordValue {
     uint8_t target = static_cast<uint8_t>(Target::COUNT);
     uint8_t index = -1;
     uint16_t offset = 0;
-};
+} __attribute__((packed));
 
 struct CommandAddDwordValue {
     uint8_t instruction = INSTRUCTION_ADD_DWORD_VALUE;
@@ -167,7 +167,7 @@ struct CommandAddDwordValue {
     uint8_t target = static_cast<uint8_t>(Target::COUNT);
     uint8_t index = -1;
     uint16_t offset = 0;
-};
+} __attribute__((packed));
 
 typedef std::array<Command, MAX_COMMANDS_SEQUENCES> CommandsArray;
 

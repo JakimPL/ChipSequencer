@@ -15,7 +15,7 @@ struct Envelope {
     uint16_t decay;
     uint16_t hold;
     uint16_t release;
-};
+} __attribute__((packed));
 
 typedef std::vector<Envelope *> Envelopes;
 
