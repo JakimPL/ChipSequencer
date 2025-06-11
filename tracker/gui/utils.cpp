@@ -249,7 +249,7 @@ std::pair<size_t, bool> draw_pattern(
     const uint16_t start,
     const uint16_t end
 ) {
-    bool select = false;
+    bool current = false;
     const int min_row_to_draw = std::max(static_cast<int>(start) - static_cast<int>(index), 0);
     const int max_row_to_draw = std::min(static_cast<int>(end) - static_cast<int>(index), static_cast<int>(pattern.notes.size()));
 
@@ -267,26 +267,26 @@ std::pair<size_t, bool> draw_pattern(
 
         for (int i = min_row_to_draw; i < max_row_to_draw; i++) {
             const int j = i + index;
-            const bool is_selected = (pattern.current_row == i);
+            const bool is_current = (pattern.current_row == i);
             bool row_is_in_block_selection = is_row_part_of_selection(j, selection);
 
             ImGui::TableNextRow();
 
             if (playing_row == j) {
-                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_PLAYING_COLOR);
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_PLAYING);
             } else if (row_is_in_block_selection) {
-                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_SELECTED_COLOR);
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_SELECTED);
             }
 
-            if (is_selected) {
-                ImGui::PushStyleColor(ImGuiCol_Text, GUI_HIGHLIGHT_COLOR);
+            if (is_current) {
+                ImGui::PushStyleColor(ImGuiCol_Text, GUI_ROW_COLOR_CURRENT);
             }
 
             ImGui::TableSetColumnIndex(0);
             const std::string index_string = std::to_string(j);
-            if (ImGui::Selectable(index_string.c_str(), is_selected, ImGuiSelectableFlags_SpanAllColumns)) {
+            if (ImGui::Selectable(index_string.c_str(), is_current, ImGuiSelectableFlags_SpanAllColumns)) {
                 pattern.current_row = i;
-                select = true;
+                current = true;
             }
 
             ImGui::TableSetColumnIndex(1);
@@ -295,7 +295,7 @@ std::pair<size_t, bool> draw_pattern(
             ImGui::TableSetColumnIndex(2);
             ImGui::Text("%s", get_note_octave(pattern.notes[i]).c_str());
 
-            if (is_selected) {
+            if (is_current) {
                 ImGui::PopStyleColor();
             }
         }
@@ -306,7 +306,7 @@ std::pair<size_t, bool> draw_pattern(
     // realignment
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 4.0f);
 
-    return {index + pattern.notes.size(), select};
+    return {index + pattern.notes.size(), current};
 }
 
 std::pair<size_t, bool> draw_commands_pattern(
@@ -318,7 +318,7 @@ std::pair<size_t, bool> draw_commands_pattern(
     const uint16_t start,
     const uint16_t end
 ) {
-    bool select = false;
+    bool current = false;
     const int min = std::max(static_cast<int>(start) - static_cast<int>(index), 0);
     const int max = std::min(static_cast<int>(end) - static_cast<int>(index), static_cast<int>(pattern.commands.size()));
     if (max <= 0 || min >= pattern.commands.size()) {
@@ -336,47 +336,47 @@ std::pair<size_t, bool> draw_commands_pattern(
 
         for (int i = min; i < max; i++) {
             const int j = i + index;
-            const bool is_command_selected = (pattern.current_row == i && pattern.selection == CommandSelection::Command);
-            const bool is_value_selected = (pattern.current_row == i && pattern.selection == CommandSelection::Value);
+            const bool is_command_current = (pattern.current_row == i && pattern.selection == CommandSelection::Command);
+            const bool is_value_current = (pattern.current_row == i && pattern.selection == CommandSelection::Value);
             ImGui::TableNextRow();
             if (playing_row == j) {
-                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, IM_COL32(128, 255, 128, 64));
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_PLAYING);
             }
 
-            if (is_command_selected || is_value_selected) {
-                ImGui::PushStyleColor(ImGuiCol_Text, GUI_HIGHLIGHT_COLOR);
+            if (is_command_current || is_value_current) {
+                ImGui::PushStyleColor(ImGuiCol_Text, GUI_ROW_COLOR_CURRENT);
             }
 
             ImGui::TableSetColumnIndex(0);
             const std::string index_string = std::to_string(j);
             ImGui::Text("%s", index_string.c_str());
 
-            if (is_command_selected || is_value_selected) {
+            if (is_command_current || is_value_current) {
                 ImGui::PopStyleColor();
             }
 
-            if (is_command_selected) {
-                ImGui::PushStyleColor(ImGuiCol_Text, GUI_HIGHLIGHT_COLOR);
+            if (is_command_current) {
+                ImGui::PushStyleColor(ImGuiCol_Text, GUI_ROW_COLOR_CURRENT);
             }
 
             ImGui::PushID(i);
             ImGui::TableSetColumnIndex(1);
             const std::string command = pattern.commands[i].empty() ? "." : pattern.commands[i];
-            if (ImGui::Selectable(command.c_str(), is_command_selected)) {
+            if (ImGui::Selectable(command.c_str(), is_command_current)) {
                 pattern.set_selection(i, CommandSelection::Command);
-                select = true;
+                current = true;
             }
 
             show_commands_pattern_tooltip(pattern, i);
             ImGui::PopID();
 
-            if (is_command_selected) {
+            if (is_command_current) {
                 ImGui::PopStyleColor();
             }
 
             std::string value;
-            if (is_value_selected) {
-                ImGui::PushStyleColor(ImGuiCol_Text, GUI_HIGHLIGHT_COLOR);
+            if (is_value_current) {
+                ImGui::PushStyleColor(ImGuiCol_Text, GUI_ROW_COLOR_CURRENT);
                 value = pattern.values_handler.get_buffer();
             } else {
                 value = pattern.values[i].empty() ? "" : pattern.values[i];
@@ -386,15 +386,15 @@ std::pair<size_t, bool> draw_commands_pattern(
 
             ImGui::TableSetColumnIndex(2);
             ImGui::PushID(MAX_STEPS + i);
-            if (ImGui::Selectable(value.c_str(), is_value_selected)) {
+            if (ImGui::Selectable(value.c_str(), is_value_current)) {
                 pattern.set_selection(i, CommandSelection::Value);
                 pattern.values_handler.set_buffer(pattern.values[i]);
-                select = true;
+                current = true;
             }
             show_commands_pattern_tooltip(pattern, i);
             ImGui::PopID();
 
-            if (is_value_selected) {
+            if (is_value_current) {
                 ImGui::PopStyleColor();
             }
         }
@@ -406,7 +406,7 @@ std::pair<size_t, bool> draw_commands_pattern(
     // realignment
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 4.0f);
 
-    return {index + pattern.commands.size(), select};
+    return {index + pattern.commands.size(), current};
 }
 
 void draw_output_output_splitter(OutputType &output_type, const LinkKey key) {
