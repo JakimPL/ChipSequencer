@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "../constants.hpp"
+#include "../utils.hpp"
 #include "../patterns/commands.hpp"
 #include "../patterns/pattern.hpp"
 #include "panel.hpp"
@@ -30,6 +31,7 @@ class GUIPatternsPanel : public GUIPanel {
 
     int page = 0;
     VariantChannelIndex current_channel = {false, 0};
+    GUIPatternSelection selection;
     size_t current_index = -1;
     int current_row = -1;
 

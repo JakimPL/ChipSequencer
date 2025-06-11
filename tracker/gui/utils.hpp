@@ -10,11 +10,19 @@
 #include "init.hpp"
 #include "enums.hpp"
 #include "shortcuts.hpp"
+#include "patterns/commands.hpp"
 #include "patterns/pattern.hpp"
 
 struct GUIState {
     bool value_changed;
     bool right_clicked;
+};
+
+struct GUIPatternSelection {
+    bool active = false;
+    size_t channel_index = -1;
+    int start = -1;
+    int end = -1;
 };
 
 int clamp_index(int index, const int size);
@@ -49,8 +57,25 @@ void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t 
 
 bool get_menu_item(const std::string &name, const std::optional<ShortcutAction> action = std::nullopt, const bool checked = false);
 
-std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header = true, const size_t index = 0, const int playing_row = -1, const uint16_t start = 0, const uint16_t end = UINT16_MAX);
-std::pair<size_t, bool> draw_commands_pattern(CommandsPattern &pattern, const bool header = true, const size_t index = 0, const int playing_row = -1, const uint16_t start = 0, const uint16_t end = UINT16_MAX);
+bool is_row_part_of_selection(int global_row_index, const GUIPatternSelection &selection);
+std::pair<size_t, bool> draw_pattern(
+    Pattern &pattern,
+    GUIPatternSelection &selection,
+    const bool header = true,
+    const size_t index = 0,
+    const int playing_row = -1,
+    const uint16_t start = 0,
+    const uint16_t end = UINT16_MAX
+);
+std::pair<size_t, bool> draw_commands_pattern(
+    CommandsPattern &pattern,
+    GUIPatternSelection &selection,
+    const bool header = true,
+    const size_t index = 0,
+    const int playing_row = -1,
+    const uint16_t start = 0,
+    const uint16_t end = UINT16_MAX
+);
 
 GUIState prepare_combo(const std::vector<std::string> &names, std::string label, int &index, const bool error_if_empty = false);
 void update_items(std::vector<std::string> &names, size_t size, std::string label, int &index);

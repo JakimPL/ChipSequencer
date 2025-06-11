@@ -231,11 +231,29 @@ bool draw_button(const char *label, const float button_padding) {
     return ImGui::Button(label, ImVec2(button_width, 0));
 }
 
-std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t index, const int playing_row, const uint16_t start, const uint16_t end) {
+bool is_row_part_of_selection(int global_row_index, const GUIPatternSelection &selection) {
+    if (!selection.active) {
+        return false;
+    }
+    int selection_start_row = std::min(selection.start, selection.end);
+    int selection_end_row = std::max(selection.start, selection.end);
+    return (global_row_index >= selection_start_row && global_row_index <= selection_end_row);
+};
+
+std::pair<size_t, bool> draw_pattern(
+    Pattern &pattern,
+    GUIPatternSelection &selection,
+    const bool header,
+    const size_t index,
+    const int playing_row,
+    const uint16_t start,
+    const uint16_t end
+) {
     bool select = false;
-    const int min = std::max(static_cast<int>(start) - static_cast<int>(index), 0);
-    const int max = std::min(static_cast<int>(end) - static_cast<int>(index), static_cast<int>(pattern.notes.size()));
-    if (max <= 0 || min >= pattern.notes.size()) {
+    const int min_row_to_draw = std::max(static_cast<int>(start) - static_cast<int>(index), 0);
+    const int max_row_to_draw = std::min(static_cast<int>(end) - static_cast<int>(index), static_cast<int>(pattern.notes.size()));
+
+    if (max_row_to_draw <= 0 || min_row_to_draw >= static_cast<int>(pattern.notes.size())) {
         return {index + pattern.notes.size(), false};
     }
 
@@ -247,12 +265,17 @@ std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t
             ImGui::TableHeadersRow();
         }
 
-        for (int i = min; i < max; i++) {
+        for (int i = min_row_to_draw; i < max_row_to_draw; i++) {
             const int j = i + index;
             const bool is_selected = (pattern.current_row == i);
+            bool row_is_in_block_selection = is_row_part_of_selection(j, selection);
+
             ImGui::TableNextRow();
+
             if (playing_row == j) {
-                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, IM_COL32(128, 255, 128, 64));
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_PLAYING_COLOR);
+            } else if (row_is_in_block_selection) {
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_SELECTED_COLOR);
             }
 
             if (is_selected) {
@@ -286,7 +309,15 @@ std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header, size_t
     return {index + pattern.notes.size(), select};
 }
 
-std::pair<size_t, bool> draw_commands_pattern(CommandsPattern &pattern, const bool header, const size_t index, const int playing_row, const uint16_t start, const uint16_t end) {
+std::pair<size_t, bool> draw_commands_pattern(
+    CommandsPattern &pattern,
+    GUIPatternSelection &selection,
+    const bool header,
+    const size_t index,
+    const int playing_row,
+    const uint16_t start,
+    const uint16_t end
+) {
     bool select = false;
     const int min = std::max(static_cast<int>(start) - static_cast<int>(index), 0);
     const int max = std::min(static_cast<int>(end) - static_cast<int>(index), static_cast<int>(pattern.commands.size()));

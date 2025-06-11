@@ -3,6 +3,7 @@
 
 #include "../../constants.hpp"
 #include "../../init.hpp"
+#include "../../utils.hpp"
 #include "../../patterns/commands.hpp"
 #include "../panel.hpp"
 
@@ -11,6 +12,8 @@ class GUICommandsSequencesPanel : public GUIPanel {
     struct CurrentCommandsSequence {
         CommandsPattern pattern;
     } current_sequence;
+
+    GUIPatternSelection selection;
 
     struct EditDialogBox {
         bool visible = false;

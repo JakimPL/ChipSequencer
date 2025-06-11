@@ -152,7 +152,7 @@ void GUICommandsSequencesPanel::draw_sequence() {
         }
     }
 
-    draw_commands_pattern(current_sequence.pattern);
+    draw_commands_pattern(current_sequence.pattern, selection);
 }
 
 void GUICommandsSequencesPanel::open_edit_dialog_box(const int item) {

@@ -5,6 +5,7 @@
 
 #include "../constants.hpp"
 #include "../init.hpp"
+#include "../utils.hpp"
 #include "../patterns/pattern.hpp"
 #include "panel.hpp"
 
@@ -13,6 +14,8 @@ class GUISequencesPanel : public GUIPanel {
     struct CurrentSequence {
         Pattern pattern;
     } current_sequence;
+
+    GUIPatternSelection selection;
 
     bool is_index_valid() const;
     void draw_sequence_length();
