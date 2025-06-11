@@ -13,7 +13,7 @@ PAGE_SIZE = 0x1000
 
 
 class LinuxCompiler(Compiler):
-    def __call__(self, flags: Optional[List[str]] = None) -> None:
+    def __call__(self, flags: Optional[List[str]] = None, hide_output: bool = False) -> None:
         self.temp_dir.mkdir(exist_ok=True)
         self.bin_dir.mkdir(exist_ok=True)
         self.build_dir.mkdir(exist_ok=True)
@@ -24,12 +24,12 @@ class LinuxCompiler(Compiler):
         message, sample_rate, output_channels = self.get_song_info()
         path = self.temp_dir / "core" / "platform" / "linux.asm"
         self.substitute_values(path, message, sample_rate, output_channels)
-        self.compile()
+        self.compile(hide_output=hide_output)
 
         file_size = self.measure_file_size()
         shutil.copy(self.temp_dir / "core" / "platform" / "linux.asm.temp", path)
         self.substitute_values(path, message, sample_rate, output_channels, file_size)
-        self.compile(flags)
+        self.compile(flags, hide_output=hide_output)
 
         if self.compression:
             self.compress()
@@ -47,14 +47,19 @@ class LinuxCompiler(Compiler):
             self.temp_dir / "core" / "platform" / "linux.asm", self.temp_dir / "core" / "platform" / "linux.asm.temp"
         )
 
-    def compile(self, flags: Optional[List[str]] = None):
+    def compile(self, flags: Optional[List[str]] = None, hide_output: bool = False):
         flags = flags or []
         command = "./compile.sh" + (" DEBUG" if self.debug else "")
         for flag in flags:
             command += f" --define={flag}"
 
         args = ["bash", "-c", command]
-        subprocess.run(args, cwd=self.temp_dir)
+        subprocess.run(
+            args,
+            stdout=subprocess.DEVNULL if hide_output else None,
+            stderr=subprocess.DEVNULL if hide_output else None,
+            cwd=self.temp_dir,
+        )
 
     def copy_executable(self):
         source = "player" if self.compression else "main"

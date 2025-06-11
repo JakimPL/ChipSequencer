@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 from pyconf import COMPONENTS_SIZES_HPP_FILE
+from tqdm import tqdm
 
 TEMP_BASE = Path(tempfile.gettempdir()) / "chipsequencer"
 CATEGORIES = ["DSP", "Oscillator", "Command"]
@@ -55,7 +56,7 @@ class SizeChecker:
 
     def check_size(self, flags: Optional[List[str]] = None) -> int:
         try:
-            self.compiler(flags)
+            self.compiler(flags, hide_output=True)
         except Exception as exception:
             print(f"Error during compilation of: {flags}")
             raise exception
@@ -66,21 +67,25 @@ class SizeChecker:
         core_size = self.check_size()
         component_sizes = {f"{category}s": {} for category in CATEGORIES}
         module_sizes = {"Core": core_size}
-        for category, flags in flags.items():
-            base_flag = f"USED_{category.upper()}"
-            base_size = self.check_size([base_flag])
-            for flag in flags:
-                size = self.check_size([base_flag, flag])
-                category_name = f"{category}s"
-                if flag != base_flag:
-                    name = flag.replace(f"{base_flag}_", "").replace("_", " ").capitalize()
-                    component_sizes[category_name][name] = size - base_size
-                    if flag in DEPENDENCIES:
-                        for dependency in DEPENDENCIES[flag]:
-                            dep_size = self.check_size([base_flag, dependency])
-                            component_sizes[category_name][name] -= dep_size - base_size
-                else:
-                    module_sizes[category_name] = base_size - core_size
+
+        total_flags = sum(len(f_list) for f_list in flags.values())
+        with tqdm(total=total_flags, desc="Calculating sizes") as pbar:
+            for category, category_flags in flags.items():
+                base_flag = f"USED_{category.upper()}"
+                base_size = self.check_size([base_flag])
+                for flag in category_flags:
+                    size = self.check_size([base_flag, flag])
+                    category_name = f"{category}s"
+                    if flag != base_flag:
+                        name = flag.replace(f"{base_flag}_", "").replace("_", " ").capitalize()
+                        component_sizes[category_name][name] = size - base_size
+                        if flag in DEPENDENCIES:
+                            for dependency in DEPENDENCIES[flag]:
+                                dep_size = self.check_size([base_flag, dependency])
+                                component_sizes[category_name][name] -= dep_size - base_size
+                    else:
+                        module_sizes[category_name] = base_size - core_size
+                    pbar.update(1)
 
         return module_sizes, component_sizes
 
