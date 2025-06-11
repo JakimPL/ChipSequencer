@@ -7,6 +7,7 @@
 #include "../init.hpp"
 #include "../utils.hpp"
 #include "../patterns/pattern.hpp"
+#include "../patterns/selection.hpp"
 #include "panel.hpp"
 
 class GUISequencesPanel : public GUIPanel {
@@ -15,7 +16,7 @@ class GUISequencesPanel : public GUIPanel {
         Pattern pattern;
     } current_sequence;
 
-    GUIPatternSelection selection;
+    PatternSelection selection;
 
     bool is_index_valid() const;
     void draw_sequence_length();

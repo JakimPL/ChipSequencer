@@ -12,17 +12,11 @@
 #include "shortcuts.hpp"
 #include "patterns/commands.hpp"
 #include "patterns/pattern.hpp"
+#include "patterns/selection.hpp"
 
 struct GUIState {
     bool value_changed;
     bool right_clicked;
-};
-
-struct GUIPatternSelection {
-    bool active = false;
-    size_t channel_index = -1;
-    int start = -1;
-    int end = -1;
 };
 
 int clamp_index(int index, const int size);
@@ -57,10 +51,10 @@ void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t 
 
 bool get_menu_item(const std::string &name, const std::optional<ShortcutAction> action = std::nullopt, const bool checked = false);
 
-bool is_row_part_of_selection(int global_row_index, const GUIPatternSelection &selection);
 std::pair<size_t, bool> draw_pattern(
     Pattern &pattern,
-    GUIPatternSelection &selection,
+    PatternSelection &selection,
+    const size_t channel_index = 0,
     const bool header = true,
     const size_t index = 0,
     const int playing_row = -1,
@@ -69,7 +63,8 @@ std::pair<size_t, bool> draw_pattern(
 );
 std::pair<size_t, bool> draw_commands_pattern(
     CommandsPattern &pattern,
-    GUIPatternSelection &selection,
+    PatternSelection &selection,
+    const size_t channel_index = 0,
     const bool header = true,
     const size_t index = 0,
     const int playing_row = -1,

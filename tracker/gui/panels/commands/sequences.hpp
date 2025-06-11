@@ -5,6 +5,7 @@
 #include "../../init.hpp"
 #include "../../utils.hpp"
 #include "../../patterns/commands.hpp"
+#include "../../patterns/selection.hpp"
 #include "../panel.hpp"
 
 class GUICommandsSequencesPanel : public GUIPanel {
@@ -13,7 +14,7 @@ class GUICommandsSequencesPanel : public GUIPanel {
         CommandsPattern pattern;
     } current_sequence;
 
-    GUIPatternSelection selection;
+    PatternSelection selection;
 
     struct EditDialogBox {
         bool visible = false;

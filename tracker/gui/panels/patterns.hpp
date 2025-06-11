@@ -8,6 +8,7 @@
 #include "../utils.hpp"
 #include "../patterns/commands.hpp"
 #include "../patterns/pattern.hpp"
+#include "../patterns/selection.hpp"
 #include "panel.hpp"
 
 struct VariantChannelIndex {
@@ -31,7 +32,7 @@ class GUIPatternsPanel : public GUIPanel {
 
     int page = 0;
     VariantChannelIndex current_channel = {false, 0};
-    GUIPatternSelection selection;
+    PatternSelection selection;
     size_t current_index = -1;
     int current_row = -1;
 

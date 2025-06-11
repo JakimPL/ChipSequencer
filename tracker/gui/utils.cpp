@@ -9,6 +9,7 @@
 #include "constants.hpp"
 #include "names.hpp"
 #include "utils.hpp"
+#include "patterns/selection.hpp"
 
 int clamp_index(int index, const int size) {
     return std::clamp(index, 0, size - 1);
@@ -231,18 +232,10 @@ bool draw_button(const char *label, const float button_padding) {
     return ImGui::Button(label, ImVec2(button_width, 0));
 }
 
-bool is_row_part_of_selection(int global_row_index, const GUIPatternSelection &selection) {
-    if (!selection.active) {
-        return false;
-    }
-    int selection_start_row = std::min(selection.start, selection.end);
-    int selection_end_row = std::max(selection.start, selection.end);
-    return (global_row_index >= selection_start_row && global_row_index <= selection_end_row);
-};
-
 std::pair<size_t, bool> draw_pattern(
     Pattern &pattern,
-    GUIPatternSelection &selection,
+    PatternSelection &selection,
+    const size_t channel_index,
     const bool header,
     const size_t index,
     const int playing_row,
@@ -268,13 +261,12 @@ std::pair<size_t, bool> draw_pattern(
         for (int i = min_row_to_draw; i < max_row_to_draw; i++) {
             const int j = i + index;
             const bool is_current = (pattern.current_row == i);
-            bool row_is_in_block_selection = is_row_part_of_selection(j, selection);
+            const bool is_selected = selection.is_row_selected(channel_index, j);
 
             ImGui::TableNextRow();
-
             if (playing_row == j) {
                 ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_PLAYING);
-            } else if (row_is_in_block_selection) {
+            } else if (is_selected) {
                 ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_SELECTED);
             }
 
@@ -288,6 +280,8 @@ std::pair<size_t, bool> draw_pattern(
                 pattern.current_row = i;
                 current = true;
             }
+
+            selection.form(channel_index, j);
 
             ImGui::TableSetColumnIndex(1);
             ImGui::Text("%s", get_note_name(pattern.notes[i]).c_str());
@@ -311,7 +305,8 @@ std::pair<size_t, bool> draw_pattern(
 
 std::pair<size_t, bool> draw_commands_pattern(
     CommandsPattern &pattern,
-    GUIPatternSelection &selection,
+    PatternSelection &selection,
+    const size_t channel_index,
     const bool header,
     const size_t index,
     const int playing_row,

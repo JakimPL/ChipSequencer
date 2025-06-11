@@ -75,7 +75,7 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
     for (auto &pattern : current_patterns.patterns[channel_index]) {
         const int playing_row = current_patterns.playing_rows[{false, channel_index}];
         auto [new_index, select] = draw_pattern(
-            pattern, selection, false, index, playing_row, start, end
+            pattern, selection, channel_index, false, index, playing_row, start, end
         );
         if (select) {
             current_channel = {false, channel_index};
@@ -98,7 +98,7 @@ void GUIPatternsPanel::draw_commands_channel(size_t channel_index) {
     for (auto &pattern : current_patterns.commands_patterns[channel_index]) {
         const int playing_row = current_patterns.playing_rows[{true, channel_index}];
         auto [new_index, select] = draw_commands_pattern(
-            pattern, selection, false, index, playing_row, start, end
+            pattern, selection, channel_index, false, index, playing_row, start, end
         );
         if (select) {
             current_channel = {true, channel_index};
