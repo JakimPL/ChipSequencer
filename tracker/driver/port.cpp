@@ -76,7 +76,6 @@ bool PortAudioDriver::open_stream() {
     );
     if (err != paNoError) {
         std::cerr << "PortAudio error: " << Pa_GetErrorText(err) << std::endl;
-        Pa_Terminate();
         return false;
     }
     return true;
@@ -119,7 +118,6 @@ bool PortAudioDriver::stop_stream() {
     if (err != paNoError) {
         std::cerr << "PortAudio error: " << Pa_GetErrorText(err) << std::endl;
         Pa_CloseStream(stream);
-        Pa_Terminate();
         return false;
     }
 
