@@ -7,6 +7,14 @@ GUIPatternsPanel::GUIPatternsPanel(const bool visible)
     : GUIPanel(visible) {
     from();
     update();
+
+    shortcut_manager.register_shortcut_and_action(
+        ShortcutAction::PatternTransposeUp,
+        {true, false, false, ImGuiKey_Q},
+        [this]() {
+            transpose_by = 1;
+        }
+    );
 }
 
 void GUIPatternsPanel::update() {
@@ -18,6 +26,7 @@ void GUIPatternsPanel::draw() {
 
     from();
     draw_channels();
+    transpose_all_rows();
     check_keyboard_input();
     to();
 
@@ -118,6 +127,7 @@ void GUIPatternsPanel::from() {
 }
 
 void GUIPatternsPanel::from_sequences() {
+    pattern_rows.clear();
     current_patterns.patterns.clear();
     current_patterns.patterns_max_rows.clear();
     const bool playing = is_playing();
@@ -137,7 +147,7 @@ void GUIPatternsPanel::from_sequences() {
         for (size_t j = 0; j < order->order_length; ++j) {
             const uint8_t sequence_index = order_sequences[j];
             if (sequence_index >= sequences.size()) {
-                break;
+                continue;
             }
 
             current_patterns.patterns[channel_index].emplace_back(sequence_index);
@@ -148,6 +158,7 @@ void GUIPatternsPanel::from_sequences() {
                 current_patterns.playing_rows[{false, channel_index}] = row + playing_row;
             }
 
+            mark_selected_rows(pattern, channel_index, row);
             row += pattern.steps;
         }
 
@@ -180,7 +191,7 @@ void GUIPatternsPanel::from_commands_sequences() {
         for (size_t j = 0; j < order->order_length; ++j) {
             const uint8_t sequence_index = order_sequences[j];
             if (sequence_index >= commands_sequences.size()) {
-                break;
+                continue;
             }
 
             if (j >= current_patterns.commands_patterns[channel_index].size()) {
@@ -222,6 +233,11 @@ void GUIPatternsPanel::to() const {
 
     to_sequences();
     to_commands_sequences();
+}
+
+void GUIPatternsPanel::transpose_all_rows() {
+    transpose(pattern_rows, transpose_by);
+    transpose_by = 0;
 }
 
 void GUIPatternsPanel::to_sequences() const {
@@ -388,6 +404,15 @@ void GUIPatternsPanel::handle_commands_pattern_input(CommandsPattern *pattern, u
     current_row = pattern->current_row + index;
 }
 
+void GUIPatternsPanel::mark_selected_rows(Pattern &pattern, const size_t channel_index, const int row) {
+    for (int i = 0; i < pattern.notes.size(); ++i) {
+        const int j = row + i;
+        if (selection.is_row_selected(channel_index, j)) {
+            pattern_rows.insert({&pattern, j});
+        }
+    }
+}
+
 std::pair<Pattern *, uint16_t> GUIPatternsPanel::find_pattern_by_current_row() const {
     if (current_channel.command) {
         return {nullptr, 0};
@@ -451,15 +476,15 @@ int GUIPatternsPanel::get_pages() const {
 }
 
 void GUIPatternsPanel::deselect_all_rows() {
-    for (auto &pattern : current_patterns.patterns) {
-        for (auto &p : pattern.second) {
-            p.current_row = -1;
+    for (auto &patterns : current_patterns.patterns) {
+        for (auto &pattern : patterns.second) {
+            pattern.current_row = -1;
         }
     }
-    for (auto &pattern : current_patterns.commands_patterns) {
-        for (auto &p : pattern.second) {
-            p.current_row = -1;
-            p.selection = CommandSelection::None;
+    for (auto &commands_patterns : current_patterns.commands_patterns) {
+        for (auto &commands_pattern : commands_patterns.second) {
+            commands_pattern.current_row = -1;
+            commands_pattern.selection = CommandSelection::None;
         }
     }
 }

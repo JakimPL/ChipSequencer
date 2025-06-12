@@ -2,6 +2,14 @@
 #define GUI_PATTERNS_SELECTION_HPP
 
 #include <cstddef>
+#include <set>
+#include <utility>
+
+#include "pattern.hpp"
+
+typedef std::set<std::pair<Pattern *, int>> PatternRows;
+
+void transpose(const PatternRows &pattern_rows, const int value);
 
 struct PatternSelection {
     bool selecting = false;

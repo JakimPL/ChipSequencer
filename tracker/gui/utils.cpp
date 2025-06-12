@@ -232,14 +232,6 @@ bool draw_button(const char *label, const float button_padding) {
     return ImGui::Button(label, ImVec2(button_width, 0));
 }
 
-void transpose(Pattern &pattern, PatternSelection &selection, const int &row, const int value) {
-    if (selection.is_active()) {
-
-    } else {
-        pattern.transpose(value, row);
-    }
-}
-
 std::pair<size_t, bool> draw_pattern(
     Pattern &pattern,
     PatternSelection &selection,
@@ -258,18 +250,9 @@ std::pair<size_t, bool> draw_pattern(
         return {index + pattern.notes.size(), false};
     }
 
-    shortcut_manager.register_shortcut_and_action(
-        ShortcutAction::PatternTransposeUp,
-        {true, false, false, ImGuiKey_Q},
-        [&]() {
-            transpose(pattern, selection, pattern.current_row, 1);
-        }
-    );
-
-    const std::string popup_id = "PatternContext##" + std::to_string(channel_index) + "_" + std::to_string(index);
     if (ImGui::BeginTable("PatternTable", 3, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg)) {
         if (ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_AllowWhenBlockedByPopup) && ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
-            ImGui::OpenPopup(popup_id.c_str());
+            ImGui::OpenPopup("PatternContext");
         }
 
         ImGui::TableSetupColumn("Index", ImGuiTableColumnFlags_WidthFixed, 50.0f);
@@ -315,11 +298,11 @@ std::pair<size_t, bool> draw_pattern(
             }
         }
 
-        if (ImGui::BeginPopup(popup_id.c_str())) {
+        if (ImGui::BeginPopup("PatternContext")) {
             draw_menu_item("Transpose +1", ShortcutAction::PatternTransposeUp);
             draw_menu_item("Transpose -1", ShortcutAction::PatternTransposeDown);
-            draw_menu_item("Transpose Octave +1", ShortcutAction::PatternTransposeOctaveUp);
-            draw_menu_item("Transpose Octave -1", ShortcutAction::PatternTransposeOctaveDown);
+            draw_menu_item("Transpose octave +1", ShortcutAction::PatternTransposeOctaveUp);
+            draw_menu_item("Transpose octave -1", ShortcutAction::PatternTransposeOctaveDown);
             ImGui::EndPopup();
         }
 
@@ -758,12 +741,11 @@ void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t 
     }
 }
 
-bool draw_menu_item(const std::string &name, const std::optional<ShortcutAction> action, const bool checked) {
+void draw_menu_item(const std::string &name, const std::optional<ShortcutAction> action, const bool checked) {
     if (get_menu_item(name, action, checked)) {
         if (action.has_value()) {
             shortcut_manager.execute_action(action.value());
         }
-        return true;
     }
 }
 

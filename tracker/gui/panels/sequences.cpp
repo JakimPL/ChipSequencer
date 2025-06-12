@@ -5,6 +5,7 @@
 #include "../enums.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
+#include "../patterns/selection.hpp"
 #include "sequences.hpp"
 
 GUISequencesPanel::GUISequencesPanel(const bool visible)
@@ -120,6 +121,7 @@ void GUISequencesPanel::draw_sequence() {
         return;
     }
 
+    PatternRows pattern_rows;
     draw_sequence_length();
     draw_pattern(current_sequence.pattern, selection);
 }

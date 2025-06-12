@@ -33,15 +33,21 @@ class GUIPatternsPanel : public GUIPanel {
     int page = 0;
     VariantChannelIndex current_channel = {false, 0};
     PatternSelection selection;
+    PatternRows pattern_rows;
     size_t current_index = -1;
     int current_row = -1;
+    int transpose_by = 0;
 
     void draw_pages();
     void draw_channels();
     void draw_channel(size_t channel_index);
     void draw_commands_channel(size_t channel_index);
+
+    void transpose_all_rows();
+    void mark_selected_rows(Pattern &pattern, const size_t channel_index, const int row);
     std::pair<Pattern *, uint16_t> find_pattern_by_current_row() const;
     std::pair<CommandsPattern *, uint16_t> find_commands_pattern_by_current_row() const;
+
     void handle_pattern_input(Pattern *pattern, uint16_t index);
     void handle_commands_pattern_input(CommandsPattern *pattern, uint16_t index);
     int get_pages() const;
