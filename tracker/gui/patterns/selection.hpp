@@ -27,6 +27,7 @@ struct SequenceRow {
 };
 
 typedef std::set<PatternRow> PatternRows;
+typedef std::map<SequenceRow, std::set<PatternRow>> PatternRowsBySequenceRow;
 
 struct PatternSelection {
     bool selecting = false;

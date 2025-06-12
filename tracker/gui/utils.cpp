@@ -235,6 +235,7 @@ bool draw_button(const char *label, const float button_padding) {
 std::pair<size_t, bool> draw_pattern(
     Pattern &pattern,
     PatternSelection &selection,
+    PatternRows &rows_in_selection,
     const size_t channel_index,
     const bool header,
     const size_t index,
@@ -251,7 +252,8 @@ std::pair<size_t, bool> draw_pattern(
     }
 
     if (ImGui::BeginTable("PatternTable", 3, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg)) {
-        if (ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_AllowWhenBlockedByPopup) && ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+        if (ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_AllowWhenBlockedByPopup) &&
+            ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
             ImGui::OpenPopup("PatternContext");
         }
 
@@ -266,12 +268,15 @@ std::pair<size_t, bool> draw_pattern(
             const int j = i + index;
             const bool is_current = (pattern.current_row == i);
             const bool is_selected = selection.is_row_selected(channel_index, j);
+            const bool is_secondary_selected = rows_in_selection.count({channel_index, pattern.sequence_index, i}) > 0;
 
             ImGui::TableNextRow();
             if (playing_row == j) {
                 ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_PLAYING);
             } else if (is_selected) {
                 ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_SELECTED);
+            } else if (is_secondary_selected) {
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_SECONDARY_SELECTED);
             }
 
             if (is_current) {

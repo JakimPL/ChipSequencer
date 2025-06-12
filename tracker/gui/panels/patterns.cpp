@@ -108,7 +108,7 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
     for (auto &pattern : current_patterns.patterns[channel_index]) {
         const int playing_row = current_patterns.playing_rows[{false, channel_index}];
         auto [new_index, select] = draw_pattern(
-            pattern, selection, channel_index, false, index, playing_row, start, end
+            pattern, selection, secondary_pattern_rows, channel_index, false, index, playing_row, start, end
         );
         if (select) {
             current_channel = {false, channel_index};
@@ -152,6 +152,8 @@ void GUIPatternsPanel::from() {
 
 void GUIPatternsPanel::from_sequences() {
     pattern_rows.clear();
+    pattern_rows_by_sequence_row.clear();
+    secondary_pattern_rows.clear();
     current_patterns.patterns.clear();
     current_patterns.patterns_max_rows.clear();
     const bool playing = is_playing();
@@ -190,6 +192,8 @@ void GUIPatternsPanel::from_sequences() {
         current_patterns.patterns_max_rows[channel_index] = row;
         current_patterns.total_rows = std::max(current_patterns.total_rows, row);
     }
+
+    prepare_secondary_selection();
 }
 
 void GUIPatternsPanel::from_commands_sequences() {
@@ -261,25 +265,17 @@ void GUIPatternsPanel::to() const {
 }
 
 void GUIPatternsPanel::transpose_selected_rows() {
-    std::set<size_t> sequences;
-    std::set<SequenceRow> sequence_rows;
-    for (auto &[channel_index, pattern_id, row] : pattern_rows) {
-        Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
-        sequences.insert(pattern.sequence_index);
-        sequence_rows.insert({pattern.sequence_index, row});
+    if (transpose_by == 0) {
+        return;
     }
 
-    for (auto &[channel_index, patterns] : current_patterns.patterns) {
-        for (Pattern &pattern : patterns) {
-            if (sequences.find(pattern.sequence_index) == sequences.end()) {
-                continue;
-            }
-            for (int i = 0; i < pattern.steps; ++i) {
-                SequenceRow sequence_row = {pattern.sequence_index, i};
-                if (sequence_rows.find(sequence_row) != sequence_rows.end()) {
-                    pattern.transpose(transpose_by, i);
-                }
-            }
+    for (auto &[sequence_row, pattern_rows] : pattern_rows_by_sequence_row) {
+        for (const PatternRow &pattern_row : pattern_rows) {
+            const size_t channel_index = pattern_row.channel_index;
+            const size_t pattern_id = pattern_row.pattern_id;
+            const int row = pattern_row.row;
+            Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
+            pattern.transpose(transpose_by, row);
         }
     }
 
@@ -293,7 +289,6 @@ void GUIPatternsPanel::to_sequences() const {
         unique_patterns.insert(pattern);
     }
 
-    // add selected patterns
     for (const auto &[channel_index, pattern_id, row] : pattern_rows) {
         const Pattern &selected_pattern = current_patterns.patterns.at(channel_index).at(pattern_id);
         unique_patterns.insert(&selected_pattern);
@@ -465,8 +460,38 @@ void GUIPatternsPanel::mark_selected_rows(const size_t channel_index, const size
     const Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
     for (int i = 0; i < pattern.notes.size(); ++i) {
         const int j = row + i;
-        if (selection.is_row_selected(channel_index, j)) {
-            pattern_rows.insert({channel_index, pattern_id, i});
+        const PatternRow pattern_row = {channel_index, pattern_id, i};
+        if (selection.is_row_selected(channel_index, j) ||
+            (!selection.is_active() && pattern.current_row == i)) {
+            const SequenceRow sequence_row = {pattern.sequence_index, i};
+            pattern_rows.insert(pattern_row);
+            pattern_rows_by_sequence_row[sequence_row].insert(pattern_row);
+        }
+    }
+}
+
+void GUIPatternsPanel::prepare_secondary_selection() {
+    std::set<size_t> sequences;
+    std::set<SequenceRow> sequence_rows;
+    for (const auto &[sequence_row, pattern_rows] : pattern_rows_by_sequence_row) {
+        sequences.insert(sequence_row.sequence_index);
+        sequence_rows.insert(sequence_row);
+    }
+
+    for (const SequenceRow &sequence_row : sequence_rows) {
+        const uint8_t sequence_index = sequence_row.sequence_index;
+        if (sequences.find(sequence_index) == sequences.end()) {
+            continue;
+        }
+
+        for (const auto &[channel_index, patterns] : current_patterns.patterns) {
+            for (const auto &pattern : patterns) {
+                if (pattern.sequence_index == sequence_index) {
+                    const PatternRow pattern_row = {channel_index, pattern.sequence_index, sequence_row.row};
+                    pattern_rows_by_sequence_row[sequence_row].insert(pattern_row);
+                    secondary_pattern_rows.insert(pattern_row);
+                }
+            }
         }
     }
 }

@@ -34,6 +34,8 @@ class GUIPatternsPanel : public GUIPanel {
     VariantChannelIndex current_channel = {false, 0};
     PatternSelection selection;
     PatternRows pattern_rows;
+    PatternRows secondary_pattern_rows;
+    PatternRowsBySequenceRow pattern_rows_by_sequence_row;
     size_t current_index = -1;
     int current_row = -1;
     int transpose_by = 0;
@@ -44,6 +46,7 @@ class GUIPatternsPanel : public GUIPanel {
     void draw_commands_channel(size_t channel_index);
 
     void transpose_selected_rows();
+    void prepare_secondary_selection();
     void mark_selected_rows(const size_t channel_index, const size_t pattern_id, const int row);
     std::pair<Pattern *, uint16_t> find_pattern_by_current_row() const;
     std::pair<CommandsPattern *, uint16_t> find_commands_pattern_by_current_row() const;

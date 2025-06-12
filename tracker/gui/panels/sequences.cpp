@@ -121,9 +121,9 @@ void GUISequencesPanel::draw_sequence() {
         return;
     }
 
-    PatternRows pattern_rows;
+    PatternRows secondary_pattern_rows;
     draw_sequence_length();
-    draw_pattern(current_sequence.pattern, selection);
+    draw_pattern(current_sequence.pattern, selection, secondary_pattern_rows);
 }
 
 void GUISequencesPanel::check_keyboard_input() {
