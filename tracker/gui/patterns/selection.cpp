@@ -1,12 +1,6 @@
 #include "../init.hpp"
 #include "selection.hpp"
 
-void transpose(const PatternRows &pattern_rows, const int value) {
-    for (auto &[pattern, row] : pattern_rows) {
-        pattern->transpose(value, row);
-    }
-}
-
 bool PatternSelection::is_row_selected(const size_t channel_index, const int row) const {
     const int min = std::min(start, end);
     const int max = std::max(start, end);

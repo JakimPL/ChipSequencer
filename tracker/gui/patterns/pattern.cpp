@@ -128,7 +128,7 @@ void Pattern::transpose(const int value, std::optional<int> row) {
         return;
     }
 
-    notes[row.value()] += value;
+    notes[row.value()] = std::clamp(notes[row.value()] + value, 0, NOTES - 1);
 }
 
 void Pattern::handle_input(const int min_row, const int max_row) {

@@ -15,6 +15,30 @@ GUIPatternsPanel::GUIPatternsPanel(const bool visible)
             transpose_by = 1;
         }
     );
+
+    shortcut_manager.register_shortcut_and_action(
+        ShortcutAction::PatternTransposeDown,
+        {true, false, false, ImGuiKey_A},
+        [this]() {
+            transpose_by = -1;
+        }
+    );
+
+    shortcut_manager.register_shortcut_and_action(
+        ShortcutAction::PatternTransposeOctaveUp,
+        {true, true, false, ImGuiKey_Q},
+        [this]() {
+            transpose_by = scale_composer.get_edo();
+        }
+    );
+
+    shortcut_manager.register_shortcut_and_action(
+        ShortcutAction::PatternTransposeOctaveDown,
+        {true, true, false, ImGuiKey_A},
+        [this]() {
+            transpose_by = -scale_composer.get_edo();
+        }
+    );
 }
 
 void GUIPatternsPanel::update() {
@@ -26,7 +50,7 @@ void GUIPatternsPanel::draw() {
 
     from();
     draw_channels();
-    transpose_all_rows();
+    transpose_selected_rows();
     check_keyboard_input();
     to();
 
@@ -151,14 +175,15 @@ void GUIPatternsPanel::from_sequences() {
             }
 
             current_patterns.patterns[channel_index].emplace_back(sequence_index);
-            Pattern &pattern = current_patterns.patterns[channel_index].back();
+            const size_t pattern_id = current_patterns.patterns[channel_index].size() - 1;
+            Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
             pattern.current_row = !current_channel.command && channel_index == current_channel.index ? current_row - row : -1;
             if (playing && playing_sequence == j) {
                 const int playing_row = pattern.calculate_playing_row(channel_index);
                 current_patterns.playing_rows[{false, channel_index}] = row + playing_row;
             }
 
-            mark_selected_rows(pattern, channel_index, row);
+            mark_selected_rows(channel_index, pattern_id, row);
             row += pattern.steps;
         }
 
@@ -235,14 +260,46 @@ void GUIPatternsPanel::to() const {
     to_commands_sequences();
 }
 
-void GUIPatternsPanel::transpose_all_rows() {
-    transpose(pattern_rows, transpose_by);
+void GUIPatternsPanel::transpose_selected_rows() {
+    std::set<size_t> sequences;
+    std::set<SequenceRow> sequence_rows;
+    for (auto &[channel_index, pattern_id, row] : pattern_rows) {
+        Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
+        sequences.insert(pattern.sequence_index);
+        sequence_rows.insert({pattern.sequence_index, row});
+    }
+
+    for (auto &[channel_index, patterns] : current_patterns.patterns) {
+        for (Pattern &pattern : patterns) {
+            if (sequences.find(pattern.sequence_index) == sequences.end()) {
+                continue;
+            }
+            for (int i = 0; i < pattern.steps; ++i) {
+                SequenceRow sequence_row = {pattern.sequence_index, i};
+                if (sequence_rows.find(sequence_row) != sequence_rows.end()) {
+                    pattern.transpose(transpose_by, i);
+                }
+            }
+        }
+    }
+
     transpose_by = 0;
 }
 
 void GUIPatternsPanel::to_sequences() const {
-    Pattern *pattern = find_pattern_by_current_row().first;
+    std::set<const Pattern *> unique_patterns = {};
+    const Pattern *pattern = find_pattern_by_current_row().first;
     if (pattern != nullptr) {
+        unique_patterns.insert(pattern);
+    }
+
+    // add selected patterns
+    for (const auto &[channel_index, pattern_id, row] : pattern_rows) {
+        const Pattern &selected_pattern = current_patterns.patterns.at(channel_index).at(pattern_id);
+        unique_patterns.insert(&selected_pattern);
+    }
+
+    for (const Pattern *pattern : unique_patterns) {
         size_t sequence_index = pattern->sequence_index;
         Sequence *sequence = sequences[sequence_index];
         const std::vector<Note> note_vector = pattern->to_note_vector();
@@ -404,11 +461,12 @@ void GUIPatternsPanel::handle_commands_pattern_input(CommandsPattern *pattern, u
     current_row = pattern->current_row + index;
 }
 
-void GUIPatternsPanel::mark_selected_rows(Pattern &pattern, const size_t channel_index, const int row) {
+void GUIPatternsPanel::mark_selected_rows(const size_t channel_index, const size_t pattern_id, const int row) {
+    const Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
     for (int i = 0; i < pattern.notes.size(); ++i) {
         const int j = row + i;
         if (selection.is_row_selected(channel_index, j)) {
-            pattern_rows.insert({&pattern, j});
+            pattern_rows.insert({channel_index, pattern_id, i});
         }
     }
 }

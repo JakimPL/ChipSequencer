@@ -7,9 +7,26 @@
 
 #include "pattern.hpp"
 
-typedef std::set<std::pair<Pattern *, int>> PatternRows;
+struct PatternRow {
+    size_t channel_index;
+    size_t pattern_id;
+    int row;
 
-void transpose(const PatternRows &pattern_rows, const int value);
+    bool operator<(const PatternRow &other) const {
+        return std::tie(channel_index, pattern_id, row) < std::tie(other.channel_index, other.pattern_id, other.row);
+    }
+};
+
+struct SequenceRow {
+    size_t sequence_index;
+    int row;
+
+    bool operator<(const SequenceRow &other) const {
+        return std::tie(sequence_index, row) < std::tie(other.sequence_index, other.row);
+    }
+};
+
+typedef std::set<PatternRow> PatternRows;
 
 struct PatternSelection {
     bool selecting = false;
