@@ -57,6 +57,7 @@ std::pair<size_t, bool> draw_pattern(
     Pattern &pattern,
     PatternSelection &selection,
     PatternRows &rows_in_selection,
+    const bool pattern_view,
     const size_t channel_index = 0,
     const bool header = true,
     const size_t index = 0,

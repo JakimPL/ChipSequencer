@@ -236,6 +236,7 @@ std::pair<size_t, bool> draw_pattern(
     Pattern &pattern,
     PatternSelection &selection,
     PatternRows &rows_in_selection,
+    const bool pattern_view,
     const size_t channel_index,
     const bool header,
     const size_t index,
@@ -305,6 +306,9 @@ std::pair<size_t, bool> draw_pattern(
 
         if (ImGui::BeginPopup("PatternContext")) {
             draw_menu_item("Select all", ShortcutAction::PatternSelectAll);
+            if (pattern_view) {
+                draw_menu_item("Select channel", ShortcutAction::PatternSelectChannel);
+            }
             draw_menu_item("Clear selection", ShortcutAction::PatternSelectNone);
             ImGui::Separator();
             draw_menu_item("Transpose +1", ShortcutAction::PatternTransposeUp);
