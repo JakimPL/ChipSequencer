@@ -201,7 +201,9 @@ void GUISequencesPanel::delete_selection() {
             current_sequence.pattern.notes[i] = NOTE_REST;
         }
     } else {
-        current_sequence.pattern.notes[current_sequence.pattern.current_row] = NOTE_REST;
+        if (current_sequence.pattern.is_row_valid(current_sequence.pattern.current_row)) {
+            current_sequence.pattern.notes[current_sequence.pattern.current_row] = NOTE_REST;
+        }
     }
 }
 

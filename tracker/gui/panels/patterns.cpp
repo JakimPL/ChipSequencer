@@ -355,6 +355,13 @@ void GUIPatternsPanel::deselect_all() {
 }
 
 void GUIPatternsPanel::delete_selection() {
+    for (const PatternRow &pattern_row : secondary_pattern_rows) {
+        const size_t channel_index = pattern_row.channel_index;
+        const size_t pattern_id = pattern_row.pattern_id;
+        const int row = pattern_row.row;
+        Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
+        pattern.notes[row] = NOTE_REST;
+    }
 }
 
 void GUIPatternsPanel::transpose_selected_rows() {
@@ -366,14 +373,12 @@ void GUIPatternsPanel::transpose_selected_rows() {
         return;
     }
 
-    for (auto &[sequence_row, pattern_rows] : pattern_rows_by_sequence_row) {
-        for (const PatternRow &pattern_row : pattern_rows) {
-            const size_t channel_index = pattern_row.channel_index;
-            const size_t pattern_id = pattern_row.pattern_id;
-            const int row = pattern_row.row;
-            Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
-            pattern.transpose(transpose_by, row);
-        }
+    for (const PatternRow &pattern_row : secondary_pattern_rows) {
+        const size_t channel_index = pattern_row.channel_index;
+        const size_t pattern_id = pattern_row.pattern_id;
+        const int row = pattern_row.row;
+        Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
+        pattern.transpose(transpose_by, row);
     }
 
     transpose_by = 0;
@@ -447,7 +452,6 @@ void GUIPatternsPanel::handle_pattern_input(Pattern *pattern, uint16_t index) {
                 --it;
                 current_channel.index = it->first;
             }
-            return;
         }
         if (ImGui::IsKeyPressed(ImGuiKey_RightArrow)) {
             if (std::next(it) == current_patterns.patterns.end()) {
@@ -463,7 +467,6 @@ void GUIPatternsPanel::handle_pattern_input(Pattern *pattern, uint16_t index) {
                 ++it;
                 current_channel.index = it->first;
             }
-            return;
         }
         if (ImGui::IsKeyPressed(ImGuiKey_UpArrow)) {
             if (pattern->current_row == 0 && index > 0) {
@@ -472,7 +475,6 @@ void GUIPatternsPanel::handle_pattern_input(Pattern *pattern, uint16_t index) {
                 Pattern *previous_pattern = find_pattern_by_current_row().first;
                 previous_pattern->current_row = previous_pattern->steps - 1;
             }
-            return;
         }
         if (ImGui::IsKeyPressed(ImGuiKey_DownArrow)) {
             if (
@@ -484,7 +486,6 @@ void GUIPatternsPanel::handle_pattern_input(Pattern *pattern, uint16_t index) {
                 Pattern *next_pattern = find_pattern_by_current_row().first;
                 next_pattern->current_row = 0;
             }
-            return;
         }
         if (ImGui::IsKeyPressed(ImGuiKey_Home)) {
             const int start = page * gui.get_page_size();
@@ -531,7 +532,6 @@ void GUIPatternsPanel::handle_commands_pattern_input(CommandsPattern *pattern, u
                 CommandsPattern *commands_pattern = find_commands_pattern_by_current_row().first;
                 commands_pattern->selection = CommandSelection::Value;
             }
-            return;
         }
         if (ImGui::IsKeyPressed(ImGuiKey_RightArrow) && pattern->selection == CommandSelection::Value) {
             if (std::next(it) == current_patterns.commands_patterns.end()) {
@@ -547,7 +547,6 @@ void GUIPatternsPanel::handle_commands_pattern_input(CommandsPattern *pattern, u
                 CommandsPattern *commands_pattern = find_commands_pattern_by_current_row().first;
                 commands_pattern->selection = CommandSelection::Command;
             }
-            return;
         }
         if (ImGui::IsKeyPressed(ImGuiKey_UpArrow)) {
             if (pattern->current_row == 0 && index > 0) {
@@ -557,7 +556,6 @@ void GUIPatternsPanel::handle_commands_pattern_input(CommandsPattern *pattern, u
                 previous_pattern->current_row = previous_pattern->steps - 1;
                 previous_pattern->selection = current_selection;
             }
-            return;
         }
         if (ImGui::IsKeyPressed(ImGuiKey_DownArrow)) {
             if (
@@ -570,7 +568,6 @@ void GUIPatternsPanel::handle_commands_pattern_input(CommandsPattern *pattern, u
                 next_pattern->current_row = 0;
                 next_pattern->selection = current_selection;
             }
-            return;
         }
         if (ImGui::IsKeyPressed(ImGuiKey_Home)) {
             const int start = page * gui.get_page_size();
