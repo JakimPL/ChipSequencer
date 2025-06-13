@@ -71,10 +71,13 @@ class ShortcutManager {
         {ShortcutAction::SongStop, {false, false, false, ImGuiKey_Escape}},
         {ShortcutAction::EditUndo, {true, false, false, ImGuiKey_Z}},
         {ShortcutAction::EditRedo, {true, false, true, ImGuiKey_Z}},
-        {ShortcutAction::PatternTransposeUp, {true, false, false, ImGuiKey_Q}},
-        {ShortcutAction::PatternTransposeDown, {true, false, false, ImGuiKey_A}},
-        {ShortcutAction::PatternTransposeOctaveUp, {true, true, false, ImGuiKey_Q}},
-        {ShortcutAction::PatternTransposeOctaveDown, {true, true, false, ImGuiKey_A}},
+        {ShortcutAction::PatternTransposeUp, {true, false, false, ImGuiKey_KeypadAdd}},
+        {ShortcutAction::PatternTransposeDown, {true, false, false, ImGuiKey_KeypadSubtract}},
+        {ShortcutAction::PatternTransposeOctaveUp, {true, true, false, ImGuiKey_KeypadAdd}},
+        {ShortcutAction::PatternTransposeOctaveDown, {true, true, false, ImGuiKey_KeypadSubtract}},
+        {ShortcutAction::PatternSelectAll, {true, false, false, ImGuiKey_A}},
+        {ShortcutAction::PatternSelectNone, {true, false, true, ImGuiKey_A}},
+        {ShortcutAction::PatternClear, {true, false, false, ImGuiKey_Delete}},
     };
 };
 
