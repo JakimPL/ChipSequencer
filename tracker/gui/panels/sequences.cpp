@@ -40,6 +40,20 @@ GUISequencesPanel::GUISequencesPanel(const bool visible)
             transpose_by = -scale_composer.get_edo();
         }
     );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSelectAll,
+        [this]() {
+            selection_mode = PatternSelectionMode::All;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSelectNone,
+        [this]() {
+            selection_mode = PatternSelectionMode::None;
+        }
+    );
 }
 
 void GUISequencesPanel::draw() {
@@ -57,6 +71,7 @@ void GUISequencesPanel::draw() {
 
     from();
     draw_sequence();
+    select();
     transpose_selected_rows();
     check_keyboard_input();
     to();
@@ -119,6 +134,37 @@ void GUISequencesPanel::remove() {
 void GUISequencesPanel::update() {
     update_items(sequence_names, sequences.size(), "Sequence ", sequence_index);
     gui.update(GUIElement::Orders);
+}
+
+void GUISequencesPanel::select() {
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+        return;
+    }
+
+    switch (selection_mode) {
+    case PatternSelectionMode::All: {
+        select_all();
+        break;
+    }
+    case PatternSelectionMode::None: {
+        deselect_all();
+        break;
+    }
+    case PatternSelectionMode::Ignore:
+    default: {
+        break;
+    }
+    }
+
+    selection_mode = PatternSelectionMode::Ignore;
+}
+
+void GUISequencesPanel::select_all() {
+    selection.select(0, current_sequence.pattern.steps - 1);
+}
+
+void GUISequencesPanel::deselect_all() {
+    selection.clear();
 }
 
 void GUISequencesPanel::transpose_selected_rows() {

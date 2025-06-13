@@ -304,10 +304,15 @@ std::pair<size_t, bool> draw_pattern(
         }
 
         if (ImGui::BeginPopup("PatternContext")) {
+            draw_menu_item("Select all", ShortcutAction::PatternSelectAll);
+            draw_menu_item("Clear selection", ShortcutAction::PatternSelectNone);
+            ImGui::Separator();
             draw_menu_item("Transpose +1", ShortcutAction::PatternTransposeUp);
             draw_menu_item("Transpose -1", ShortcutAction::PatternTransposeDown);
             draw_menu_item("Transpose octave +1", ShortcutAction::PatternTransposeOctaveUp);
             draw_menu_item("Transpose octave -1", ShortcutAction::PatternTransposeOctaveDown);
+            ImGui::Separator();
+            draw_menu_item("Delete", ShortcutAction::PatternClear);
             ImGui::EndPopup();
         }
 

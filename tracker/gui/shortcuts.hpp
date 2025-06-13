@@ -76,7 +76,7 @@ class ShortcutManager {
         {ShortcutAction::PatternTransposeOctaveUp, {true, true, false, ImGuiKey_KeypadAdd}},
         {ShortcutAction::PatternTransposeOctaveDown, {true, true, false, ImGuiKey_KeypadSubtract}},
         {ShortcutAction::PatternSelectAll, {true, false, false, ImGuiKey_A}},
-        {ShortcutAction::PatternSelectNone, {true, false, true, ImGuiKey_A}},
+        {ShortcutAction::PatternSelectNone, {true, true, false, ImGuiKey_A}},
         {ShortcutAction::PatternClear, {true, false, false, ImGuiKey_Delete}},
     };
 };

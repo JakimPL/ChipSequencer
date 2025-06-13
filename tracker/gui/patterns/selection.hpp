@@ -37,10 +37,23 @@ struct PatternSelection {
     int channel_start = -1;
     int channel_end = -1;
 
+    void select(
+        const int start,
+        const int end,
+        const size_t channel_start = 0,
+        const size_t channel_end = 0
+    );
     bool is_row_selected(const size_t channel_index, const int row) const;
     void form(const size_t channel_index, const int row);
-    void reset();
+    void clear();
     bool is_active() const;
+    void adjust_selection();
+};
+
+enum class PatternSelectionMode {
+    Ignore,
+    All,
+    None,
 };
 
 #endif // GUI_PATTERNS_SELECTION_HPP
