@@ -10,49 +10,40 @@
 
 GUIMenu::GUIMenu(const bool visible)
     : GUIPanel(visible) {
-    shortcut_manager.register_shortcut_and_action(
+    shortcut_manager.register_shortcut(
         ShortcutAction::FileNew,
-        {true, false, false, ImGuiKey_N},
         [this]() { file_new_confirm(); }
     );
-    shortcut_manager.register_shortcut_and_action(
+    shortcut_manager.register_shortcut(
         ShortcutAction::FileOpen,
-        {true, false, false, ImGuiKey_O},
         [this]() { file_open(); }
     );
-    shortcut_manager.register_shortcut_and_action(
+    shortcut_manager.register_shortcut(
         ShortcutAction::FileSave,
-        {true, false, false, ImGuiKey_S},
         [this]() { file_save(); }
     );
-    shortcut_manager.register_shortcut_and_action(
+    shortcut_manager.register_shortcut(
         ShortcutAction::FileSaveAs,
-        {true, false, true, ImGuiKey_S},
         [this]() { file_save_as(); }
     );
-    shortcut_manager.register_shortcut_and_action(
+    shortcut_manager.register_shortcut(
         ShortcutAction::FileRender,
-        {true, false, false, ImGuiKey_R},
         [this]() { file_render(); }
     );
-    shortcut_manager.register_shortcut_and_action(
+    shortcut_manager.register_shortcut(
         ShortcutAction::FileCompileCompressed,
-        {true, false, false, ImGuiKey_E},
         [this]() { file_compile(CompilationScheme::Compressed, CompilationTarget::Linux); }
     );
-    shortcut_manager.register_shortcut_and_action(
+    shortcut_manager.register_shortcut(
         ShortcutAction::FileCompileUncompressed,
-        {true, true, false, ImGuiKey_E},
         [this]() { file_compile(CompilationScheme::Uncompressed, CompilationTarget::Linux); }
     );
-    shortcut_manager.register_shortcut_and_action(
+    shortcut_manager.register_shortcut(
         ShortcutAction::FileCompileDebug,
-        {true, false, true, ImGuiKey_E},
         [this]() { file_compile(CompilationScheme::Debug, CompilationTarget::Linux); }
     );
-    shortcut_manager.register_shortcut_and_action(
+    shortcut_manager.register_shortcut(
         ShortcutAction::FileExit,
-        {false, false, true, ImGuiKey_F4},
         [this]() { file_exit_confirm(); }
     );
 }

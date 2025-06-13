@@ -46,9 +46,8 @@ struct Shortcut {
 
 class ShortcutManager {
   public:
-    void register_shortcut_and_action(
+    void register_shortcut(
         const ShortcutAction id,
-        const Shortcut &shortcut,
         const std::function<void()> &action
     );
     const Shortcut &get_shortcut(const ShortcutAction id) const;
@@ -57,11 +56,26 @@ class ShortcutManager {
     void execute_action(const ShortcutAction id) const;
 
   private:
-    std::unordered_map<ShortcutAction, Shortcut> shortcuts;
     std::unordered_map<ShortcutAction, std::function<void()>> actions;
-
-    void register_action(const ShortcutAction id, const std::function<void()> &action);
-    void register_shortcut(const ShortcutAction id, const Shortcut &shortcut);
+    const std::unordered_map<ShortcutAction, Shortcut> shortcuts = {
+        {ShortcutAction::FileNew, {true, false, false, ImGuiKey_N}},
+        {ShortcutAction::FileOpen, {true, false, false, ImGuiKey_O}},
+        {ShortcutAction::FileSave, {true, false, false, ImGuiKey_S}},
+        {ShortcutAction::FileSaveAs, {true, false, true, ImGuiKey_S}},
+        {ShortcutAction::FileRender, {true, true, false, ImGuiKey_R}},
+        {ShortcutAction::FileCompileCompressed, {true, false, false, ImGuiKey_E}},
+        {ShortcutAction::FileCompileUncompressed, {true, true, false, ImGuiKey_E}},
+        {ShortcutAction::FileCompileDebug, {true, false, true, ImGuiKey_E}},
+        {ShortcutAction::FileExit, {false, false, true, ImGuiKey_F4}},
+        {ShortcutAction::SongPlayPause, {false, false, false, ImGuiKey_Space}},
+        {ShortcutAction::SongStop, {false, false, false, ImGuiKey_Escape}},
+        {ShortcutAction::EditUndo, {true, false, false, ImGuiKey_Z}},
+        {ShortcutAction::EditRedo, {true, false, true, ImGuiKey_Z}},
+        {ShortcutAction::PatternTransposeUp, {true, false, false, ImGuiKey_Q}},
+        {ShortcutAction::PatternTransposeDown, {true, false, false, ImGuiKey_A}},
+        {ShortcutAction::PatternTransposeOctaveUp, {true, true, false, ImGuiKey_Q}},
+        {ShortcutAction::PatternTransposeOctaveDown, {true, true, false, ImGuiKey_A}},
+    };
 };
 
 #endif // GUI_SHORTCUTS_HPP

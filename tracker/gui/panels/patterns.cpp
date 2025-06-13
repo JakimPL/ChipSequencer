@@ -8,33 +8,29 @@ GUIPatternsPanel::GUIPatternsPanel(const bool visible)
     from();
     update();
 
-    shortcut_manager.register_shortcut_and_action(
+    shortcut_manager.register_shortcut(
         ShortcutAction::PatternTransposeUp,
-        {true, false, false, ImGuiKey_Q},
         [this]() {
             transpose_by = 1;
         }
     );
 
-    shortcut_manager.register_shortcut_and_action(
+    shortcut_manager.register_shortcut(
         ShortcutAction::PatternTransposeDown,
-        {true, false, false, ImGuiKey_A},
         [this]() {
             transpose_by = -1;
         }
     );
 
-    shortcut_manager.register_shortcut_and_action(
+    shortcut_manager.register_shortcut(
         ShortcutAction::PatternTransposeOctaveUp,
-        {true, true, false, ImGuiKey_Q},
         [this]() {
             transpose_by = scale_composer.get_edo();
         }
     );
 
-    shortcut_manager.register_shortcut_and_action(
+    shortcut_manager.register_shortcut(
         ShortcutAction::PatternTransposeOctaveDown,
-        {true, true, false, ImGuiKey_A},
         [this]() {
             transpose_by = -scale_composer.get_edo();
         }

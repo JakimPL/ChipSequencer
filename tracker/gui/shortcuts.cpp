@@ -17,21 +17,11 @@ std::string Shortcut::get_display_string() const {
     return display_string;
 }
 
-void ShortcutManager::register_action(const ShortcutAction id, const std::function<void()> &action) {
-    actions[id] = action;
-}
-
-void ShortcutManager::register_shortcut(const ShortcutAction id, const Shortcut &shortcut) {
-    shortcuts[id] = shortcut;
-}
-
-void ShortcutManager::register_shortcut_and_action(
+void ShortcutManager::register_shortcut(
     const ShortcutAction id,
-    const Shortcut &shortcut,
     const std::function<void()> &action
 ) {
-    register_shortcut(id, shortcut);
-    register_action(id, action);
+    actions[id] = action;
 }
 
 const Shortcut &ShortcutManager::get_shortcut(const ShortcutAction id) const {
