@@ -50,11 +50,16 @@ struct PatternSelection {
     void adjust_selection();
 };
 
-enum class PatternSelectionMode {
-    Ignore,
-    All,
-    Channel,
+enum class PatternSelectionAction {
     None,
+    TransposeUp,
+    TransposeDown,
+    TransposeOctaveUp,
+    TransposeOctaveDown,
+    SelectAll,
+    SelectChannel,
+    DeselectAll,
+    Clear
 };
 
 #endif // GUI_PATTERNS_SELECTION_HPP

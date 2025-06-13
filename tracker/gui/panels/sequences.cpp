@@ -16,42 +16,49 @@ GUISequencesPanel::GUISequencesPanel(const bool visible)
     shortcut_manager.register_shortcut(
         ShortcutAction::PatternTransposeUp,
         [this]() {
-            transpose_by = 1;
+            selection_action = PatternSelectionAction::TransposeUp;
         }
     );
 
     shortcut_manager.register_shortcut(
         ShortcutAction::PatternTransposeDown,
         [this]() {
-            transpose_by = -1;
+            selection_action = PatternSelectionAction::TransposeDown;
         }
     );
 
     shortcut_manager.register_shortcut(
         ShortcutAction::PatternTransposeOctaveUp,
         [this]() {
-            transpose_by = scale_composer.get_edo();
+            selection_action = PatternSelectionAction::TransposeOctaveUp;
         }
     );
 
     shortcut_manager.register_shortcut(
         ShortcutAction::PatternTransposeOctaveDown,
         [this]() {
-            transpose_by = -scale_composer.get_edo();
+            selection_action = PatternSelectionAction::TransposeOctaveDown;
         }
     );
 
     shortcut_manager.register_shortcut(
         ShortcutAction::PatternSelectAll,
         [this]() {
-            selection_mode = PatternSelectionMode::All;
+            selection_action = PatternSelectionAction::SelectAll;
         }
     );
 
     shortcut_manager.register_shortcut(
         ShortcutAction::PatternSelectNone,
         [this]() {
-            selection_mode = PatternSelectionMode::None;
+            selection_action = PatternSelectionAction::DeselectAll;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternClear,
+        [this]() {
+            selection_action = PatternSelectionAction::Clear;
         }
     );
 }
@@ -71,7 +78,7 @@ void GUISequencesPanel::draw() {
 
     from();
     draw_sequence();
-    select();
+    action();
     transpose_selected_rows();
     check_keyboard_input();
     to();
@@ -136,28 +143,48 @@ void GUISequencesPanel::update() {
     gui.update(GUIElement::Orders);
 }
 
-void GUISequencesPanel::select() {
+void GUISequencesPanel::action() {
     if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
 
-    switch (selection_mode) {
-    case PatternSelectionMode::All:
-    case PatternSelectionMode::Channel: {
+    switch (selection_action) {
+    case PatternSelectionAction::TransposeUp: {
+        transpose_by = 1;
+        break;
+    }
+    case PatternSelectionAction::TransposeDown: {
+        transpose_by = -1;
+        break;
+    }
+    case PatternSelectionAction::TransposeOctaveUp: {
+        transpose_by = scale_composer.get_edo();
+        break;
+    }
+    case PatternSelectionAction::TransposeOctaveDown: {
+        transpose_by = -scale_composer.get_edo();
+        break;
+    }
+    case PatternSelectionAction::SelectAll:
+    case PatternSelectionAction::SelectChannel: {
         select_all();
         break;
     }
-    case PatternSelectionMode::None: {
+    case PatternSelectionAction::DeselectAll: {
         deselect_all();
         break;
     }
-    case PatternSelectionMode::Ignore:
+    case PatternSelectionAction::Clear: {
+        delete_selection();
+        break;
+    }
+    case PatternSelectionAction::None:
     default: {
         break;
     }
     }
 
-    selection_mode = PatternSelectionMode::Ignore;
+    selection_action = PatternSelectionAction::None;
 }
 
 void GUISequencesPanel::select_all() {
@@ -166,6 +193,16 @@ void GUISequencesPanel::select_all() {
 
 void GUISequencesPanel::deselect_all() {
     selection.clear();
+}
+
+void GUISequencesPanel::delete_selection() {
+    if (selection.is_active()) {
+        for (size_t i = selection.start; i <= selection.end; i++) {
+            current_sequence.pattern.notes[i] = NOTE_REST;
+        }
+    } else {
+        current_sequence.pattern.notes[current_sequence.pattern.current_row] = NOTE_REST;
+    }
 }
 
 void GUISequencesPanel::transpose_selected_rows() {

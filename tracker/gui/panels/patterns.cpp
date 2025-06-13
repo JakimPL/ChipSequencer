@@ -11,49 +11,56 @@ GUIPatternsPanel::GUIPatternsPanel(const bool visible)
     shortcut_manager.register_shortcut(
         ShortcutAction::PatternTransposeUp,
         [this]() {
-            transpose_by = 1;
+            selection_action = PatternSelectionAction::TransposeUp;
         }
     );
 
     shortcut_manager.register_shortcut(
         ShortcutAction::PatternTransposeDown,
         [this]() {
-            transpose_by = -1;
+            selection_action = PatternSelectionAction::TransposeDown;
         }
     );
 
     shortcut_manager.register_shortcut(
         ShortcutAction::PatternTransposeOctaveUp,
         [this]() {
-            transpose_by = scale_composer.get_edo();
+            selection_action = PatternSelectionAction::TransposeOctaveUp;
         }
     );
 
     shortcut_manager.register_shortcut(
         ShortcutAction::PatternTransposeOctaveDown,
         [this]() {
-            transpose_by = -scale_composer.get_edo();
+            selection_action = PatternSelectionAction::TransposeOctaveDown;
         }
     );
 
     shortcut_manager.register_shortcut(
         ShortcutAction::PatternSelectAll,
         [this]() {
-            selection_mode = PatternSelectionMode::All;
+            selection_action = PatternSelectionAction::SelectAll;
         }
     );
 
     shortcut_manager.register_shortcut(
         ShortcutAction::PatternSelectChannel,
         [this]() {
-            selection_mode = PatternSelectionMode::Channel;
+            selection_action = PatternSelectionAction::SelectChannel;
         }
     );
 
     shortcut_manager.register_shortcut(
         ShortcutAction::PatternSelectNone,
         [this]() {
-            selection_mode = PatternSelectionMode::None;
+            selection_action = PatternSelectionAction::DeselectAll;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternClear,
+        [this]() {
+            selection_action = PatternSelectionAction::Clear;
         }
     );
 }
@@ -67,7 +74,7 @@ void GUIPatternsPanel::draw() {
 
     from();
     draw_channels();
-    select();
+    action();
     transpose_selected_rows();
     check_keyboard_input();
     to();
@@ -285,31 +292,51 @@ void GUIPatternsPanel::to() const {
     to_commands_sequences();
 }
 
-void GUIPatternsPanel::select() {
+void GUIPatternsPanel::action() {
     if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
 
-    switch (selection_mode) {
-    case PatternSelectionMode::All: {
+    switch (selection_action) {
+    case PatternSelectionAction::TransposeUp: {
+        transpose_by = 1;
+        break;
+    }
+    case PatternSelectionAction::TransposeDown: {
+        transpose_by = -1;
+        break;
+    }
+    case PatternSelectionAction::TransposeOctaveUp: {
+        transpose_by = scale_composer.get_edo();
+        break;
+    }
+    case PatternSelectionAction::TransposeOctaveDown: {
+        transpose_by = -scale_composer.get_edo();
+        break;
+    }
+    case PatternSelectionAction::SelectAll: {
         select_all();
         break;
     }
-    case PatternSelectionMode::Channel: {
+    case PatternSelectionAction::SelectChannel: {
         select_channel();
         break;
     }
-    case PatternSelectionMode::None: {
+    case PatternSelectionAction::DeselectAll: {
         deselect_all();
         break;
     }
-    case PatternSelectionMode::Ignore:
+    case PatternSelectionAction::Clear: {
+        delete_selection();
+        break;
+    }
+    case PatternSelectionAction::None:
     default: {
         break;
     }
     }
 
-    selection_mode = PatternSelectionMode::Ignore;
+    selection_action = PatternSelectionAction::None;
 }
 
 void GUIPatternsPanel::select_all() {
@@ -325,6 +352,9 @@ void GUIPatternsPanel::select_channel() {
 
 void GUIPatternsPanel::deselect_all() {
     selection.clear();
+}
+
+void GUIPatternsPanel::delete_selection() {
 }
 
 void GUIPatternsPanel::transpose_selected_rows() {
