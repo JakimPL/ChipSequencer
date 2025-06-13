@@ -101,10 +101,13 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
     const uint16_t start = page * gui.get_page_size();
     const uint16_t end = start + gui.get_page_size();
 
+    PatternSelection empty_selection;
+    PatternSelection &pattern_selection = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ? selection : empty_selection;
+
     for (auto &pattern : current_patterns.patterns[channel_index]) {
         const int playing_row = current_patterns.playing_rows[{false, channel_index}];
         auto [new_index, select] = draw_pattern(
-            pattern, selection, secondary_pattern_rows, channel_index, false, index, playing_row, start, end
+            pattern, pattern_selection, secondary_pattern_rows, channel_index, false, index, playing_row, start, end
         );
         if (select) {
             current_channel = {false, channel_index};
@@ -505,10 +508,6 @@ void GUIPatternsPanel::handle_commands_pattern_input(CommandsPattern *pattern, u
 }
 
 void GUIPatternsPanel::mark_selected_rows(const size_t channel_index, const size_t pattern_id, const int row) {
-    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
-        return;
-    }
-
     const Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
     for (int i = 0; i < pattern.notes.size(); ++i) {
         const int j = row + i;
