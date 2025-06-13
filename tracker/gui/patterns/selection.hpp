@@ -53,6 +53,7 @@ struct PatternSelection {
 enum class PatternSelectionMode {
     Ignore,
     All,
+    Channel,
     None,
 };
 

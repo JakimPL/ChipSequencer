@@ -33,6 +33,7 @@ class GUIPatternsPanel : public GUIPanel {
     int page = 0;
     VariantChannelIndex current_channel = {false, 0};
     PatternSelection selection;
+    PatternSelectionMode selection_mode = PatternSelectionMode::Ignore;
     PatternRows pattern_rows;
     PatternRows secondary_pattern_rows;
     PatternRowsBySequenceRow pattern_rows_by_sequence_row;
@@ -45,6 +46,10 @@ class GUIPatternsPanel : public GUIPanel {
     void draw_channel(size_t channel_index);
     void draw_commands_channel(size_t channel_index);
 
+    void select();
+    void select_channel();
+    void select_all();
+    void deselect_all();
     void transpose_selected_rows();
     void prepare_secondary_selection();
     void mark_selected_rows(const size_t channel_index, const size_t pattern_id, const int row);

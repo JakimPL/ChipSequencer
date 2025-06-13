@@ -142,7 +142,8 @@ void GUISequencesPanel::select() {
     }
 
     switch (selection_mode) {
-    case PatternSelectionMode::All: {
+    case PatternSelectionMode::All:
+    case PatternSelectionMode::Channel: {
         select_all();
         break;
     }

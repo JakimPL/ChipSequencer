@@ -60,6 +60,7 @@ class GUI {
     int get_current_octave() const;
     int get_jump_step() const;
     int get_page_size() const;
+    std::pair<int, int> get_page_start_end(const int page) const;
 
     int get_current_channel_index() const;
     int get_current_dsp_index() const;

@@ -35,6 +35,27 @@ GUIPatternsPanel::GUIPatternsPanel(const bool visible)
             transpose_by = -scale_composer.get_edo();
         }
     );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSelectAll,
+        [this]() {
+            selection_mode = PatternSelectionMode::All;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSelectChannel,
+        [this]() {
+            selection_mode = PatternSelectionMode::Channel;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSelectNone,
+        [this]() {
+            selection_mode = PatternSelectionMode::None;
+        }
+    );
 }
 
 void GUIPatternsPanel::update() {
@@ -46,6 +67,7 @@ void GUIPatternsPanel::draw() {
 
     from();
     draw_channels();
+    select();
     transpose_selected_rows();
     check_keyboard_input();
     to();
@@ -261,6 +283,48 @@ void GUIPatternsPanel::to() const {
 
     to_sequences();
     to_commands_sequences();
+}
+
+void GUIPatternsPanel::select() {
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+        return;
+    }
+
+    switch (selection_mode) {
+    case PatternSelectionMode::All: {
+        select_all();
+        break;
+    }
+    case PatternSelectionMode::Channel: {
+        select_channel();
+        break;
+    }
+    case PatternSelectionMode::None: {
+        deselect_all();
+        break;
+    }
+    case PatternSelectionMode::Ignore:
+    default: {
+        break;
+    }
+    }
+
+    selection_mode = PatternSelectionMode::Ignore;
+}
+
+void GUIPatternsPanel::select_all() {
+    const auto [start, end] = gui.get_page_start_end(page);
+    const size_t last_channel_index = current_patterns.patterns.empty() ? 0 : current_patterns.patterns.rbegin()->first;
+    selection.select(start, end, 0, last_channel_index);
+}
+
+void GUIPatternsPanel::select_channel() {
+    const auto [start, end] = gui.get_page_start_end(page);
+    selection.select(start, end, current_channel.index, current_channel.index);
+}
+
+void GUIPatternsPanel::deselect_all() {
+    selection.clear();
 }
 
 void GUIPatternsPanel::transpose_selected_rows() {

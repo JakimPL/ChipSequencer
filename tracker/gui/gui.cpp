@@ -61,6 +61,12 @@ int GUI::get_page_size() const {
     return std::clamp(page_size, GUI_MIN_PAGE_SIZE, GUI_MAX_PAGE_SIZE);
 }
 
+std::pair<int, int> GUI::get_page_start_end(const int page) const {
+    const int start = page * get_page_size();
+    const int end = start + get_page_size();
+    return {start, end};
+}
+
 bool GUI::initialize() {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0) {
         printf("Error: %s\n", SDL_GetError());
