@@ -65,5 +65,15 @@ bool StringInputHandler::handle_input(std::vector<std::string> &strings, int &in
         buffer = strings[index];
     }
 
+    if (ImGui::IsKeyPressed(ImGuiKey_Home)) {
+        index = 0;
+        buffer = strings[index];
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_End)) {
+        index = static_cast<int>(strings.size()) - 1;
+        buffer = strings[index];
+    }
+
     return value_inserted;
 }
