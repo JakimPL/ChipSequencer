@@ -261,6 +261,10 @@ void GUIPatternsPanel::to() const {
 }
 
 void GUIPatternsPanel::transpose_selected_rows() {
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+        transpose_by = 0;
+    }
+
     if (transpose_by == 0) {
         return;
     }
@@ -501,6 +505,10 @@ void GUIPatternsPanel::handle_commands_pattern_input(CommandsPattern *pattern, u
 }
 
 void GUIPatternsPanel::mark_selected_rows(const size_t channel_index, const size_t pattern_id, const int row) {
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+        return;
+    }
+
     const Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
     for (int i = 0; i < pattern.notes.size(); ++i) {
         const int j = row + i;

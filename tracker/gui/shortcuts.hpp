@@ -56,7 +56,7 @@ class ShortcutManager {
     void execute_action(const ShortcutAction id) const;
 
   private:
-    std::unordered_map<ShortcutAction, std::function<void()>> actions;
+    std::unordered_map<ShortcutAction, std::vector<std::function<void()>>> actions;
     const std::unordered_map<ShortcutAction, Shortcut> shortcuts = {
         {ShortcutAction::FileNew, {true, false, false, ImGuiKey_N}},
         {ShortcutAction::FileOpen, {true, false, false, ImGuiKey_O}},

@@ -21,7 +21,7 @@ void ShortcutManager::register_shortcut(
     const ShortcutAction id,
     const std::function<void()> &action
 ) {
-    actions[id] = action;
+    actions[id].push_back(action);
 }
 
 const Shortcut &ShortcutManager::get_shortcut(const ShortcutAction id) const {
@@ -49,10 +49,7 @@ void ShortcutManager::process_shortcuts() const {
             ImGui::GetIO().KeyCtrl == shortcut.ctrl &&
             ImGui::GetIO().KeyShift == shortcut.shift &&
             ImGui::GetIO().KeyAlt == shortcut.alt) {
-            auto it = actions.find(action);
-            if (it != actions.end()) {
-                it->second();
-            }
+            execute_action(action);
         }
     }
 }
@@ -60,6 +57,8 @@ void ShortcutManager::process_shortcuts() const {
 void ShortcutManager::execute_action(const ShortcutAction id) const {
     auto it = actions.find(id);
     if (it != actions.end()) {
-        it->second();
+        for (const auto &action : it->second) {
+            action();
+        }
     }
 }

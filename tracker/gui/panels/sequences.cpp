@@ -12,6 +12,34 @@ GUISequencesPanel::GUISequencesPanel(const bool visible)
     : GUIPanel(visible) {
     from();
     update();
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternTransposeUp,
+        [this]() {
+            transpose_by = 1;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternTransposeDown,
+        [this]() {
+            transpose_by = -1;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternTransposeOctaveUp,
+        [this]() {
+            transpose_by = scale_composer.get_edo();
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternTransposeOctaveDown,
+        [this]() {
+            transpose_by = -scale_composer.get_edo();
+        }
+    );
 }
 
 void GUISequencesPanel::draw() {
@@ -29,6 +57,7 @@ void GUISequencesPanel::draw() {
 
     from();
     draw_sequence();
+    transpose_selected_rows();
     check_keyboard_input();
     to();
 
@@ -90,6 +119,22 @@ void GUISequencesPanel::remove() {
 void GUISequencesPanel::update() {
     update_items(sequence_names, sequences.size(), "Sequence ", sequence_index);
     gui.update(GUIElement::Orders);
+}
+
+void GUISequencesPanel::transpose_selected_rows() {
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+        transpose_by = 0;
+    }
+
+    if (transpose_by == 0) {
+        return;
+    }
+
+    for (size_t i = selection.start; i <= selection.end; i++) {
+        current_sequence.pattern.transpose(transpose_by, i);
+    }
+
+    transpose_by = 0;
 }
 
 void GUISequencesPanel::draw_sequence_length() {

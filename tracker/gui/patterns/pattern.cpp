@@ -188,4 +188,13 @@ void Pattern::handle_input(const int min_row, const int max_row) {
     if (ImGui::IsKeyPressed(ImGuiKey_KeypadSubtract)) {
         steps = std::max(steps, 1);
     }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_Home)) {
+        current_row = 0;
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_End)) {
+        const int max = max_row == -1 ? steps : std::min(steps, max_row);
+        current_row = max - 1;
+    }
 }

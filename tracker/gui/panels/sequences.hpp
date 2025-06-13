@@ -17,8 +17,10 @@ class GUISequencesPanel : public GUIPanel {
     } current_sequence;
 
     PatternSelection selection;
+    int transpose_by = 0;
 
     bool is_index_valid() const;
+    void transpose_selected_rows();
     void draw_sequence_length();
     void draw_sequence();
 
