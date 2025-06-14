@@ -131,7 +131,7 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
     const uint16_t start = page * gui.get_page_size();
     const uint16_t end = start + gui.get_page_size();
 
-    PatternSelection empty_selection;
+    PatternSelection empty_selection = {selection.command};
     PatternSelection &pattern_selection = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ? selection : empty_selection;
 
     for (auto &pattern : current_patterns.patterns[channel_index]) {
@@ -157,7 +157,7 @@ void GUIPatternsPanel::draw_commands_channel(size_t channel_index) {
     const uint16_t start = page * gui.get_page_size();
     const uint16_t end = start + gui.get_page_size();
 
-    PatternSelection empty_selection;
+    PatternSelection empty_selection = {selection.command};
     PatternSelection &commands_selection = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ? selection : empty_selection;
 
     for (auto &pattern : current_patterns.commands_patterns[channel_index]) {
