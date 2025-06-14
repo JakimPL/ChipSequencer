@@ -1,5 +1,4 @@
-#ifndef STRUCTURES_RESOURCES_MANAGER_HPP
-#define STRUCTURES_RESOURCES_MANAGER_HPP
+#pragma once
 
 #include <functional>
 #include <unordered_map>
@@ -37,5 +36,3 @@ class ResourceManager {
         deleters.clear();
     }
 };
-
-#endif // STRUCTURES_RESOURCES_MANAGER_HPP

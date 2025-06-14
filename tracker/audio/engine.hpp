@@ -1,5 +1,4 @@
-#ifndef AUDIO_ENGINE_HPP
-#define AUDIO_ENGINE_HPP
+#pragma once
 
 #define BUFFER_SIZE 512
 
@@ -36,5 +35,3 @@ class AudioEngine {
 
     void join_thread();
 };
-
-#endif // AUDIO_ENGINE_HPP

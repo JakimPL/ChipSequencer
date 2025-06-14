@@ -1,5 +1,4 @@
-#ifndef MAPS_OSCILLATORS_HPP
-#define MAPS_OSCILLATORS_HPP
+#pragma once
 
 #include <array>
 #include <cstdint>
@@ -20,5 +19,3 @@ constexpr auto oscillators_sizes = make_oscillators_sizes(
     SIZE_OSCILLATOR_WAVETABLE,
     SIZE_OSCILLATOR_NOISE
 );
-
-#endif // MAPS_OSCILLATORS_HPP

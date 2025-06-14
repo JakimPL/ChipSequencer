@@ -1,5 +1,4 @@
-#ifndef GUI_PANELS_SUMMARY_HPP
-#define GUI_PANELS_SUMMARY_HPP
+#pragma once
 
 #include <optional>
 
@@ -28,5 +27,3 @@ class GUISummaryPanel : public GUIPanel {
     void from() override {};
     void to() const override {};
 };
-
-#endif // GUI_PANELS_SUMMARY_HPP

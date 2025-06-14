@@ -1,5 +1,4 @@
-#ifndef SONG_LINKS_MANAGER_HPP
-#define SONG_LINKS_MANAGER_HPP
+#pragma once
 
 #include <cstdint>
 #include <unordered_map>
@@ -54,5 +53,3 @@ class LinkManager {
 
     static std::pair<uint8_t, uint8_t> unpack_command_id(const uint16_t id);
 };
-
-#endif // SONG_LINKS_MANAGER_HPP

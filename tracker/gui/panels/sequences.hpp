@@ -1,5 +1,4 @@
-#ifndef GUI_PANELS_SEQUENCES_HPP
-#define GUI_PANELS_SEQUENCES_HPP
+#pragma once
 
 #include <string>
 
@@ -45,5 +44,3 @@ class GUISequencesPanel : public GUIPanel {
 
     int sequence_index = 0;
 };
-
-#endif // GUI_PANELS_SEQUENCES_HPP

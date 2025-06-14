@@ -1,5 +1,4 @@
-#ifndef GUI_PANELS_ENVELOPES_HPP
-#define GUI_PANELS_ENVELOPES_HPP
+#pragma once
 
 #include <algorithm>
 #include <string>
@@ -49,5 +48,3 @@ class GUIEnvelopesPanel : public GUIPanel {
 
     int envelope_index = 0;
 };
-
-#endif // GUI_PANELS_ENVELOPES_HPP

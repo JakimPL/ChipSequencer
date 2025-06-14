@@ -1,5 +1,4 @@
-#ifndef STRUCTURES_COMMANDS_SEQUENCE_HPP
-#define STRUCTURES_COMMANDS_SEQUENCE_HPP
+#pragma once
 
 #include <cstdint>
 #include <fstream>
@@ -22,5 +21,3 @@ typedef std::vector<CommandsSequence *> CommandsSequences;
 constexpr size_t COMMANDS_SEQUENCE_SIZE = offsetof(CommandsSequence, size);
 constexpr size_t COMMANDS_SEQUENCE_LENGTH = offsetof(CommandsSequence, length);
 constexpr size_t COMMANDS_SEQUENCE_DATA = offsetof(CommandsSequence, commands);
-
-#endif // STRUCTURES_COMMANDS_SEQUENCE_HPP

@@ -1,5 +1,4 @@
-#ifndef STRUCTURES_COMMANDS_COMMAND_HPP
-#define STRUCTURES_COMMANDS_COMMAND_HPP
+#pragma once
 
 #include <array>
 #include <cstddef>
@@ -234,5 +233,3 @@ static_assert(sizeof(Command) == sizeof(CommandAddFloatValue), "Command and Comm
 static_assert(sizeof(Command) == sizeof(CommandAddByteValue), "Command and CommandAddByteValue must be of the same size.");
 static_assert(sizeof(Command) == sizeof(CommandAddWordValue), "Command and CommandAddWordValue must be of the same size.");
 static_assert(sizeof(Command) == sizeof(CommandAddDwordValue), "Command and CommandAddDwordValue must be of the same size.");
-
-#endif // STRUCTURES_COMMANDS_COMMAND_HPP

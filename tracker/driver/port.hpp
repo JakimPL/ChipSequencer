@@ -1,5 +1,4 @@
-#ifndef DRIVER_PORT_HPP
-#define DRIVER_PORT_HPP
+#pragma once
 
 #include <vector>
 #include <atomic>
@@ -54,5 +53,3 @@ class PortAudioDriver : public Driver {
         void *user_data
     );
 };
-
-#endif // DRIVER_PORT_HPP

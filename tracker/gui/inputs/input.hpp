@@ -1,5 +1,4 @@
-#ifndef GUI_INPUTS_INPUT_HPP
-#define GUI_INPUTS_INPUT_HPP
+#pragma once
 
 #include <string>
 #include <vector>
@@ -20,5 +19,3 @@ class InputHandler {
 
     bool capture_input = false;
 };
-
-#endif // GUI_INPUTS_INPUT_HPP

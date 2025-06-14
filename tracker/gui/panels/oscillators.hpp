@@ -1,5 +1,4 @@
-#ifndef GUI_PANELS_OSCILLATORS_HPP
-#define GUI_PANELS_OSCILLATORS_HPP
+#pragma once
 
 #include <string>
 #include <vector>
@@ -47,5 +46,3 @@ class GUIOscillatorsPanel : public GUIPanel {
 
     int oscillator_index = 0;
 };
-
-#endif // GUI_PANELS_OSCILLATORS_HPP

@@ -1,5 +1,4 @@
-#ifndef GUI_INPUTS_STRING_HPP
-#define GUI_INPUTS_STRING_HPP
+#pragma once
 
 #include "input.hpp"
 
@@ -12,5 +11,3 @@ class StringInputHandler : public InputHandler {
     StringInputHandler(const std::vector<ImGuiKey> keys, const bool synchronize = true);
     bool handle_input(std::vector<std::string> &strings, int &index);
 };
-
-#endif // GUI_INPUTS_STRING_HPP

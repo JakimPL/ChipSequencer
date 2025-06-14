@@ -1,5 +1,4 @@
-#ifndef SONG_LINKS_LINK_HPP
-#define SONG_LINKS_LINK_HPP
+#pragma once
 
 #include <array>
 #include <cstdint>
@@ -30,5 +29,3 @@ struct Link {
 
 typedef std::array<std::vector<Link>, static_cast<size_t>(ItemType::COUNT)> Links;
 typedef std::map<uint8_t, std::map<uint8_t, Link>> CommandsLinks;
-
-#endif // SONG_LINKS_LINK_HPP

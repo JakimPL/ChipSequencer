@@ -1,5 +1,4 @@
-#ifndef SONG_COMPILATION_HPP
-#define SONG_COMPILATION_HPP
+#pragma once
 
 #include <cstdint>
 
@@ -12,5 +11,3 @@ enum class CompilationScheme : uint8_t {
 enum class CompilationTarget : uint8_t {
     Linux,
 };
-
-#endif // SONG_COMPILATION_HPP

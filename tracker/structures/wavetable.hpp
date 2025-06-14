@@ -1,5 +1,4 @@
-#ifndef STRUCTURES_WAVETABLE_HPP
-#define STRUCTURES_WAVETABLE_HPP
+#pragma once
 
 #include <array>
 #include <cstddef>
@@ -23,5 +22,3 @@ typedef std::vector<Wavetable *> Wavetables;
 
 constexpr size_t WAVETABLE_SIZE = offsetof(Wavetable, wavetable_size);
 constexpr size_t WAVETABLE_DATA = offsetof(Wavetable, data);
-
-#endif // STRUCTURES_WAVETABLE_HPP

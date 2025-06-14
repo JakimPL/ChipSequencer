@@ -1,5 +1,4 @@
-#ifndef GUI_GUI_HPP
-#define GUI_GUI_HPP
+#pragma once
 
 #include <functional>
 #include <string>
@@ -17,7 +16,7 @@
 #include "panels/oscillators.hpp"
 #include "panels/orders.hpp"
 #include "panels/patterns.hpp"
-#include "panels/routing.hpp"
+#include "panels/routings.hpp"
 #include "panels/sequences.hpp"
 #include "panels/summary.hpp"
 #include "panels/wavetables.hpp"
@@ -108,7 +107,7 @@ class GUI {
     GUISequencesPanel sequences_panel;
     GUIWavetablesPanel wavetables_panel;
     GUIPatternsPanel patterns_panel;
-    GUIRoutingPanel routing_panel;
+    GUIRoutingsPanel routing_panel;
     GUISummaryPanel summary_panel;
 
     SDL_Window *window;
@@ -126,5 +125,3 @@ class GUI {
     void set_visibility_all(const bool visible);
     void clear_input_buffers();
 };
-
-#endif // GUI_GUI_HPP

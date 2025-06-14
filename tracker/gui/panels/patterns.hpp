@@ -1,5 +1,4 @@
-#ifndef GUI_PANELS_PATTERNS_HPP
-#define GUI_PANELS_PATTERNS_HPP
+#pragma once
 
 #include <map>
 #include <vector>
@@ -85,5 +84,3 @@ class GUIPatternsPanel : public GUIPanel {
 
     void deselect_all_rows();
 };
-
-#endif // GUI_PANELS_PATTERNS_HPP

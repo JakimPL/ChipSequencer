@@ -1,5 +1,4 @@
-#ifndef GUI_PANELS_PANEL_HPP
-#define GUI_PANELS_PANEL_HPP
+#pragma once
 
 #include "../init.hpp"
 
@@ -28,5 +27,3 @@ class GUIPanel {
     virtual void draw() = 0;
     virtual void check_keyboard_input() = 0;
 };
-
-#endif // GUI_PANELS_PANEL_HPP

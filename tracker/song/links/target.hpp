@@ -1,5 +1,4 @@
-#ifndef SONG_LINKS_TARGET_HPP
-#define SONG_LINKS_TARGET_HPP
+#pragma once
 
 #include <cstdint>
 
@@ -31,5 +30,3 @@ enum class TargetVariableType : uint8_t {
 bool is_target_splitter(const Target target);
 bool is_target_output(const Target target);
 bool is_target_parameter(const Target target);
-
-#endif // SONG_LINKS_TARGET_HPP

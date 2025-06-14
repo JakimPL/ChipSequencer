@@ -1,5 +1,4 @@
-#ifndef UTILS_STRING_HPP
-#define UTILS_STRING_HPP
+#pragma once
 
 #include <string>
 #include <vector>
@@ -23,5 +22,3 @@ double string_to_double(
     const double min = -std::numeric_limits<double>::infinity(),
     const double max = std::numeric_limits<double>::infinity()
 );
-
-#endif // UTILS_STRING_HPP

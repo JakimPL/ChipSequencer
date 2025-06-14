@@ -1,5 +1,4 @@
-#ifndef SONG_FUNCTIONS_HPP
-#define SONG_FUNCTIONS_HPP
+#pragma once
 
 extern "C" {
 void sound_driver_initialize() __attribute__((used));
@@ -19,5 +18,3 @@ inline void sound_driver_terminate() {
 
 inline void sound_driver_step() {
 }
-
-#endif // SONG_FUNCTIONS_HPP

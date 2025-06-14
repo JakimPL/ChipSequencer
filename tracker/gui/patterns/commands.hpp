@@ -1,5 +1,4 @@
-#ifndef GUI_PATTERNS_COMMANDS_HPP
-#define GUI_PATTERNS_COMMANDS_HPP
+#pragma once
 
 #include <cstdint>
 #include <map>
@@ -63,5 +62,3 @@ struct CommandsPattern {
     void set_selection(const int row, const CommandSelection item);
     void add_command(const std::string &command = "", const std::string &value = "");
 };
-
-#endif // GUI_PATTERNS_COMMANDS_HPP

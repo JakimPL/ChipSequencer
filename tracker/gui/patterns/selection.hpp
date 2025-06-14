@@ -1,5 +1,4 @@
-#ifndef GUI_PATTERNS_SELECTION_HPP
-#define GUI_PATTERNS_SELECTION_HPP
+#pragma once
 
 #include <cstddef>
 #include <set>
@@ -63,5 +62,3 @@ enum class PatternSelectionAction {
     DeselectAll,
     Clear
 };
-
-#endif // GUI_PATTERNS_SELECTION_HPP

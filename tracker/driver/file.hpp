@@ -1,5 +1,4 @@
-#ifndef DRIVER_FILE_HPP
-#define DRIVER_FILE_HPP
+#pragma once
 
 #include <string>
 #include "driver.hpp"
@@ -26,5 +25,3 @@ class FileDriver : public Driver {
     int sample_rate;
     int output_channels;
 };
-
-#endif // DRIVER_FILE_HPP

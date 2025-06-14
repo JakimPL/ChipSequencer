@@ -1,5 +1,4 @@
-#ifndef GUI_DEFAULT_HPP
-#define GUI_DEFAULT_HPP
+#pragma once
 
 #include <string>
 
@@ -171,5 +170,3 @@ DockSpace           ID=0xE241FA1E Window=0xA7EE3C72 Pos=0,19 Size=1848,990 Split
       DockNode      ID=0x00000011 Parent=0x00000010 SizeRef=326,430 Selected=0x2E93F19D
       DockNode      ID=0x00000012 Parent=0x00000010 SizeRef=326,385 Selected=0x1CD7E199
 )INI";
-
-#endif // GUI_DEFAULT_HPP

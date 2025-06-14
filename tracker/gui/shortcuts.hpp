@@ -1,5 +1,4 @@
-#ifndef GUI_SHORTCUTS_HPP
-#define GUI_SHORTCUTS_HPP
+#pragma once
 
 #include <functional>
 #include <string>
@@ -82,5 +81,3 @@ class ShortcutManager {
         {ShortcutAction::PatternClear, {true, false, false, ImGuiKey_Delete}},
     };
 };
-
-#endif // GUI_SHORTCUTS_HPP

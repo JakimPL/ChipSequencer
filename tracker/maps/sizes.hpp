@@ -1,5 +1,4 @@
-#ifndef MAPS_SIZES_HPP
-#define MAPS_SIZES_HPP
+#pragma once
 
 #include <string>
 #include <unordered_map>
@@ -53,5 +52,3 @@ std::unordered_map<std::string, std::unordered_map<std::string, size_t>> compone
         },
     },
 };
-
-#endif // MAPS_SIZES_HPP

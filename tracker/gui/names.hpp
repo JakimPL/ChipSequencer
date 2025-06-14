@@ -1,5 +1,4 @@
-#ifndef GUI_NAMES_HPP
-#define GUI_NAMES_HPP
+#pragma once
 
 #include <map>
 #include <string>
@@ -89,5 +88,3 @@ const std::map<Instruction, const char *> simple_instruction_names = {
     {Instruction::SetDivision, "Set division"},
     {Instruction::ChangeByteValue, "Change value"},
 };
-
-#endif // GUI_NAMES_HPP

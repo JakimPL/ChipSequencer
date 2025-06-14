@@ -1,5 +1,4 @@
-#ifndef GUI_PANELS_COMMANDS_SEQUENCES_HPP
-#define GUI_PANELS_COMMANDS_SEQUENCES_HPP
+#pragma once
 
 #include "../../constants.hpp"
 #include "../../init.hpp"
@@ -64,5 +63,3 @@ class GUICommandsSequencesPanel : public GUIPanel {
 
     int sequence_index = 0;
 };
-
-#endif // GUI_PANELS_COMMANDS_SEQUENCES_HPP

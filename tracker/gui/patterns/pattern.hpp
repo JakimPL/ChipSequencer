@@ -1,5 +1,4 @@
-#ifndef GUI_PATTERNS_PATTERN_HPP
-#define GUI_PATTERNS_PATTERN_HPP
+#pragma once
 
 #include <cstdint>
 #include <optional>
@@ -30,5 +29,3 @@ struct Pattern {
     void transpose(const int value, std::optional<int> row = std::nullopt);
     void handle_input(const int min_row = 0, const int max_row = -1);
 };
-
-#endif // GUI_PATTERNS_PATTERN_HPP

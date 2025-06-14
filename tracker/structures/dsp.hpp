@@ -1,5 +1,4 @@
-#ifndef STRUCTURES_DSP_HPP
-#define STRUCTURES_DSP_HPP
+#pragma once
 
 #include <cstddef>
 #include <cstdint>
@@ -107,5 +106,3 @@ static_assert(sizeof(DSP) == sizeof(DSPGainer), "DSP and DSPGainer must be of th
 static_assert(sizeof(DSP) == sizeof(DSPDistortion), "DSP and DSPDistortion must be of the same size.");
 static_assert(sizeof(DSP) == sizeof(DSPFilter), "DSP and DSPFilter must be of the same size.");
 static_assert(sizeof(DSP) == sizeof(DSPDelay), "DSP and DSPDelay must be of the same size.");
-
-#endif // STRUCTURES_DSP_HPP

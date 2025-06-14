@@ -1,5 +1,4 @@
-#ifndef SONG_HEADERS_HPP
-#define SONG_HEADERS_HPP
+#pragma once
 
 #include <array>
 #include <string>
@@ -39,5 +38,3 @@ std::array<std::string, static_cast<size_t>(Instruction::Count)> header_instruct
     "COMMAND_ADD_DWORD_VALUE",
     "COMMAND_ADD_FLOAT_VALUE",
 };
-
-#endif // SONG_HEADERS_HPP

@@ -18,16 +18,16 @@
 #include "../constants.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
-#include "routing.hpp"
+#include "routings.hpp"
 
-GUIRoutingPanel::GUIRoutingPanel(const bool visible)
+GUIRoutingsPanel::GUIRoutingsPanel(const bool visible)
     : GUIPanel(visible) {
 }
 
-void GUIRoutingPanel::update() {
+void GUIRoutingsPanel::update() {
 }
 
-void GUIRoutingPanel::draw() {
+void GUIRoutingsPanel::draw() {
     ImGui::Begin("Routings");
     ImGui::Columns(1, "routings");
 
@@ -42,12 +42,12 @@ void GUIRoutingPanel::draw() {
     ImGui::End();
 }
 
-void GUIRoutingPanel::from() {
+void GUIRoutingsPanel::from() {
     collect_nodes();
     collect_links();
 }
 
-void GUIRoutingPanel::to() const {
+void GUIRoutingsPanel::to() const {
     if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || gui.is_playing()) {
         return;
     }
@@ -67,7 +67,7 @@ void GUIRoutingPanel::to() const {
     link_manager.save_targets();
 }
 
-void GUIRoutingPanel::collect_links() {
+void GUIRoutingsPanel::collect_links() {
     nodes_links.clear();
     for (const ItemType type : {ItemType::CHANNEL, ItemType::DSP}) {
         for (const auto &link : links[static_cast<size_t>(type)]) {
@@ -76,7 +76,7 @@ void GUIRoutingPanel::collect_links() {
     }
 }
 
-void GUIRoutingPanel::collect_nodes() {
+void GUIRoutingsPanel::collect_nodes() {
     std::unordered_map<NodeIdentifier, size_t> existing_node_indices;
     for (size_t i = 0; i < nodes.size(); ++i) {
         existing_node_indices[nodes[i].identifier] = i;
@@ -152,7 +152,7 @@ void GUIRoutingPanel::collect_nodes() {
     nodes = std::move(next_nodes);
 }
 
-void GUIRoutingPanel::update_channel_node(size_t index, RoutingNode &channel_node) {
+void GUIRoutingsPanel::update_channel_node(size_t index, RoutingNode &channel_node) {
     channel_node.name = channel_names[index];
     channel_node.parameters.clear();
     channel_node.lines = 1;
@@ -179,7 +179,7 @@ void GUIRoutingPanel::update_channel_node(size_t index, RoutingNode &channel_nod
     }
 }
 
-void GUIRoutingPanel::add_channel_node(size_t index, std::vector<RoutingNode> &next_nodes, std::map<float, float> &column_next_y) {
+void GUIRoutingsPanel::add_channel_node(size_t index, std::vector<RoutingNode> &next_nodes, std::map<float, float> &column_next_y) {
     const float channel_x = GUI_ROUTING_NODE_HORIZONTAL_PADDING;
     const float vertical_padding = GUI_ROUTING_NODE_VERTICAL_PADDING;
 
@@ -196,7 +196,7 @@ void GUIRoutingPanel::add_channel_node(size_t index, std::vector<RoutingNode> &n
     next_nodes.push_back(channel_node);
 }
 
-void GUIRoutingPanel::update_dsp_node(size_t index, RoutingNode &dsp_node) {
+void GUIRoutingsPanel::update_dsp_node(size_t index, RoutingNode &dsp_node) {
     dsp_node.name = dsp_names[index];
     dsp_node.parameters.clear();
     dsp_node.lines = 1;
@@ -223,7 +223,7 @@ void GUIRoutingPanel::update_dsp_node(size_t index, RoutingNode &dsp_node) {
     }
 }
 
-void GUIRoutingPanel::add_dsp_node(size_t index, std::vector<RoutingNode> &next_nodes, std::map<float, float> &column_next_y) {
+void GUIRoutingsPanel::add_dsp_node(size_t index, std::vector<RoutingNode> &next_nodes, std::map<float, float> &column_next_y) {
     const float channel_x = GUI_ROUTING_NODE_HORIZONTAL_PADDING;
     const float dsp_x = channel_x + GUI_ROUTING_NODE_WIDTH + GUI_ROUTING_NODE_HORIZONTAL_PADDING;
     const float vertical_padding = GUI_ROUTING_NODE_VERTICAL_PADDING;
@@ -241,13 +241,13 @@ void GUIRoutingPanel::add_dsp_node(size_t index, std::vector<RoutingNode> &next_
     next_nodes.push_back(dsp_node);
 }
 
-void GUIRoutingPanel::update_output_node(size_t index, RoutingNode &output_node) {
+void GUIRoutingsPanel::update_output_node(size_t index, RoutingNode &output_node) {
     output_node.name = "Output " + std::to_string(index);
     output_node.parameters.clear();
     output_node.lines = 1;
 }
 
-void GUIRoutingPanel::add_output_node(size_t index, std::vector<RoutingNode> &next_nodes, std::map<float, float> &column_next_y) {
+void GUIRoutingsPanel::add_output_node(size_t index, std::vector<RoutingNode> &next_nodes, std::map<float, float> &column_next_y) {
     const float channel_x = GUI_ROUTING_NODE_HORIZONTAL_PADDING;
     const float dsp_x = channel_x + GUI_ROUTING_NODE_WIDTH + GUI_ROUTING_NODE_HORIZONTAL_PADDING;
     const float output_x = dsp_x + GUI_ROUTING_NODE_WIDTH + GUI_ROUTING_NODE_HORIZONTAL_PADDING;
@@ -265,7 +265,7 @@ void GUIRoutingPanel::add_output_node(size_t index, std::vector<RoutingNode> &ne
     next_nodes.push_back(output_node);
 }
 
-void GUIRoutingPanel::draw_reset_button() {
+void GUIRoutingsPanel::draw_reset_button() {
     if (ImGui::Button("Reset view", ImVec2(100.0f, 0))) {
         clear_nodes();
         collect_nodes();
@@ -275,7 +275,7 @@ void GUIRoutingPanel::draw_reset_button() {
     ImGui::Separator();
 }
 
-void GUIRoutingPanel::draw_nodes() {
+void GUIRoutingsPanel::draw_nodes() {
     input_pins.clear();
     output_pins.clear();
 
@@ -302,7 +302,7 @@ void GUIRoutingPanel::draw_nodes() {
     ImGui::EndChild();
 }
 
-void GUIRoutingPanel::draw_link(const InputKey source, const OutputKey target, uint8_t alpha) {
+void GUIRoutingsPanel::draw_link(const InputKey source, const OutputKey target, uint8_t alpha) {
     const float line_thickness = GUI_ROUTING_LINK_THICKNESS;
     const ImU32 audio_color = IM_COL32(0, 200, 0, alpha);
     const ImU32 parameter_color = IM_COL32(200, 150, 0, alpha);
@@ -343,7 +343,7 @@ void GUIRoutingPanel::draw_link(const InputKey source, const OutputKey target, u
     }
 }
 
-Splitter GUIRoutingPanel::get_splitter_from_input_key(const InputKey &source) const {
+Splitter GUIRoutingsPanel::get_splitter_from_input_key(const InputKey &source) const {
     Splitter splitter;
     switch (source.first) {
     case ItemType::CHANNEL: {
@@ -372,7 +372,7 @@ Splitter GUIRoutingPanel::get_splitter_from_input_key(const InputKey &source) co
     return splitter;
 }
 
-void GUIRoutingPanel::draw_all_links() {
+void GUIRoutingsPanel::draw_all_links() {
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
     for (const auto &[source, target] : nodes_links) {
         const Splitter splitter = get_splitter_from_input_key(source);
@@ -407,7 +407,7 @@ void GUIRoutingPanel::draw_all_links() {
     }
 }
 
-void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rect_min) {
+void GUIRoutingsPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rect_min) {
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
     std::string id_prefix;
     switch (routing_node.identifier.type) {
@@ -548,7 +548,7 @@ void GUIRoutingPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_rec
     ImGui::PopID();
 }
 
-RoutingNode *GUIRoutingPanel::handle_node_dragging(const ImVec2 &canvas_origin) {
+RoutingNode *GUIRoutingsPanel::handle_node_dragging(const ImVec2 &canvas_origin) {
     if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || gui.is_playing()) {
         return nullptr;
     }
@@ -579,7 +579,7 @@ RoutingNode *GUIRoutingPanel::handle_node_dragging(const ImVec2 &canvas_origin) 
     return current_dragging_node_ptr;
 }
 
-void GUIRoutingPanel::set_source_key(const ImVec2 pin_position, const InputKey &key) {
+void GUIRoutingsPanel::set_source_key(const ImVec2 pin_position, const InputKey &key) {
     if (gui.is_playing()) {
         return;
     }
@@ -593,7 +593,7 @@ void GUIRoutingPanel::set_source_key(const ImVec2 pin_position, const InputKey &
     }
 }
 
-void GUIRoutingPanel::set_target_key(const ImVec2 pin_position, const OutputKey &key) {
+void GUIRoutingsPanel::set_target_key(const ImVec2 pin_position, const OutputKey &key) {
     if (gui.is_playing()) {
         return;
     }
@@ -607,7 +607,7 @@ void GUIRoutingPanel::set_target_key(const ImVec2 pin_position, const OutputKey 
     }
 }
 
-bool GUIRoutingPanel::is_linking_possible(const InputKey &source_key, const OutputKey &target_key) const {
+bool GUIRoutingsPanel::is_linking_possible(const InputKey &source_key, const OutputKey &target_key) const {
     const ItemType type = source_key.first;
     const size_t id = source_key.second;
     const size_t item = target_key.index;
@@ -615,10 +615,10 @@ bool GUIRoutingPanel::is_linking_possible(const InputKey &source_key, const Outp
     return (item > id || type != ItemType::DSP || (target != Target::DIRECT_DSP && target != Target::SPLITTER_DSP));
 }
 
-void GUIRoutingPanel::check_keyboard_input() {
+void GUIRoutingsPanel::check_keyboard_input() {
 }
 
-bool GUIRoutingPanel::get_splitter_bounds(const size_t j, size_t index, const Link &link) const {
+bool GUIRoutingsPanel::get_splitter_bounds(const size_t j, size_t index, const Link &link) const {
     if (!is_target_splitter(link.target)) {
         return true;
     }
@@ -637,7 +637,7 @@ bool GUIRoutingPanel::get_splitter_bounds(const size_t j, size_t index, const Li
     return false;
 }
 
-void GUIRoutingPanel::clear_nodes() {
+void GUIRoutingsPanel::clear_nodes() {
     nodes.clear();
     input_pins.clear();
     output_pins.clear();
@@ -646,7 +646,7 @@ void GUIRoutingPanel::clear_nodes() {
     link_dragging_source_key.reset();
 }
 
-std::vector<std::pair<NodeIdentifier, ImVec2>> GUIRoutingPanel::get_nodes_positions() const {
+std::vector<std::pair<NodeIdentifier, ImVec2>> GUIRoutingsPanel::get_nodes_positions() const {
     std::vector<std::pair<NodeIdentifier, ImVec2>> nodes_positions;
     nodes_positions.reserve(nodes.size());
 
@@ -657,7 +657,7 @@ std::vector<std::pair<NodeIdentifier, ImVec2>> GUIRoutingPanel::get_nodes_positi
     return nodes_positions;
 }
 
-void GUIRoutingPanel::set_nodes_positions(const std::vector<std::pair<NodeIdentifier, ImVec2>> &nodes_positions) {
+void GUIRoutingsPanel::set_nodes_positions(const std::vector<std::pair<NodeIdentifier, ImVec2>> &nodes_positions) {
     for (const auto &[identifier, position] : nodes_positions) {
         for (RoutingNode &node : nodes) {
             if (node.identifier == identifier) {
@@ -668,7 +668,7 @@ void GUIRoutingPanel::set_nodes_positions(const std::vector<std::pair<NodeIdenti
     }
 }
 
-ImVec2 GUIRoutingPanel::calculate_content_size() const {
+ImVec2 GUIRoutingsPanel::calculate_content_size() const {
 
     ImVec2 min_pos(FLT_MAX, FLT_MAX);
     ImVec2 max_pos(-FLT_MAX, -FLT_MAX);

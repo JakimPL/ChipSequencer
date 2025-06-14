@@ -1,5 +1,4 @@
-#ifndef GUI_PANELS_DSPS_HPP
-#define GUI_PANELS_DSPS_HPP
+#pragma once
 
 #include "../init.hpp"
 #include "panel.hpp"
@@ -51,5 +50,3 @@ class GUIDSPsPanel : public GUIPanel {
 
     int dsp_index = 0;
 };
-
-#endif // GUI_PANELS_DSPS_HPP

@@ -1,5 +1,4 @@
-#ifndef MAPS_ROUTING_HPP
-#define MAPS_ROUTING_HPP
+#pragma once
 
 #include <map>
 #include <string>
@@ -41,5 +40,3 @@ struct RoutingItems {
 };
 
 extern const std::map<Target, RoutingItems> routing_variables;
-
-#endif // MAPS_ROUTING_HPP

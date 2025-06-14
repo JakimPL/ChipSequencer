@@ -1,5 +1,4 @@
-#ifndef TUNING_CONSTANTS_HPP
-#define TUNING_CONSTANTS_HPP
+#pragma once
 
 #define MIN_EDO 7
 #define MAX_EDO 32
@@ -36,5 +35,3 @@ constexpr std::array<const char *, 3> scale_symbols = {
     "",
     "#",
 };
-
-#endif // TUNING_CONSTANTS_HPP

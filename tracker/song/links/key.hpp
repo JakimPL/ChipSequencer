@@ -1,5 +1,4 @@
-#ifndef SONG_LINKS_KEY_HPP
-#define SONG_LINKS_KEY_HPP
+#pragma once
 
 #include <cstdint>
 #include <unordered_map>
@@ -29,5 +28,3 @@ struct std::hash<LinkKey> {
         return h1 ^ (h2 << 1) ^ (h3 << 2);
     }
 };
-
-#endif // SONG_LINKS_KEY_HPP

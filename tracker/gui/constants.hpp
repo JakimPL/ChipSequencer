@@ -1,5 +1,4 @@
-#ifndef GUI_CONSTANTS_HPP
-#define GUI_CONSTANTS_HPP
+#pragma once
 
 #define APPLICATION_TITLE "ChipSequencer"
 
@@ -61,5 +60,3 @@
 #define GUI_ROUTING_LINK_THICKNESS 1.5f
 #define GUI_ROUTING_PIN_RADIUS 4.0f
 #define GUI_ROUTING_CURVE_SEGMENTS 12
-
-#endif // GUI_CONSTANTS_HPP

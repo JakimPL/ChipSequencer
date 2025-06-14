@@ -1,5 +1,4 @@
-#ifndef SONG_SONG_HPP
-#define SONG_SONG_HPP
+#pragma once
 
 #include <fstream>
 #include <nlohmann/json.hpp>
@@ -183,5 +182,3 @@ class Song {
     float calculate_real_bpm() const;
     float get_row_duration() const;
 };
-
-#endif // SONG_SONG_HPP

@@ -1,5 +1,4 @@
-#ifndef MAPS_KEYS_HPP
-#define MAPS_KEYS_HPP
+#pragma once
 
 #include "../gui/init.hpp"
 
@@ -110,5 +109,3 @@ constexpr std::array<ImGuiKey, 12> values_keys = {
     ImGuiKey_Period,
     ImGuiKey_Comma,
 };
-
-#endif // MAPS_KEYS_HPP

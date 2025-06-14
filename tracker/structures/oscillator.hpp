@@ -1,5 +1,4 @@
-#ifndef STRUCTURES_OSCILLATOR_HPP
-#define STRUCTURES_OSCILLATOR_HPP
+#pragma once
 
 #include <cstddef>
 #include <cstdint>
@@ -77,5 +76,3 @@ static_assert(sizeof(Oscillator) == sizeof(OscillatorSaw), "Oscillator and Oscil
 static_assert(sizeof(Oscillator) == sizeof(OscillatorSine), "Oscillator and OscillatorSine must be of the same size.");
 static_assert(sizeof(Oscillator) == sizeof(OscillatorWavetable), "Oscillator and OscillatorWavetable must be of the same size.");
 static_assert(sizeof(Oscillator) == sizeof(OscillatorNoise), "Oscillator and OscillatorNoise must be of the same size.");
-
-#endif // STRUCTURES_OSCILLATOR_HPP

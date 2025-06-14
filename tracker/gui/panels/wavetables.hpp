@@ -1,5 +1,4 @@
-#ifndef GUI_PANELS_WAVETABLES_HPP
-#define GUI_PANELS_WAVETABLES_HPP
+#pragma once
 
 #include <algorithm>
 #include <cmath>
@@ -50,5 +49,3 @@ class GUIWavetablesPanel : public GUIPanel {
 
     int wavetable_index = 0;
 };
-
-#endif // GUI_PANELS_WAVETABLES_HPP

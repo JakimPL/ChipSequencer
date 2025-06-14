@@ -1,5 +1,4 @@
-#ifndef GENERAL_HPP
-#define GENERAL_HPP
+#pragma once
 
 #include <filesystem>
 
@@ -28,5 +27,3 @@ extern GUI gui;
 extern std::filesystem::path current_path;
 
 void terminate();
-
-#endif // GENERAL_HPP

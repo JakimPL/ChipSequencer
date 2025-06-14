@@ -1,5 +1,4 @@
-#ifndef STRUCTURES_ENVELOPE_HPP
-#define STRUCTURES_ENVELOPE_HPP
+#pragma once
 
 #include <cstddef>
 #include <cstdint>
@@ -28,5 +27,3 @@ constexpr size_t ENVELOPE_HOLD = offsetof(Envelope, hold);
 constexpr size_t ENVELOPE_RELEASE = offsetof(Envelope, release);
 
 static_assert(sizeof(Envelope) == SIZE_ENVELOPE, "Envelope must be of 14 bytes.");
-
-#endif // STRUCTURES_ENVELOPE_HPP
