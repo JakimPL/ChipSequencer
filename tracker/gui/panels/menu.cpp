@@ -46,6 +46,16 @@ GUIMenu::GUIMenu(const bool visible)
         ShortcutAction::FileExit,
         [this]() { file_exit_confirm(); }
     );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::EditUndo,
+        []() { history_manager.undo(); }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::EditRedo,
+        []() { history_manager.redo(); }
+    );
 }
 
 void GUIMenu::draw() {

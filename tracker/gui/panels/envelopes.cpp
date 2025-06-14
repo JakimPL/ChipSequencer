@@ -29,14 +29,7 @@ void GUIEnvelopesPanel::draw() {
     }
 
     from();
-
-    ImGui::Columns(2, "envelope_top_columns");
-    draw_levels();
-    ImGui::NextColumn();
-    draw_timers();
-
-    ImGui::Columns(1, "envelope_bottom_columns");
-    draw_envelope_graph();
+    draw_envelope();
     check_keyboard_input();
     to();
 
@@ -146,6 +139,16 @@ void GUIEnvelopesPanel::remove() {
 void GUIEnvelopesPanel::update() {
     update_items(envelope_names, envelopes.size(), "Envelope ", envelope_index);
     gui.update(GUIElement::Channels);
+}
+
+void GUIEnvelopesPanel::draw_envelope() {
+    ImGui::Columns(2, "envelope_top_columns");
+    draw_levels();
+    ImGui::NextColumn();
+    draw_timers();
+
+    ImGui::Columns(1, "envelope_bottom_columns");
+    draw_envelope_graph();
 }
 
 void GUIEnvelopesPanel::draw_levels() {
