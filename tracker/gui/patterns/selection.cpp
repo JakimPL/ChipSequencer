@@ -45,7 +45,7 @@ void PatternSelection::form(const bool commands, const size_t channel_index, con
             end = row;
             channel_start = channel_index;
             channel_end = channel_index;
-        } else {
+        } else if (commands == command) {
             end = row;
             channel_end = channel_index;
         }

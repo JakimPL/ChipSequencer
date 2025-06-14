@@ -197,8 +197,8 @@ void GUISequencesPanel::deselect_all() {
 
 void GUISequencesPanel::delete_selection() {
     if (selection.is_active()) {
-        for (size_t i = selection.start; i <= selection.end; i++) {
-            current_sequence.pattern.notes[i] = NOTE_REST;
+        for (size_t row = selection.start; row <= selection.end; row++) {
+            current_sequence.pattern.notes[row] = NOTE_REST;
         }
     } else {
         if (current_sequence.pattern.is_row_valid(current_sequence.pattern.current_row)) {

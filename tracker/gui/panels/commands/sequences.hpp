@@ -14,8 +14,6 @@ class GUICommandsSequencesPanel : public GUIPanel {
         CommandsPattern pattern;
     } current_sequence;
 
-    PatternSelection selection;
-
     struct EditDialogBox {
         bool visible = false;
         int item = -1;
@@ -33,8 +31,14 @@ class GUICommandsSequencesPanel : public GUIPanel {
     } edit_dialog_box;
 
     bool dialog_box_open = false;
+    PatternSelection selection;
+    PatternSelectionAction selection_action = PatternSelectionAction::None;
 
     bool is_index_valid() const;
+    void action();
+    void select_all();
+    void deselect_all();
+    void delete_selection();
     void draw_sequence();
     void draw_sequence_length();
     void open_edit_dialog_box(const int item);

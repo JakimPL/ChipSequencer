@@ -349,6 +349,11 @@ std::pair<size_t, bool> draw_commands_pattern(
     }
 
     if (ImGui::BeginTable("CommandsPatternTable", 3, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg)) {
+        if (ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_AllowWhenBlockedByPopup) &&
+            ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+            ImGui::OpenPopup("CommandsPatternContext");
+        }
+
         ImGui::BeginDisabled(gui.is_playing());
         ImGui::TableSetupColumn("Index", ImGuiTableColumnFlags_WidthFixed, 40.0f);
         ImGui::TableSetupColumn("Com", ImGuiTableColumnFlags_WidthFixed, 50.0f);
@@ -436,7 +441,7 @@ std::pair<size_t, bool> draw_commands_pattern(
             }
         }
 
-        if (ImGui::BeginPopup("PatternContext")) {
+        if (ImGui::BeginPopup("CommandsPatternContext")) {
             draw_menu_item("Select all", ShortcutAction::PatternSelectAll);
             if (pattern_view) {
                 draw_menu_item("Select channel", ShortcutAction::PatternSelectChannel);
