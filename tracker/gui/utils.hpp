@@ -9,7 +9,7 @@
 #include "../song/links/key.hpp"
 #include "init.hpp"
 #include "enums.hpp"
-#include "shortcuts.hpp"
+#include "actions/shortcuts.hpp"
 #include "patterns/commands.hpp"
 #include "patterns/pattern.hpp"
 #include "patterns/selection.hpp"

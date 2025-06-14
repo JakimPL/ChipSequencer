@@ -69,6 +69,28 @@ void GUIMenu::draw() {
             draw_menu_item("Exit", ShortcutAction::FileExit);
             ImGui::EndMenu();
         }
+        if (ImGui::BeginMenu("Edit")) {
+            draw_menu_item("Undo", ShortcutAction::EditUndo);
+            draw_menu_item("Redo", ShortcutAction::EditRedo);
+            ImGui::Separator();
+            draw_menu_item("Cut", ShortcutAction::EditCut);
+            draw_menu_item("Copy", ShortcutAction::EditCopy);
+            draw_menu_item("Paste", ShortcutAction::EditPaste);
+            if (gui.is_pattern_view_active()) {
+                ImGui::Separator();
+                draw_menu_item("Select all", ShortcutAction::PatternSelectAll);
+                draw_menu_item("Select channel", ShortcutAction::PatternSelectChannel);
+                draw_menu_item("Deselect all", ShortcutAction::PatternSelectNone);
+                if (!gui.is_commands_pattern_view_active()) {
+                    ImGui::Separator();
+                    draw_menu_item("Transpose up", ShortcutAction::PatternTransposeUp);
+                    draw_menu_item("Transpose down", ShortcutAction::PatternTransposeDown);
+                    draw_menu_item("Transpose octave up", ShortcutAction::PatternTransposeOctaveUp);
+                    draw_menu_item("Transpose octave down", ShortcutAction::PatternTransposeOctaveDown);
+                }
+            }
+            ImGui::EndMenu();
+        }
         if (ImGui::BeginMenu("View")) {
             for (const auto &[element, name] : menu_items) {
                 const bool visible = gui.get_visibility(element);

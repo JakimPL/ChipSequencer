@@ -792,3 +792,11 @@ void GUIPatternsPanel::set_index(const int index) {
 bool GUIPatternsPanel::is_playing() const {
     return gui.is_playing() && ticks_per_beat > 0;
 }
+
+bool GUIPatternsPanel::is_active() const {
+    return visible && ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+}
+
+bool GUIPatternsPanel::is_commands_view_active() const {
+    return is_active() && current_channel.command;
+}

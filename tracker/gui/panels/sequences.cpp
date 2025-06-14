@@ -278,3 +278,7 @@ void GUISequencesPanel::check_keyboard_input() {
 void GUISequencesPanel::set_index(const int index) {
     sequence_index = clamp_index(index, sequences.size());
 }
+
+bool GUISequencesPanel::is_active() const {
+    return visible && ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+}

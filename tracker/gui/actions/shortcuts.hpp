@@ -4,7 +4,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "init.hpp"
+#include "../init.hpp"
 
 enum class ShortcutAction {
     FileNew,
@@ -20,6 +20,9 @@ enum class ShortcutAction {
     SongStop,
     EditUndo,
     EditRedo,
+    EditCut,
+    EditCopy,
+    EditPaste,
     PatternTransposeUp,
     PatternTransposeDown,
     PatternTransposeOctaveUp,
@@ -71,6 +74,9 @@ class ShortcutManager {
         {ShortcutAction::SongStop, {false, false, false, ImGuiKey_Escape}},
         {ShortcutAction::EditUndo, {true, false, false, ImGuiKey_Z}},
         {ShortcutAction::EditRedo, {true, false, true, ImGuiKey_Z}},
+        {ShortcutAction::EditCut, {true, false, false, ImGuiKey_X}},
+        {ShortcutAction::EditCopy, {true, false, false, ImGuiKey_C}},
+        {ShortcutAction::EditPaste, {true, false, false, ImGuiKey_V}},
         {ShortcutAction::PatternTransposeUp, {true, false, false, ImGuiKey_KeypadAdd}},
         {ShortcutAction::PatternTransposeDown, {true, false, false, ImGuiKey_KeypadSubtract}},
         {ShortcutAction::PatternTransposeOctaveUp, {true, true, false, ImGuiKey_KeypadAdd}},

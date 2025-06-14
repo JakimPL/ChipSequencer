@@ -91,6 +91,9 @@ class GUI {
 
     void deselect_all_rows();
 
+    bool is_pattern_view_active() const;
+    bool is_commands_pattern_view_active() const;
+
   private:
     AudioEngine *audio_engine;
 

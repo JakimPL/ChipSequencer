@@ -42,5 +42,7 @@ class GUISequencesPanel : public GUIPanel {
     void from() override;
     void to() const override;
 
+    bool is_active() const;
+
     int sequence_index = 0;
 };

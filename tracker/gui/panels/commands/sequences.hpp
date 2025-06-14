@@ -60,6 +60,7 @@ class GUICommandsSequencesPanel : public GUIPanel {
     void to() const override;
 
     void clear_input_buffers();
+    bool is_active() const;
 
     int sequence_index = 0;
 };

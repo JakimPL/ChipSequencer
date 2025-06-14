@@ -1,4 +1,4 @@
-#include "../general.hpp"
+#include "../../general.hpp"
 #include "shortcuts.hpp"
 
 std::string Shortcut::get_display_string() const {

@@ -510,3 +510,7 @@ void GUICommandsSequencesPanel::clear_input_buffers() {
     current_sequence.pattern.commands_handler.clear();
     current_sequence.pattern.values_handler.clear();
 }
+
+bool GUICommandsSequencesPanel::is_active() const {
+    return visible && ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+}

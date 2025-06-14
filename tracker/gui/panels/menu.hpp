@@ -5,7 +5,7 @@
 
 #include "../../song/compilation.hpp"
 #include "../init.hpp"
-#include "../shortcuts.hpp"
+#include "../actions/shortcuts.hpp"
 
 class GUIMenu : public GUIPanel {
   private:

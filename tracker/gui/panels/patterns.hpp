@@ -83,4 +83,6 @@ class GUIPatternsPanel : public GUIPanel {
     void to() const override;
 
     void deselect_all_rows();
+    bool is_active() const;
+    bool is_commands_view_active() const;
 };

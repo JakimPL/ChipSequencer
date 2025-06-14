@@ -614,3 +614,14 @@ std::vector<std::pair<NodeIdentifier, ImVec2>> GUI::get_routing_nodes_positions(
 void GUI::set_routing_nodes_positions(const std::vector<std::pair<NodeIdentifier, ImVec2>> &nodes_positions) {
     routing_panel.set_nodes_positions(nodes_positions);
 }
+
+bool GUI::is_pattern_view_active() const {
+    return patterns_panel.is_active() ||
+           commands_sequences_panel.is_active() ||
+           sequences_panel.is_active();
+}
+
+bool GUI::is_commands_pattern_view_active() const {
+    return commands_sequences_panel.is_active() ||
+           (patterns_panel.is_active() && patterns_panel.is_commands_view_active());
+}
