@@ -53,7 +53,9 @@ class GUIPatternsPanel : public GUIPanel {
     void delete_selection();
     void transpose_selected_rows();
     void prepare_secondary_selection();
-    void mark_selected_rows(const size_t channel_index, const size_t pattern_id, const int row);
+    void mark_selected_rows(const bool command, const size_t channel_index, const size_t pattern_id, const int row);
+    void mark_selected_pattern_rows(const size_t channel_index, const size_t pattern_id, const int row);
+    void mark_selected_commands_pattern_rows(const size_t channel_index, const size_t pattern_id, const int row);
     std::pair<Pattern *, uint16_t> find_pattern_by_current_row() const;
     std::pair<CommandsPattern *, uint16_t> find_commands_pattern_by_current_row() const;
 

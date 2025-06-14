@@ -30,6 +30,7 @@ typedef std::set<PatternRow> PatternRows;
 typedef std::map<SequenceRow, std::set<PatternRow>> PatternRowsBySequenceRow;
 
 struct PatternSelection {
+    bool command = false;
     bool selecting = false;
     size_t channel_index = -1;
     int start = -1;
@@ -40,11 +41,12 @@ struct PatternSelection {
     void select(
         const int start,
         const int end,
+        const bool command = false,
         const size_t channel_start = 0,
         const size_t channel_end = 0
     );
     bool is_row_selected(const size_t channel_index, const int row) const;
-    void form(const size_t channel_index, const int row);
+    void form(const bool command, const size_t channel_index, const int row);
     void clear();
     bool is_active() const;
     void adjust_selection();

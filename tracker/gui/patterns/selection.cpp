@@ -4,9 +4,11 @@
 void PatternSelection::select(
     const int start,
     const int end,
+    const bool command,
     const size_t channel_start,
     const size_t channel_end
 ) {
+    this->command = command;
     this->channel_index = channel_index;
     this->start = start;
     this->end = end;
@@ -27,7 +29,7 @@ bool PatternSelection::is_row_selected(const size_t channel_index, const int row
     );
 };
 
-void PatternSelection::form(const size_t channel_index, const int row) {
+void PatternSelection::form(const bool commands, const size_t channel_index, const int row) {
     if (
         ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId) ||
         !ImGui::IsItemHovered(ImGuiHoveredFlags_RectOnly)
@@ -37,6 +39,7 @@ void PatternSelection::form(const size_t channel_index, const int row) {
 
     if (ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
         if (!selecting) {
+            command = commands;
             selecting = true;
             start = row;
             end = row;
@@ -59,6 +62,7 @@ void PatternSelection::form(const size_t channel_index, const int row) {
 
 void PatternSelection::clear() {
     selecting = false;
+    command = false;
     start = -1;
     end = -1;
     channel_start = -1;

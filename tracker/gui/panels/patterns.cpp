@@ -73,6 +73,7 @@ void GUIPatternsPanel::draw() {
     ImGui::Separator();
 
     from();
+    prepare_secondary_selection();
     draw_channels();
     action();
     transpose_selected_rows();
@@ -156,10 +157,13 @@ void GUIPatternsPanel::draw_commands_channel(size_t channel_index) {
     const uint16_t start = page * gui.get_page_size();
     const uint16_t end = start + gui.get_page_size();
 
+    PatternSelection empty_selection;
+    PatternSelection &commands_selection = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ? selection : empty_selection;
+
     for (auto &pattern : current_patterns.commands_patterns[channel_index]) {
         const int playing_row = current_patterns.playing_rows[{true, channel_index}];
         auto [new_index, select] = draw_commands_pattern(
-            pattern, selection, channel_index, false, index, playing_row, start, end
+            pattern, commands_selection, secondary_pattern_rows, true, channel_index, false, index, playing_row, start, end
         );
         if (select) {
             current_channel = {true, channel_index};
@@ -213,15 +217,13 @@ void GUIPatternsPanel::from_sequences() {
                 current_patterns.playing_rows[{false, channel_index}] = row + playing_row;
             }
 
-            mark_selected_rows(channel_index, pattern_id, row);
+            mark_selected_rows(false, channel_index, pattern_id, row);
             row += pattern.steps;
         }
 
         current_patterns.patterns_max_rows[channel_index] = row;
         current_patterns.total_rows = std::max(current_patterns.total_rows, row);
     }
-
-    prepare_secondary_selection();
 }
 
 void GUIPatternsPanel::from_commands_sequences() {
@@ -264,6 +266,7 @@ void GUIPatternsPanel::from_commands_sequences() {
                 current_patterns.playing_rows[{true, channel_index}] = row + playing_row;
             }
 
+            mark_selected_rows(true, channel_index, j, row);
             row += pattern.steps;
         }
 
@@ -340,14 +343,16 @@ void GUIPatternsPanel::action() {
 }
 
 void GUIPatternsPanel::select_all() {
+    const bool command = current_channel.command;
     const auto [start, end] = gui.get_page_start_end(page);
     const size_t last_channel_index = current_patterns.patterns.empty() ? 0 : current_patterns.patterns.rbegin()->first;
-    selection.select(start, end, 0, last_channel_index);
+    selection.select(start, end, command, 0, last_channel_index);
 }
 
 void GUIPatternsPanel::select_channel() {
+    const bool command = current_channel.command;
     const auto [start, end] = gui.get_page_start_end(page);
-    selection.select(start, end, current_channel.index, current_channel.index);
+    selection.select(start, end, command, current_channel.index, current_channel.index);
 }
 
 void GUIPatternsPanel::deselect_all() {
@@ -355,12 +360,15 @@ void GUIPatternsPanel::deselect_all() {
 }
 
 void GUIPatternsPanel::delete_selection() {
-    for (const PatternRow &pattern_row : secondary_pattern_rows) {
-        const size_t channel_index = pattern_row.channel_index;
-        const size_t pattern_id = pattern_row.pattern_id;
-        const int row = pattern_row.row;
-        Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
-        pattern.notes[row] = NOTE_REST;
+    if (selection.command) {
+    } else {
+        for (const PatternRow &pattern_row : secondary_pattern_rows) {
+            const size_t channel_index = pattern_row.channel_index;
+            const size_t pattern_id = pattern_row.pattern_id;
+            const int row = pattern_row.row;
+            Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
+            pattern.notes[row] = NOTE_REST;
+        }
     }
 }
 
@@ -369,7 +377,7 @@ void GUIPatternsPanel::transpose_selected_rows() {
         transpose_by = 0;
     }
 
-    if (transpose_by == 0) {
+    if (transpose_by == 0 || selection.command) {
         return;
     }
 
@@ -598,9 +606,39 @@ void GUIPatternsPanel::handle_commands_pattern_input(CommandsPattern *pattern, u
     current_row = pattern->current_row + index;
 }
 
-void GUIPatternsPanel::mark_selected_rows(const size_t channel_index, const size_t pattern_id, const int row) {
+void GUIPatternsPanel::mark_selected_rows(const bool command, const size_t channel_index, const size_t pattern_id, const int row) {
+    if (command) {
+        mark_selected_commands_pattern_rows(channel_index, pattern_id, row);
+    } else {
+        mark_selected_pattern_rows(channel_index, pattern_id, row);
+    }
+}
+
+void GUIPatternsPanel::mark_selected_pattern_rows(const size_t channel_index, const size_t pattern_id, const int row) {
+    if (selection.command) {
+        return;
+    }
+
     const Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
     for (int i = 0; i < pattern.notes.size(); ++i) {
+        const int j = row + i;
+        const PatternRow pattern_row = {channel_index, pattern_id, i};
+        if (selection.is_row_selected(channel_index, j) ||
+            (!selection.is_active() && pattern.current_row == i)) {
+            const SequenceRow sequence_row = {pattern.sequence_index, i};
+            pattern_rows.insert(pattern_row);
+            pattern_rows_by_sequence_row[sequence_row].insert(pattern_row);
+        }
+    }
+}
+
+void GUIPatternsPanel::mark_selected_commands_pattern_rows(const size_t channel_index, const size_t pattern_id, const int row) {
+    if (!selection.command) {
+        return;
+    }
+
+    const CommandsPattern &pattern = current_patterns.commands_patterns[channel_index][pattern_id];
+    for (int i = 0; i < pattern.commands.size(); ++i) {
         const int j = row + i;
         const PatternRow pattern_row = {channel_index, pattern_id, i};
         if (selection.is_row_selected(channel_index, j) ||
@@ -626,12 +664,24 @@ void GUIPatternsPanel::prepare_secondary_selection() {
             continue;
         }
 
-        for (const auto &[channel_index, patterns] : current_patterns.patterns) {
-            for (const auto &pattern : patterns) {
-                if (pattern.sequence_index == sequence_index) {
-                    const PatternRow pattern_row = {channel_index, pattern.sequence_index, sequence_row.row};
-                    pattern_rows_by_sequence_row[sequence_row].insert(pattern_row);
-                    secondary_pattern_rows.insert(pattern_row);
+        if (selection.command) {
+            for (const auto &[channel_index, commands_patterns] : current_patterns.commands_patterns) {
+                for (const auto &commands_pattern : commands_patterns) {
+                    if (commands_pattern.sequence_index == sequence_index) {
+                        const PatternRow pattern_row = {channel_index, commands_pattern.sequence_index, sequence_row.row};
+                        pattern_rows_by_sequence_row[sequence_row].insert(pattern_row);
+                        secondary_pattern_rows.insert(pattern_row);
+                    }
+                }
+            }
+        } else {
+            for (const auto &[channel_index, patterns] : current_patterns.patterns) {
+                for (const auto &pattern : patterns) {
+                    if (pattern.sequence_index == sequence_index) {
+                        const PatternRow pattern_row = {channel_index, pattern.sequence_index, sequence_row.row};
+                        pattern_rows_by_sequence_row[sequence_row].insert(pattern_row);
+                        secondary_pattern_rows.insert(pattern_row);
+                    }
                 }
             }
         }
