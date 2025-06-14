@@ -95,6 +95,14 @@ int Pattern::calculate_playing_row(size_t channel_index) {
     }
 }
 
+void Pattern::clear_row(const int row) {
+    if (!is_row_valid(row)) {
+        return;
+    }
+
+    notes[row] = NOTE_REST;
+}
+
 bool Pattern::is_row_valid(const int row) const {
     return row >= 0 && row < static_cast<int>(notes.size());
 }

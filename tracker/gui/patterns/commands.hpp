@@ -57,6 +57,7 @@ struct CommandsPattern {
     void save_links(size_t sequence_index) const;
     int calculate_playing_row(size_t channel_index);
 
+    void clear_row(const int row);
     bool is_row_valid(const int row) const;
     void handle_input(const int min_row = 0, const int max_row = -1);
     void set_selection(const int row, const CommandSelection item);

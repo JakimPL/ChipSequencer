@@ -198,12 +198,11 @@ void GUISequencesPanel::deselect_all() {
 void GUISequencesPanel::delete_selection() {
     if (selection.is_active()) {
         for (size_t row = selection.start; row <= selection.end; row++) {
-            current_sequence.pattern.notes[row] = NOTE_REST;
+            current_sequence.pattern.clear_row(row);
         }
     } else {
-        if (current_sequence.pattern.is_row_valid(current_sequence.pattern.current_row)) {
-            current_sequence.pattern.notes[current_sequence.pattern.current_row] = NOTE_REST;
-        }
+        const int row = current_sequence.pattern.current_row;
+        current_sequence.pattern.clear_row(row);
     }
 }
 

@@ -178,15 +178,11 @@ void GUICommandsSequencesPanel::deselect_all() {
 void GUICommandsSequencesPanel::delete_selection() {
     if (selection.is_active()) {
         for (size_t row = selection.start; row <= selection.end; row++) {
-            current_sequence.pattern.commands[row] = "";
-            current_sequence.pattern.values[row] = "";
+            current_sequence.pattern.clear_row(row);
         }
     } else {
         const int row = current_sequence.pattern.current_row;
-        if (current_sequence.pattern.is_row_valid(row)) {
-            current_sequence.pattern.commands[row] = "";
-            current_sequence.pattern.values[row] = "";
-        }
+        current_sequence.pattern.clear_row(row);
     }
 }
 

@@ -361,13 +361,20 @@ void GUIPatternsPanel::deselect_all() {
 
 void GUIPatternsPanel::delete_selection() {
     if (selection.command) {
+        for (const PatternRow &pattern_row : secondary_pattern_rows) {
+            const size_t channel_index = pattern_row.channel_index;
+            const size_t pattern_id = pattern_row.pattern_id;
+            const int row = pattern_row.row;
+            CommandsPattern &pattern = current_patterns.commands_patterns[channel_index][pattern_id];
+            pattern.clear_row(row);
+        }
     } else {
         for (const PatternRow &pattern_row : secondary_pattern_rows) {
             const size_t channel_index = pattern_row.channel_index;
             const size_t pattern_id = pattern_row.pattern_id;
             const int row = pattern_row.row;
             Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
-            pattern.notes[row] = NOTE_REST;
+            pattern.clear_row(row);
         }
     }
 }
@@ -393,15 +400,17 @@ void GUIPatternsPanel::transpose_selected_rows() {
 }
 
 void GUIPatternsPanel::to_sequences() const {
-    std::set<const Pattern *> unique_patterns = {};
+    std::set<const Pattern *> unique_patterns;
     const Pattern *pattern = find_pattern_by_current_row().first;
     if (pattern != nullptr) {
         unique_patterns.insert(pattern);
     }
 
-    for (const auto &[channel_index, pattern_id, row] : pattern_rows) {
-        const Pattern &selected_pattern = current_patterns.patterns.at(channel_index).at(pattern_id);
-        unique_patterns.insert(&selected_pattern);
+    if (!selection.command) {
+        for (const auto &[channel_index, pattern_id, row] : secondary_pattern_rows) {
+            const Pattern &selected_pattern = current_patterns.patterns.at(channel_index).at(pattern_id);
+            unique_patterns.insert(&selected_pattern);
+        }
     }
 
     for (const Pattern *pattern : unique_patterns) {
@@ -413,8 +422,20 @@ void GUIPatternsPanel::to_sequences() const {
 }
 
 void GUIPatternsPanel::to_commands_sequences() const {
-    CommandsPattern *pattern = find_commands_pattern_by_current_row().first;
+    std::set<const CommandsPattern *> unique_patterns;
+    const CommandsPattern *pattern = find_commands_pattern_by_current_row().first;
     if (pattern != nullptr) {
+        unique_patterns.insert(pattern);
+    }
+
+    if (selection.command) {
+        for (const auto &[channel_index, pattern_id, row] : secondary_pattern_rows) {
+            const CommandsPattern &selected_pattern = current_patterns.commands_patterns.at(channel_index).at(pattern_id);
+            unique_patterns.insert(&selected_pattern);
+        }
+    }
+
+    for (const CommandsPattern *pattern : unique_patterns) {
         size_t sequence_index = pattern->sequence_index;
         CommandsSequence *sequence = commands_sequences[sequence_index];
         const std::vector<Command> command_vector = pattern->to_command_vector();
