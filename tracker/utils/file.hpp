@@ -1,5 +1,4 @@
-#ifndef UTILS_FILE_HPP
-#define UTILS_FILE_HPP
+#pragma once
 
 #include <filesystem>
 #include <fstream>
@@ -86,5 +85,3 @@ inline std::filesystem::path check_and_correct_path_by_extension(const std::file
 
     return new_path;
 }
-
-#endif // UTILS_FILE_HPP

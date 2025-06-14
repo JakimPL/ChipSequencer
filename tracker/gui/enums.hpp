@@ -1,5 +1,4 @@
-#ifndef GUI_ENUMS_HPP
-#define GUI_ENUMS_HPP
+#pragma once
 
 enum class GUIElement {
     All,
@@ -26,5 +25,3 @@ enum class GUIScale {
     Logarithmic,
     Quadratic,
 };
-
-#endif // GUI_ENUMS_HPP

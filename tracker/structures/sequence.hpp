@@ -1,5 +1,4 @@
-#ifndef STRUCTURES_SEQUENCE_HPP
-#define STRUCTURES_SEQUENCE_HPP
+#pragma once
 
 #include <array>
 #include <cstddef>
@@ -27,5 +26,3 @@ typedef std::vector<Sequence *> Sequences;
 
 constexpr size_t SEQUENCE_SIZE = offsetof(Sequence, size);
 constexpr size_t SEQUENCE_NOTES = offsetof(Sequence, notes);
-
-#endif // STRUCTURES_SEQUENCE_HPP

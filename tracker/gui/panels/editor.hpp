@@ -1,5 +1,4 @@
-#ifndef GUI_PANELS_EDITOR_HPP
-#define GUI_PANELS_EDITOR_HPP
+#pragma once
 
 #include <functional>
 
@@ -34,5 +33,3 @@ class GUIEditorPanel : public GUIPanel {
     void from() override {};
     void to() const override {};
 };
-
-#endif // GUI_PANELS_EDITOR_HPP

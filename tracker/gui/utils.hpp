@@ -1,16 +1,18 @@
-#ifndef GUI_UTILS_HPP
-#define GUI_UTILS_HPP
+#pragma once
 
 #include <functional>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "../song/links/key.hpp"
 #include "init.hpp"
 #include "enums.hpp"
 #include "shortcuts.hpp"
+#include "patterns/commands.hpp"
 #include "patterns/pattern.hpp"
+#include "patterns/selection.hpp"
 
 struct GUIState {
     bool value_changed;
@@ -47,10 +49,33 @@ bool draw_output(OutputType &output_type, const LinkKey key);
 void show_dependency_tooltip(std::vector<std::string> &dependencies);
 void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t index);
 
+void draw_menu_item(const std::string &name, const std::optional<ShortcutAction> action = std::nullopt, const bool checked = false);
 bool get_menu_item(const std::string &name, const std::optional<ShortcutAction> action = std::nullopt, const bool checked = false);
 
-std::pair<size_t, bool> draw_pattern(Pattern &pattern, const bool header = true, const size_t index = 0, const int playing_row = -1, const uint16_t start = 0, const uint16_t end = UINT16_MAX);
-std::pair<size_t, bool> draw_commands_pattern(CommandsPattern &pattern, const bool header = true, const size_t index = 0, const int playing_row = -1, const uint16_t start = 0, const uint16_t end = UINT16_MAX);
+std::pair<size_t, bool> draw_pattern(
+    Pattern &pattern,
+    PatternSelection &selection,
+    PatternRows &selected_rows,
+    const bool pattern_view,
+    const size_t channel_index = 0,
+    const bool header = true,
+    const size_t index = 0,
+    const int playing_row = -1,
+    const uint16_t start = 0,
+    const uint16_t end = UINT16_MAX
+);
+std::pair<size_t, bool> draw_commands_pattern(
+    CommandsPattern &pattern,
+    PatternSelection &selection,
+    PatternRows &selected_rows,
+    const bool pattern_view,
+    const size_t channel_index = 0,
+    const bool header = true,
+    const size_t index = 0,
+    const int playing_row = -1,
+    const uint16_t start = 0,
+    const uint16_t end = UINT16_MAX
+);
 
 GUIState prepare_combo(const std::vector<std::string> &names, std::string label, int &index, const bool error_if_empty = false);
 void update_items(std::vector<std::string> &names, size_t size, std::string label, int &index);
@@ -62,5 +87,3 @@ void pop_tertiary_style();
 std::string get_note_name(uint8_t note_value);
 std::string get_note_octave(uint8_t note_value);
 uint8_t get_note_value(const std::string &note_name, const int octave);
-
-#endif // GUI_UTILS_HPP

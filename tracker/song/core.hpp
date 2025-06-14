@@ -1,5 +1,4 @@
-#ifndef SONG_CORE_HPP
-#define SONG_CORE_HPP
+#pragma once
 
 #include "../constants.hpp"
 #include "../structures.hpp"
@@ -53,5 +52,3 @@ extern CommandsChannels commands_channels;
 extern Targets targets;
 extern Links links;
 extern CommandsLinks commands_links;
-
-#endif // SONG_CORE_HPP

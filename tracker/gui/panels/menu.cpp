@@ -10,49 +10,40 @@
 
 GUIMenu::GUIMenu(const bool visible)
     : GUIPanel(visible) {
-    shortcut_manager.register_shortcut_and_action(
+    shortcut_manager.register_shortcut(
         ShortcutAction::FileNew,
-        {true, false, false, ImGuiKey_N},
         [this]() { file_new_confirm(); }
     );
-    shortcut_manager.register_shortcut_and_action(
+    shortcut_manager.register_shortcut(
         ShortcutAction::FileOpen,
-        {true, false, false, ImGuiKey_O},
         [this]() { file_open(); }
     );
-    shortcut_manager.register_shortcut_and_action(
+    shortcut_manager.register_shortcut(
         ShortcutAction::FileSave,
-        {true, false, false, ImGuiKey_S},
         [this]() { file_save(); }
     );
-    shortcut_manager.register_shortcut_and_action(
+    shortcut_manager.register_shortcut(
         ShortcutAction::FileSaveAs,
-        {true, false, true, ImGuiKey_S},
         [this]() { file_save_as(); }
     );
-    shortcut_manager.register_shortcut_and_action(
+    shortcut_manager.register_shortcut(
         ShortcutAction::FileRender,
-        {true, false, false, ImGuiKey_R},
         [this]() { file_render(); }
     );
-    shortcut_manager.register_shortcut_and_action(
+    shortcut_manager.register_shortcut(
         ShortcutAction::FileCompileCompressed,
-        {true, false, false, ImGuiKey_E},
         [this]() { file_compile(CompilationScheme::Compressed, CompilationTarget::Linux); }
     );
-    shortcut_manager.register_shortcut_and_action(
+    shortcut_manager.register_shortcut(
         ShortcutAction::FileCompileUncompressed,
-        {true, true, false, ImGuiKey_E},
         [this]() { file_compile(CompilationScheme::Uncompressed, CompilationTarget::Linux); }
     );
-    shortcut_manager.register_shortcut_and_action(
+    shortcut_manager.register_shortcut(
         ShortcutAction::FileCompileDebug,
-        {true, false, true, ImGuiKey_E},
         [this]() { file_compile(CompilationScheme::Debug, CompilationTarget::Linux); }
     );
-    shortcut_manager.register_shortcut_and_action(
+    shortcut_manager.register_shortcut(
         ShortcutAction::FileExit,
-        {true, false, false, ImGuiKey_Q},
         [this]() { file_exit_confirm(); }
     );
 }
@@ -60,48 +51,28 @@ GUIMenu::GUIMenu(const bool visible)
 void GUIMenu::draw() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("File")) {
-            if (get_menu_item("New", ShortcutAction::FileNew)) {
-                file_new_confirm();
-            }
-            if (get_menu_item("Save", ShortcutAction::FileSave)) {
-                file_save();
-            }
-            if (get_menu_item("Save as", ShortcutAction::FileSaveAs)) {
-                file_save_as();
-            }
+            draw_menu_item("New", ShortcutAction::FileNew);
+            draw_menu_item("Save", ShortcutAction::FileSave);
+            draw_menu_item("Save as", ShortcutAction::FileSaveAs);
             ImGui::Separator();
-            if (get_menu_item("Open", ShortcutAction::FileOpen)) {
-                file_open();
-            }
+            draw_menu_item("Open", ShortcutAction::FileOpen);
             ImGui::Separator();
-            if (get_menu_item("Render", ShortcutAction::FileRender)) {
-                file_render();
-            }
+            draw_menu_item("Render", ShortcutAction::FileRender);
             ImGui::Separator();
             if (ImGui::BeginMenu("Compile")) {
-                if (get_menu_item("Compressed", ShortcutAction::FileCompileCompressed)) {
-                    file_compile(CompilationScheme::Compressed, CompilationTarget::Linux);
-                }
-                if (get_menu_item("Uncompressed", ShortcutAction::FileCompileUncompressed)) {
-                    file_compile(CompilationScheme::Uncompressed, CompilationTarget::Linux);
-                }
-                if (get_menu_item("Debug", ShortcutAction::FileCompileDebug)) {
-                    file_compile(CompilationScheme::Debug, CompilationTarget::Linux);
-                }
+                draw_menu_item("Compressed", ShortcutAction::FileCompileCompressed);
+                draw_menu_item("Uncompressed", ShortcutAction::FileCompileUncompressed);
+                draw_menu_item("Debug", ShortcutAction::FileCompileDebug);
                 ImGui::EndMenu();
             }
             ImGui::Separator();
-            if (get_menu_item("Exit", ShortcutAction::FileExit)) {
-                file_exit_confirm();
-            }
+            draw_menu_item("Exit", ShortcutAction::FileExit);
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("View")) {
             for (const auto &[element, name] : menu_items) {
                 const bool visible = gui.get_visibility(element);
-                if (get_menu_item(name, std::nullopt, visible)) {
-                    gui.set_visibility(element, !visible);
-                }
+                draw_menu_item(name, std::nullopt, visible);
             }
             ImGui::EndMenu();
         }

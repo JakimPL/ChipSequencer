@@ -1,5 +1,4 @@
-#ifndef STRUCTURES_HPP
-#define STRUCTURES_HPP
+#pragma once
 
 #include "structures/envelope.hpp"
 #include "structures/sequence.hpp"
@@ -11,5 +10,3 @@
 #include "structures/dsp.hpp"
 #include "structures/channel.hpp"
 #include "structures/targets.hpp"
-
-#endif // STRUCTURES_HPP

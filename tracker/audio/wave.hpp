@@ -1,5 +1,4 @@
-#ifndef AUDIO_WAVE_HPP
-#define AUDIO_WAVE_HPP
+#pragma once
 
 #include <sndfile.h>
 #include <stdexcept>
@@ -25,5 +24,3 @@ void save_wave(
 );
 
 Samples load_wave(const std::string &filename);
-
-#endif // AUDIO_WAVE_HPP

@@ -29,14 +29,12 @@ bool NumericInputHandler::handle_input(std::vector<int> &vector, int &index) {
         value_inserted = true;
     }
 
-    if (!buffer.empty()) {
-        try {
-            int value = std::stoi(buffer);
-            value = std::max(std::min(value, limit), 0);
-            vector[index] = value;
-        } catch (std::out_of_range &) {
-            buffer.clear();
-        }
+    if (ImGui::IsKeyPressed(ImGuiKey_KeypadAdd)) {
+        assign_value(vector, index, 1);
+    } else if (ImGui::IsKeyPressed(ImGuiKey_KeypadSubtract)) {
+        assign_value(vector, index, -1);
+    } else {
+        assign_value(vector, index);
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_UpArrow)) {
@@ -49,5 +47,30 @@ bool NumericInputHandler::handle_input(std::vector<int> &vector, int &index) {
         buffer.clear();
     }
 
+    if (ImGui::IsKeyPressed(ImGuiKey_Home)) {
+        index = 0;
+        buffer.clear();
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_End)) {
+        index = static_cast<int>(vector.size()) - 1;
+        buffer.clear();
+    }
+
     return value_inserted;
+}
+
+void NumericInputHandler::assign_value(std::vector<int> &vector, const size_t index, const int adjustment) {
+    if (buffer.empty()) {
+        return;
+    }
+
+    try {
+        int value = std::stoi(buffer);
+        value = std::max(std::min(value + adjustment, limit), 0);
+        vector[index] = value;
+        buffer = std::to_string(value);
+    } catch (std::out_of_range &) {
+        this->buffer.clear();
+    }
 }

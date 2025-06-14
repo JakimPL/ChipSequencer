@@ -1,11 +1,12 @@
-#ifndef GUI_PANELS_SEQUENCES_HPP
-#define GUI_PANELS_SEQUENCES_HPP
+#pragma once
 
 #include <string>
 
 #include "../constants.hpp"
 #include "../init.hpp"
+#include "../utils.hpp"
 #include "../patterns/pattern.hpp"
+#include "../patterns/selection.hpp"
 #include "panel.hpp"
 
 class GUISequencesPanel : public GUIPanel {
@@ -14,7 +15,16 @@ class GUISequencesPanel : public GUIPanel {
         Pattern pattern;
     } current_sequence;
 
+    PatternSelection selection;
+    PatternSelectionAction selection_action = PatternSelectionAction::None;
+    int transpose_by = 0;
+
     bool is_index_valid() const;
+    void transpose_selected_rows();
+    void action();
+    void select_all();
+    void deselect_all();
+    void delete_selection();
     void draw_sequence_length();
     void draw_sequence();
 
@@ -34,5 +44,3 @@ class GUISequencesPanel : public GUIPanel {
 
     int sequence_index = 0;
 };
-
-#endif // GUI_PANELS_SEQUENCES_HPP

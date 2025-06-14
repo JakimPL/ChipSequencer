@@ -12,7 +12,7 @@ std::string to_lower(const std::string &string) {
     return result;
 }
 
-void string_copy_to_buffer(const std::string &string, char *target, size_t size) {
+void copy_string_to_buffer(const std::string &string, char *target, size_t size) {
     if (size == 0) {
         return;
     }

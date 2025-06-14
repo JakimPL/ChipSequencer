@@ -1,5 +1,4 @@
-#ifndef SONG_OUTPUT_HPP
-#define SONG_OUTPUT_HPP
+#pragma once
 
 #include <cstdint>
 
@@ -64,5 +63,3 @@ static_assert(static_cast<uint8_t>(OutputTarget::DSPSplitter) == static_cast<uin
 static_assert(static_cast<uint8_t>(OutputTarget::DirectOutput) == static_cast<uint8_t>(Target::DIRECT_OUTPUT));
 static_assert(static_cast<uint8_t>(OutputTarget::DirectDSP) == static_cast<uint8_t>(Target::DIRECT_DSP));
 static_assert(static_cast<uint8_t>(OutputTarget::Parameter) == static_cast<uint8_t>(Target::ENVELOPE));
-
-#endif // SONG_OUTPUT_HPP

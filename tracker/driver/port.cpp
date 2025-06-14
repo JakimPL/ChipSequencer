@@ -76,7 +76,6 @@ bool PortAudioDriver::open_stream() {
     );
     if (err != paNoError) {
         std::cerr << "PortAudio error: " << Pa_GetErrorText(err) << std::endl;
-        Pa_Terminate();
         return false;
     }
     return true;
@@ -119,7 +118,6 @@ bool PortAudioDriver::stop_stream() {
     if (err != paNoError) {
         std::cerr << "PortAudio error: " << Pa_GetErrorText(err) << std::endl;
         Pa_CloseStream(stream);
-        Pa_Terminate();
         return false;
     }
 
@@ -165,6 +163,6 @@ void PortAudioDriver::set_output_channels(const int channels) {
         return;
     }
 
-    pingpong_buffer.resize(2 * frames_per_buffer * output_channels, 0);
     output_channels = channels;
+    pingpong_buffer.resize(2 * frames_per_buffer * output_channels, 0);
 }

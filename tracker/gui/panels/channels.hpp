@@ -1,5 +1,4 @@
-#ifndef GUI_PANELS_CHANNELS_HPP
-#define GUI_PANELS_CHANNELS_HPP
+#pragma once
 
 #include <algorithm>
 #include <cmath>
@@ -48,5 +47,3 @@ class GUIChannelsPanel : public GUIPanel {
 
     int channel_index = 0;
 };
-
-#endif // GUI_PANELS_CHANNELS_HPP

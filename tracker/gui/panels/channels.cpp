@@ -65,7 +65,7 @@ void GUIChannelsPanel::from() {
             current_channel.pitch = static_cast<float>(channel->pitch) / 0x10000;
         }
     } else {
-        current_channel.transpose = 12 * log2(static_cast<float>(channel->pitch) / DEFAULT_CHANNEL_PITCH);
+        current_channel.transpose = scale_composer.get_edo() * log2(static_cast<float>(channel->pitch) / DEFAULT_CHANNEL_PITCH);
     }
 
     const Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][channel_index];
@@ -101,7 +101,7 @@ void GUIChannelsPanel::to() const {
 
         channel->pitch = static_cast<uint32_t>(std::round(current_channel.pitch * 0x10000));
     } else {
-        channel->pitch = static_cast<uint32_t>(std::round(DEFAULT_CHANNEL_PITCH * pow(2, current_channel.transpose / 12)));
+        channel->pitch = static_cast<uint32_t>(std::round(DEFAULT_CHANNEL_PITCH * pow(2, current_channel.transpose / scale_composer.get_edo())));
     }
 
     Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][channel_index];

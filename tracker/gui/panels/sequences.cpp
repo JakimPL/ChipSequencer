@@ -5,12 +5,62 @@
 #include "../enums.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
+#include "../patterns/selection.hpp"
 #include "sequences.hpp"
 
 GUISequencesPanel::GUISequencesPanel(const bool visible)
     : GUIPanel(visible) {
     from();
     update();
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternTransposeUp,
+        [this]() {
+            selection_action = PatternSelectionAction::TransposeUp;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternTransposeDown,
+        [this]() {
+            selection_action = PatternSelectionAction::TransposeDown;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternTransposeOctaveUp,
+        [this]() {
+            selection_action = PatternSelectionAction::TransposeOctaveUp;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternTransposeOctaveDown,
+        [this]() {
+            selection_action = PatternSelectionAction::TransposeOctaveDown;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSelectAll,
+        [this]() {
+            selection_action = PatternSelectionAction::SelectAll;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSelectNone,
+        [this]() {
+            selection_action = PatternSelectionAction::DeselectAll;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternClear,
+        [this]() {
+            selection_action = PatternSelectionAction::Clear;
+        }
+    );
 }
 
 void GUISequencesPanel::draw() {
@@ -28,6 +78,8 @@ void GUISequencesPanel::draw() {
 
     from();
     draw_sequence();
+    action();
+    transpose_selected_rows();
     check_keyboard_input();
     to();
 
@@ -91,6 +143,89 @@ void GUISequencesPanel::update() {
     gui.update(GUIElement::Orders);
 }
 
+void GUISequencesPanel::action() {
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+        return;
+    }
+
+    switch (selection_action) {
+    case PatternSelectionAction::TransposeUp: {
+        transpose_by = 1;
+        break;
+    }
+    case PatternSelectionAction::TransposeDown: {
+        transpose_by = -1;
+        break;
+    }
+    case PatternSelectionAction::TransposeOctaveUp: {
+        transpose_by = scale_composer.get_edo();
+        break;
+    }
+    case PatternSelectionAction::TransposeOctaveDown: {
+        transpose_by = -scale_composer.get_edo();
+        break;
+    }
+    case PatternSelectionAction::SelectAll:
+    case PatternSelectionAction::SelectChannel: {
+        select_all();
+        break;
+    }
+    case PatternSelectionAction::DeselectAll: {
+        deselect_all();
+        break;
+    }
+    case PatternSelectionAction::Clear: {
+        delete_selection();
+        break;
+    }
+    case PatternSelectionAction::None:
+    default: {
+        break;
+    }
+    }
+
+    selection_action = PatternSelectionAction::None;
+}
+
+void GUISequencesPanel::select_all() {
+    selection.select(0, current_sequence.pattern.steps - 1);
+}
+
+void GUISequencesPanel::deselect_all() {
+    selection.clear();
+}
+
+void GUISequencesPanel::delete_selection() {
+    if (selection.is_active()) {
+        for (size_t row = selection.start; row <= selection.end; row++) {
+            current_sequence.pattern.clear_row(row);
+        }
+    } else {
+        const int row = current_sequence.pattern.current_row;
+        current_sequence.pattern.clear_row(row);
+    }
+}
+
+void GUISequencesPanel::transpose_selected_rows() {
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+        transpose_by = 0;
+    }
+
+    if (transpose_by == 0) {
+        return;
+    }
+
+    if (selection.is_active()) {
+        for (size_t i = selection.start; i <= selection.end; i++) {
+            current_sequence.pattern.transpose(transpose_by, i);
+        }
+    } else {
+        current_sequence.pattern.transpose(transpose_by);
+    }
+
+    transpose_by = 0;
+}
+
 void GUISequencesPanel::draw_sequence_length() {
     const size_t old_size = current_sequence.pattern.steps;
     draw_number_of_items("Steps", "##SequenceLength", current_sequence.pattern.steps, 1, MAX_STEPS);
@@ -120,8 +255,12 @@ void GUISequencesPanel::draw_sequence() {
         return;
     }
 
+    PatternSelection empty_selection;
+    PatternSelection &sequence_selection = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ? selection : empty_selection;
+    PatternRows secondary_pattern_rows;
+
     draw_sequence_length();
-    draw_pattern(current_sequence.pattern);
+    draw_pattern(current_sequence.pattern, sequence_selection, secondary_pattern_rows, false);
 }
 
 void GUISequencesPanel::check_keyboard_input() {

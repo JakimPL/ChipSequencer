@@ -21,7 +21,7 @@ void Pattern::from_sequence(const uint8_t index) {
     notes.clear();
     indices.clear();
     durations.clear();
-    for (size_t i = 0; i < sequence->size / 2; ++i) {
+    for (size_t i = 0; i < sequence->size / sizeof(Note); ++i) {
         uint16_t duration = sequence->notes[i].duration;
         durations.push_back(duration);
         indices.push_back(total_length);
@@ -41,7 +41,7 @@ void Pattern::to_buffer(const size_t sequence_index) const {
     }
 
     const Sequence *sequence = sequences[sequence_index];
-    const size_t sequence_length = sequence->size / 2;
+    const size_t sequence_length = sequence->size / sizeof(Note);
     for (size_t i = 0; i < sequence_length; ++i) {
         const uint8_t pitch = notes[i];
         if (pitch == NOTE_OFF) {
@@ -95,6 +95,18 @@ int Pattern::calculate_playing_row(size_t channel_index) {
     }
 }
 
+void Pattern::clear_row(const int row) {
+    if (!is_row_valid(row)) {
+        return;
+    }
+
+    notes[row] = NOTE_REST;
+}
+
+bool Pattern::is_row_valid(const int row) const {
+    return row >= 0 && row < static_cast<int>(notes.size());
+}
+
 void Pattern::jump(const int max_row) {
     const int max = max_row == -1 ? steps : std::min(steps, max_row);
     current_row = std::min(current_row + gui.get_jump_step(), max - 1);
@@ -111,32 +123,51 @@ void Pattern::set_note(const int note_index, const int edo, const int max_row) {
     jump(max_row);
 }
 
+void Pattern::transpose(const int value, std::optional<int> row) {
+    if (!row.has_value()) {
+        row = current_row;
+    }
+
+    if (!is_row_valid(row.value())) {
+        return;
+    }
+
+    if (notes[row.value()] == NOTE_REST || notes[row.value()] == NOTE_OFF) {
+        return;
+    }
+
+    notes[row.value()] = std::clamp(notes[row.value()] + value, 0, NOTES - 1);
+}
+
 void Pattern::handle_input(const int min_row, const int max_row) {
-    const bool valid = current_row >= 0 && current_row < notes.size();
-    if (!valid) {
+    if (!is_row_valid(current_row)) {
         return;
     }
 
     const int edo = scale_composer.get_edo();
-    if (edo == DEFAULT_EDO) {
-        for (const auto &m : key_note_12_edo_mapping) {
-            if (ImGui::IsKeyPressed(m.key)) {
-                set_note(m.note_index, edo, max_row);
-                break;
+    if (!ImGui::GetIO().KeyCtrl &&
+        !ImGui::GetIO().KeyShift &&
+        !ImGui::GetIO().KeyAlt) {
+        if (edo == DEFAULT_EDO) {
+            for (const auto &m : key_note_12_edo_mapping) {
+                if (ImGui::IsKeyPressed(m.key)) {
+                    set_note(m.note_index, edo, max_row);
+                    break;
+                }
+            }
+        } else {
+            for (const auto &m : key_note_linear_mapping) {
+                if (ImGui::IsKeyPressed(m.key)) {
+                    set_note(m.note_index, edo, max_row);
+                    break;
+                }
             }
         }
-    } else {
-        for (const auto &m : key_note_linear_mapping) {
-            if (ImGui::IsKeyPressed(m.key)) {
-                set_note(m.note_index, edo, max_row);
-                break;
-            }
-        }
-    }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_Delete)) {
-        notes[current_row] = NOTE_REST;
-        jump(max_row);
+        if (ImGui::IsKeyPressed(ImGuiKey_Delete)) {
+            notes[current_row] = NOTE_REST;
+            jump(max_row);
+        }
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_Apostrophe) || ImGui::IsKeyPressed(ImGuiKey_Equal)) {
@@ -164,5 +195,14 @@ void Pattern::handle_input(const int min_row, const int max_row) {
 
     if (ImGui::IsKeyPressed(ImGuiKey_KeypadSubtract)) {
         steps = std::max(steps, 1);
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_Home)) {
+        current_row = 0;
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_End)) {
+        const int max = max_row == -1 ? steps : std::min(steps, max_row);
+        current_row = max - 1;
     }
 }

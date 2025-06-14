@@ -1,5 +1,4 @@
-#ifndef SONG_BUFFERS_HPP
-#define SONG_BUFFERS_HPP
+#pragma once
 
 #include <array>
 #include <cstdint>
@@ -17,5 +16,3 @@ struct Buffers {
     std::array<std::array<uint8_t, MAX_ORDER_ITEMS>, MAX_ORDERS> orders;
     std::array<std::array<uint8_t, MAX_WAVETABLE_SIZE>, MAX_WAVETABLES> wavetables;
 };
-
-#endif // SONG_BUFFERS_HPP

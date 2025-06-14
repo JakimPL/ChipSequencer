@@ -1,5 +1,4 @@
-#ifndef DRIVER_DRIVER_HPP
-#define DRIVER_DRIVER_HPP
+#pragma once
 
 #include <array>
 #include <string>
@@ -12,5 +11,3 @@ class Driver {
     virtual void terminate() = 0;
     virtual void play() = 0;
 };
-
-#endif // DRIVER_DRIVER_HPP

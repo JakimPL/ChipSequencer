@@ -1,5 +1,4 @@
-#ifndef SONG_VALIDATION_HPP
-#define SONG_VALIDATION_HPP
+#pragma once
 
 enum class ValidationResult {
     OK,
@@ -10,5 +9,3 @@ enum class ValidationResult {
     ChannelMissingEnvelope,
     ChannelMissingOrder,
 };
-
-#endif // SONG_VALIDATION_HPP

@@ -1,5 +1,4 @@
-#ifndef GUI_PANELS_GENERAL_HPP
-#define GUI_PANELS_GENERAL_HPP
+#pragma once
 
 #include <atomic>
 #include <functional>
@@ -55,5 +54,3 @@ class GUIGeneralPanel : public GUIPanel {
     void from() override;
     void to() const override;
 };
-
-#endif // GUI_PANELS_GENERAL_HPP

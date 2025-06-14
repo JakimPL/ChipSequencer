@@ -1,5 +1,4 @@
-#ifndef TUNING_SCALE_HPP
-#define TUNING_SCALE_HPP
+#pragma once
 
 #include <array>
 #include <string>
@@ -24,5 +23,3 @@ class ScaleComposer {
     ptrdiff_t get_ordered_index(const std::string &note_name);
     std::string render(const std::string &name, int offset) const;
 };
-
-#endif // TUNING_SCALE_HPP

@@ -1,5 +1,4 @@
-#ifndef GUI_PANELS_ORDERS_HPP
-#define GUI_PANELS_ORDERS_HPP
+#pragma once
 
 #include <algorithm>
 #include <stdio.h>
@@ -41,5 +40,3 @@ class GUIOrdersPanel : public GUIPanel {
 
     int order_index = 0;
 };
-
-#endif // GUI_PANELS_ORDERS_HPP

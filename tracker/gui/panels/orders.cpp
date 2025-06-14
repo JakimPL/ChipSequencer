@@ -150,7 +150,7 @@ void GUIOrdersPanel::draw_order() {
         const bool is_selected = (selected_sequence == i);
         const std::string order_string = std::to_string(item);
         if (is_selected) {
-            ImGui::PushStyleColor(ImGuiCol_Text, GUI_HIGHLIGHT_COLOR);
+            ImGui::PushStyleColor(ImGuiCol_Text, GUI_ROW_TEXT_CURRENT);
         }
 
         if (ImGui::Selectable("##selectable", is_selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)) {

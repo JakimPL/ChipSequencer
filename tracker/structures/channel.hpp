@@ -1,5 +1,4 @@
-#ifndef STRUCTURES_CHANNEL_HPP
-#define STRUCTURES_CHANNEL_HPP
+#pragma once
 
 #include <cstddef>
 #include <cstdint>
@@ -38,5 +37,3 @@ constexpr size_t CHANNEL_FLAG = offsetof(Channel, flag);
 constexpr size_t CHANNEL_FRACTION = offsetof(Channel, fraction);
 
 static_assert(sizeof(Channel) == SIZE_CHANNEL, "Channel must be of 16 bytes.");
-
-#endif // STRUCTURES_CHANNEL_HPP

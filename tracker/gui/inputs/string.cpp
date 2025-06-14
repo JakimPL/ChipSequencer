@@ -27,25 +27,29 @@ bool StringInputHandler::handle_input(std::vector<std::string> &strings, int &in
         buffer.clear();
     }
 
-    for (const int key : keys) {
-        if (ImGui::IsKeyPressed(static_cast<ImGuiKey>(key))) {
-            char input_character = 0;
-            if (key >= ImGuiKey_A && key <= ImGuiKey_Z) {
-                input_character = 'A' + (key - ImGuiKey_A);
-            } else if (key >= ImGuiKey_0 && key <= ImGuiKey_9) {
-                input_character = '0' + (key - ImGuiKey_0);
-            } else if (key == ImGuiKey_Period) {
-                input_character = '.';
-            } else if (key == ImGuiKey_Comma) {
-                input_character = ',';
-            }
+    if (!ImGui::GetIO().KeyCtrl &&
+        !ImGui::GetIO().KeyShift &&
+        !ImGui::GetIO().KeyAlt) {
+        for (const int key : keys) {
+            if (ImGui::IsKeyPressed(static_cast<ImGuiKey>(key))) {
+                char input_character = 0;
+                if (key >= ImGuiKey_A && key <= ImGuiKey_Z) {
+                    input_character = 'A' + (key - ImGuiKey_A);
+                } else if (key >= ImGuiKey_0 && key <= ImGuiKey_9) {
+                    input_character = '0' + (key - ImGuiKey_0);
+                } else if (key == ImGuiKey_Period) {
+                    input_character = '.';
+                } else if (key == ImGuiKey_Comma) {
+                    input_character = ',';
+                }
 
-            if (buffer.size() >= limit) {
-                buffer.pop_back();
-            }
+                if (buffer.size() >= limit) {
+                    buffer.pop_back();
+                }
 
-            buffer.push_back(input_character);
-            value_inserted = true;
+                buffer.push_back(input_character);
+                value_inserted = true;
+            }
         }
     }
 
@@ -62,6 +66,16 @@ bool StringInputHandler::handle_input(std::vector<std::string> &strings, int &in
 
     if (ImGui::IsKeyPressed(ImGuiKey_DownArrow)) {
         index = std::min(static_cast<int>(strings.size()) - 1, index + 1);
+        buffer = strings[index];
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_Home)) {
+        index = 0;
+        buffer = strings[index];
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_End)) {
+        index = static_cast<int>(strings.size()) - 1;
         buffer = strings[index];
     }
 

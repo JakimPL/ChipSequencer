@@ -1,5 +1,4 @@
-#ifndef MAPS_COMMANDS_HPP
-#define MAPS_COMMANDS_HPP
+#pragma once
 
 #include <array>
 #include <cstdint>
@@ -65,5 +64,3 @@ const std::map<Instruction, char> command_letters = {
     {Instruction::AddDwordValue, 'A'},
     {Instruction::AddFloatValue, 'A'},
 };
-
-#endif // MAPS_COMMANDS_HPP

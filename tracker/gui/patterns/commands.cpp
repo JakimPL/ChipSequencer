@@ -583,6 +583,19 @@ LinkKey CommandsPattern::get_command_key(const CommandChangeValue *command) cons
     return {static_cast<Target>(command->target), command->index, command->offset};
 }
 
+void CommandsPattern::clear_row(const int row) {
+    if (!is_row_valid(row)) {
+        return;
+    }
+
+    commands[row].clear();
+    values[row].clear();
+}
+
+bool CommandsPattern::is_row_valid(const int row) const {
+    return row >= 0 && row < static_cast<int>(commands.size());
+}
+
 void CommandsPattern::handle_input(const int min_row, const int max_row) {
     const bool valid = current_row >= 0 && current_row < commands.size();
     if (!valid) {

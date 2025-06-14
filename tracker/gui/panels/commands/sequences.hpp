@@ -1,9 +1,10 @@
-#ifndef GUI_PANELS_COMMANDS_SEQUENCES_HPP
-#define GUI_PANELS_COMMANDS_SEQUENCES_HPP
+#pragma once
 
 #include "../../constants.hpp"
 #include "../../init.hpp"
+#include "../../utils.hpp"
 #include "../../patterns/commands.hpp"
+#include "../../patterns/selection.hpp"
 #include "../panel.hpp"
 
 class GUICommandsSequencesPanel : public GUIPanel {
@@ -29,8 +30,14 @@ class GUICommandsSequencesPanel : public GUIPanel {
     } edit_dialog_box;
 
     bool dialog_box_open = false;
+    PatternSelection selection;
+    PatternSelectionAction selection_action = PatternSelectionAction::None;
 
     bool is_index_valid() const;
+    void action();
+    void select_all();
+    void deselect_all();
+    void delete_selection();
     void draw_sequence();
     void draw_sequence_length();
     void open_edit_dialog_box(const int item);
@@ -56,5 +63,3 @@ class GUICommandsSequencesPanel : public GUIPanel {
 
     int sequence_index = 0;
 };
-
-#endif // GUI_PANELS_COMMANDS_SEQUENCES_HPP

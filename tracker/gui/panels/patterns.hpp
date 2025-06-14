@@ -1,12 +1,13 @@
-#ifndef GUI_PANELS_PATTERNS_HPP
-#define GUI_PANELS_PATTERNS_HPP
+#pragma once
 
 #include <map>
 #include <vector>
 
 #include "../constants.hpp"
+#include "../utils.hpp"
 #include "../patterns/commands.hpp"
 #include "../patterns/pattern.hpp"
+#include "../patterns/selection.hpp"
 #include "panel.hpp"
 
 struct VariantChannelIndex {
@@ -30,15 +31,33 @@ class GUIPatternsPanel : public GUIPanel {
 
     int page = 0;
     VariantChannelIndex current_channel = {false, 0};
+    PatternSelection selection;
+    PatternSelectionAction selection_action = PatternSelectionAction::None;
+    PatternRows pattern_rows;
+    PatternRows secondary_pattern_rows;
+    PatternRowsBySequenceRow pattern_rows_by_sequence_row;
     size_t current_index = -1;
     int current_row = -1;
+    int transpose_by = 0;
 
     void draw_pages();
     void draw_channels();
     void draw_channel(size_t channel_index);
     void draw_commands_channel(size_t channel_index);
+
+    void action();
+    void select_channel();
+    void select_all();
+    void deselect_all();
+    void delete_selection();
+    void transpose_selected_rows();
+    void prepare_secondary_selection();
+    void mark_selected_rows(const bool command, const size_t channel_index, const size_t pattern_id, const int row);
+    void mark_selected_pattern_rows(const size_t channel_index, const size_t pattern_id, const int row);
+    void mark_selected_commands_pattern_rows(const size_t channel_index, const size_t pattern_id, const int row);
     std::pair<Pattern *, uint16_t> find_pattern_by_current_row() const;
     std::pair<CommandsPattern *, uint16_t> find_commands_pattern_by_current_row() const;
+
     void handle_pattern_input(Pattern *pattern, uint16_t index);
     void handle_commands_pattern_input(CommandsPattern *pattern, uint16_t index);
     int get_pages() const;
@@ -65,5 +84,3 @@ class GUIPatternsPanel : public GUIPanel {
 
     void deselect_all_rows();
 };
-
-#endif // GUI_PANELS_PATTERNS_HPP

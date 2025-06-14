@@ -1,5 +1,4 @@
-#ifndef GUI_PANELS_MENU_HPP
-#define GUI_PANELS_MENU_HPP
+#pragma once
 
 #include <functional>
 #include <optional>
@@ -40,5 +39,3 @@ class GUIMenu : public GUIPanel {
     void from() override {};
     void to() const override {};
 };
-
-#endif // GUI_PANELS_MENU_HPP

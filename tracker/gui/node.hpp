@@ -1,5 +1,4 @@
-#ifndef GUI_NODE_HPP
-#define GUI_NODE_HPP
+#pragma once
 
 #include <functional>
 #include <optional>
@@ -44,5 +43,3 @@ struct RoutingNode {
     int lines = 1;
     bool bypass = false;
 };
-
-#endif // GUI_NODE_HPP

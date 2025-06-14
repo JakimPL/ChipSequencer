@@ -1,5 +1,4 @@
-#ifndef SONG_LINKS_TYPE_HPP
-#define SONG_LINKS_TYPE_HPP
+#pragma once
 
 #include <cstdint>
 
@@ -9,5 +8,3 @@ enum class ItemType : uint8_t {
     COMMANDS,
     COUNT,
 };
-
-#endif // SONG_LINKS_TYPE_HPP

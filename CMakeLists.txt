@@ -107,12 +107,13 @@ add_executable(ChipSequencer
     tracker/gui/panels/oscillators.cpp
     tracker/gui/panels/panel.cpp
     tracker/gui/panels/patterns.cpp
-    tracker/gui/panels/routing.cpp
+    tracker/gui/panels/routings.cpp
     tracker/gui/panels/sequences.cpp
     tracker/gui/panels/summary.cpp
     tracker/gui/panels/wavetables.cpp
     tracker/gui/patterns/commands.cpp
     tracker/gui/patterns/pattern.cpp
+    tracker/gui/patterns/selection.cpp
     tracker/gui/utils.cpp
     tracker/main.cpp
     tracker/maps/routing.cpp

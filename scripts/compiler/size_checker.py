@@ -102,8 +102,7 @@ class SizeChecker:
     @staticmethod
     def write_hpp_file(module_sizes: dict, component_sizes: dict, output_path: str) -> None:
         with open(output_path, "w") as file:
-            file.write("#ifndef MAPS_SIZES_HPP\n")
-            file.write("#define MAPS_SIZES_HPP\n\n")
+            file.write("#pragma once\n\n")
             file.write("#include <string>\n")
             file.write("#include <unordered_map>\n\n")
 

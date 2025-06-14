@@ -1,5 +1,4 @@
-#ifndef STRUCTURES_ORDER_HPP
-#define STRUCTURES_ORDER_HPP
+#pragma once
 
 #include <array>
 #include <cstddef>
@@ -21,5 +20,3 @@ typedef std::vector<Order *> Orders;
 
 constexpr size_t ORDER_LENGTH = offsetof(Order, order_length);
 constexpr size_t ORDER_SEQUENCES = offsetof(Order, sequences);
-
-#endif // STRUCTURES_ORDER_HPP

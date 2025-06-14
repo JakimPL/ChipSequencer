@@ -1,5 +1,4 @@
-#ifndef GUI_PANELS_ROUTING_HPP
-#define GUI_PANELS_ROUTING_HPP
+#pragma once
 
 #include <cstdint>
 #include <map>
@@ -14,7 +13,7 @@
 
 typedef std::array<uint8_t, MAX_OUTPUT_CHANNELS> Splitter;
 
-class GUIRoutingPanel : public GUIPanel {
+class GUIRoutingsPanel : public GUIPanel {
   private:
     std::vector<RoutingNode> nodes;
     std::map<InputKey, OutputKey> nodes_links;
@@ -56,7 +55,7 @@ class GUIRoutingPanel : public GUIPanel {
     void check_keyboard_input() override;
 
   public:
-    GUIRoutingPanel(const bool visible = true);
+    GUIRoutingsPanel(const bool visible = true);
     void update() override;
     void set_index(const int index) override {};
 
@@ -67,5 +66,3 @@ class GUIRoutingPanel : public GUIPanel {
     std::vector<std::pair<NodeIdentifier, ImVec2>> get_nodes_positions() const;
     void set_nodes_positions(const std::vector<std::pair<NodeIdentifier, ImVec2>> &nodes_positions);
 };
-
-#endif // GUI_PANELS_ROUTING_HPP

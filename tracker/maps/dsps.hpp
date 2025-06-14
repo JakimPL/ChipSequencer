@@ -1,5 +1,4 @@
-#ifndef MAPS_DSPS_HPP
-#define MAPS_DSPS_HPP
+#pragma once
 
 #include <array>
 #include <cstdint>
@@ -19,5 +18,3 @@ constexpr auto dsps_sizes = make_dsps_sizes(
     SIZE_DSP_FILTER,
     SIZE_DSP_DELAY
 );
-
-#endif // MAPS_DSPS_HPP

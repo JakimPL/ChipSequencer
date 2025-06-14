@@ -1,5 +1,4 @@
-#ifndef TUNING_FREQUENCIES_HPP
-#define TUNING_FREQUENCIES_HPP
+#pragma once
 
 #include "../constants.hpp"
 #include "scale.hpp"
@@ -47,5 +46,3 @@ class FrequencyTable {
     void calculate_frequency_table();
     void assign_note_names();
 };
-
-#endif // TUNING_FREQUENCIES_HPP

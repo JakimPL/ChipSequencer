@@ -1,7 +1,7 @@
-#ifndef GUI_PATTERNS_PATTERN_HPP
-#define GUI_PATTERNS_PATTERN_HPP
+#pragma once
 
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "../../structures/sequence.hpp"
@@ -22,9 +22,10 @@ struct Pattern {
     void to_buffer(const size_t sequence_index) const;
     int calculate_playing_row(size_t channel_index);
 
+    void clear_row(const int row);
+    bool is_row_valid(const int row) const;
     void jump(const int max_row = -1);
     void set_note(const int note_index, const int edo, const int max_row = -1);
+    void transpose(const int value, std::optional<int> row = std::nullopt);
     void handle_input(const int min_row = 0, const int max_row = -1);
 };
-
-#endif // GUI_PATTERNS_PATTERN_HPP
