@@ -231,7 +231,7 @@ void GUIDSPsPanel::draw_dsp() {
 }
 
 void GUIDSPsPanel::draw_effect() {
-    ImGui::Checkbox("Bypass", &current_dsp.output_type.bypass);
+    draw_checkbox(this, "Bypass", current_dsp.output_type.bypass, {Target::SPECIAL, dsp_index, SPECIAL_DSP_BYPASS});
     ImGui::Separator();
 
     switch (static_cast<Effect>(current_dsp.effect_index)) {

@@ -92,6 +92,13 @@ const std::map<Target, RoutingItems> routing_variables = {
             {"Shift", SPECIAL_SHIFT, TargetVariableType::Byte, ROUTING_HIDDEN},
             {"Channel index", SPECIAL_CHANNEL_INDEX, TargetVariableType::Byte, ROUTING_HIDDEN},
             {"DSP index", SPECIAL_DSP_INDEX, TargetVariableType::Byte, ROUTING_HIDDEN},
+            {"Hide channel", SPECIAL_CHANNEL_HIDE, TargetVariableType::Byte, ROUTING_HIDDEN},
+            {"Bypass channel", SPECIAL_CHANNEL_BYPASS, TargetVariableType::Byte, ROUTING_HIDDEN},
+            {"Constant pitch", SPECIAL_CHANNEL_CONSTANT_PITCH, TargetVariableType::Byte, ROUTING_HIDDEN},
+            {"Synchronize", SPECIAL_CHANNEL_SYNCHRONIZE, TargetVariableType::Byte, ROUTING_HIDDEN},
+            {"Bypass DSP", SPECIAL_DSP_BYPASS, TargetVariableType::Byte, ROUTING_HIDDEN},
+            {"Bypass command channel", SPECIAL_COMMAND_CHANNEL_BYPASS, TargetVariableType::Byte, ROUTING_HIDDEN},
+            {"Hide command channel", SPECIAL_COMMAND_CHANNEL_HIDE, TargetVariableType::Byte, ROUTING_HIDDEN},
         }),
     },
 };

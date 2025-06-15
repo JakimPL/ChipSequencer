@@ -105,8 +105,8 @@ void GUICommandsChannelsPanel::update() {
 }
 
 void GUICommandsChannelsPanel::draw_channel() {
-    ImGui::Checkbox("Bypass", &current_channel.bypass);
-    ImGui::Checkbox("Hide in pattern view", &current_channel.hide);
+    draw_checkbox(this, "Bypass", current_channel.bypass, {Target::SPECIAL, channel_index, SPECIAL_COMMAND_CHANNEL_BYPASS});
+    draw_checkbox(this, "Hide in pattern view", current_channel.hide, {Target::SPECIAL, channel_index, SPECIAL_COMMAND_CHANNEL_HIDE});
     ImGui::Separator();
 
     ImGui::Text("Order:");

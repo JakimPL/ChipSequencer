@@ -217,9 +217,9 @@ void GUIChannelsPanel::draw_channel() {
 
     ImGui::Separator();
     ImGui::Text("Pitch/transpose:");
-    ImGui::Checkbox("Constant pitch", &current_channel.constant_pitch);
+    draw_checkbox(this, "Constant pitch", current_channel.constant_pitch, {Target::SPECIAL, channel_index, SPECIAL_CHANNEL_CONSTANT_PITCH});
     ImGui::BeginDisabled(!current_channel.constant_pitch);
-    ImGui::Checkbox("Synchronize", &current_channel.sync);
+    draw_checkbox(this, "Synchronize", current_channel.sync, {Target::SPECIAL, channel_index, SPECIAL_CHANNEL_SYNCHRONIZE});
     ImGui::EndDisabled();
 
     const LinkKey key = {Target::CHANNEL, channel_index, CHANNEL_PITCH};
