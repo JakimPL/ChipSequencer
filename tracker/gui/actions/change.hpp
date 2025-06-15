@@ -3,8 +3,8 @@
 template <typename T>
 struct ValueChange {
     T &parameter;
-    const T old_value;
-    const T new_value;
+    T old_value;
+    T new_value;
 
     void execute() {
         parameter = new_value;

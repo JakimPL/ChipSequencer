@@ -3,6 +3,7 @@
 #include <functional>
 #include <optional>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -18,6 +19,9 @@ struct GUIState {
     bool value_changed;
     bool right_clicked;
 };
+
+extern std::unordered_map<LinkKey, bool> slider_states;
+extern std::unordered_map<LinkKey, float> slider_float_values;
 
 int clamp_index(int index, const int size);
 void draw_number_of_items(const std::string &label, const char *label_id, int &value, int min, int max, float label_length = 50.0f);
@@ -92,6 +96,7 @@ template <typename T>
 void add_action(
     GUIPanel *owner,
     const std::string &label,
+    const LinkKey key,
     T &reference,
     const T old_value
 );
@@ -99,6 +104,7 @@ void add_action(
 void add_action_float(
     GUIPanel *owner,
     const std::string &label,
+    const LinkKey key,
     float &reference,
     const float old_value,
     const char *format = "%.4f"

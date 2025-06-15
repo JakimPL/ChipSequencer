@@ -1,6 +1,15 @@
 #include "history.hpp"
 
 void HistoryManager::add_action(std::unique_ptr<Action> action) {
+    if (current_index > 0) {
+        Action *last_action = actions[current_index - 1].get();
+
+        if (last_action->can_merge(action.get())) {
+            last_action->merge(action.get());
+            return;
+        }
+    }
+
     if (current_index < actions.size()) {
         actions.erase(actions.begin() + current_index, actions.end());
     }
@@ -54,7 +63,7 @@ size_t HistoryManager::get_history_size() const {
 
 std::string HistoryManager::get_action_name(const size_t index) const {
     if (index < actions.size()) {
-        return actions[index]->name;
+        return actions[index]->get_name();
     }
     return "Unknown";
 }

@@ -96,7 +96,7 @@ void draw_float_slider(GUIPanel *owner, const char *label, float &reference, con
         }
 
         reference = std::clamp(reference, min, max);
-        add_action_float(owner, label, reference, old_value, format);
+        add_action_float(owner, label, key, reference, old_value, format);
     }
 
     draw_link_tooltip(key);
@@ -104,7 +104,7 @@ void draw_float_slider(GUIPanel *owner, const char *label, float &reference, con
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
     if (ImGui::InputFloat(input_id.c_str(), &reference, 0.0f, 0.0f, format)) {
         reference = std::clamp(reference, min, max);
-        add_action_float(owner, label, reference, old_value, format);
+        add_action_float(owner, label, key, reference, old_value, format);
     }
 
     draw_link_tooltip(key);
@@ -916,15 +916,14 @@ template <typename T>
 void add_action(
     GUIPanel *owner,
     const std::string &label,
+    const LinkKey key,
     T &reference,
     const T old_value
 ) {
     if (old_value != reference) {
-        std::ostringstream action_name;
-        action_name << "Change " << label << " from " << old_value << " to " << reference;
         const auto value_change = ValueChange<T>(reference, old_value);
         history_manager.add_action(
-            std::make_unique<ChangeValueAction<T>>(action_name.str(), owner, value_change)
+            std::make_unique<ChangeValueAction<T>>(label, owner, key, value_change)
         );
     }
 }
@@ -932,6 +931,7 @@ void add_action(
 void add_action_float(
     GUIPanel *owner,
     const std::string &label,
+    const LinkKey key,
     float &reference,
     const float old_value,
     const char *format
@@ -940,11 +940,9 @@ void add_action_float(
     std::string new_value_string = convert_double_to_string(reference, format);
 
     if (old_value != reference && old_value_string != new_value_string) {
-        std::ostringstream action_name;
-        action_name << "Change " << label << " from " << old_value_string << " to " << new_value_string;
         const auto value_change = ValueChange<float>(reference, old_value);
         history_manager.add_action(
-            std::make_unique<ChangeValueAction<float>>(action_name.str(), owner, value_change)
+            std::make_unique<ChangeValueAction<float>>(label, owner, key, value_change)
         );
     }
 }
