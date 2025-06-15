@@ -22,6 +22,7 @@ class GUIPanel {
     void add_action(Action *action, const bool undo);
 
   protected:
+    bool save = false;
     std::vector<std::pair<Action *, bool>> pending_actions;
 
     void actions();
@@ -38,5 +39,5 @@ class GUIPanel {
     virtual void draw() {};
     virtual void check_keyboard_input() {};
     virtual void shortcut_actions() {};
-    virtual void post_actions() {};
+    virtual void post_actions() { save = false; };
 };

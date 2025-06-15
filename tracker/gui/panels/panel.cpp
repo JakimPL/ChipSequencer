@@ -103,6 +103,11 @@ void GUIPanel::add_action(Action *action, const bool undo) {
 }
 
 void GUIPanel::actions() {
+    if (pending_actions.empty()) {
+        return;
+    }
+
+    save = true;
     for (const auto &[action, undo] : pending_actions) {
         if (undo) {
             action->undo();

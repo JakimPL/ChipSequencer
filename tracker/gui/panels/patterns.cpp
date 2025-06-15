@@ -290,7 +290,7 @@ void GUIPatternsPanel::from_commands_sequences() {
 }
 
 void GUIPatternsPanel::to() const {
-    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+    if (!save && !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
 

@@ -50,7 +50,9 @@ void GUIRoutingsPanel::from() {
 }
 
 void GUIRoutingsPanel::to() const {
-    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || gui.is_playing()) {
+    if (!save &&
+        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
+         gui.is_playing())) {
         return;
     }
 

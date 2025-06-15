@@ -86,11 +86,10 @@ void GUICommandsSequencesPanel::from() {
 
 void GUICommandsSequencesPanel::to() const {
     const bool focus = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
-    if (
-        (!focus && !dialog_box_open) ||
-        !is_index_valid() ||
-        gui.is_playing()
-    ) {
+    if (!save &&
+        ((!focus && !dialog_box_open) ||
+         !is_index_valid() ||
+         gui.is_playing())) {
         return;
     }
 

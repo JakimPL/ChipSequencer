@@ -79,7 +79,6 @@ void draw_float_slider(GUIPanel *owner, const char *label, float &reference, con
 
     const bool non_linear_scale = scale != GUIScale::Linear;
     if (ImGui::SliderFloat(slider_id.c_str(), &display_value, non_linear_scale ? 0.0f : min, non_linear_scale ? 1.0f : max, label)) {
-        add_action_float(owner, label, reference, old_value, format);
         switch (scale) {
         case GUIScale::Logarithmic: {
             reference = min * std::pow(max / min, display_value);
@@ -95,20 +94,22 @@ void draw_float_slider(GUIPanel *owner, const char *label, float &reference, con
             break;
         }
         }
+
+        reference = std::clamp(reference, min, max);
+        add_action_float(owner, label, reference, old_value, format);
     }
 
     draw_link_tooltip(key);
     ImGui::SameLine();
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
     if (ImGui::InputFloat(input_id.c_str(), &reference, 0.0f, 0.0f, format)) {
+        reference = std::clamp(reference, min, max);
         add_action_float(owner, label, reference, old_value, format);
     }
 
     draw_link_tooltip(key);
     ImGui::PopID();
     ImGui::EndDisabled();
-
-    reference = std::clamp(reference, min, max);
 }
 
 void draw_knob(const char *label, float &reference, const LinkKey key, float min, float max) {

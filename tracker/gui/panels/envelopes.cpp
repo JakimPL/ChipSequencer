@@ -103,10 +103,9 @@ void GUIEnvelopesPanel::gather_envelope_positions() {
 }
 
 void GUIEnvelopesPanel::to() const {
-    if (pending_actions.empty() &&
+    if (!save &&
         (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
-         !is_index_valid()
-        )) {
+         !is_index_valid())) {
         return;
     }
 
