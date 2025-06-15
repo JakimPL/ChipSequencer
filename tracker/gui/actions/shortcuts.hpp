@@ -73,7 +73,7 @@ class ShortcutManager {
         {ShortcutAction::SongPlayPause, {false, false, false, ImGuiKey_Space}},
         {ShortcutAction::SongStop, {false, false, false, ImGuiKey_Escape}},
         {ShortcutAction::EditUndo, {true, false, false, ImGuiKey_Z}},
-        {ShortcutAction::EditRedo, {true, false, true, ImGuiKey_Z}},
+        {ShortcutAction::EditRedo, {true, true, false, ImGuiKey_Z}},
         {ShortcutAction::EditCut, {true, false, false, ImGuiKey_X}},
         {ShortcutAction::EditCopy, {true, false, false, ImGuiKey_C}},
         {ShortcutAction::EditPaste, {true, false, false, ImGuiKey_V}},

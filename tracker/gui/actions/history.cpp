@@ -20,7 +20,7 @@ void HistoryManager::undo() {
     }
 
     current_index--;
-    actions[current_index]->undo();
+    actions[current_index]->notify_panel(true);
 }
 
 void HistoryManager::redo() {
@@ -28,7 +28,7 @@ void HistoryManager::redo() {
         return;
     }
 
-    actions[current_index]->redo();
+    actions[current_index]->notify_panel(false);
     current_index++;
 }
 

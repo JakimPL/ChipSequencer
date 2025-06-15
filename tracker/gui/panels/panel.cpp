@@ -1,4 +1,6 @@
+
 #include "../names.hpp"
+#include "../actions/action.hpp"
 #include "panel.hpp"
 
 GUIPanel::GUIPanel(const bool visible)
@@ -91,5 +93,21 @@ void GUIPanel::draw_add_or_remove(
 void GUIPanel::frame() {
     if (visible) {
         draw();
+    }
+}
+
+void GUIPanel::add_action(Action *value_change, const bool undo) {
+    if (value_change != nullptr) {
+        pending_actions.emplace_back(value_change, undo);
+    }
+}
+
+void GUIPanel::actions() {
+    for (const auto &[value_change, undo] : pending_actions) {
+        if (undo) {
+            value_change->undo();
+        } else {
+            value_change->redo();
+        }
     }
 }

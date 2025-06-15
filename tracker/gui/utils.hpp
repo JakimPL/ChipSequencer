@@ -24,7 +24,7 @@ void draw_number_of_items(const std::string &label, const char *label_id, int &v
 
 void draw_checkbox(const char *label, bool &reference, const LinkKey key);
 void draw_int_slider(const char *label, int &reference, const LinkKey key, int min = 0, int max = 1);
-void draw_float_slider(const char *label, float &reference, const LinkKey = LinkKey(), float min = 0.0f, float max = 1.0f, const GUIScale scale = GUIScale::Linear, const char *format = "%.4f");
+void draw_float_slider(GUIPanel *owner, const char *label, float &reference, const LinkKey = LinkKey(), float min = 0.0f, float max = 1.0f, const GUIScale scale = GUIScale::Linear, const char *format = "%.4f");
 void draw_knob(const char *label, float &reference, const LinkKey key, float min = 0.0f, float max = 1.0f);
 void draw_link_tooltip(const LinkKey &key);
 
@@ -36,15 +36,15 @@ void draw_confirmation_popup(
     std::function<void()> save_action = nullptr
 );
 
-void draw_output_output_splitter(OutputType &output_type, const LinkKey key);
-void draw_output_dsp_splitter(OutputType &output_type, const int dsp_index, const LinkKey key);
+void draw_output_output_splitter(GUIPanel *owner, OutputType &output_type, const LinkKey key);
+void draw_output_dsp_splitter(GUIPanel *owner, OutputType &output_type, const int dsp_index, const LinkKey key);
 void draw_output_direct_output(OutputType &output_type, const LinkKey key);
 void draw_output_direct_dsp(OutputType &output_type, const int dsp_index, const LinkKey key);
 bool draw_output_parameter(OutputType &output_type, const LinkKey key);
 void draw_output_parameter_generic(OutputType &output_type, const std::vector<std::string> &names, const std::string label);
 void draw_output_parameter_oscillator(OutputType &output_type);
 void draw_output_parameter_dsp(OutputType &output_type);
-bool draw_output(OutputType &output_type, const LinkKey key);
+bool draw_output(GUIPanel *owner, OutputType &output_type, const LinkKey key);
 
 void show_dependency_tooltip(std::vector<std::string> &dependencies);
 void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t index);

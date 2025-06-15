@@ -9,6 +9,7 @@
 #include "constants.hpp"
 #include "names.hpp"
 #include "utils.hpp"
+#include "actions/action.hpp"
 #include "patterns/selection.hpp"
 
 int clamp_index(int index, const int size) {
@@ -51,9 +52,10 @@ void draw_int_slider(const char *label, int &reference, const LinkKey key, int m
     reference = std::clamp(reference, min, max);
 }
 
-void draw_float_slider(const char *label, float &reference, const LinkKey key, float min, float max, const GUIScale scale, const char *format) {
+void draw_float_slider(GUIPanel *owner, const char *label, float &reference, const LinkKey key, float min, float max, const GUIScale scale, const char *format) {
     ImGui::BeginDisabled(link_manager.is_linked(key));
 
+    const float old_value = reference;
     const std::string slider_id = std::string("##") + label + "Slider";
     const std::string input_id = std::string("##") + label + "Input";
     ImGui::PushID(label);
@@ -97,7 +99,17 @@ void draw_float_slider(const char *label, float &reference, const LinkKey key, f
     draw_link_tooltip(key);
     ImGui::SameLine();
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-    ImGui::InputFloat(input_id.c_str(), &reference, 0.0f, 0.0f, format);
+    if (ImGui::InputFloat(input_id.c_str(), &reference, 0.0f, 0.0f, format)) {
+        if (old_value != reference) {
+            std::ostringstream action_name;
+            action_name << "Change " << label << " from " << old_value << " to " << reference;
+            const auto value_change = ValueChange<float>(reference, old_value);
+            history_manager.add_action(
+                std::make_unique<ChangeValueAction<float>>(action_name.str(), owner, value_change)
+            );
+        }
+    }
+
     draw_link_tooltip(key);
     ImGui::PopID();
     ImGui::EndDisabled();
@@ -462,17 +474,17 @@ std::pair<size_t, bool> draw_commands_pattern(
     return {index + pattern.commands.size(), current};
 }
 
-void draw_output_output_splitter(OutputType &output_type, const LinkKey key) {
+void draw_output_output_splitter(GUIPanel *owner, OutputType &output_type, const LinkKey key) {
     const size_t output_channels = song.get_output_channels();
     ImGui::Text("Splitter:");
     for (size_t i = 0; i < output_channels; ++i) {
         const LinkKey splitter_key = {key.target, key.index, static_cast<uint16_t>(key.offset + i)};
         const std::string label = "Channel " + std::to_string(i);
-        draw_float_slider(label.c_str(), output_type.splitter[i], splitter_key, 0.0f, 1.0f);
+        draw_float_slider(owner, label.c_str(), output_type.splitter[i], splitter_key, 0.0f, 1.0f);
     }
 }
 
-void draw_output_dsp_splitter(OutputType &output_type, const int dsp_index, const LinkKey key) {
+void draw_output_dsp_splitter(GUIPanel *owner, OutputType &output_type, const int dsp_index, const LinkKey key) {
     if (dsps.empty() || dsp_index >= static_cast<int>(dsps.size()) - 1) {
         ImGui::Text("No DSP available.");
         return;
@@ -487,7 +499,7 @@ void draw_output_dsp_splitter(OutputType &output_type, const int dsp_index, cons
         const size_t j = i - output_type.dsp_channel;
         const std::string label = dsp_names[i];
         const LinkKey splitter_key = {key.target, key.index, static_cast<uint16_t>(key.offset + j)};
-        draw_float_slider(label.c_str(), output_type.splitter[j], splitter_key, 0.0f, 1.0f);
+        draw_float_slider(owner, label.c_str(), output_type.splitter[j], splitter_key, 0.0f, 1.0f);
     }
 }
 
@@ -635,7 +647,7 @@ void draw_output_parameter_dsp(OutputType &output_type) {
     output_type.variable_type = static_cast<int>(routing.types[output_type.routing_index]);
 }
 
-bool draw_output(OutputType &output_type, const LinkKey key) {
+bool draw_output(GUIPanel *owner, OutputType &output_type, const LinkKey key) {
     push_secondary_style();
     ImGui::Separator();
     ImGui::Text("Output:");
@@ -644,7 +656,7 @@ bool draw_output(OutputType &output_type, const LinkKey key) {
 
     switch (static_cast<OutputTarget>(output_type.target)) {
     case OutputTarget::OutputSplitter: {
-        draw_output_output_splitter(output_type, key);
+        draw_output_output_splitter(owner, output_type, key);
 
         if (value_changed) {
             output_type.operation = static_cast<int>(OutputOperation::Add);
@@ -653,7 +665,7 @@ bool draw_output(OutputType &output_type, const LinkKey key) {
         break;
     }
     case OutputTarget::DSPSplitter: {
-        draw_output_dsp_splitter(output_type, dsp_index, key);
+        draw_output_dsp_splitter(owner, output_type, dsp_index, key);
 
         if (value_changed) {
             output_type.operation = static_cast<int>(OutputOperation::Add);

@@ -228,13 +228,13 @@ void GUIChannelsPanel::draw_channel() {
             current_channel.sync_numerator = std::clamp(current_channel.sync_numerator, 1, 16);
             current_channel.sync_denominator = std::clamp(current_channel.sync_denominator, 1, 16);
         } else {
-            draw_float_slider("Pitch (Hz)", current_channel.pitch, key, GUI_MIN_PITCH, GUI_MAX_PITCH, GUIScale::Logarithmic);
+            draw_float_slider(this, "Pitch (Hz)", current_channel.pitch, key, GUI_MIN_PITCH, GUI_MAX_PITCH, GUIScale::Logarithmic);
         }
     } else {
-        draw_float_slider("Transpose", current_channel.transpose, key, GUI_MIN_TRANSPOSE, GUI_MAX_TRANSPOSE);
+        draw_float_slider(this, "Transpose", current_channel.transpose, key, GUI_MIN_TRANSPOSE, GUI_MAX_TRANSPOSE);
     }
 
-    if (draw_output(current_channel.output_type, {Target::CHANNEL, channel_index, CHANNEL_SPLITTER})) {
+    if (draw_output(this, current_channel.output_type, {Target::CHANNEL, channel_index, CHANNEL_SPLITTER})) {
         update_channel_name(channel_index, current_channel.output_type.target);
     }
 }

@@ -226,7 +226,7 @@ void GUIOscillatorsPanel::draw_oscillator() {
     case Generator::Square: {
         ImGui::Text("Duty Cycle");
         ImGui::NextColumn();
-        draw_float_slider("##DutyCycle", current_oscillator.square_duty_cycle, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_SQUARE_DUTY_CYCLE}, 0.0f, 1.0f, GUIScale::Linear, "%.6f");
+        draw_float_slider(this, "##DutyCycle", current_oscillator.square_duty_cycle, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_SQUARE_DUTY_CYCLE}, 0.0f, 1.0f, GUIScale::Linear, "%.6f");
         break;
     }
     case Generator::Saw: {

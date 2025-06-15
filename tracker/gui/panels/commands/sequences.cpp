@@ -343,7 +343,7 @@ void GUICommandsSequencesPanel::draw_output_section() {
         break;
     }
     case TargetVariableType::Float: {
-        draw_float_slider("Value", edit_dialog_box.value_float, {}, 0.0f, 1.0f);
+        draw_float_slider(this, "Value", edit_dialog_box.value_float, {}, 0.0f, 1.0f);
         break;
     }
     case TargetVariableType::Count:
@@ -382,11 +382,11 @@ void GUICommandsSequencesPanel::draw_edit_dialog_box() {
         case Instruction::PortamentoDown: {
             ImGui::Text("Channel:");
             prepare_combo(channel_names, "##EditCommandChannel", edit_dialog_box.portamento_channel);
-            draw_float_slider("Semitones", edit_dialog_box.portamento_value, {}, 0.0f, MAX_PORTAMENTO);
+            draw_float_slider(this, "Semitones", edit_dialog_box.portamento_value, {}, 0.0f, MAX_PORTAMENTO);
             break;
         }
         case Instruction::SetMasterGainer: {
-            draw_float_slider("Gainer", edit_dialog_box.gainer, {}, 0.0f, 1.0f);
+            draw_float_slider(this, "Gainer", edit_dialog_box.gainer, {}, 0.0f, 1.0f);
             break;
         }
         case Instruction::SetBPM: {

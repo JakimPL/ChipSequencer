@@ -2,39 +2,38 @@
 
 #include <string>
 
-class Action {
-  public:
+#include "change.hpp"
+
+class GUIPanel;
+
+struct Action {
+    Action(const std::string &nm, GUIPanel *own)
+        : name(nm), owner(own) {}
+
     virtual ~Action() = default;
     virtual void execute() = 0;
     virtual void undo() = 0;
-    virtual void redo() {
-        execute();
-    };
+    virtual void redo();
+    virtual void notify_panel(const bool undo);
 
-    virtual std::string get_name() const = 0;
+    const std::string name;
+    GUIPanel *owner;
 };
 
 template <typename T>
 class ChangeValueAction : public Action {
   private:
-    T &parameter;
-    const T old_value;
-    const T new_value;
-    const std::string action_name;
+    ValueChange<T> value_change;
 
   public:
-    ChangeValueAction(T &param, T old_val, T new_val, const std::string &name)
-        : parameter(param), old_value(old_val), new_value(new_val), action_name(name) {}
+    ChangeValueAction(const std::string &nm, GUIPanel *own, const ValueChange<T> &val_ch)
+        : Action(nm, own), value_change(val_ch) {}
 
     void execute() override {
-        parameter = new_value;
+        value_change.execute();
     }
 
     void undo() override {
-        parameter = old_value;
-    }
-
-    std::string get_name() const override {
-        return action_name;
+        value_change.undo();
     }
 };
