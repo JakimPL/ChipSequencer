@@ -52,25 +52,23 @@ size_t HistoryManager::get_history_size() const {
     return actions.size();
 }
 
-std::string HistoryManager::get_action_name(size_t index) const {
+std::string HistoryManager::get_action_name(const size_t index) const {
     if (index < actions.size()) {
         return actions[index]->name;
     }
     return "Unknown";
 }
 
-void HistoryManager::go_to_index(size_t target_index) {
-    if (target_index > actions.size()) {
-        target_index = actions.size();
+void HistoryManager::go_to_index(size_t index) {
+    if (index > actions.size()) {
+        index = actions.size();
     }
 
-    while (current_index < target_index) {
-        actions[current_index]->notify_panel(false);
-        current_index++;
+    while (current_index < index) {
+        redo();
     }
 
-    while (current_index > target_index) {
-        current_index--;
-        actions[current_index]->notify_panel(true);
+    while (current_index > index) {
+        undo();
     }
 }

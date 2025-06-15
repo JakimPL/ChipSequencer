@@ -96,18 +96,19 @@ void GUIPanel::frame() {
     }
 }
 
-void GUIPanel::add_action(Action *value_change, const bool undo) {
-    if (value_change != nullptr) {
-        pending_actions.emplace_back(value_change, undo);
+void GUIPanel::add_action(Action *action, const bool undo) {
+    if (action != nullptr) {
+        pending_actions.emplace_back(action, undo);
     }
 }
 
 void GUIPanel::actions() {
-    for (const auto &[value_change, undo] : pending_actions) {
+    for (const auto &[action, undo] : pending_actions) {
         if (undo) {
-            value_change->undo();
+            action->undo();
         } else {
-            value_change->redo();
+            action->redo();
         }
     }
+    pending_actions.clear();
 }

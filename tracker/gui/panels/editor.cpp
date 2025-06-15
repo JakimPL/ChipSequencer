@@ -96,8 +96,9 @@ void GUIEditorPanel::draw_history() {
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
         }
 
+        const std::string action_label = action_name + "##" + std::to_string(i + 1);
         char label[GUI_MAX_HISTORY_ITEM_LENGTH];
-        copy_string_to_buffer(action_name.c_str(), label, sizeof(label));
+        copy_string_to_buffer(action_label.c_str(), label, sizeof(label));
 
         if (ImGui::Selectable(label, i == static_cast<int>(current_index) - 1, ImGuiSelectableFlags_SpanAllColumns)) {
             history_manager.go_to_index(i + 1);

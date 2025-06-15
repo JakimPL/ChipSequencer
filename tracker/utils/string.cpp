@@ -38,6 +38,12 @@ std::string convert_double_to_string(const double value, const uint8_t decimals)
     return stream.str();
 }
 
+std::string convert_double_to_string(const double value, const char *format) {
+    char buffer[64];
+    std::snprintf(buffer, sizeof(buffer), format, value);
+    return std::string(buffer);
+}
+
 void pad_string(std::string &string, const char padding, const size_t size) {
     if (string.size() < size) {
         string.resize(size, padding);
@@ -64,4 +70,14 @@ double string_to_double(const std::string &string, const double default_value, c
     } catch (const std::out_of_range &) {
         return default_value;
     }
+}
+
+bool compare_floats(const float a, const float b, const char *format) {
+    char buffer_a[64];
+    char buffer_b[64];
+
+    std::snprintf(buffer_a, sizeof(buffer_a), format, a);
+    std::snprintf(buffer_b, sizeof(buffer_b), format, b);
+
+    return std::strcmp(buffer_a, buffer_b) == 0;
 }

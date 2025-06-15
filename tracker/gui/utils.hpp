@@ -95,3 +95,11 @@ void add_action(
     T &reference,
     const T old_value
 );
+
+void add_action_float(
+    GUIPanel *owner,
+    const std::string &label,
+    float &reference,
+    const float old_value,
+    const char *format = "%.4f"
+);

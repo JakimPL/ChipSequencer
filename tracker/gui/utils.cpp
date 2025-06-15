@@ -79,7 +79,7 @@ void draw_float_slider(GUIPanel *owner, const char *label, float &reference, con
 
     const bool non_linear_scale = scale != GUIScale::Linear;
     if (ImGui::SliderFloat(slider_id.c_str(), &display_value, non_linear_scale ? 0.0f : min, non_linear_scale ? 1.0f : max, label)) {
-        add_action(owner, label, reference, old_value);
+        add_action_float(owner, label, reference, old_value, format);
         switch (scale) {
         case GUIScale::Logarithmic: {
             reference = min * std::pow(max / min, display_value);
@@ -101,7 +101,7 @@ void draw_float_slider(GUIPanel *owner, const char *label, float &reference, con
     ImGui::SameLine();
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
     if (ImGui::InputFloat(input_id.c_str(), &reference, 0.0f, 0.0f, format)) {
-        add_action(owner, label, reference, old_value);
+        add_action_float(owner, label, reference, old_value, format);
     }
 
     draw_link_tooltip(key);
@@ -921,6 +921,26 @@ void add_action(
     if (old_value != reference) {
         std::ostringstream action_name;
         action_name << "Change " << label << " from " << old_value << " to " << reference;
+        const auto value_change = ValueChange<T>(reference, old_value);
+        history_manager.add_action(
+            std::make_unique<ChangeValueAction<T>>(action_name.str(), owner, value_change)
+        );
+    }
+}
+
+void add_action_float(
+    GUIPanel *owner,
+    const std::string &label,
+    float &reference,
+    const float old_value,
+    const char *format
+) {
+    std::string old_value_string = convert_double_to_string(old_value, format);
+    std::string new_value_string = convert_double_to_string(reference, format);
+
+    if (old_value != reference && old_value_string != new_value_string) {
+        std::ostringstream action_name;
+        action_name << "Change " << label << " from " << old_value_string << " to " << new_value_string;
         const auto value_change = ValueChange<float>(reference, old_value);
         history_manager.add_action(
             std::make_unique<ChangeValueAction<float>>(action_name.str(), owner, value_change)
