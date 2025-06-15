@@ -96,7 +96,6 @@ uint8_t get_note_value(const std::string &note_name, const int octave);
 template <typename T>
 void add_action(
     GUIPanel *owner,
-    const std::string &label,
     const LinkKey key,
     T &reference,
     const T old_value
@@ -104,7 +103,6 @@ void add_action(
 
 void add_action_float(
     GUIPanel *owner,
-    const std::string &label,
     const LinkKey key,
     float &reference,
     const float old_value,

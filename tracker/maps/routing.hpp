@@ -37,4 +37,6 @@ struct RoutingItems {
     size_t get_index_from_offset(const LinkKey key) const;
 };
 
+std::string get_key_name(const LinkKey key);
+
 extern const std::map<Target, RoutingItems> routing_variables;

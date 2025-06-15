@@ -52,7 +52,7 @@ void draw_int_slider(GUIPanel *owner, const char *label, int &reference, const L
     ImGui::EndDisabled();
 
     reference = std::clamp(reference, min, max);
-    add_action(owner, label, key, reference, old_value);
+    add_action(owner, key, reference, old_value);
 }
 
 void draw_float_slider(GUIPanel *owner, const char *label, float &reference, const LinkKey key, float min, float max, const GUIScale scale, const char *format) {
@@ -109,7 +109,7 @@ void draw_float_slider(GUIPanel *owner, const char *label, float &reference, con
     ImGui::EndDisabled();
 
     reference = std::clamp(reference, min, max);
-    add_action_float(owner, label, key, reference, old_value, format);
+    add_action_float(owner, key, reference, old_value, format);
 }
 
 void draw_knob(const char *label, float &reference, const LinkKey key, float min, float max) {
@@ -916,12 +916,12 @@ uint8_t get_note_value(const std::string &note_name, const int octave) {
 template <typename T>
 void add_action(
     GUIPanel *owner,
-    const std::string &label,
     const LinkKey key,
     T &reference,
     const T old_value
 ) {
     if (old_value != reference) {
+        const std::string label = get_key_name(key);
         const auto value_change = ValueChange<T>(reference, old_value);
         history_manager.add_action(
             std::make_unique<ChangeValueAction<T>>(label, owner, key, value_change)
@@ -931,7 +931,6 @@ void add_action(
 
 void add_action_float(
     GUIPanel *owner,
-    const std::string &label,
     const LinkKey key,
     float &reference,
     const float old_value,
@@ -941,6 +940,7 @@ void add_action_float(
     std::string new_value_string = convert_double_to_string(reference, format);
 
     if (old_value != reference && old_value_string != new_value_string) {
+        const std::string label = get_key_name(key);
         const auto value_change = ValueChange<float>(reference, old_value);
         history_manager.add_action(
             std::make_unique<ChangeValueAction<float>>(label, owner, key, value_change)

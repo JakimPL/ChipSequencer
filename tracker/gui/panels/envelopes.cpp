@@ -163,8 +163,8 @@ void GUIEnvelopesPanel::draw_envelope() {
 
 void GUIEnvelopesPanel::draw_levels() {
     ImGui::Text("Levels");
-    draw_float_slider(this, "Base Volume", current_envelope.base_volume, {Target::ENVELOPE, envelope_index, ENVELOPE_BASE_VOLUME}, 0.0f, 1.0f);
-    draw_float_slider(this, "Sustain Level", current_envelope.sustain_level, {Target::ENVELOPE, envelope_index, ENVELOPE_SUSTAIN_LEVEL}, 0.0f, 1.0f);
+    draw_float_slider(this, "Base volume", current_envelope.base_volume, {Target::ENVELOPE, envelope_index, ENVELOPE_BASE_VOLUME}, 0.0f, 1.0f);
+    draw_float_slider(this, "Sustain level", current_envelope.sustain_level, {Target::ENVELOPE, envelope_index, ENVELOPE_SUSTAIN_LEVEL}, 0.0f, 1.0f);
 }
 
 void GUIEnvelopesPanel::draw_timers() {

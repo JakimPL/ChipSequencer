@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "../constants.hpp"
 #include "../structures.hpp"
 #include "routing.hpp"
@@ -146,4 +148,18 @@ size_t RoutingItems::get_index_from_offset(const LinkKey key) const {
     }
 
     return -1;
+}
+
+std::string get_key_name(const LinkKey key) {
+    const RoutingItems &items = routing_variables.at(key.target);
+    size_t index = items.get_index_from_offset(key);
+    if (index == -1 || index >= items.labels.size()) {
+        return "Unknown";
+    }
+
+    std::ostringstream stream;
+    stream << items.labels[index] << " "
+           << key.index;
+
+    return stream.str();
 }
