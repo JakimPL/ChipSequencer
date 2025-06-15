@@ -89,6 +89,9 @@ const std::map<Target, RoutingItems> routing_variables = {
             {"A4 frequency", SPECIAL_A4_FREQUENCY, TargetVariableType::Word, ROUTING_HIDDEN},
             {"EDO", SPECIAL_EDO, TargetVariableType::Byte, ROUTING_HIDDEN},
             {"Output channels", SPECIAL_OUTPUT_CHANNELS, TargetVariableType::Byte, ROUTING_HIDDEN},
+            {"Shift", SPECIAL_SHIFT, TargetVariableType::Byte, ROUTING_HIDDEN},
+            {"Channel index", SPECIAL_CHANNEL_INDEX, TargetVariableType::Byte, ROUTING_HIDDEN},
+            {"DSP index", SPECIAL_DSP_INDEX, TargetVariableType::Byte, ROUTING_HIDDEN},
         }),
     },
 };
@@ -151,6 +154,10 @@ size_t RoutingItems::get_index_from_offset(const LinkKey key) const {
 }
 
 std::string get_key_name(const LinkKey key) {
+    if (key.target == Target::COUNT || key.index < 0) {
+        return "Unknown";
+    }
+
     const RoutingItems &items = routing_variables.at(key.target);
     size_t index = items.get_index_from_offset(key);
     if (index == -1 || index >= items.labels.size()) {

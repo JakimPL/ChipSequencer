@@ -114,12 +114,3 @@
 ; Commands channel
     %define COMMANDS_CHANNEL_FLAG 0
     %define COMMANDS_CHANNEL_ORDER_INDEX 1
-
-; Special
-    %define SPECIAL_NONE 0
-    %define SPECIAL_BPM 1
-    %define SPECIAL_DIVISION 3
-    %define SPECIAL_MASTER_GAINER 4
-    %define SPECIAL_SAMPLE_RATE 8
-    %define SPECIAL_A4_FREQUENCY 12
-    %define SPECIAL_EDO 14

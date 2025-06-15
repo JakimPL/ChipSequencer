@@ -24,14 +24,17 @@ void draw_number_of_items(const std::string &label, const char *label_id, int &v
     value = std::clamp(value, min, max);
 }
 
-void draw_checkbox(const char *label, bool &reference, const LinkKey key) {
+void draw_checkbox(GUIPanel *owner, const char *label, bool &reference, const LinkKey key) {
     ImGui::BeginDisabled(link_manager.is_linked(key));
 
+    const bool old_value = reference;
     ImGui::PushID(label);
     ImGui::Checkbox(label, &reference);
     draw_link_tooltip(key);
     ImGui::PopID();
     ImGui::EndDisabled();
+
+    add_action(owner, key, reference, old_value);
 }
 
 void draw_int_slider(GUIPanel *owner, const char *label, int &reference, const LinkKey key, int min, int max) {
@@ -112,8 +115,10 @@ void draw_float_slider(GUIPanel *owner, const char *label, float &reference, con
     add_action_float(owner, key, reference, old_value, format);
 }
 
-void draw_knob(const char *label, float &reference, const LinkKey key, float min, float max) {
+void draw_knob(GUIPanel *owner, const char *label, float &reference, const LinkKey key, float min, float max) {
     ImGui::BeginDisabled(link_manager.is_linked(key));
+    const float old_value = reference;
+
     ImGui::PushID(label);
     ImGuiKnobs::Knob(label, &reference, min, max);
     draw_link_tooltip(key);
@@ -122,6 +127,7 @@ void draw_knob(const char *label, float &reference, const LinkKey key, float min
     ImGui::EndDisabled();
 
     reference = std::clamp(reference, min, max);
+    add_action_float(owner, key, reference, old_value);
 }
 
 void draw_link_tooltip(const LinkKey &key) {
@@ -486,7 +492,7 @@ void draw_output_dsp_splitter(GUIPanel *owner, OutputType &output_type, const in
     }
 
     ImGui::Text("Initial DSP:");
-    draw_int_slider(owner, "DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
+    draw_int_slider(owner, "DSP", output_type.dsp_channel, {Target::SPECIAL, dsp_index, SPECIAL_DSP_INDEX}, dsp_index + 1, dsps.size() - 1);
     ImGui::Text("Splitter:");
     int start = output_type.dsp_channel;
     int end = start + std::clamp(static_cast<int>(dsps.size()) - start, 0, MAX_OUTPUT_CHANNELS);
@@ -500,7 +506,7 @@ void draw_output_dsp_splitter(GUIPanel *owner, OutputType &output_type, const in
 
 void draw_output_direct_output(GUIPanel *owner, OutputType &output_type, const LinkKey key) {
     const size_t output_channels = song.get_output_channels();
-    draw_int_slider(owner, "Channel", output_type.output_channel, {}, 0, output_channels - 1);
+    draw_int_slider(owner, "Channel", output_type.output_channel, {Target::SPECIAL, key.index, SPECIAL_CHANNEL_INDEX}, 0, output_channels - 1);
 }
 
 void draw_output_direct_dsp(GUIPanel *owner, OutputType &output_type, const int dsp_index, const LinkKey key) {
@@ -509,7 +515,7 @@ void draw_output_direct_dsp(GUIPanel *owner, OutputType &output_type, const int 
         return;
     }
 
-    draw_int_slider(owner, "DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
+    draw_int_slider(owner, "DSP", output_type.dsp_channel, {Target::SPECIAL, dsp_index, SPECIAL_DSP_INDEX}, dsp_index + 1, dsps.size() - 1);
 }
 
 bool draw_output_parameter(OutputType &output_type, const LinkKey key) {
@@ -704,7 +710,7 @@ bool draw_output(GUIPanel *owner, OutputType &output_type, const LinkKey key) {
     ImGui::Text("Variable:");
     prepare_combo(variable_types, "##OutputTypeCombo", output_type.variable_type);
     ImGui::BeginDisabled(output_type.variable_type == 0);
-    draw_int_slider(owner, "Shift", output_type.shift, {}, 0, 15);
+    draw_int_slider(owner, "Shift", output_type.shift, {Target::SPECIAL, key.index, SPECIAL_SHIFT}, 0, 15);
     ImGui::EndDisabled();
     pop_secondary_style();
 

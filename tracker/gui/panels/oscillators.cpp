@@ -238,7 +238,7 @@ void GUIOscillatorsPanel::draw_oscillator() {
         break;
     }
     case Generator::Saw: {
-        draw_checkbox("Bypass", current_oscillator.saw_reverse, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_SAW_REVERSE});
+        draw_checkbox(this, "Bypass", current_oscillator.saw_reverse, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_SAW_REVERSE});
         break;
     }
     case Generator::Wavetable: {
@@ -249,7 +249,7 @@ void GUIOscillatorsPanel::draw_oscillator() {
         }
 
         ImGui::NextColumn();
-        draw_checkbox("Interpolation", current_oscillator.wavetable_interpolation, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_WAVETABLE_INTERPOLATION});
+        draw_checkbox(this, "Interpolation", current_oscillator.wavetable_interpolation, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_WAVETABLE_INTERPOLATION});
         break;
     }
     case Generator::Count:
