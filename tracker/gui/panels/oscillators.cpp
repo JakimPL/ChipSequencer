@@ -16,24 +16,37 @@ void GUIOscillatorsPanel::draw() {
     ImGui::Begin("Oscillators");
     ImGui::Columns(1, "oscillator_columns");
 
+    if (select_item()) {
+        from();
+        draw_oscillator();
+        check_keyboard_input();
+        actions();
+        to();
+        post_actions();
+    } else {
+        empty();
+    }
+
+    ImGui::Columns(1);
+    ImGui::End();
+}
+
+bool GUIOscillatorsPanel::select_item() {
     std::vector<std::string> dependencies = song.find_oscillator_dependencies(oscillator_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
     prepare_combo(oscillator_names, "##OscillatorCombo", oscillator_index);
     show_dependency_tooltip(dependencies);
-
     pop_tertiary_style();
-
     ImGui::Separator();
 
-    from();
-    draw_oscillator();
-    check_keyboard_input();
-    to();
-
-    ImGui::Columns(1);
-    ImGui::End();
+    return !oscillators.empty();
 }
+
+void GUIOscillatorsPanel::empty() {
+    ImGui::Text("No oscillator available.");
+}
+
 bool GUIOscillatorsPanel::is_index_valid() const {
     return oscillator_index >= 0 && oscillator_index < oscillators.size();
 }
@@ -208,13 +221,6 @@ void GUIOscillatorsPanel::draw_oscillator_type() {
 
 void GUIOscillatorsPanel::draw_oscillator() {
     ImGui::Text("Oscillator:");
-
-    if (oscillators.empty()) {
-        ImGui::Text("No oscillator available");
-        ImGui::Columns(1);
-        return;
-    }
-
     ImGui::Columns(2, "oscillator_columns", false);
     ImGui::SetColumnWidth(0, 150.0f);
     draw_oscillator_type();

@@ -25,17 +25,8 @@ class GUIMenu : public GUIPanel {
     void file_exit();
     void file_exit_confirm();
 
-    void add() override {};
-    void duplicate() override {};
-    void remove() override {};
     void draw() override;
-    void check_keyboard_input() override {};
 
   public:
     GUIMenu(const bool visible = true);
-    void update() override {};
-    void set_index(const int index) override {};
-
-    void from() override {};
-    void to() const override {};
 };

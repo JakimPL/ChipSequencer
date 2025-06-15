@@ -24,6 +24,8 @@ class GUIOrdersPanel : public GUIPanel {
     void draw_order_length();
     void draw_order();
 
+    bool select_item() override;
+    void empty() override;
     void add() override;
     void duplicate() override;
     void remove() override;

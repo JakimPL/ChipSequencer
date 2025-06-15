@@ -13,9 +13,6 @@ class GUIEditorPanel : public GUIPanel {
 
     void draw_panels();
 
-    void add() override {};
-    void duplicate() override {};
-    void remove() override {};
     void draw() override;
     void check_keyboard_input() override;
 
@@ -26,10 +23,4 @@ class GUIEditorPanel : public GUIPanel {
         int &jump_step,
         int &page_size
     );
-
-    void update() override {};
-    void set_index(const int index) override {};
-
-    void from() override {};
-    void to() const override {};
 };

@@ -13,11 +13,11 @@ class GUIPanel {
 
     bool visible = true;
 
-    virtual void update() = 0;
-    virtual void set_index(const int index) = 0;
+    virtual void update() {};
+    virtual void set_index(const int) {};
     void frame();
-    virtual void from() = 0;
-    virtual void to() const = 0;
+    virtual void from() {};
+    virtual void to() const {};
 
     void add_action(Action *action, const bool undo);
 
@@ -25,14 +25,17 @@ class GUIPanel {
     std::vector<std::pair<Action *, bool>> pending_actions;
 
     void actions();
+    void post_actions();
     void draw_add_or_remove(
         const std::vector<std::string> &dependencies = {},
         const std::vector<std::pair<ItemType, uint8_t>> &link_dependencies = {}
     );
 
-    virtual void add() = 0;
-    virtual void duplicate() = 0;
-    virtual void remove() = 0;
-    virtual void draw() = 0;
-    virtual void check_keyboard_input() = 0;
+    virtual bool select_item() { return true; };
+    virtual void empty() {};
+    virtual void add() {};
+    virtual void duplicate() {};
+    virtual void remove() {};
+    virtual void draw() {};
+    virtual void check_keyboard_input() {};
 };

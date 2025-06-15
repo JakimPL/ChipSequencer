@@ -48,16 +48,12 @@ class GUIRoutingsPanel : public GUIPanel {
     bool get_splitter_bounds(const size_t j, size_t index, const Link &link) const;
     Splitter get_splitter_from_input_key(const InputKey &source) const;
 
-    void add() override {};
-    void duplicate() override {};
-    void remove() override {};
     void draw() override;
     void check_keyboard_input() override;
 
   public:
     GUIRoutingsPanel(const bool visible = true);
     void update() override;
-    void set_index(const int index) override {};
 
     void from() override;
     void to() const override;

@@ -30,6 +30,8 @@ class GUIOscillatorsPanel : public GUIPanel {
     void update_oscillator_name(const int index, const int generator_index = -1);
     void update_oscillator_names();
 
+    bool select_item() override;
+    void empty() override;
     void add() override;
     void duplicate() override;
     void remove() override;

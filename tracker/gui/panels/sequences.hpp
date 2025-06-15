@@ -28,6 +28,8 @@ class GUISequencesPanel : public GUIPanel {
     void draw_sequence_length();
     void draw_sequence();
 
+    bool select_item() override;
+    void empty() override;
     void add() override;
     void duplicate() override;
     void remove() override;

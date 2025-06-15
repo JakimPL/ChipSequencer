@@ -37,6 +37,27 @@ void GUICommandsSequencesPanel::draw() {
     ImGui::Columns(1, "commands_sequence_columns");
     ImGui::BeginDisabled(gui.is_playing());
 
+    if (select_item()) {
+        from();
+        draw_sequence();
+        action();
+        check_keyboard_input();
+        draw_edit_dialog_box();
+        actions();
+        to();
+        post_actions();
+    } else {
+        empty();
+    }
+
+    dialog_box_open = edit_dialog_box.visible;
+
+    ImGui::EndDisabled();
+    ImGui::Columns(1);
+    ImGui::End();
+}
+
+bool GUICommandsSequencesPanel::select_item() {
     std::vector<std::string> dependencies = song.find_commands_sequence_dependencies(sequence_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
@@ -46,21 +67,13 @@ void GUICommandsSequencesPanel::draw() {
     }
     show_dependency_tooltip(dependencies);
     pop_tertiary_style();
-
     ImGui::Separator();
 
-    from();
-    draw_sequence();
-    action();
-    check_keyboard_input();
-    draw_edit_dialog_box();
-    to();
+    return !commands_sequences.empty();
+}
 
-    dialog_box_open = edit_dialog_box.visible;
-
-    ImGui::EndDisabled();
-    ImGui::Columns(1);
-    ImGui::End();
+void GUICommandsSequencesPanel::empty() {
+    ImGui::Text("No commands sequences available.");
 }
 
 bool GUICommandsSequencesPanel::is_index_valid() const {
@@ -210,15 +223,7 @@ void GUICommandsSequencesPanel::draw_sequence() {
     }
 
     ImGui::Text("Pattern:");
-
-    if (!is_index_valid()) {
-        ImGui::Text("No sequence available.");
-        ImGui::Columns(1);
-        return;
-    }
-
     draw_sequence_length();
-
     if (current_sequence.pattern.steps > 0) {
         if (ImGui::Button("Edit")) {
             open_edit_dialog_box(current_sequence.pattern.current_row);

@@ -40,16 +40,11 @@ class GUIGeneralPanel : public GUIPanel {
     void play();
     std::string get_error_message(const ValidationResult result, const int index) const;
 
-    void add() override {};
-    void duplicate() override {};
-    void remove() override {};
     void draw() override;
-    void check_keyboard_input() override {};
 
   public:
     GUIGeneralPanel(const bool visible = true);
     void update() override;
-    void set_index(const int index) override {};
 
     void from() override;
     void to() const override;

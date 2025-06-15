@@ -45,6 +45,8 @@ class GUICommandsSequencesPanel : public GUIPanel {
     void draw_output_section();
     void set_current_command();
 
+    bool select_item() override;
+    void empty() override;
     void add() override;
     void duplicate() override;
     void remove() override;

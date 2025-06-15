@@ -17,28 +17,35 @@ GUIWavetablesPanel::GUIWavetablesPanel(const bool visible)
 void GUIWavetablesPanel::draw() {
     ImGui::Begin("Wavetables");
 
+    if (select_item()) {
+        from();
+        draw_waveform();
+        draw_status();
+        check_keyboard_input();
+        actions();
+        to();
+        post_actions();
+    } else {
+        empty();
+    }
+
+    ImGui::End();
+}
+
+bool GUIWavetablesPanel::select_item() {
     std::vector<std::string> dependencies = song.find_wavetable_dependencies(wavetable_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
     prepare_combo(wavetable_names, "##WavetableCombo", wavetable_index);
     show_dependency_tooltip(dependencies);
     pop_tertiary_style();
-
     ImGui::Separator();
 
-    if (wavetables.empty()) {
-        ImGui::Text("No wavetables available.");
-        ImGui::End();
-        return;
-    }
+    return !wavetables.empty();
+}
 
-    from();
-    draw_waveform();
-    draw_status();
-    check_keyboard_input();
-    to();
-
-    ImGui::End();
+void GUIWavetablesPanel::empty() {
+    ImGui::Text("No wavetable available.");
 }
 
 bool GUIWavetablesPanel::is_index_valid() const {
@@ -139,11 +146,6 @@ void GUIWavetablesPanel::draw_wavetable_length() {
 }
 
 void GUIWavetablesPanel::draw_waveform() {
-    if (wavetables.empty()) {
-        ImGui::Text("No wavetables available.");
-        return;
-    }
-
     ImGui::Checkbox("Show interpolation", &current_wavetable.interpolation);
 
     ImGui::Text("Waveform:");

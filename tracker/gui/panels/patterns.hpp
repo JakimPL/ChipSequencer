@@ -68,9 +68,6 @@ class GUIPatternsPanel : public GUIPanel {
     void to_sequences() const;
     void to_commands_sequences() const;
 
-    void add() override {};
-    void duplicate() override {};
-    void remove() override {};
     void draw() override;
     void check_keyboard_input() override;
 

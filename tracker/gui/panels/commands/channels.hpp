@@ -13,6 +13,8 @@ class GUICommandsChannelsPanel : public GUIPanel {
     bool is_index_valid() const;
     void draw_channel();
 
+    bool select_item() override;
+    void empty() override;
     void add() override;
     void duplicate() override;
     void remove() override;

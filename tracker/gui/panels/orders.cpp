@@ -14,6 +14,22 @@ void GUIOrdersPanel::draw() {
     ImGui::Begin("Orders");
     ImGui::Columns(1, "order_columns");
 
+    if (select_item()) {
+        from();
+        draw_order();
+        check_keyboard_input();
+        actions();
+        to();
+        post_actions();
+    } else {
+        empty();
+    }
+
+    ImGui::Columns(1);
+    ImGui::End();
+}
+
+bool GUIOrdersPanel::select_item() {
     std::vector<std::string> dependencies = song.find_order_dependencies(order_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
@@ -22,16 +38,13 @@ void GUIOrdersPanel::draw() {
     }
     show_dependency_tooltip(dependencies);
     pop_tertiary_style();
-
     ImGui::Separator();
 
-    from();
-    draw_order();
-    check_keyboard_input();
-    to();
+    return !orders.empty();
+}
 
-    ImGui::Columns(1);
-    ImGui::End();
+void GUIOrdersPanel::empty() {
+    ImGui::Text("No order available.");
 }
 
 bool GUIOrdersPanel::is_index_valid() const {
@@ -126,11 +139,6 @@ void GUIOrdersPanel::draw_order_length() {
 }
 
 void GUIOrdersPanel::draw_order() {
-    if (!is_index_valid()) {
-        ImGui::Text("No order available.");
-        return;
-    }
-
     ImGui::Text("Order:");
 
     draw_order_length();

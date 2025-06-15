@@ -67,24 +67,37 @@ void GUISequencesPanel::draw() {
     ImGui::Begin("Sequences");
     ImGui::Columns(1, "sequence_columns");
 
+    if (select_item()) {
+        from();
+        draw_sequence();
+        action();
+        transpose_selected_rows();
+        check_keyboard_input();
+        actions();
+        to();
+        post_actions();
+    } else {
+        empty();
+    }
+
+    ImGui::Columns(1);
+    ImGui::End();
+}
+
+bool GUISequencesPanel::select_item() {
     std::vector<std::string> dependencies = song.find_sequence_dependencies(sequence_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
     prepare_combo(sequence_names, "##SequenceCombo", sequence_index);
     show_dependency_tooltip(dependencies);
     pop_tertiary_style();
-
     ImGui::Separator();
 
-    from();
-    draw_sequence();
-    action();
-    transpose_selected_rows();
-    check_keyboard_input();
-    to();
+    return !sequences.empty();
+}
 
-    ImGui::Columns(1);
-    ImGui::End();
+void GUISequencesPanel::empty() {
+    ImGui::Text("No sequence available.");
 }
 
 bool GUISequencesPanel::is_index_valid() const {
@@ -248,13 +261,6 @@ void GUISequencesPanel::draw_sequence() {
     }
 
     ImGui::Text("Pattern:");
-
-    if (!is_index_valid()) {
-        ImGui::Text("No sequence available.");
-        ImGui::Columns(1);
-        return;
-    }
-
     PatternSelection empty_selection;
     PatternSelection &sequence_selection = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ? selection : empty_selection;
     PatternRows secondary_pattern_rows;

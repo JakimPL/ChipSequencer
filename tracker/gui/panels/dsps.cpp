@@ -13,8 +13,25 @@ GUIDSPsPanel::GUIDSPsPanel(const bool visible)
 void GUIDSPsPanel::draw() {
     ImGui::Begin("DSPs");
     ImGui::Columns(1, "dsp_columns");
-
     ImGui::BeginDisabled(gui.is_playing());
+
+    if (select_item()) {
+        from();
+        draw_dsp();
+        check_keyboard_input();
+        actions();
+        to();
+        post_actions();
+    } else {
+        empty();
+    }
+
+    ImGui::EndDisabled();
+    ImGui::Columns(1);
+    ImGui::End();
+}
+
+bool GUIDSPsPanel::select_item() {
     std::vector<std::string> dependencies = song.find_dsp_dependencies(dsp_index);
     std::vector<std::pair<ItemType, uint8_t>> link_dependencies = link_manager.find_dependencies(Target::DSP, dsp_index);
     push_tertiary_style();
@@ -22,17 +39,13 @@ void GUIDSPsPanel::draw() {
     prepare_combo(dsp_names, "##DSPCombo", dsp_index);
     show_dependency_tooltip(dependencies);
     pop_tertiary_style();
-
     ImGui::Separator();
 
-    from();
-    draw_dsp();
-    check_keyboard_input();
-    to();
+    return !dsps.empty();
+}
 
-    ImGui::EndDisabled();
-    ImGui::Columns(1);
-    ImGui::End();
+void GUIDSPsPanel::empty() {
+    ImGui::Text("No DSP available.");
 }
 
 bool GUIDSPsPanel::is_index_valid() const {
@@ -208,11 +221,6 @@ void GUIDSPsPanel::draw_dsp_type() {
 }
 
 void GUIDSPsPanel::draw_dsp() {
-    if (dsps.empty()) {
-        ImGui::Text("No DSPs available.");
-        return;
-    }
-
     draw_dsp_type();
     ImGui::NextColumn();
     draw_effect();

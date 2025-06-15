@@ -13,6 +13,21 @@ GUIEnvelopesPanel::GUIEnvelopesPanel(const bool visible)
 void GUIEnvelopesPanel::draw() {
     ImGui::Begin("Envelopes");
 
+    if (select_item()) {
+        from();
+        draw_envelope();
+        check_keyboard_input();
+        actions();
+        to();
+        post_actions();
+    } else {
+        empty();
+    }
+
+    ImGui::End();
+}
+
+bool GUIEnvelopesPanel::select_item() {
     std::vector<std::string> dependencies = song.find_envelope_dependencies(envelope_index);
     std::vector<std::pair<ItemType, uint8_t>> link_dependencies = link_manager.find_dependencies(Target::ENVELOPE, envelope_index);
     push_tertiary_style();
@@ -20,22 +35,13 @@ void GUIEnvelopesPanel::draw() {
     prepare_combo(envelope_names, "##EnvelopeCombo", envelope_index);
     show_dependency_tooltip(dependencies);
     pop_tertiary_style();
-
     ImGui::Separator();
-    if (envelopes.empty()) {
-        ImGui::Text("No envelopes available.");
-        ImGui::End();
-        return;
-    }
 
-    from();
-    draw_envelope();
-    check_keyboard_input();
-    actions();
-    to();
-    pending_actions.clear();
+    return !envelopes.empty();
+}
 
-    ImGui::End();
+void GUIEnvelopesPanel::empty() {
+    ImGui::Text("No envelope available.");
 }
 
 bool GUIEnvelopesPanel::is_index_valid() const {

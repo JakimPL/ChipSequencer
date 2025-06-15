@@ -33,6 +33,8 @@ class GUIEnvelopesPanel : public GUIPanel {
     void draw_envelope_graph();
     void gather_envelope_positions();
 
+    bool select_item() override;
+    void empty() override;
     void add() override;
     void duplicate() override;
     void remove() override;

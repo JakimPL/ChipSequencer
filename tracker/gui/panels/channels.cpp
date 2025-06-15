@@ -16,24 +16,37 @@ GUIChannelsPanel::GUIChannelsPanel(const bool visible)
 void GUIChannelsPanel::draw() {
     ImGui::Begin("Channels");
     ImGui::Columns(1, "channel_columns");
-
     ImGui::BeginDisabled(gui.is_playing());
+
+    if (select_item()) {
+        from();
+        draw_channel();
+        check_keyboard_input();
+        actions();
+        to();
+        post_actions();
+    } else {
+        empty();
+    }
+
+    ImGui::EndDisabled();
+    ImGui::Columns(1);
+    ImGui::End();
+}
+
+bool GUIChannelsPanel::select_item() {
     std::vector<std::pair<ItemType, uint8_t>> link_dependencies = link_manager.find_dependencies(Target::CHANNEL, channel_index);
     push_tertiary_style();
     draw_add_or_remove({}, link_dependencies);
     prepare_combo(channel_names, "##ChannelCombo", channel_index);
     pop_tertiary_style();
-
     ImGui::Separator();
 
-    from();
-    draw_channel();
-    check_keyboard_input();
-    to();
+    return !channels.empty();
+}
 
-    ImGui::EndDisabled();
-    ImGui::Columns(1);
-    ImGui::End();
+void GUIChannelsPanel::empty() {
+    ImGui::Text("No channel available.");
 }
 
 bool GUIChannelsPanel::is_index_valid() const {
@@ -182,11 +195,6 @@ void GUIChannelsPanel::update_channel_name(const int index, const int target_id)
 }
 
 void GUIChannelsPanel::draw_channel() {
-    if (channels.empty()) {
-        ImGui::Text("No channels available.");
-        return;
-    }
-
     ImGui::Checkbox("Bypass", &current_channel.output_type.bypass);
     ImGui::Checkbox("Hide in pattern view", &current_channel.hide);
     ImGui::Separator();

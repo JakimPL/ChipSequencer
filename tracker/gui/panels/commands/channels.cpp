@@ -12,23 +12,36 @@ GUICommandsChannelsPanel::GUICommandsChannelsPanel(const bool visible)
 void GUICommandsChannelsPanel::draw() {
     ImGui::Begin("Commands channels");
     ImGui::Columns(1, "commands_channel_columns");
-
     ImGui::BeginDisabled(gui.is_playing());
-    push_tertiary_style();
-    draw_add_or_remove();
-    prepare_combo(commands_channel_names, "##CommandsChannelCombo", channel_index);
-    pop_tertiary_style();
 
-    ImGui::Separator();
-
-    from();
-    draw_channel();
-    check_keyboard_input();
-    to();
+    if (select_item()) {
+        from();
+        draw_channel();
+        check_keyboard_input();
+        actions();
+        to();
+        post_actions();
+    } else {
+        empty();
+    }
 
     ImGui::EndDisabled();
     ImGui::Columns(1);
     ImGui::End();
+}
+
+bool GUICommandsChannelsPanel::select_item() {
+    push_tertiary_style();
+    draw_add_or_remove();
+    prepare_combo(commands_channel_names, "##CommandsChannelCombo", channel_index);
+    pop_tertiary_style();
+    ImGui::Separator();
+
+    return !commands_channels.empty();
+}
+
+void GUICommandsChannelsPanel::empty() {
+    ImGui::Text("No command channel available.");
 }
 
 bool GUICommandsChannelsPanel::is_index_valid() const {
@@ -91,11 +104,6 @@ void GUICommandsChannelsPanel::update() {
 }
 
 void GUICommandsChannelsPanel::draw_channel() {
-    if (commands_channels.empty()) {
-        ImGui::Text("No channels available.");
-        return;
-    }
-
     ImGui::Checkbox("Bypass", &current_channel.bypass);
     ImGui::Checkbox("Hide in pattern view", &current_channel.hide);
     ImGui::Separator();

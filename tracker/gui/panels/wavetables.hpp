@@ -33,6 +33,8 @@ class GUIWavetablesPanel : public GUIPanel {
     std::vector<std::vector<float>> prepare_wave_to_save() const;
     void prepare_wave_from_load(Samples samples);
 
+    bool select_item() override;
+    void empty() override;
     void add() override;
     void duplicate() override;
     void remove() override;
