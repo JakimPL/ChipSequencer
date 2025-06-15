@@ -39,3 +39,38 @@ bool HistoryManager::can_undo() const {
 bool HistoryManager::can_redo() const {
     return current_index < actions.size();
 }
+
+void HistoryManager::clear() {
+    actions.clear();
+    current_index = 0;
+}
+
+size_t HistoryManager::get_current_index() const {
+    return current_index;
+}
+size_t HistoryManager::get_history_size() const {
+    return actions.size();
+}
+
+std::string HistoryManager::get_action_name(size_t index) const {
+    if (index < actions.size()) {
+        return actions[index]->name;
+    }
+    return "Unknown";
+}
+
+void HistoryManager::go_to_index(size_t target_index) {
+    if (target_index > actions.size()) {
+        target_index = actions.size();
+    }
+
+    while (current_index < target_index) {
+        actions[current_index]->notify_panel(false);
+        current_index++;
+    }
+
+    while (current_index > target_index) {
+        current_index--;
+        actions[current_index]->notify_panel(true);
+    }
+}

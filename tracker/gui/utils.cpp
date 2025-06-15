@@ -79,6 +79,7 @@ void draw_float_slider(GUIPanel *owner, const char *label, float &reference, con
 
     const bool non_linear_scale = scale != GUIScale::Linear;
     if (ImGui::SliderFloat(slider_id.c_str(), &display_value, non_linear_scale ? 0.0f : min, non_linear_scale ? 1.0f : max, label)) {
+        add_action(owner, label, reference, old_value);
         switch (scale) {
         case GUIScale::Logarithmic: {
             reference = min * std::pow(max / min, display_value);
@@ -100,14 +101,7 @@ void draw_float_slider(GUIPanel *owner, const char *label, float &reference, con
     ImGui::SameLine();
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
     if (ImGui::InputFloat(input_id.c_str(), &reference, 0.0f, 0.0f, format)) {
-        if (old_value != reference) {
-            std::ostringstream action_name;
-            action_name << "Change " << label << " from " << old_value << " to " << reference;
-            const auto value_change = ValueChange<float>(reference, old_value);
-            history_manager.add_action(
-                std::make_unique<ChangeValueAction<float>>(action_name.str(), owner, value_change)
-            );
-        }
+        add_action(owner, label, reference, old_value);
     }
 
     draw_link_tooltip(key);
@@ -915,4 +909,21 @@ uint8_t get_note_value(const std::string &note_name, const int octave) {
     if (note_name == "===") return NOTE_OFF;
     if (note_name == "???") return NOTES;
     return frequency_table.get_note_value(note_name, octave);
+}
+
+template <typename T>
+void add_action(
+    GUIPanel *owner,
+    const std::string &label,
+    T &reference,
+    const T old_value
+) {
+    if (old_value != reference) {
+        std::ostringstream action_name;
+        action_name << "Change " << label << " from " << old_value << " to " << reference;
+        const auto value_change = ValueChange<float>(reference, old_value);
+        history_manager.add_action(
+            std::make_unique<ChangeValueAction<float>>(action_name.str(), owner, value_change)
+        );
+    }
 }

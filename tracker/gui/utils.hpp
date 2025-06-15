@@ -87,3 +87,11 @@ void pop_tertiary_style();
 std::string get_note_name(uint8_t note_value);
 std::string get_note_octave(uint8_t note_value);
 uint8_t get_note_value(const std::string &note_name, const int octave);
+
+template <typename T>
+void add_action(
+    GUIPanel *owner,
+    const std::string &label,
+    T &reference,
+    const T old_value
+);

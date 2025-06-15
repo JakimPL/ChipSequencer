@@ -2,6 +2,7 @@
 
 #include <deque>
 #include <memory>
+#include <string>
 
 #include "../constants.hpp"
 #include "action.hpp"
@@ -19,4 +20,10 @@ class HistoryManager {
     void redo();
     bool can_undo() const;
     bool can_redo() const;
+    void clear();
+
+    size_t get_current_index() const;
+    size_t get_history_size() const;
+    std::string get_action_name(size_t index) const;
+    void go_to_index(size_t target_index);
 };

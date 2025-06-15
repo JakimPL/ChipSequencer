@@ -18,6 +18,7 @@ GUI::~GUI() {
 
 void GUI::new_song() {
     clear_input_buffers();
+    history_manager.clear();
     song.new_song();
 }
 
@@ -29,6 +30,7 @@ void GUI::save(const std::string &filename) {
 
 void GUI::open(const std::string &filename) {
     clear_input_buffers();
+    history_manager.clear();
     song.load_from_file(filename);
     current_path = filename;
 
