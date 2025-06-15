@@ -34,7 +34,6 @@ class GUICommandsSequencesPanel : public GUIPanel {
     PatternSelectionAction selection_action = PatternSelectionAction::None;
 
     bool is_index_valid() const;
-    void action();
     void select_all();
     void deselect_all();
     void delete_selection();
@@ -52,6 +51,7 @@ class GUICommandsSequencesPanel : public GUIPanel {
     void remove() override;
     void draw() override;
     void check_keyboard_input() override;
+    void shortcut_actions() override;
     void post_actions() override;
 
   public:

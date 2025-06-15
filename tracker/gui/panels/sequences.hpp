@@ -21,7 +21,6 @@ class GUISequencesPanel : public GUIPanel {
 
     bool is_index_valid() const;
     void transpose_selected_rows();
-    void action();
     void select_all();
     void deselect_all();
     void delete_selection();
@@ -35,6 +34,7 @@ class GUISequencesPanel : public GUIPanel {
     void remove() override;
     void draw() override;
     void check_keyboard_input() override;
+    void shortcut_actions() override;
 
   public:
     GUISequencesPanel(const bool visible = true);

@@ -72,13 +72,17 @@ void GUIPatternsPanel::draw() {
     ImGui::Begin("Patterns");
     ImGui::Separator();
 
-    from();
-    prepare_secondary_selection();
-    draw_channels();
-    action();
-    transpose_selected_rows();
-    check_keyboard_input();
-    to();
+    if (select_item()) {
+        from();
+        prepare_secondary_selection();
+        draw_channels();
+        shortcut_actions();
+        transpose_selected_rows();
+        check_keyboard_input();
+        to();
+    } else {
+        empty();
+    }
 
     ImGui::End();
 }
@@ -295,7 +299,7 @@ void GUIPatternsPanel::to() const {
     to_commands_sequences();
 }
 
-void GUIPatternsPanel::action() {
+void GUIPatternsPanel::shortcut_actions() {
     if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }

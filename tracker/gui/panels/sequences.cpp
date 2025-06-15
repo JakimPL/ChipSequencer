@@ -70,7 +70,7 @@ void GUISequencesPanel::draw() {
     if (select_item()) {
         from();
         draw_sequence();
-        action();
+        shortcut_actions();
         transpose_selected_rows();
         check_keyboard_input();
         actions();
@@ -156,7 +156,7 @@ void GUISequencesPanel::update() {
     gui.update(GUIElement::Orders);
 }
 
-void GUISequencesPanel::action() {
+void GUISequencesPanel::shortcut_actions() {
     if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }

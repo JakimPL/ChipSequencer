@@ -37,5 +37,6 @@ class GUIPanel {
     virtual void remove() {};
     virtual void draw() {};
     virtual void check_keyboard_input() {};
+    virtual void shortcut_actions() {};
     virtual void post_actions() {};
 };

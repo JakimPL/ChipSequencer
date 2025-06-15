@@ -45,7 +45,6 @@ class GUIPatternsPanel : public GUIPanel {
     void draw_channel(size_t channel_index);
     void draw_commands_channel(size_t channel_index);
 
-    void action();
     void select_channel();
     void select_all();
     void deselect_all();
@@ -70,6 +69,7 @@ class GUIPatternsPanel : public GUIPanel {
 
     void draw() override;
     void check_keyboard_input() override;
+    void shortcut_actions() override;
 
   public:
     GUIPatternsPanel(const bool visible = true);

@@ -40,7 +40,7 @@ void GUICommandsSequencesPanel::draw() {
     if (select_item()) {
         from();
         draw_sequence();
-        action();
+        shortcut_actions();
         check_keyboard_input();
         draw_edit_dialog_box();
         actions();
@@ -146,7 +146,7 @@ void GUICommandsSequencesPanel::update() {
     gui.update(GUIElement::Orders);
 }
 
-void GUICommandsSequencesPanel::action() {
+void GUICommandsSequencesPanel::shortcut_actions() {
     if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
