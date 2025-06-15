@@ -11,7 +11,6 @@ GUICommandsChannelsPanel::GUICommandsChannelsPanel(const bool visible)
 
 void GUICommandsChannelsPanel::draw() {
     ImGui::Begin("Commands channels");
-    ImGui::Columns(1, "commands_channel_columns");
     ImGui::BeginDisabled(gui.is_playing());
 
     if (select_item()) {
@@ -26,7 +25,6 @@ void GUICommandsChannelsPanel::draw() {
     }
 
     ImGui::EndDisabled();
-    ImGui::Columns(1);
     ImGui::End();
 }
 

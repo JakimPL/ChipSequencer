@@ -12,7 +12,6 @@ GUIDSPsPanel::GUIDSPsPanel(const bool visible)
 
 void GUIDSPsPanel::draw() {
     ImGui::Begin("DSPs");
-    ImGui::Columns(1, "dsp_columns");
     ImGui::BeginDisabled(gui.is_playing());
 
     if (select_item()) {
@@ -27,7 +26,6 @@ void GUIDSPsPanel::draw() {
     }
 
     ImGui::EndDisabled();
-    ImGui::Columns(1);
     ImGui::End();
 }
 

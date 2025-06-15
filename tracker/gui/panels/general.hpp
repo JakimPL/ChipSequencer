@@ -34,6 +34,7 @@ class GUIGeneralPanel : public GUIPanel {
     void draw_play_triangle();
     void draw_stop_square() const;
     void draw_song_info();
+    void draw_tabs();
     void draw_tempo();
     void draw_output();
     void draw_tuning_settings();
@@ -41,6 +42,7 @@ class GUIGeneralPanel : public GUIPanel {
     std::string get_error_message(const ValidationResult result, const int index) const;
 
     void draw() override;
+    void post_actions() override;
 
   public:
     GUIGeneralPanel(const bool visible = true);

@@ -24,47 +24,16 @@ void GUIGeneralPanel::update() {
 
 void GUIGeneralPanel::draw() {
     ImGui::Begin("General");
-    from();
-    draw_play_button();
 
-    if (gui.is_playing()) {
-        if (gui.check_audio_error()) {
-            error = true;
-            error_message = "Audio error: segfault occurred during playback.";
-            ImGui::OpenPopup("Error");
-        }
-    }
-
-    if (ImGui::BeginTabBar("GeneralTabs")) {
-        if (ImGui::BeginTabItem("Song")) {
-            draw_song_info();
-            ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Tempo")) {
-            draw_tempo();
-            ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Output")) {
-            draw_output();
-            ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Tuning")) {
-            draw_tuning_settings();
-            ImGui::EndTabItem();
-        }
-        ImGui::EndTabBar();
-    }
-
-    check_keyboard_input();
-    to();
-
-    if (error) {
-        ImGui::OpenPopup("Error");
-        error = false;
-    }
-
-    if (ImGui::BeginPopupModal("Error", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        draw_popup(error_message);
+    if (select_item()) {
+        from();
+        draw_play_button();
+        draw_tabs();
+        check_keyboard_input();
+        to();
+        post_actions();
+    } else {
+        empty();
     }
 
     ImGui::End();
@@ -110,6 +79,36 @@ void GUIGeneralPanel::play() {
     } else {
         error = false;
         error_message = "";
+    }
+}
+
+void GUIGeneralPanel::draw_tabs() {
+    if (gui.is_playing()) {
+        if (gui.check_audio_error()) {
+            error = true;
+            error_message = "Audio error: segfault occurred during playback.";
+            ImGui::OpenPopup("Error");
+        }
+    }
+
+    if (ImGui::BeginTabBar("GeneralTabs")) {
+        if (ImGui::BeginTabItem("Song")) {
+            draw_song_info();
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Tempo")) {
+            draw_tempo();
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Output")) {
+            draw_output();
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Tuning")) {
+            draw_tuning_settings();
+            ImGui::EndTabItem();
+        }
+        ImGui::EndTabBar();
     }
 }
 
@@ -266,4 +265,15 @@ std::string GUIGeneralPanel::get_error_message(const ValidationResult result, co
     }
 
     return stream.str();
+}
+
+void GUIGeneralPanel::post_actions() {
+    if (error) {
+        ImGui::OpenPopup("Error");
+        error = false;
+    }
+
+    if (ImGui::BeginPopupModal("Error", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup(error_message);
+    }
 }

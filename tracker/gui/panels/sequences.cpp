@@ -65,7 +65,6 @@ GUISequencesPanel::GUISequencesPanel(const bool visible)
 
 void GUISequencesPanel::draw() {
     ImGui::Begin("Sequences");
-    ImGui::Columns(1, "sequence_columns");
 
     if (select_item()) {
         from();
@@ -80,7 +79,6 @@ void GUISequencesPanel::draw() {
         empty();
     }
 
-    ImGui::Columns(1);
     ImGui::End();
 }
 

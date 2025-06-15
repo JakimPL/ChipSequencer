@@ -70,7 +70,6 @@ void GUIPatternsPanel::update() {
 
 void GUIPatternsPanel::draw() {
     ImGui::Begin("Patterns");
-    ImGui::Separator();
 
     if (select_item()) {
         from();

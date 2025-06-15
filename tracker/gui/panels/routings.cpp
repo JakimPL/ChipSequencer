@@ -29,16 +29,18 @@ void GUIRoutingsPanel::update() {
 
 void GUIRoutingsPanel::draw() {
     ImGui::Begin("Routings");
-    ImGui::Columns(1, "routings");
 
-    from();
-    draw_reset_button();
-    draw_nodes();
-    draw_all_links();
-    check_keyboard_input();
-    to();
+    if (select_item()) {
+        from();
+        draw_reset_button();
+        draw_nodes();
+        draw_all_links();
+        check_keyboard_input();
+        to();
+    } else {
+        empty();
+    }
 
-    ImGui::Columns(1);
     ImGui::End();
 }
 

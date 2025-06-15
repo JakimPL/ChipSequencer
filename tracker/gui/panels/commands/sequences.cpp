@@ -34,7 +34,6 @@ GUICommandsSequencesPanel::GUICommandsSequencesPanel(const bool visible)
 
 void GUICommandsSequencesPanel::draw() {
     ImGui::Begin("Commands sequences");
-    ImGui::Columns(1, "commands_sequence_columns");
     ImGui::BeginDisabled(gui.is_playing());
 
     if (select_item()) {
@@ -51,7 +50,6 @@ void GUICommandsSequencesPanel::draw() {
     }
 
     ImGui::EndDisabled();
-    ImGui::Columns(1);
     ImGui::End();
 }
 
