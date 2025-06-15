@@ -25,7 +25,6 @@ class GUIPanel {
     std::vector<std::pair<Action *, bool>> pending_actions;
 
     void actions();
-    void post_actions();
     void draw_add_or_remove(
         const std::vector<std::string> &dependencies = {},
         const std::vector<std::pair<ItemType, uint8_t>> &link_dependencies = {}
@@ -38,4 +37,5 @@ class GUIPanel {
     virtual void remove() {};
     virtual void draw() {};
     virtual void check_keyboard_input() {};
+    virtual void post_actions() {};
 };

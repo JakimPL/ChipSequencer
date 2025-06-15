@@ -111,10 +111,3 @@ void GUIPanel::actions() {
         }
     }
 }
-
-void GUIPanel::post_actions() {
-    if (!pending_actions.empty()) {
-        throw std::runtime_error("Pending actions not executed: " + pending_actions.front().first->name);
-    }
-    pending_actions.clear();
-}

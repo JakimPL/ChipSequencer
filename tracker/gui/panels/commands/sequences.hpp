@@ -52,6 +52,7 @@ class GUICommandsSequencesPanel : public GUIPanel {
     void remove() override;
     void draw() override;
     void check_keyboard_input() override;
+    void post_actions() override;
 
   public:
     GUICommandsSequencesPanel(const bool visible = true);

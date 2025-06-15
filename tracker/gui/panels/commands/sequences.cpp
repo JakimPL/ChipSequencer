@@ -50,8 +50,6 @@ void GUICommandsSequencesPanel::draw() {
         empty();
     }
 
-    dialog_box_open = edit_dialog_box.visible;
-
     ImGui::EndDisabled();
     ImGui::Columns(1);
     ImGui::End();
@@ -518,4 +516,8 @@ void GUICommandsSequencesPanel::clear_input_buffers() {
 
 bool GUICommandsSequencesPanel::is_active() const {
     return visible && ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+}
+
+void GUICommandsSequencesPanel::post_actions() {
+    dialog_box_open = edit_dialog_box.visible;
 }
