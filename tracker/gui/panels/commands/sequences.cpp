@@ -331,15 +331,15 @@ void GUICommandsSequencesPanel::draw_output_section() {
     prepare_combo(variable_types, "##OutputTypeCombo", edit_dialog_box.output_type.variable_type);
     switch (static_cast<TargetVariableType>(edit_dialog_box.output_type.variable_type)) {
     case TargetVariableType::Byte: {
-        draw_int_slider("Value", edit_dialog_box.value_integer, {}, 0, UINT8_MAX);
+        draw_int_slider(this, "Value", edit_dialog_box.value_integer, {}, 0, UINT8_MAX);
         break;
     }
     case TargetVariableType::Word: {
-        draw_int_slider("Value", edit_dialog_box.value_integer, {}, 0, UINT16_MAX);
+        draw_int_slider(this, "Value", edit_dialog_box.value_integer, {}, 0, UINT16_MAX);
         break;
     }
     case TargetVariableType::Dword: {
-        draw_int_slider("Value", edit_dialog_box.value_integer, {}, 0, UINT32_MAX);
+        draw_int_slider(this, "Value", edit_dialog_box.value_integer, {}, 0, UINT32_MAX);
         break;
     }
     case TargetVariableType::Float: {
@@ -390,11 +390,11 @@ void GUICommandsSequencesPanel::draw_edit_dialog_box() {
             break;
         }
         case Instruction::SetBPM: {
-            draw_int_slider("BPM", edit_dialog_box.bpm, {}, GUI_MIN_BPM, GUI_MAX_BPM);
+            draw_int_slider(this, "BPM", edit_dialog_box.bpm, {}, GUI_MIN_BPM, GUI_MAX_BPM);
             break;
         }
         case Instruction::SetDivision: {
-            draw_int_slider("Division", edit_dialog_box.division, {}, GUI_MIN_DIVISION, GUI_MAX_DIVISION);
+            draw_int_slider(this, "Division", edit_dialog_box.division, {}, GUI_MIN_DIVISION, GUI_MAX_DIVISION);
             break;
         }
         case Instruction::ChangeByteValue:

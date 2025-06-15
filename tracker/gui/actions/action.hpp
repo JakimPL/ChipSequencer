@@ -64,10 +64,14 @@ class ChangeValueAction : public Action {
 
     std::string get_name() const override {
         std::ostringstream stream;
-        stream << "Change " << name
-               << " from " << std::setprecision(4) << value_change.old_value
-               << " to " << std::setprecision(4) << value_change.new_value;
-
+        stream << "Change " << name;
+        if constexpr (std::is_floating_point_v<T>) {
+            stream << " from " << std::setprecision(4) << value_change.old_value
+                   << " to " << std::setprecision(4) << value_change.new_value;
+        } else {
+            stream << " from " << value_change.old_value
+                   << " to " << value_change.new_value;
+        }
         return stream.str();
     }
 };

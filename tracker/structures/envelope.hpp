@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "../sizes.hpp"
+#include "../structures/sizes.hpp"
 
 struct Envelope {
     uint16_t base_volume;

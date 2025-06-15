@@ -5,8 +5,6 @@
 #include <tuple>
 #include <vector>
 
-#include "../constants.hpp"
-#include "../structures.hpp"
 #include "../song/links/key.hpp"
 #include "../song/links/target.hpp"
 

@@ -421,6 +421,7 @@ void CommandsPattern::split_change_value_parts(
             index_id = std::clamp(index_id, 0, static_cast<int>(wavetables.size()) - 1);
             break;
         }
+        case Target::SPECIAL:
         case Target::COUNT:
         default: {
             throw std::runtime_error("Invalid target type: " + std::to_string(static_cast<int>(target)));

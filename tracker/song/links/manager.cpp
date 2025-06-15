@@ -98,6 +98,7 @@ void LinkManager::set_link(Link &link, void *item, const uint8_t i) {
         }
         break;
     }
+    case Target::SPECIAL:
     case Target::COUNT:
     default: {
         throw std::runtime_error("Invalid link target " + std::to_string(static_cast<int>(link.target)));
@@ -280,6 +281,7 @@ std::string LinkManager::get_link_reference(const LinkKey key) const {
         reference = "commands_channels.commands_sequence_" + std::to_string(key.index);
         break;
     }
+    case Target::SPECIAL:
     case Target::COUNT:
     default: {
         throw std::runtime_error("Invalid link target: " + std::to_string(static_cast<int>(key.target)));
@@ -418,7 +420,8 @@ TargetVariableType LinkManager::get_type(const LinkKey key) const {
     case Target::OSCILLATOR:
     case Target::WAVETABLE:
     case Target::DSP:
-    case Target::CHANNEL: {
+    case Target::CHANNEL:
+    case Target::SPECIAL: {
         try {
             const size_t index = routing_variables.at(key.target).get_index_from_offset(key);
             return routing_variables.at(key.target).types[index];

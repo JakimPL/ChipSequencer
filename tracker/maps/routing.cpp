@@ -1,3 +1,5 @@
+#include "../constants.hpp"
+#include "../structures.hpp"
 #include "routing.hpp"
 
 extern std::vector<DSP *> dsps;
@@ -73,6 +75,18 @@ const std::map<Target, RoutingItems> routing_variables = {
         Target::COMMANDS_CHANNEL,
         RoutingItems({
             {"Order index", COMMANDS_CHANNEL_ORDER_INDEX, TargetVariableType::Byte, ROUTING_HIDDEN},
+        }),
+    },
+    {
+        Target::SPECIAL,
+        RoutingItems({
+            {"BPM", SPECIAL_BPM, TargetVariableType::Word, ROUTING_HIDDEN},
+            {"Division", SPECIAL_DIVISION, TargetVariableType::Word, ROUTING_HIDDEN},
+            {"Master gainer", SPECIAL_MASTER_GAINER, TargetVariableType::Float, ROUTING_HIDDEN},
+            {"Sample rate", SPECIAL_SAMPLE_RATE, TargetVariableType::Dword, ROUTING_HIDDEN},
+            {"A4 frequency", SPECIAL_A4_FREQUENCY, TargetVariableType::Word, ROUTING_HIDDEN},
+            {"EDO", SPECIAL_EDO, TargetVariableType::Byte, ROUTING_HIDDEN},
+            {"Output channels", SPECIAL_OUTPUT_CHANNELS, TargetVariableType::Byte, ROUTING_HIDDEN},
         }),
     },
 };

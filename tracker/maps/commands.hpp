@@ -5,7 +5,7 @@
 #include <map>
 
 #include "../constants.hpp"
-#include "../sizes.hpp"
+#include "../structures/sizes.hpp"
 #include "../structures/commands/sequence.hpp"
 
 template <typename... T>

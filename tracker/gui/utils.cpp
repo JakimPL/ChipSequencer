@@ -34,9 +34,10 @@ void draw_checkbox(const char *label, bool &reference, const LinkKey key) {
     ImGui::EndDisabled();
 }
 
-void draw_int_slider(const char *label, int &reference, const LinkKey key, int min, int max) {
+void draw_int_slider(GUIPanel *owner, const char *label, int &reference, const LinkKey key, int min, int max) {
     ImGui::BeginDisabled(link_manager.is_linked(key));
 
+    const int old_value = reference;
     const std::string slider_id = std::string("##") + label + "Slider";
     const std::string input_id = std::string("##") + label + "Input";
     ImGui::PushID(label);
@@ -45,11 +46,13 @@ void draw_int_slider(const char *label, int &reference, const LinkKey key, int m
     ImGui::SameLine();
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
     ImGui::InputInt(input_id.c_str(), &reference, 0, 0);
+
     draw_link_tooltip(key);
     ImGui::PopID();
     ImGui::EndDisabled();
 
     reference = std::clamp(reference, min, max);
+    add_action(owner, label, key, reference, old_value);
 }
 
 void draw_float_slider(GUIPanel *owner, const char *label, float &reference, const LinkKey key, float min, float max, const GUIScale scale, const char *format) {
@@ -94,22 +97,19 @@ void draw_float_slider(GUIPanel *owner, const char *label, float &reference, con
             break;
         }
         }
-
-        reference = std::clamp(reference, min, max);
-        add_action_float(owner, label, key, reference, old_value, format);
     }
 
     draw_link_tooltip(key);
     ImGui::SameLine();
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-    if (ImGui::InputFloat(input_id.c_str(), &reference, 0.0f, 0.0f, format)) {
-        reference = std::clamp(reference, min, max);
-        add_action_float(owner, label, key, reference, old_value, format);
-    }
+    ImGui::InputFloat(input_id.c_str(), &reference, 0.0f, 0.0f, format);
 
     draw_link_tooltip(key);
     ImGui::PopID();
     ImGui::EndDisabled();
+
+    reference = std::clamp(reference, min, max);
+    add_action_float(owner, label, key, reference, old_value, format);
 }
 
 void draw_knob(const char *label, float &reference, const LinkKey key, float min, float max) {
@@ -486,7 +486,7 @@ void draw_output_dsp_splitter(GUIPanel *owner, OutputType &output_type, const in
     }
 
     ImGui::Text("Initial DSP:");
-    draw_int_slider("DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
+    draw_int_slider(owner, "DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
     ImGui::Text("Splitter:");
     int start = output_type.dsp_channel;
     int end = start + std::clamp(static_cast<int>(dsps.size()) - start, 0, MAX_OUTPUT_CHANNELS);
@@ -498,18 +498,18 @@ void draw_output_dsp_splitter(GUIPanel *owner, OutputType &output_type, const in
     }
 }
 
-void draw_output_direct_output(OutputType &output_type, const LinkKey key) {
+void draw_output_direct_output(GUIPanel *owner, OutputType &output_type, const LinkKey key) {
     const size_t output_channels = song.get_output_channels();
-    draw_int_slider("Channel", output_type.output_channel, {}, 0, output_channels - 1);
+    draw_int_slider(owner, "Channel", output_type.output_channel, {}, 0, output_channels - 1);
 }
 
-void draw_output_direct_dsp(OutputType &output_type, const int dsp_index, const LinkKey key) {
+void draw_output_direct_dsp(GUIPanel *owner, OutputType &output_type, const int dsp_index, const LinkKey key) {
     if (dsps.empty() || dsp_index >= static_cast<int>(dsps.size()) - 1) {
         ImGui::Text("No DSP available.");
         return;
     }
 
-    draw_int_slider("DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
+    draw_int_slider(owner, "DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
 }
 
 bool draw_output_parameter(OutputType &output_type, const LinkKey key) {
@@ -545,6 +545,7 @@ bool draw_output_parameter(OutputType &output_type, const LinkKey key) {
     case Target::SPLITTER_DSP:
     case Target::DIRECT_OUTPUT:
     case Target::DIRECT_DSP:
+    case Target::SPECIAL:
     case Target::COUNT:
     default: {
         throw std::runtime_error("Invalid target type: " + std::to_string(output_type.target));
@@ -669,7 +670,7 @@ bool draw_output(GUIPanel *owner, OutputType &output_type, const LinkKey key) {
         break;
     }
     case OutputTarget::DirectOutput: {
-        draw_output_direct_output(output_type, key);
+        draw_output_direct_output(owner, output_type, key);
 
         if (value_changed) {
             output_type.operation = static_cast<int>(OutputOperation::Add);
@@ -678,7 +679,7 @@ bool draw_output(GUIPanel *owner, OutputType &output_type, const LinkKey key) {
         break;
     }
     case OutputTarget::DirectDSP: {
-        draw_output_direct_dsp(output_type, dsp_index, key);
+        draw_output_direct_dsp(owner, output_type, dsp_index, key);
 
         if (value_changed) {
             output_type.operation = static_cast<int>(OutputOperation::Add);
@@ -703,7 +704,7 @@ bool draw_output(GUIPanel *owner, OutputType &output_type, const LinkKey key) {
     ImGui::Text("Variable:");
     prepare_combo(variable_types, "##OutputTypeCombo", output_type.variable_type);
     ImGui::BeginDisabled(output_type.variable_type == 0);
-    draw_int_slider("Shift", output_type.shift, {}, 0, 15);
+    draw_int_slider(owner, "Shift", output_type.shift, {}, 0, 15);
     ImGui::EndDisabled();
     pop_secondary_style();
 

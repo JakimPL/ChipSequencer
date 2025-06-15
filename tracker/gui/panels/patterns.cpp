@@ -89,7 +89,7 @@ void GUIPatternsPanel::draw() {
 void GUIPatternsPanel::draw_pages() {
     const int previous_page = page;
     const int pages = get_pages();
-    draw_int_slider("Page", page, {}, 0, pages - 1);
+    draw_int_slider(this, "Page", page, {}, 0, pages - 1);
     if (page != previous_page) {
         deselect_all_rows();
     }

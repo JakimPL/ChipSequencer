@@ -1,5 +1,6 @@
 #include "../../general.hpp"
 #include "../../song/functions.hpp"
+#include "../../structures/offsets.hpp"
 #include "../../utils/string.hpp"
 #include "../utils.hpp"
 #include "general.hpp"
@@ -210,27 +211,27 @@ void GUIGeneralPanel::draw_song_info() {
 void GUIGeneralPanel::draw_tempo() {
     ImGui::Text("Tempo");
     ImGui::BeginDisabled(gui.is_playing());
-    draw_int_slider("BPM", current_song.bpm, {}, GUI_MIN_BPM, GUI_MAX_BPM);
+    draw_int_slider(this, "BPM", current_song.bpm, {Target::SPECIAL, 0, SPECIAL_BPM}, GUI_MIN_BPM, GUI_MAX_BPM);
     if (ImGui::IsItemHovered()) {
         ImGui::SetTooltip("Real BPM: %s", std::to_string(song.calculate_real_bpm()).c_str());
     }
-    draw_int_slider("Division", current_song.division, {}, GUI_MIN_DIVISION, GUI_MAX_DIVISION);
+    draw_int_slider(this, "Division", current_song.division, {Target::SPECIAL, 0, SPECIAL_DIVISION}, GUI_MIN_DIVISION, GUI_MAX_DIVISION);
     ImGui::EndDisabled();
 }
 
 void GUIGeneralPanel::draw_output() {
     ImGui::Text("Output");
     ImGui::BeginDisabled(gui.is_playing());
-    draw_float_slider(this, "Master gainer", current_song.normalizer, {}, 0.01f, 2.0f);
-    draw_float_slider(this, "Sample rate", current_song.sample_rate, {}, GUI_MIN_SAMPLE_RATE, GUI_MAX_SAMPLE_RATE, GUIScale::Linear, "%.0f");
-    draw_int_slider("Output channels", current_song.output_channels, {}, 1, MAX_OUTPUT_CHANNELS);
+    draw_float_slider(this, "Master gainer", current_song.normalizer, {Target::SPECIAL, 0, SPECIAL_MASTER_GAINER}, 0.01f, 2.0f);
+    draw_float_slider(this, "Sample rate", current_song.sample_rate, {Target::SPECIAL, 0, SPECIAL_SAMPLE_RATE}, GUI_MIN_SAMPLE_RATE, GUI_MAX_SAMPLE_RATE, GUIScale::Linear, "%.0f");
+    draw_int_slider(this, "Output channels", current_song.output_channels, {Target::SPECIAL, 0, SPECIAL_OUTPUT_CHANNELS}, 1, MAX_OUTPUT_CHANNELS);
     ImGui::EndDisabled();
 }
 
 void GUIGeneralPanel::draw_tuning_settings() {
     ImGui::Text("Tuning Settings");
-    draw_int_slider("EDO", current_song.edo, {}, MIN_EDO, MAX_EDO);
-    draw_float_slider(this, "A4 Frequency", current_song.a4_frequency, {}, MIN_A4_FREQUENCY, MAX_A4_FREQUENCY);
+    draw_int_slider(this, "EDO", current_song.edo, {Target::SPECIAL, 0, SPECIAL_EDO}, MIN_EDO, MAX_EDO);
+    draw_float_slider(this, "A4 Frequency", current_song.a4_frequency, {Target::SPECIAL, 0, SPECIAL_A4_FREQUENCY}, MIN_A4_FREQUENCY, MAX_A4_FREQUENCY);
 
     if (draw_button("Apply Tuning", 100.0f)) {
         gui.stop();

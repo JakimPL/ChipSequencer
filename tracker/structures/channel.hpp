@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "../constants.hpp"
-#include "../sizes.hpp"
+#include "../structures/sizes.hpp"
 
 struct Channel {
     uint8_t splitter[MAX_OUTPUT_CHANNELS];

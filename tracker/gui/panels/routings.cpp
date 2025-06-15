@@ -452,6 +452,9 @@ void GUIRoutingsPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_re
     case Target::WAVETABLE:
         id_prefix = "WavetableNode_";
         break;
+    case Target::SPECIAL:
+        id_prefix = "SpecialNode_";
+        break;
     case Target::COUNT:
     default:
         throw std::runtime_error("Invalid target type: " + std::to_string(static_cast<int>(routing_node.identifier.type)));

@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "../constants.hpp"
-#include "../sizes.hpp"
+#include "../structures/sizes.hpp"
 
 enum class Generator : uint8_t {
     Square = GENERATOR_SQUARE,
