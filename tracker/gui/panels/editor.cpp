@@ -73,6 +73,7 @@ void GUIEditorPanel::draw_history() {
 
     if (history_size == 0) {
         ImGui::TextColored(GUI_TEXT_COLOR_UNAVAILABLE, "No actions recorded yet.");
+        ImGui::EndDisabled();
         ImGui::EndChild();
         return;
     }

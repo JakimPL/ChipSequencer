@@ -117,3 +117,11 @@ void perform_action_routing(
     const LinkKey &new_value,
     const LinkKey &old_value
 );
+
+void perform_action_order_sequence(
+    GUIPanel *owner,
+    const LinkKey key,
+    const size_t sequence_index,
+    const size_t old_sequence,
+    const size_t new_sequence
+);

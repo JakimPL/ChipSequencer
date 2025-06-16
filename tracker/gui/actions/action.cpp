@@ -4,6 +4,7 @@
 
 #include "action.hpp"
 #include "../names.hpp"
+#include "../panels/orders.hpp"
 #include "../panels/panel.hpp"
 #include "../panels/routings.hpp"
 
@@ -125,6 +126,48 @@ std::string ChangeRoutingAction::get_name() const {
            << " from " << old_value_target << " " << routing_change.old_routing.index
            << " to " << new_value_target << " " << routing_change.new_routing.index;
 
+    return stream.str();
+}
+
+ChangeOrderSequenceAction::ChangeOrderSequenceAction(
+    const std::string &nm,
+    GUIPanel *own,
+    const LinkKey k,
+    const OrderSequenceChange &seq_ch
+)
+    : Action(nm, own, k), sequence_change(seq_ch) {
+}
+
+void ChangeOrderSequenceAction::redo() {
+    GUIOrdersPanel *panel = dynamic_cast<GUIOrdersPanel *>(owner);
+    panel->set_sequence(sequence_change.sequence_index, sequence_change.new_sequence);
+}
+
+void ChangeOrderSequenceAction::undo() {
+    GUIOrdersPanel *panel = dynamic_cast<GUIOrdersPanel *>(owner);
+    panel->set_sequence(sequence_change.sequence_index, sequence_change.old_sequence);
+}
+
+bool ChangeOrderSequenceAction::can_merge(const Action *other) const {
+    if (!Action::can_merge(other)) {
+        return false;
+    }
+    return dynamic_cast<const ChangeOrderSequenceAction *>(other) != nullptr;
+}
+
+void ChangeOrderSequenceAction::merge(const Action *other) {
+    const auto *other_change = dynamic_cast<const ChangeOrderSequenceAction *>(other);
+    if (other_change) {
+        sequence_change.new_sequence = other_change->sequence_change.new_sequence;
+    }
+}
+
+std::string ChangeOrderSequenceAction::get_name() const {
+    std::ostringstream stream;
+    stream << "Change Order " << key.index
+           << " sequence " << sequence_change.sequence_index
+           << " from " << sequence_change.old_sequence
+           << " to " << sequence_change.new_sequence;
     return stream.str();
 }
 

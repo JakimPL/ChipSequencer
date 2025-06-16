@@ -21,11 +21,13 @@ void draw_number_of_items(GUIPanel *owner, const std::string &label, const char 
 
     ImGui::PushID(label_id);
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - label_length);
-    ImGui::InputInt("Items", &value, min, max);
+    const bool action = ImGui::InputInt("Items", &value, min, max);
     ImGui::PopID();
 
     value = std::clamp(value, min, max);
-    perform_action(owner, key, value, old_value);
+    if (action) {
+        perform_action(owner, key, value, old_value);
+    }
 }
 
 void draw_checkbox(GUIPanel *owner, const char *label, bool &reference, const LinkKey key) {
@@ -992,6 +994,22 @@ void perform_action_routing(
         const auto value_change = RoutingChange(input_key, old_value, new_value);
         history_manager.add_action(
             std::make_unique<ChangeRoutingAction>(label, owner, key, value_change)
+        );
+    }
+}
+
+void perform_action_order_sequence(
+    GUIPanel *owner,
+    const LinkKey key,
+    const size_t sequence_index,
+    const size_t old_sequence,
+    const size_t new_sequence
+) {
+    if (old_sequence != new_sequence) {
+        const std::string label = "Order " + std::to_string(key.index);
+        const OrderSequenceChange value_change = {sequence_index, old_sequence, new_sequence};
+        history_manager.add_action(
+            std::make_unique<ChangeOrderSequenceAction>(label, owner, key, value_change)
         );
     }
 }

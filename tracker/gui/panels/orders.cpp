@@ -197,11 +197,28 @@ void GUIOrdersPanel::check_keyboard_input() {
         return;
     }
 
+    const int old_sequence_index = selected_sequence;
+    const int old_sequence = current_order.sequences[selected_sequence];
     const size_t size = std::max(sequences.size(), commands_sequences.size());
     input_handler.set_limit(static_cast<int>(size) - 1);
     input_handler.handle_input(current_order.sequences, selected_sequence);
+    if (old_sequence_index == selected_sequence) {
+        const LinkKey key = {Target::ORDER, order_index, static_cast<uint16_t>(ORDER_SEQUENCES + selected_sequence)};
+        perform_action_order_sequence(
+            this, key, selected_sequence, old_sequence, current_order.sequences[selected_sequence]
+        );
+    }
 }
 
 void GUIOrdersPanel::set_index(const int index) {
     order_index = clamp_index(index, orders.size());
+}
+
+void GUIOrdersPanel::set_sequence(const size_t sequence_index, const size_t new_sequence) {
+    if (sequence_index >= current_order.sequences.size()) {
+        return;
+    }
+
+    current_order.sequences[sequence_index] = new_sequence;
+    input_handler.clear(true);
 }

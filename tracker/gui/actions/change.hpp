@@ -21,3 +21,9 @@ struct RoutingChange {
     RoutingChange(const InputKey &input, const OutputKey &old_routing, const OutputKey &new_routing)
         : input_key(input), old_routing(old_routing), new_routing(new_routing) {}
 };
+
+struct OrderSequenceChange {
+    size_t sequence_index;
+    size_t old_sequence;
+    size_t new_sequence;
+};
