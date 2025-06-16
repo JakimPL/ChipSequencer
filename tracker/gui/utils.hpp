@@ -45,10 +45,10 @@ void draw_output_output_splitter(GUIPanel *owner, OutputType &output_type, const
 void draw_output_dsp_splitter(GUIPanel *owner, OutputType &output_type, const int dsp_index, const LinkKey key);
 void draw_output_direct_output(GUIPanel *owner, OutputType &output_type, const LinkKey key);
 void draw_output_direct_dsp(GUIPanel *owner, OutputType &output_type, const int dsp_index, const LinkKey key);
-bool draw_output_parameter(OutputType &output_type, const LinkKey key);
-void draw_output_parameter_generic(OutputType &output_type, const std::vector<std::string> &names, const std::string label);
-void draw_output_parameter_oscillator(OutputType &output_type);
-void draw_output_parameter_dsp(OutputType &output_type);
+bool draw_output_parameter(GUIPanel *owner, OutputType &output_type, const LinkKey key);
+void draw_output_parameter_generic(GUIPanel *owner, OutputType &output_type, const std::vector<std::string> &names, const std::string label);
+void draw_output_parameter_oscillator(GUIPanel *owner, OutputType &output_type);
+void draw_output_parameter_dsp(GUIPanel *owner, OutputType &output_type);
 bool draw_output(GUIPanel *owner, OutputType &output_type, const LinkKey key);
 
 void show_dependency_tooltip(std::vector<std::string> &dependencies);
@@ -82,7 +82,7 @@ std::pair<size_t, bool> draw_commands_pattern(
     const uint16_t end = UINT16_MAX
 );
 
-GUIState prepare_combo(const std::vector<std::string> &names, std::string label, int &index, const bool error_if_empty = false);
+GUIState prepare_combo(GUIPanel *owner, const std::vector<std::string> &names, std::string label, int &index, const LinkKey = {}, const bool error_if_empty = false);
 void update_items(std::vector<std::string> &names, size_t size, std::string label, int &index);
 void push_secondary_style();
 void pop_secondary_style();

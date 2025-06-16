@@ -31,7 +31,7 @@ bool GUIOrdersPanel::select_item() {
     std::vector<std::string> dependencies = song.find_order_dependencies(order_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
-    if (prepare_combo(order_names, "##OrderCombo", order_index).value_changed) {
+    if (prepare_combo(this, order_names, "##OrderCombo", order_index).value_changed) {
         input_handler.clear();
     }
     show_dependency_tooltip(dependencies);

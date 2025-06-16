@@ -86,7 +86,7 @@ bool GUISequencesPanel::select_item() {
     std::vector<std::string> dependencies = song.find_sequence_dependencies(sequence_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
-    prepare_combo(sequence_names, "##SequenceCombo", sequence_index);
+    prepare_combo(this, sequence_names, "##SequenceCombo", sequence_index);
     show_dependency_tooltip(dependencies);
     pop_tertiary_style();
     ImGui::Separator();

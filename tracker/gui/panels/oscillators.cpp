@@ -35,7 +35,7 @@ bool GUIOscillatorsPanel::select_item() {
     std::vector<std::string> dependencies = song.find_oscillator_dependencies(oscillator_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
-    prepare_combo(oscillator_names, "##OscillatorCombo", oscillator_index);
+    prepare_combo(this, oscillator_names, "##OscillatorCombo", oscillator_index);
     show_dependency_tooltip(dependencies);
     pop_tertiary_style();
     ImGui::Separator();
@@ -209,7 +209,7 @@ void GUIOscillatorsPanel::draw_oscillator_type() {
     ImGui::Text("Type");
     ImGui::NextColumn();
 
-    if (prepare_combo(generator_names, "##GeneratorCombo", current_oscillator.generator_index).value_changed) {
+    if (prepare_combo(this, generator_names, "##GeneratorCombo", current_oscillator.generator_index, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_GENERATOR_INDEX}).value_changed) {
         update_oscillator_name(oscillator_index, current_oscillator.generator_index);
         if (current_oscillator.generator_index == GENERATOR_WAVETABLE && wavetables.empty()) {
             song.add_wavetable();
@@ -244,7 +244,7 @@ void GUIOscillatorsPanel::draw_oscillator() {
     case Generator::Wavetable: {
         ImGui::Text("Wavetable");
         ImGui::NextColumn();
-        if (prepare_combo(wavetable_names, "##WavetableCombo", current_oscillator.wavetable_index, true).right_clicked) {
+        if (prepare_combo(this, wavetable_names, "##WavetableCombo", current_oscillator.wavetable_index, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_WAVETABLE_WAVETABLE_INDEX}, true).right_clicked) {
             gui.set_index(GUIElement::Wavetables, current_oscillator.wavetable_index);
         }
 

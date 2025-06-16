@@ -34,7 +34,7 @@ bool GUIDSPsPanel::select_item() {
     std::vector<std::pair<ItemType, uint8_t>> link_dependencies = link_manager.find_dependencies(Target::DSP, dsp_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies, link_dependencies);
-    prepare_combo(dsp_names, "##DSPCombo", dsp_index);
+    prepare_combo(this, dsp_names, "##DSPCombo", dsp_index);
     show_dependency_tooltip(dependencies);
     pop_tertiary_style();
     ImGui::Separator();
@@ -214,7 +214,7 @@ void GUIDSPsPanel::draw_dsp_type() {
     ImGui::Text("Type");
     ImGui::NextColumn();
 
-    if (prepare_combo(effect_names, "##GeneratorCombo", current_dsp.effect_index).value_changed) {
+    if (prepare_combo(this, effect_names, "##GeneratorCombo", current_dsp.effect_index, {Target::DSP, dsp_index, DSP_EFFECT_INDEX}).value_changed) {
         update_dsp_name(dsp_index, current_dsp.effect_index);
     }
 

@@ -36,7 +36,7 @@ bool GUIChannelsPanel::select_item() {
     std::vector<std::pair<ItemType, uint8_t>> link_dependencies = link_manager.find_dependencies(Target::CHANNEL, channel_index);
     push_tertiary_style();
     draw_add_or_remove({}, link_dependencies);
-    prepare_combo(channel_names, "##ChannelCombo", channel_index);
+    prepare_combo(this, channel_names, "##ChannelCombo", channel_index);
     pop_tertiary_style();
     ImGui::Separator();
 
@@ -201,17 +201,17 @@ void GUIChannelsPanel::draw_channel() {
     ImGui::Separator();
 
     ImGui::Text("Envelope:");
-    if (prepare_combo(envelope_names, "##EnvelopeCombo", current_channel.envelope_index, true).right_clicked) {
+    if (prepare_combo(this, envelope_names, "##EnvelopeCombo", current_channel.envelope_index, {Target::CHANNEL, channel_index, CHANNEL_ENVELOPE_INDEX}, true).right_clicked) {
         gui.set_index(GUIElement::Envelopes, current_channel.envelope_index);
     }
 
     ImGui::Text("Oscillator:");
-    if (prepare_combo(oscillator_names, "##OscillatorCombo", current_channel.oscillator_index, true).right_clicked) {
+    if (prepare_combo(this, oscillator_names, "##OscillatorCombo", current_channel.oscillator_index, {Target::CHANNEL, channel_index, CHANNEL_OSCILLATOR_INDEX}, true).right_clicked) {
         gui.set_index(GUIElement::Oscillators, current_channel.oscillator_index);
     }
 
     ImGui::Text("Order:");
-    if (prepare_combo(order_names, "##OrderCombo", current_channel.order_index, !current_channel.constant_pitch).right_clicked) {
+    if (prepare_combo(this, order_names, "##OrderCombo", current_channel.order_index, {Target::CHANNEL, channel_index, CHANNEL_ORDER_INDEX}, !current_channel.constant_pitch).right_clicked) {
         gui.set_index(GUIElement::Orders, current_channel.order_index);
     }
 

@@ -36,9 +36,11 @@ const std::map<Target, RoutingItems> routing_variables = {
     {
         Target::OSCILLATOR,
         RoutingItems({
+            {"Generator", OSCILLATOR_GENERATOR_INDEX, TargetVariableType::Byte, ROUTING_HIDDEN},
             {"Duty cycle", OSCILLATOR_SQUARE_DUTY_CYCLE, TargetVariableType::Word, GENERATOR_SQUARE},
             {"Reverse", OSCILLATOR_SAW_REVERSE, TargetVariableType::Byte, GENERATOR_SAW},
             {"Interpolation", OSCILLATOR_WAVETABLE_INTERPOLATION, TargetVariableType::Byte, GENERATOR_WAVETABLE},
+            {"Wavetable index", OSCILLATOR_WAVETABLE_WAVETABLE_INDEX, TargetVariableType::Byte, GENERATOR_WAVETABLE},
         }),
     },
     {
@@ -50,6 +52,7 @@ const std::map<Target, RoutingItems> routing_variables = {
     {
         Target::DSP,
         RoutingItems({
+            {"Effect", DSP_EFFECT_INDEX, TargetVariableType::Byte, ROUTING_HIDDEN},
             {"Gain", DSP_GAINER_VOLUME, TargetVariableType::Word, EFFECT_GAINER},
             {"Level", DSP_DISTORTION_LEVEL, TargetVariableType::Word, EFFECT_DISTORTION},
             {"Cutoff frequency", DSP_FILTER_FREQUENCY, TargetVariableType::Word, EFFECT_FILTER},
@@ -107,6 +110,11 @@ const std::map<Target, RoutingItems> routing_variables = {
             {"Hide command channel", SPECIAL_COMMAND_CHANNEL_HIDE, TargetVariableType::Byte, ROUTING_HIDDEN},
             {"Sequence length", SPECIAL_SEQUENCE_LENGTH, TargetVariableType::Byte, ROUTING_HIDDEN},
             {"Commands sequence length", SPECIAL_COMMANDS_SEQUENCE_LENGTH, TargetVariableType::Byte, ROUTING_HIDDEN},
+            {"Output target", SPECIAL_OUTPUT_TARGET, TargetVariableType::Byte, ROUTING_HIDDEN},
+            {"Routing item", SPECIAL_OUTPUT_ROUTING_ITEM, TargetVariableType::Byte, ROUTING_HIDDEN},
+            {"Parameter index", SPECIAL_OUTPUT_PARAMETER_INDEX, TargetVariableType::Byte, ROUTING_HIDDEN},
+            {"Operation type", SPECIAL_OPERATION_TYPE, TargetVariableType::Byte, ROUTING_HIDDEN},
+            {"Variable type", SPECIAL_VARIABLE_TYPE, TargetVariableType::Byte, ROUTING_HIDDEN},
         }),
     },
 };

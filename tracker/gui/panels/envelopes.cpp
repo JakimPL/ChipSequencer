@@ -32,7 +32,7 @@ bool GUIEnvelopesPanel::select_item() {
     std::vector<std::pair<ItemType, uint8_t>> link_dependencies = link_manager.find_dependencies(Target::ENVELOPE, envelope_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies, link_dependencies);
-    prepare_combo(envelope_names, "##EnvelopeCombo", envelope_index);
+    prepare_combo(this, envelope_names, "##EnvelopeCombo", envelope_index);
     show_dependency_tooltip(dependencies);
     pop_tertiary_style();
     ImGui::Separator();

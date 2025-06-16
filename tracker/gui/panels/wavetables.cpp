@@ -36,7 +36,7 @@ bool GUIWavetablesPanel::select_item() {
     std::vector<std::string> dependencies = song.find_wavetable_dependencies(wavetable_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
-    prepare_combo(wavetable_names, "##WavetableCombo", wavetable_index);
+    prepare_combo(this, wavetable_names, "##WavetableCombo", wavetable_index);
     show_dependency_tooltip(dependencies);
     pop_tertiary_style();
     ImGui::Separator();

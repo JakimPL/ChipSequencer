@@ -57,7 +57,7 @@ bool GUICommandsSequencesPanel::select_item() {
     std::vector<std::string> dependencies = song.find_commands_sequence_dependencies(sequence_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
-    if (prepare_combo(commands_sequence_names, "##CommandsSequenceCombo", sequence_index).value_changed) {
+    if (prepare_combo(this, commands_sequence_names, "##CommandsSequenceCombo", sequence_index).value_changed) {
         current_sequence.pattern.values_handler.clear();
         current_sequence.pattern.commands_handler.clear();
     }
@@ -325,11 +325,11 @@ void GUICommandsSequencesPanel::draw_output_section() {
     push_secondary_style();
     ImGui::Text("Output:");
 
-    draw_output_parameter(edit_dialog_box.output_type, {});
+    draw_output_parameter(this, edit_dialog_box.output_type, {});
     ImGui::Text("Operation:");
-    prepare_combo(simple_operation_names, "##OutputTypeOperation", edit_dialog_box.output_type.operation);
+    prepare_combo(this, simple_operation_names, "##OutputTypeOperation", edit_dialog_box.output_type.operation);
     ImGui::Text("Variable:");
-    prepare_combo(variable_types, "##OutputTypeCombo", edit_dialog_box.output_type.variable_type);
+    prepare_combo(this, variable_types, "##OutputTypeCombo", edit_dialog_box.output_type.variable_type);
     switch (static_cast<TargetVariableType>(edit_dialog_box.output_type.variable_type)) {
     case TargetVariableType::Byte: {
         draw_int_slider(this, "Value", edit_dialog_box.value_integer, {}, 0, UINT8_MAX);
@@ -370,7 +370,7 @@ void GUICommandsSequencesPanel::draw_edit_dialog_box() {
 
         ImGui::Text("Command:");
         push_tertiary_style();
-        prepare_combo(names, "##EditCommand", edit_dialog_box.instruction);
+        prepare_combo(this, names, "##EditCommand", edit_dialog_box.instruction);
         pop_tertiary_style();
         ImGui::Separator();
 
@@ -382,7 +382,7 @@ void GUICommandsSequencesPanel::draw_edit_dialog_box() {
         case Instruction::PortamentoUp:
         case Instruction::PortamentoDown: {
             ImGui::Text("Channel:");
-            prepare_combo(channel_names, "##EditCommandChannel", edit_dialog_box.portamento_channel);
+            prepare_combo(this, channel_names, "##EditCommandChannel", edit_dialog_box.portamento_channel);
             draw_float_slider(this, "Semitones", edit_dialog_box.portamento_value, {}, 0.0f, MAX_PORTAMENTO);
             break;
         }

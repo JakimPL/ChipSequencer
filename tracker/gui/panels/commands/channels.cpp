@@ -31,7 +31,7 @@ void GUICommandsChannelsPanel::draw() {
 bool GUICommandsChannelsPanel::select_item() {
     push_tertiary_style();
     draw_add_or_remove();
-    prepare_combo(commands_channel_names, "##CommandsChannelCombo", channel_index);
+    prepare_combo(this, commands_channel_names, "##CommandsChannelCombo", channel_index);
     pop_tertiary_style();
     ImGui::Separator();
 
@@ -110,7 +110,7 @@ void GUICommandsChannelsPanel::draw_channel() {
     ImGui::Separator();
 
     ImGui::Text("Order:");
-    if (prepare_combo(order_names, "##OrderCombo", current_channel.order_index, true).right_clicked) {
+    if (prepare_combo(this, order_names, "##OrderCombo", current_channel.order_index, {Target::COMMANDS_CHANNEL, channel_index, COMMANDS_CHANNEL_ORDER_INDEX}, true).right_clicked) {
         gui.set_index(GUIElement::Orders, current_channel.order_index);
     }
 }
