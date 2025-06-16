@@ -6,8 +6,8 @@ class GUI;
 
 #include "driver/file.hpp"
 #include "gui/gui.hpp"
-#include "gui/actions/history.hpp"
-#include "gui/actions/shortcuts.hpp"
+#include "gui/history/manager.hpp"
+#include "gui/history/shortcuts.hpp"
 #include "song/buffers.hpp"
 #include "song/song.hpp"
 #include "song/links/manager.hpp"

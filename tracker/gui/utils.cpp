@@ -9,7 +9,10 @@
 #include "constants.hpp"
 #include "names.hpp"
 #include "utils.hpp"
-#include "actions/action.hpp"
+#include "history/actions/routing.hpp"
+#include "history/actions/sequence.hpp"
+#include "history/actions/text.hpp"
+#include "history/actions/value.hpp"
 #include "patterns/selection.hpp"
 
 int clamp_index(int index, const int size) {

@@ -1,6 +1,6 @@
 
 #include "../names.hpp"
-#include "../actions/action.hpp"
+#include "../history/actions/action.hpp"
 #include "panel.hpp"
 
 GUIPanel::GUIPanel(

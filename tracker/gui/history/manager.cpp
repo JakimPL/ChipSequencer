@@ -1,5 +1,5 @@
 #include "../../general.hpp"
-#include "history.hpp"
+#include "manager.hpp"
 
 void HistoryManager::add_action(std::unique_ptr<Action> action) {
     if (action->key.is_null()) {

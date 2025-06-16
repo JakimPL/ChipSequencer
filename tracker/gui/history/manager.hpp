@@ -5,7 +5,7 @@
 #include <string>
 
 #include "../constants.hpp"
-#include "action.hpp"
+#include "actions/action.hpp"
 
 class HistoryManager {
   private:

@@ -88,10 +88,14 @@ add_executable(ChipSequencer
     tracker/driver/file.cpp
     tracker/driver/port.cpp
     tracker/general.cpp
-    tracker/gui/actions/action.cpp
-    tracker/gui/actions/history.cpp
-    tracker/gui/actions/shortcuts.cpp
     tracker/gui/gui.cpp
+    tracker/gui/history/actions/action.cpp
+    tracker/gui/history/actions/routing.cpp
+    tracker/gui/history/actions/sequence.cpp
+    tracker/gui/history/actions/text.cpp
+    tracker/gui/history/actions/value.cpp
+    tracker/gui/history/manager.cpp
+    tracker/gui/history/shortcuts.cpp
     tracker/gui/inputs/input.cpp
     tracker/gui/inputs/numeric.cpp
     tracker/gui/inputs/string.cpp

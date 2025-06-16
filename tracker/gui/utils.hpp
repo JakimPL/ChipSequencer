@@ -12,7 +12,7 @@
 #include "enums.hpp"
 #include "node.hpp"
 #include "panels/panel.hpp"
-#include "actions/shortcuts.hpp"
+#include "history/shortcuts.hpp"
 #include "patterns/commands.hpp"
 #include "patterns/pattern.hpp"
 #include "patterns/selection.hpp"
