@@ -182,9 +182,9 @@ void GUIGeneralPanel::draw_stop_square() const {
 
 void GUIGeneralPanel::draw_song_info() {
     ImGui::Text("Song Details");
-    ImGui::InputText("Title", current_song.title, IM_ARRAYSIZE(current_song.title));
-    ImGui::InputText("Author", current_song.author, IM_ARRAYSIZE(current_song.author));
-    ImGui::InputText("Message", current_song.message, IM_ARRAYSIZE(current_song.message));
+    draw_text(this, "Title", current_song.title, {Target::SPECIAL, 0, SPECIAL_TITLE});
+    draw_text(this, "Author", current_song.author, {Target::SPECIAL, 0, SPECIAL_AUTHOR});
+    draw_text(this, "Message", current_song.message, {Target::SPECIAL, 0, SPECIAL_MESSAGE});
 }
 
 void GUIGeneralPanel::draw_tempo() {

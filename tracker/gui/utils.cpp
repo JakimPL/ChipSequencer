@@ -30,6 +30,21 @@ void draw_number_of_items(GUIPanel *owner, const std::string &label, const char 
     }
 }
 
+template <size_t n>
+void draw_text(GUIPanel *owner, const char *label, char (&text)[n], const LinkKey key) {
+    ImGui::BeginDisabled(link_manager.is_linked(key));
+
+    const std::string old_value = text;
+
+    ImGui::PushID(label);
+    if (ImGui::InputText(label, text, IM_ARRAYSIZE(text))) {
+        perform_action_string<n>(owner, key, text, old_value);
+    }
+    draw_link_tooltip(key);
+    ImGui::PopID();
+    ImGui::EndDisabled();
+}
+
 void draw_checkbox(GUIPanel *owner, const char *label, bool &reference, const LinkKey key) {
     ImGui::BeginDisabled(link_manager.is_linked(key));
 
@@ -1013,3 +1028,28 @@ void perform_action_order_sequence(
         );
     }
 }
+
+template <size_t n>
+void perform_action_string(
+    GUIPanel *owner,
+    const LinkKey key,
+    char (&buffer)[n],
+    const std::string &old_value
+) {
+    const std::string new_value = buffer;
+    if (old_value != new_value) {
+        std::string label = get_key_name(key);
+        const auto value_change = TextChange<n>(buffer, old_value, new_value);
+        history_manager.add_action(
+            std::make_unique<ChangeTextAction<n>>(label, owner, key, value_change)
+        );
+    }
+}
+
+template void draw_text<GUI_MAX_STRING_LENGTH>(GUIPanel *owner, const char *label, char (&text)[GUI_MAX_STRING_LENGTH], const LinkKey key);
+template void perform_action_string<GUI_MAX_STRING_LENGTH>(
+    GUIPanel *owner,
+    const LinkKey key,
+    char (&buffer)[GUI_MAX_STRING_LENGTH],
+    const std::string &old_value
+);

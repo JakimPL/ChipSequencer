@@ -27,3 +27,6 @@ constexpr size_t SPECIAL_OUTPUT_ROUTING_ITEM = 33;
 constexpr size_t SPECIAL_OUTPUT_PARAMETER_INDEX = 34;
 constexpr size_t SPECIAL_OPERATION_TYPE = 35;
 constexpr size_t SPECIAL_VARIABLE_TYPE = 36;
+constexpr size_t SPECIAL_TITLE = 37;
+constexpr size_t SPECIAL_AUTHOR = 101;
+constexpr size_t SPECIAL_MESSAGE = 165;

@@ -28,9 +28,11 @@ extern std::unordered_map<LinkKey, float> slider_float_values;
 int clamp_index(int index, const int size);
 void draw_number_of_items(GUIPanel *owner, const std::string &label, const char *label_id, int &value, int min, int max, const LinkKey key = {}, float label_length = 50.0f);
 
+template <size_t n>
+void draw_text(GUIPanel *owner, const char *label, char (&text)[n], const LinkKey key);
 void draw_checkbox(GUIPanel *owner, const char *label, bool &reference, const LinkKey key);
 void draw_int_slider(GUIPanel *owner, const char *label, int &reference, const LinkKey key, int min = 0, int max = 1);
-void draw_float_slider(GUIPanel *owner, const char *label, float &reference, const LinkKey = LinkKey(), float min = 0.0f, float max = 1.0f, const GUIScale scale = GUIScale::Linear, const char *format = "%.4f");
+void draw_float_slider(GUIPanel *owner, const char *label, float &reference, const LinkKey, float min = 0.0f, float max = 1.0f, const GUIScale scale = GUIScale::Linear, const char *format = "%.4f");
 void draw_knob(GUIPanel *owner, const char *label, float &reference, const LinkKey key, float min = 0.0f, float max = 1.0f);
 void draw_link_tooltip(const LinkKey &key);
 
@@ -124,4 +126,12 @@ void perform_action_order_sequence(
     const size_t sequence_index,
     const size_t old_sequence,
     const size_t new_sequence
+);
+
+template <size_t n>
+void perform_action_string(
+    GUIPanel *owner,
+    const LinkKey key,
+    char (&buffer)[n],
+    const std::string &old_value
 );

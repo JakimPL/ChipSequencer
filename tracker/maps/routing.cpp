@@ -115,6 +115,9 @@ const std::map<Target, RoutingItems> routing_variables = {
             {"Parameter index", SPECIAL_OUTPUT_PARAMETER_INDEX, TargetVariableType::Byte},
             {"Operation type", SPECIAL_OPERATION_TYPE, TargetVariableType::Byte},
             {"Variable type", SPECIAL_VARIABLE_TYPE, TargetVariableType::Byte},
+            {"Title", SPECIAL_TITLE, TargetVariableType::Count, ROUTING_HIDDEN},
+            {"Author", SPECIAL_AUTHOR, TargetVariableType::Count, ROUTING_HIDDEN},
+            {"Message", SPECIAL_MESSAGE, TargetVariableType::Count, ROUTING_HIDDEN},
         }),
     },
 };
