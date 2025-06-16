@@ -3,8 +3,8 @@
 #include "../actions/action.hpp"
 #include "panel.hpp"
 
-GUIPanel::GUIPanel(const bool visible)
-    : visible(visible) {
+GUIPanel::GUIPanel(const bool visible, const bool windowed)
+    : visible(visible), windowed(true) {
 }
 
 void GUIPanel::draw_add_or_remove(

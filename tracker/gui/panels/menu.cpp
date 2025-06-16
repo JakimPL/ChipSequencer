@@ -8,8 +8,8 @@
 #include "../utils.hpp"
 #include "menu.hpp"
 
-GUIMenu::GUIMenu(const bool visible)
-    : GUIPanel(visible) {
+GUIMenu::GUIMenu(const bool visible, const bool windowed)
+    : GUIPanel(visible, windowed) {
     shortcut_manager.register_shortcut(
         ShortcutAction::FileNew,
         [this]() { file_new_confirm(); }

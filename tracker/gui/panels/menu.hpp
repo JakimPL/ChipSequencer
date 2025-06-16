@@ -6,6 +6,7 @@
 #include "../../song/compilation.hpp"
 #include "../init.hpp"
 #include "../actions/shortcuts.hpp"
+#include "panel.hpp"
 
 class GUIMenu : public GUIPanel {
   private:
@@ -33,5 +34,5 @@ class GUIMenu : public GUIPanel {
     void post_actions() override;
 
   public:
-    GUIMenu(const bool visible = true);
+    GUIMenu(const bool visible = true, const bool windowed = false);
 };

@@ -8,10 +8,11 @@ class Action;
 
 class GUIPanel {
   public:
-    GUIPanel(const bool visible = true);
+    GUIPanel(const bool visible = true, const bool windowed = true);
     virtual ~GUIPanel() = default;
 
     bool visible = true;
+    const bool windowed;
 
     virtual void update() {};
     virtual void set_index(const int) {};
