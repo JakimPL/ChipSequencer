@@ -1,3 +1,4 @@
+#include "../../general.hpp"
 #include "history.hpp"
 
 void HistoryManager::add_action(std::unique_ptr<Action> action) {
@@ -28,7 +29,7 @@ void HistoryManager::add_action(std::unique_ptr<Action> action) {
 }
 
 void HistoryManager::undo() {
-    if (!can_undo()) {
+    if (!can_undo() || gui.is_playing()) {
         return;
     }
 
@@ -37,7 +38,7 @@ void HistoryManager::undo() {
 }
 
 void HistoryManager::redo() {
-    if (!can_redo()) {
+    if (!can_redo() || gui.is_playing()) {
         return;
     }
 

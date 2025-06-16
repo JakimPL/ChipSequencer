@@ -59,6 +59,7 @@ void GUIEditorPanel::draw_history() {
     const size_t history_size = history_manager.get_history_size();
 
     ImGui::BeginChild("HistoryPanel", ImVec2(0, 0), false);
+    ImGui::BeginDisabled(gui.is_playing());
     ImGui::Separator();
 
     if (ImGui::Button("Undo") && history_manager.can_undo()) {
@@ -127,6 +128,7 @@ void GUIEditorPanel::draw_history() {
     }
 
     ImGui::Columns(1);
+    ImGui::EndDisabled();
     ImGui::EndChild();
 }
 
