@@ -261,9 +261,6 @@ void GUIOscillatorsPanel::draw_oscillator() {
     ImGui::Columns(1);
 }
 
-void GUIOscillatorsPanel::check_keyboard_input() {
-}
-
 void GUIOscillatorsPanel::set_index(const int index) {
     oscillator_index = clamp_index(index, oscillators.size());
 }

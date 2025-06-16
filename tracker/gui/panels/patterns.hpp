@@ -73,7 +73,6 @@ class GUIPatternsPanel : public GUIPanel {
 
   public:
     GUIPatternsPanel(const bool visible = true);
-    void update() override;
     void set_index(const int index) override;
 
     void from() override;

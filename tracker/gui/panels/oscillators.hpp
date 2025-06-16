@@ -36,7 +36,6 @@ class GUIOscillatorsPanel : public GUIPanel {
     void duplicate() override;
     void remove() override;
     void draw() override;
-    void check_keyboard_input() override;
 
   public:
     GUIOscillatorsPanel(const bool visible = true);

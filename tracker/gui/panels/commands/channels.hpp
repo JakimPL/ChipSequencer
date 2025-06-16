@@ -19,7 +19,6 @@ class GUICommandsChannelsPanel : public GUIPanel {
     void duplicate() override;
     void remove() override;
     void draw() override;
-    void check_keyboard_input() override;
 
   public:
     GUICommandsChannelsPanel(const bool visible = true);

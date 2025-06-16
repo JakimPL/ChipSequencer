@@ -39,7 +39,6 @@ class GUIEnvelopesPanel : public GUIPanel {
     void duplicate() override;
     void remove() override;
     void draw() override;
-    void check_keyboard_input() override;
 
   public:
     GUIEnvelopesPanel(const bool visible = true);

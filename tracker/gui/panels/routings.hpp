@@ -49,11 +49,9 @@ class GUIRoutingsPanel : public GUIPanel {
     Splitter get_splitter_from_input_key(const InputKey &source) const;
 
     void draw() override;
-    void check_keyboard_input() override;
 
   public:
     GUIRoutingsPanel(const bool visible = true);
-    void update() override;
 
     void from() override;
     void to() const override;

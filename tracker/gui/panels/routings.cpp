@@ -24,9 +24,6 @@ GUIRoutingsPanel::GUIRoutingsPanel(const bool visible)
     : GUIPanel(visible) {
 }
 
-void GUIRoutingsPanel::update() {
-}
-
 void GUIRoutingsPanel::draw() {
     ImGui::Begin("Routings");
 
@@ -625,9 +622,6 @@ bool GUIRoutingsPanel::is_linking_possible(const InputKey &source_key, const Out
     const size_t item = target_key.index;
     const Target target = target_key.target;
     return (item > id || type != ItemType::DSP || (target != Target::DIRECT_DSP && target != Target::SPLITTER_DSP));
-}
-
-void GUIRoutingsPanel::check_keyboard_input() {
 }
 
 bool GUIRoutingsPanel::get_splitter_bounds(const size_t j, size_t index, const Link &link) const {

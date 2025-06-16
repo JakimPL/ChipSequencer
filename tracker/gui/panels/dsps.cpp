@@ -267,9 +267,6 @@ void GUIDSPsPanel::draw_effect() {
     }
 }
 
-void GUIDSPsPanel::check_keyboard_input() {
-}
-
 void GUIDSPsPanel::set_index(const int index) {
     dsp_index = clamp_index(index, dsps.size());
 }

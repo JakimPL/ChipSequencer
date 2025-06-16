@@ -5,8 +5,6 @@
 
 class FileDriver : public Driver {
   public:
-    FileDriver();
-
     void terminate() override;
     void play() override;
 

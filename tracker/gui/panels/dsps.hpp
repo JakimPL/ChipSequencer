@@ -40,7 +40,6 @@ class GUIDSPsPanel : public GUIPanel {
     void duplicate() override;
     void remove() override;
     void draw() override;
-    void check_keyboard_input() override;
 
   public:
     GUIDSPsPanel(const bool visible = true);

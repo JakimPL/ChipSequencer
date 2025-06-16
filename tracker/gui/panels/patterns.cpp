@@ -65,9 +65,6 @@ GUIPatternsPanel::GUIPatternsPanel(const bool visible)
     );
 }
 
-void GUIPatternsPanel::update() {
-}
-
 void GUIPatternsPanel::draw() {
     ImGui::Begin("Patterns");
 

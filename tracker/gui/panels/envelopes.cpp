@@ -264,9 +264,6 @@ void GUIEnvelopesPanel::draw_envelope_graph() {
     }
 }
 
-void GUIEnvelopesPanel::check_keyboard_input() {
-}
-
 void GUIEnvelopesPanel::set_index(const int index) {
     envelope_index = clamp_index(index, envelopes.size());
 }

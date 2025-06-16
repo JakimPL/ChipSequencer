@@ -115,9 +115,6 @@ void GUICommandsChannelsPanel::draw_channel() {
     }
 }
 
-void GUICommandsChannelsPanel::check_keyboard_input() {
-}
-
 void GUICommandsChannelsPanel::set_index(const int index) {
     channel_index = clamp_index(index, commands_channels.size());
 }
