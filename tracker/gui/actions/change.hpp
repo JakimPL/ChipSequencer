@@ -1,12 +1,14 @@
 #pragma once
 
+#include "../../song/links/key.hpp"
+
 template <typename T>
 struct ValueChange {
     T &parameter;
     T old_value;
     T new_value;
 
-    void execute() {
+    void redo() {
         parameter = new_value;
     }
 

@@ -31,6 +31,7 @@ void GUIGeneralPanel::draw() {
         draw_play_button();
         draw_tabs();
         check_keyboard_input();
+        actions();
         to();
         post_actions();
     } else {

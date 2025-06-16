@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 
+#include "../../maps/routing.hpp"
 #include "../../song/links/key.hpp"
 #include "change.hpp"
 
@@ -14,9 +15,9 @@ struct Action {
         : name(nm), owner(own), key(k) {}
 
     virtual ~Action() = default;
-    virtual void execute() = 0;
     virtual void undo() = 0;
-    virtual void redo();
+    virtual void redo() = 0;
+    virtual void execute() { redo(); };
     virtual void notify_panel(const bool undo);
     virtual bool can_merge(const Action *other) const {
         return key == other->key && !key.is_null();
@@ -35,11 +36,16 @@ class ChangeValueAction : public Action {
     ValueChange<T> value_change;
 
   public:
-    ChangeValueAction(const std::string &nm, GUIPanel *own, const LinkKey k, const ValueChange<T> &val_ch)
+    ChangeValueAction(
+        const std::string &nm,
+        GUIPanel *own,
+        const LinkKey k,
+        const ValueChange<T> &val_ch
+    )
         : Action(nm, own, k), value_change(val_ch) {}
 
-    void execute() override {
-        value_change.execute();
+    void redo() override {
+        value_change.redo();
     }
 
     void undo() override {
@@ -71,6 +77,51 @@ class ChangeValueAction : public Action {
             stream << " from " << value_change.old_value
                    << " to " << value_change.new_value;
         }
+        return stream.str();
+    }
+};
+
+class ChangeRoutingAction : public Action {
+  private:
+    ValueChange<LinkKey> routing_change;
+
+  public:
+    ChangeRoutingAction(
+        const std::string &nm,
+        GUIPanel *own,
+        const LinkKey k,
+        const ValueChange<LinkKey> &rout_ch
+    )
+        : Action(nm, own, k), routing_change(rout_ch) {}
+
+    void redo() override {
+        routing_change.redo();
+    }
+
+    void undo() override {
+        routing_change.undo();
+    }
+
+    bool can_merge(const Action *other) const override {
+        if (!Action::can_merge(other)) {
+            return false;
+        }
+
+        return dynamic_cast<const ChangeRoutingAction *>(other) != nullptr;
+    }
+
+    void merge(const Action *other) override {
+        const auto *other_change = dynamic_cast<const ChangeRoutingAction *>(other);
+        if (other_change) {
+            routing_change.new_value = other_change->routing_change.new_value;
+        }
+    }
+
+    std::string get_name() const override {
+        std::ostringstream stream;
+        stream << "Change routing for " << name
+               << " from " << get_key_name(routing_change.old_value)
+               << " to " << get_key_name(routing_change.new_value);
         return stream.str();
     }
 };
