@@ -32,40 +32,50 @@ void draw_checkbox(GUIPanel *owner, const char *label, bool &reference, const Li
     ImGui::BeginDisabled(link_manager.is_linked(key));
 
     const bool old_value = reference;
+
     ImGui::PushID(label);
-    ImGui::Checkbox(label, &reference);
+    const bool action = ImGui::Checkbox(label, &reference);
+
     draw_link_tooltip(key);
     ImGui::PopID();
     ImGui::EndDisabled();
 
-    perform_action(owner, key, reference, old_value);
+    if (action) {
+        perform_action(owner, key, reference, old_value);
+    }
 }
 
 void draw_int_slider(GUIPanel *owner, const char *label, int &reference, const LinkKey key, int min, int max) {
     ImGui::BeginDisabled(link_manager.is_linked(key));
 
     const int old_value = reference;
+
     const std::string slider_id = std::string("##") + label + "Slider";
     const std::string input_id = std::string("##") + label + "Input";
     ImGui::PushID(label);
-    ImGui::SliderInt(slider_id.c_str(), &reference, min, max, label);
+    bool action = ImGui::SliderInt(slider_id.c_str(), &reference, min, max, label);
     draw_link_tooltip(key);
+
     ImGui::SameLine();
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-    ImGui::InputInt(input_id.c_str(), &reference, 0, 0);
-
+    action |= ImGui::InputInt(input_id.c_str(), &reference, 0, 0);
     draw_link_tooltip(key);
+
     ImGui::PopID();
     ImGui::EndDisabled();
 
     reference = std::clamp(reference, min, max);
-    perform_action(owner, key, reference, old_value);
+    if (action) {
+        perform_action(owner, key, reference, old_value);
+    }
 }
 
 void draw_float_slider(GUIPanel *owner, const char *label, float &reference, const LinkKey key, float min, float max, const GUIScale scale, const char *format) {
     ImGui::BeginDisabled(link_manager.is_linked(key));
 
     const float old_value = reference;
+    bool action = false;
+
     const std::string slider_id = std::string("##") + label + "Slider";
     const std::string input_id = std::string("##") + label + "Input";
     ImGui::PushID(label);
@@ -89,6 +99,7 @@ void draw_float_slider(GUIPanel *owner, const char *label, float &reference, con
 
     const bool non_linear_scale = scale != GUIScale::Linear;
     if (ImGui::SliderFloat(slider_id.c_str(), &display_value, non_linear_scale ? 0.0f : min, non_linear_scale ? 1.0f : max, label)) {
+        action = true;
         switch (scale) {
         case GUIScale::Logarithmic: {
             reference = min * std::pow(max / min, display_value);
@@ -109,29 +120,37 @@ void draw_float_slider(GUIPanel *owner, const char *label, float &reference, con
     draw_link_tooltip(key);
     ImGui::SameLine();
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-    ImGui::InputFloat(input_id.c_str(), &reference, 0.0f, 0.0f, format);
+    if (ImGui::InputFloat(input_id.c_str(), &reference, 0.0f, 0.0f, format)) {
+        action = true;
+    }
 
     draw_link_tooltip(key);
     ImGui::PopID();
     ImGui::EndDisabled();
 
     reference = std::clamp(reference, min, max);
-    perform_action_float(owner, key, reference, old_value, format);
+    if (action) {
+        perform_action_float(owner, key, reference, old_value, format);
+    }
 }
 
 void draw_knob(GUIPanel *owner, const char *label, float &reference, const LinkKey key, float min, float max) {
     ImGui::BeginDisabled(link_manager.is_linked(key));
+
     const float old_value = reference;
+    bool action = false;
 
     ImGui::PushID(label);
-    ImGuiKnobs::Knob(label, &reference, min, max);
+    action = ImGuiKnobs::Knob(label, &reference, min, max);
     draw_link_tooltip(key);
     ImGui::SameLine();
     ImGui::PopID();
     ImGui::EndDisabled();
 
     reference = std::clamp(reference, min, max);
-    perform_action_float(owner, key, reference, old_value);
+    if (action) {
+        perform_action_float(owner, key, reference, old_value);
+    }
 }
 
 void draw_link_tooltip(const LinkKey &key) {
