@@ -12,6 +12,8 @@
 
 class GUIWavetablesPanel : public GUIPanel {
   private:
+    const std::string label = "Wavetables";
+
     struct CurrentWavetable {
         std::vector<float> wave = {};
         int size = 0;

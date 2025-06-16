@@ -8,6 +8,8 @@
 
 class GUIOscillatorsPanel : public GUIPanel {
   private:
+    const std::string label = "Oscillators";
+
     struct CurrentOscillator {
         int generator_index = -1;
         std::string type = "";

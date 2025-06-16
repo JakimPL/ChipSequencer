@@ -14,7 +14,7 @@ GUIChannelsPanel::GUIChannelsPanel(const bool visible)
 }
 
 void GUIChannelsPanel::draw() {
-    ImGui::Begin("Channels");
+    ImGui::Begin(label.c_str());
     ImGui::BeginDisabled(gui.is_playing());
 
     if (select_item()) {

@@ -11,6 +11,8 @@
 
 class GUISequencesPanel : public GUIPanel {
   private:
+    const std::string label = "Sequences";
+
     struct CurrentSequence {
         Pattern pattern;
     } current_sequence;

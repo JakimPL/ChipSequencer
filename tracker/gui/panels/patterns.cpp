@@ -66,7 +66,7 @@ GUIPatternsPanel::GUIPatternsPanel(const bool visible)
 }
 
 void GUIPatternsPanel::draw() {
-    ImGui::Begin("Patterns");
+    ImGui::Begin(label.c_str());
 
     if (select_item()) {
         from();

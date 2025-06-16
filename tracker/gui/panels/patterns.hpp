@@ -20,6 +20,8 @@ struct VariantChannelIndex {
 
 class GUIPatternsPanel : public GUIPanel {
   private:
+    const std::string label = "Patterns";
+
     struct CurrentPatterns {
         uint16_t total_rows = 0;
         std::map<size_t, std::vector<Pattern>> patterns;

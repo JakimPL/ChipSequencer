@@ -11,7 +11,7 @@ GUIDSPsPanel::GUIDSPsPanel(const bool visible)
 }
 
 void GUIDSPsPanel::draw() {
-    ImGui::Begin("DSPs");
+    ImGui::Begin(label.c_str());
     ImGui::BeginDisabled(gui.is_playing());
 
     if (select_item()) {

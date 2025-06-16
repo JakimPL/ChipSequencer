@@ -11,7 +11,7 @@ GUIEnvelopesPanel::GUIEnvelopesPanel(const bool visible)
 }
 
 void GUIEnvelopesPanel::draw() {
-    ImGui::Begin("Envelopes");
+    ImGui::Begin(label.c_str());
 
     if (select_item()) {
         from();

@@ -5,6 +5,8 @@
 
 class GUIDSPsPanel : public GUIPanel {
   private:
+    const std::string label = "DSPs";
+
     struct CurrentDSP {
         int effect_index = -1;
         std::string type = "";

@@ -17,7 +17,7 @@ GUISummaryPanel::GUISummaryPanel(const bool visible)
 }
 
 void GUISummaryPanel::draw() {
-    ImGui::Begin("Summary");
+    ImGui::Begin(label.c_str());
 
     draw_summary();
     draw_optimizations();

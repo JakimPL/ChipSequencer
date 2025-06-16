@@ -9,6 +9,8 @@
 
 class GUICommandsSequencesPanel : public GUIPanel {
   private:
+    const std::string label = "Commands sequences";
+
     struct CurrentCommandsSequence {
         CommandsPattern pattern;
     } current_sequence;

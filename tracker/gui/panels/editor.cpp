@@ -8,7 +8,7 @@ GUIEditorPanel::GUIEditorPanel(const bool visible, int &octave, int &step, int &
 }
 
 void GUIEditorPanel::draw() {
-    ImGui::Begin("Editor");
+    ImGui::Begin(label.c_str());
 
     if (select_item()) {
         check_keyboard_input();

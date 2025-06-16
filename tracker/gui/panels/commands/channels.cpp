@@ -10,7 +10,7 @@ GUICommandsChannelsPanel::GUICommandsChannelsPanel(const bool visible)
 }
 
 void GUICommandsChannelsPanel::draw() {
-    ImGui::Begin("Commands channels");
+    ImGui::Begin(label.c_str());
     ImGui::BeginDisabled(gui.is_playing());
 
     if (select_item()) {

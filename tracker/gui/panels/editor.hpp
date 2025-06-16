@@ -7,6 +7,8 @@
 
 class GUIEditorPanel : public GUIPanel {
   private:
+    const std::string label = "Editor";
+
     int &current_octave;
     int &jump_step;
     int &page_size;

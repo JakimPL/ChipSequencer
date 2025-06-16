@@ -25,7 +25,7 @@ GUIRoutingsPanel::GUIRoutingsPanel(const bool visible)
 }
 
 void GUIRoutingsPanel::draw() {
-    ImGui::Begin("Routings");
+    ImGui::Begin(label.c_str());
 
     if (select_item()) {
         from();

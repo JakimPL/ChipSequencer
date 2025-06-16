@@ -33,7 +33,7 @@ GUICommandsSequencesPanel::GUICommandsSequencesPanel(const bool visible)
 }
 
 void GUICommandsSequencesPanel::draw() {
-    ImGui::Begin("Commands sequences");
+    ImGui::Begin(label.c_str());
     ImGui::BeginDisabled(gui.is_playing());
 
     if (select_item()) {

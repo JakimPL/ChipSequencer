@@ -13,8 +13,7 @@ GUIOscillatorsPanel::GUIOscillatorsPanel(const bool visible)
 }
 
 void GUIOscillatorsPanel::draw() {
-    ImGui::Begin("Oscillators");
-    ImGui::Columns(1, "oscillator_columns");
+    ImGui::Begin(label.c_str());
 
     if (select_item()) {
         from();
@@ -27,7 +26,6 @@ void GUIOscillatorsPanel::draw() {
         empty();
     }
 
-    ImGui::Columns(1);
     ImGui::End();
 }
 

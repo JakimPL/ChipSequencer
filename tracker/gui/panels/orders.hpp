@@ -12,6 +12,8 @@
 
 class GUIOrdersPanel : public GUIPanel {
   private:
+    const std::string label = "Orders";
+
     struct CurrentOrder {
         int length = 0;
         std::vector<int> sequences = {};

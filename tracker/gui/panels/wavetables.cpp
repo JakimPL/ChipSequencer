@@ -15,7 +15,7 @@ GUIWavetablesPanel::GUIWavetablesPanel(const bool visible)
 }
 
 void GUIWavetablesPanel::draw() {
-    ImGui::Begin("Wavetables");
+    ImGui::Begin(label.c_str());
 
     if (select_item()) {
         from();

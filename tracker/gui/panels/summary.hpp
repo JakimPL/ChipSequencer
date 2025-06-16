@@ -6,6 +6,8 @@
 
 class GUISummaryPanel : public GUIPanel {
   private:
+    const std::string label = "Summary";
+
     void draw_summary();
     void draw_table_row(bool highlight, const char *label, size_t size);
     void draw_table_row(bool highlight, const char *label, std::optional<size_t> count, size_t size);

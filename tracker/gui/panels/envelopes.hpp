@@ -9,6 +9,8 @@
 
 class GUIEnvelopesPanel : public GUIPanel {
   private:
+    const std::string label = "Envelopes";
+
     struct CurrentEnvelope {
         float base_volume = 0.0f;
         float sustain_level = 0.0f;

@@ -11,7 +11,7 @@ GUIOrdersPanel::GUIOrdersPanel(const bool visible)
 }
 
 void GUIOrdersPanel::draw() {
-    ImGui::Begin("Orders");
+    ImGui::Begin(label.c_str());
 
     if (select_item()) {
         from();

@@ -10,6 +10,8 @@
 
 class GUIChannelsPanel : public GUIPanel {
   private:
+    const std::string label = "Channels";
+
     struct CurrentChannel {
         int envelope_index = 0;
         int order_index = -1;

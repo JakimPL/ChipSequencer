@@ -11,6 +11,8 @@
 
 class GUIGeneralPanel : public GUIPanel {
   private:
+    const std::string label = "General";
+
     struct CurrentSong {
         char title[GUI_MAX_STRING_LENGTH] = "";
         char author[GUI_MAX_STRING_LENGTH] = "";

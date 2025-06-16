@@ -23,6 +23,7 @@ class GUIPanel {
 
   protected:
     bool save = false;
+    const std::string label;
     std::vector<std::pair<Action *, bool>> pending_actions;
 
     void history_actions();

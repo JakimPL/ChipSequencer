@@ -64,7 +64,7 @@ GUISequencesPanel::GUISequencesPanel(const bool visible)
 }
 
 void GUISequencesPanel::draw() {
-    ImGui::Begin("Sequences");
+    ImGui::Begin(label.c_str());
 
     if (select_item()) {
         from();

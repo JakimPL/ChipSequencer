@@ -24,7 +24,7 @@ void GUIGeneralPanel::update() {
 }
 
 void GUIGeneralPanel::draw() {
-    ImGui::Begin("General");
+    ImGui::Begin(label.c_str());
 
     if (select_item()) {
         from();

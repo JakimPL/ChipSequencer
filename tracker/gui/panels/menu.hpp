@@ -9,6 +9,8 @@
 
 class GUIMenu : public GUIPanel {
   private:
+    const std::string label = "Menu";
+
     std::optional<bool> compilation_status;
     std::optional<bool> render_status;
     std::optional<bool> load_error;

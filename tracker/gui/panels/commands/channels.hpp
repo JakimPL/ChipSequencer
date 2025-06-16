@@ -4,6 +4,8 @@
 
 class GUICommandsChannelsPanel : public GUIPanel {
   private:
+    const std::string label = "Commands channels";
+
     struct CurrentCommandsChannel {
         int order_index = -1;
         bool bypass = false;
