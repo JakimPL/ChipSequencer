@@ -34,7 +34,7 @@ struct RoutingItems {
     std::map<std::pair<int, uint16_t>, size_t> offset_to_index;
 
     RoutingTuple filter_items(const int constraint, const bool allow_hidden = false) const;
-    size_t get_index_from_offset(const LinkKey key) const;
+    size_t get_index_from_offset(const LinkKey key, const bool allow_hidden = false) const;
 };
 
 std::string get_key_name(const LinkKey key);

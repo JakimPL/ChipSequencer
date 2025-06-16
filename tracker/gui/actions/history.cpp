@@ -1,6 +1,10 @@
 #include "history.hpp"
 
 void HistoryManager::add_action(std::unique_ptr<Action> action) {
+    if (action->key.is_null()) {
+        return;
+    }
+
     if (current_index > 0) {
         Action *last_action = actions[current_index - 1].get();
 

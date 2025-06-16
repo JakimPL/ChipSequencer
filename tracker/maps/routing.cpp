@@ -36,7 +36,7 @@ const std::map<Target, RoutingItems> routing_variables = {
     {
         Target::OSCILLATOR,
         RoutingItems({
-            {"Generator", OSCILLATOR_GENERATOR_INDEX, TargetVariableType::Byte, ROUTING_HIDDEN},
+            {"Oscillator type", OSCILLATOR_GENERATOR_INDEX, TargetVariableType::Byte, ROUTING_HIDDEN},
             {"Duty cycle", OSCILLATOR_SQUARE_DUTY_CYCLE, TargetVariableType::Word, GENERATOR_SQUARE},
             {"Reverse", OSCILLATOR_SAW_REVERSE, TargetVariableType::Byte, GENERATOR_SAW},
             {"Interpolation", OSCILLATOR_WAVETABLE_INTERPOLATION, TargetVariableType::Byte, GENERATOR_WAVETABLE},
@@ -89,32 +89,32 @@ const std::map<Target, RoutingItems> routing_variables = {
     {
         Target::SPECIAL,
         RoutingItems({
-            {"BPM", SPECIAL_BPM, TargetVariableType::Word, ROUTING_HIDDEN},
-            {"Division", SPECIAL_DIVISION, TargetVariableType::Word, ROUTING_HIDDEN},
-            {"Master gainer", SPECIAL_MASTER_GAINER, TargetVariableType::Float, ROUTING_HIDDEN},
-            {"Sample rate", SPECIAL_SAMPLE_RATE, TargetVariableType::Dword, ROUTING_HIDDEN},
-            {"A4 frequency", SPECIAL_A4_FREQUENCY, TargetVariableType::Word, ROUTING_HIDDEN},
-            {"EDO", SPECIAL_EDO, TargetVariableType::Byte, ROUTING_HIDDEN},
-            {"Output channels", SPECIAL_OUTPUT_CHANNELS, TargetVariableType::Byte, ROUTING_HIDDEN},
-            {"Shift", SPECIAL_SHIFT, TargetVariableType::Byte, ROUTING_HIDDEN},
-            {"Channel index", SPECIAL_CHANNEL_INDEX, TargetVariableType::Byte, ROUTING_HIDDEN},
-            {"DSP index", SPECIAL_DSP_INDEX, TargetVariableType::Byte, ROUTING_HIDDEN},
-            {"Hide channel", SPECIAL_CHANNEL_HIDE, TargetVariableType::Byte, ROUTING_HIDDEN},
-            {"Bypass channel", SPECIAL_CHANNEL_BYPASS, TargetVariableType::Byte, ROUTING_HIDDEN},
-            {"Constant pitch", SPECIAL_CHANNEL_CONSTANT_PITCH, TargetVariableType::Byte, ROUTING_HIDDEN},
-            {"Synchronize", SPECIAL_CHANNEL_SYNCHRONIZE, TargetVariableType::Byte, ROUTING_HIDDEN},
-            {"Sync numerator", SPECIAL_CHANNEL_SYNC_NUMERATOR, TargetVariableType::Byte, ROUTING_HIDDEN},
-            {"Sync denominator", SPECIAL_CHANNEL_SYNC_DENOMINATOR, TargetVariableType::Byte, ROUTING_HIDDEN},
-            {"Bypass DSP", SPECIAL_DSP_BYPASS, TargetVariableType::Byte, ROUTING_HIDDEN},
-            {"Bypass command channel", SPECIAL_COMMAND_CHANNEL_BYPASS, TargetVariableType::Byte, ROUTING_HIDDEN},
-            {"Hide command channel", SPECIAL_COMMAND_CHANNEL_HIDE, TargetVariableType::Byte, ROUTING_HIDDEN},
-            {"Sequence length", SPECIAL_SEQUENCE_LENGTH, TargetVariableType::Byte, ROUTING_HIDDEN},
-            {"Commands sequence length", SPECIAL_COMMANDS_SEQUENCE_LENGTH, TargetVariableType::Byte, ROUTING_HIDDEN},
-            {"Output target", SPECIAL_OUTPUT_TARGET, TargetVariableType::Byte, ROUTING_HIDDEN},
-            {"Routing item", SPECIAL_OUTPUT_ROUTING_ITEM, TargetVariableType::Byte, ROUTING_HIDDEN},
-            {"Parameter index", SPECIAL_OUTPUT_PARAMETER_INDEX, TargetVariableType::Byte, ROUTING_HIDDEN},
-            {"Operation type", SPECIAL_OPERATION_TYPE, TargetVariableType::Byte, ROUTING_HIDDEN},
-            {"Variable type", SPECIAL_VARIABLE_TYPE, TargetVariableType::Byte, ROUTING_HIDDEN},
+            {"BPM", SPECIAL_BPM, TargetVariableType::Word},
+            {"Division", SPECIAL_DIVISION, TargetVariableType::Word},
+            {"Master gainer", SPECIAL_MASTER_GAINER, TargetVariableType::Float},
+            {"Sample rate", SPECIAL_SAMPLE_RATE, TargetVariableType::Dword},
+            {"A4 frequency", SPECIAL_A4_FREQUENCY, TargetVariableType::Word},
+            {"EDO", SPECIAL_EDO, TargetVariableType::Byte},
+            {"Output channels", SPECIAL_OUTPUT_CHANNELS, TargetVariableType::Byte},
+            {"Shift", SPECIAL_SHIFT, TargetVariableType::Byte},
+            {"Channel index", SPECIAL_CHANNEL_INDEX, TargetVariableType::Byte},
+            {"DSP index", SPECIAL_DSP_INDEX, TargetVariableType::Byte},
+            {"Hide channel", SPECIAL_CHANNEL_HIDE, TargetVariableType::Byte},
+            {"Bypass channel", SPECIAL_CHANNEL_BYPASS, TargetVariableType::Byte},
+            {"Constant pitch", SPECIAL_CHANNEL_CONSTANT_PITCH, TargetVariableType::Byte},
+            {"Synchronize", SPECIAL_CHANNEL_SYNCHRONIZE, TargetVariableType::Byte},
+            {"Sync numerator", SPECIAL_CHANNEL_SYNC_NUMERATOR, TargetVariableType::Byte},
+            {"Sync denominator", SPECIAL_CHANNEL_SYNC_DENOMINATOR, TargetVariableType::Byte},
+            {"Bypass DSP", SPECIAL_DSP_BYPASS, TargetVariableType::Byte},
+            {"Bypass command channel", SPECIAL_COMMAND_CHANNEL_BYPASS, TargetVariableType::Byte},
+            {"Hide command channel", SPECIAL_COMMAND_CHANNEL_HIDE, TargetVariableType::Byte},
+            {"Sequence length", SPECIAL_SEQUENCE_LENGTH, TargetVariableType::Byte},
+            {"Commands sequence length", SPECIAL_COMMANDS_SEQUENCE_LENGTH, TargetVariableType::Byte},
+            {"Output target", SPECIAL_OUTPUT_TARGET, TargetVariableType::Byte},
+            {"Routing item", SPECIAL_OUTPUT_ROUTING_ITEM, TargetVariableType::Byte},
+            {"Parameter index", SPECIAL_OUTPUT_PARAMETER_INDEX, TargetVariableType::Byte},
+            {"Operation type", SPECIAL_OPERATION_TYPE, TargetVariableType::Byte},
+            {"Variable type", SPECIAL_VARIABLE_TYPE, TargetVariableType::Byte},
         }),
     },
 };
@@ -138,7 +138,7 @@ RoutingTuple RoutingItems::filter_items(const int constraint, const bool allow_h
     for (size_t i = 0; i < labels.size(); ++i) {
         if (constraints[i] == ROUTING_NO_CONSTRAINTS ||
             constraints[i] == constraint ||
-            (allow_hidden && constraints[i] == ROUTING_HIDDEN)) {
+            (constraints[i] == ROUTING_HIDDEN && allow_hidden)) {
             indices.push_back(i);
             filtered_labels.push_back(labels[i]);
             filtered_offsets.push_back(offsets[i]);
@@ -149,7 +149,7 @@ RoutingTuple RoutingItems::filter_items(const int constraint, const bool allow_h
     return {indices, filtered_labels, filtered_offsets, filtered_types};
 }
 
-size_t RoutingItems::get_index_from_offset(const LinkKey key) const {
+size_t RoutingItems::get_index_from_offset(const LinkKey key, const bool allow_hidden) const {
     if (offset_to_index.empty()) {
         return -1;
     }
@@ -166,8 +166,9 @@ size_t RoutingItems::get_index_from_offset(const LinkKey key) const {
     for (const auto &[key_constraint, index] : offset_to_index) {
         const auto &[item_constraint, item_offset] = key_constraint;
         if (key.offset == item_offset) {
-            if (constraint == ROUTING_NO_CONSTRAINTS ||
-                constraint == item_constraint) {
+            if (item_constraint == ROUTING_NO_CONSTRAINTS ||
+                item_constraint == constraint ||
+                (item_constraint == ROUTING_HIDDEN && allow_hidden)) {
                 return index;
             }
         }
@@ -182,7 +183,7 @@ std::string get_key_name(const LinkKey key) {
     }
 
     const RoutingItems &items = routing_variables.at(key.target);
-    size_t index = items.get_index_from_offset(key);
+    size_t index = items.get_index_from_offset(key, true);
     if (index == -1 || index >= items.labels.size()) {
         return "Unknown";
     }

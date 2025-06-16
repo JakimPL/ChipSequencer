@@ -19,9 +19,8 @@ struct Action {
     virtual void redo();
     virtual void notify_panel(const bool undo);
     virtual bool can_merge(const Action *other) const {
-        return key.target != Target::COUNT && key == other->key;
+        return key == other->key && !key.is_null();
     }
-
     virtual void merge(const Action *other) {}
     virtual std::string get_name() const { return name; }
 
