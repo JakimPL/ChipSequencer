@@ -8,30 +8,13 @@
 #include "../utils.hpp"
 #include "wavetables.hpp"
 
-GUIWavetablesPanel::GUIWavetablesPanel(const bool visible)
-    : GUIPanel(visible) {
-    from();
-    update();
+GUIWavetablesPanel::GUIWavetablesPanel(const bool visible, const bool windowed)
+    : GUIPanel("Wavetables", visible, windowed) {
 }
 
 void GUIWavetablesPanel::draw() {
-    ImGui::Begin(label.c_str());
-    ImGui::BeginDisabled(is_disabled());
-
-    if (select_item()) {
-        from();
-        draw_waveform();
-        draw_status();
-        check_keyboard_input();
-        to();
-        history_actions();
-        post_actions();
-    } else {
-        empty();
-    }
-
-    ImGui::EndDisabled();
-    ImGui::End();
+    draw_waveform();
+    draw_status();
 }
 
 bool GUIWavetablesPanel::select_item() {

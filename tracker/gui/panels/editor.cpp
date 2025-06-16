@@ -3,19 +3,12 @@
 #include "../constants.hpp"
 #include "editor.hpp"
 
+GUIEditorPanel::GUIEditorPanel(const bool visible, const bool windowed)
+    : GUIPanel("Editor", visible, windowed) {
+}
+
 void GUIEditorPanel::draw() {
-    ImGui::Begin(label.c_str());
-    ImGui::BeginDisabled(is_disabled());
-
-    if (select_item()) {
-        check_keyboard_input();
-        draw_tabs();
-    } else {
-        empty();
-    }
-
-    ImGui::EndDisabled();
-    ImGui::End();
+    draw_tabs();
 }
 
 void GUIEditorPanel::draw_tabs() {

@@ -10,8 +10,6 @@
 
 class GUIMenu : public GUIPanel {
   private:
-    const std::string label = "Menu";
-
     std::optional<bool> compilation_status;
     std::optional<bool> render_status;
     std::optional<bool> load_error;
@@ -30,8 +28,9 @@ class GUIMenu : public GUIPanel {
     void file_exit();
     void file_exit_confirm();
 
+    void register_shortcuts() override;
     void draw() override;
-    void post_actions() override;
+    void draw_dialog_box() override;
 
   public:
     GUIMenu(const bool visible = true, const bool windowed = false);

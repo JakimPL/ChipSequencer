@@ -6,29 +6,12 @@
 #include "../names.hpp"
 #include "../utils.hpp"
 
-GUIOscillatorsPanel::GUIOscillatorsPanel(const bool visible)
-    : GUIPanel(visible) {
-    from();
-    update();
+GUIOscillatorsPanel::GUIOscillatorsPanel(const bool visible, const bool windowed)
+    : GUIPanel("Oscillators", visible, windowed) {
 }
 
 void GUIOscillatorsPanel::draw() {
-    ImGui::Begin(label.c_str());
-    ImGui::BeginDisabled(is_disabled());
-
-    if (select_item()) {
-        from();
-        draw_oscillator();
-        check_keyboard_input();
-        to();
-        history_actions();
-        post_actions();
-    } else {
-        empty();
-    }
-
-    ImGui::EndDisabled();
-    ImGui::End();
+    draw_oscillator();
 }
 
 bool GUIOscillatorsPanel::select_item() {

@@ -4,29 +4,13 @@
 #include "../utils.hpp"
 #include "dsps.hpp"
 
-GUIDSPsPanel::GUIDSPsPanel(const bool visible)
-    : GUIPanel(visible) {
-    from();
-    update();
+GUIDSPsPanel::GUIDSPsPanel(const bool visible, const bool windowed)
+    : GUIPanel("DSPs", visible, windowed) {
+    initialize();
 }
 
 void GUIDSPsPanel::draw() {
-    ImGui::Begin(label.c_str());
-    ImGui::BeginDisabled(is_disabled());
-
-    if (select_item()) {
-        from();
-        draw_dsp();
-        check_keyboard_input();
-        to();
-        history_actions();
-        post_actions();
-    } else {
-        empty();
-    }
-
-    ImGui::EndDisabled();
-    ImGui::End();
+    draw_dsp();
 }
 
 bool GUIDSPsPanel::is_disabled() const {

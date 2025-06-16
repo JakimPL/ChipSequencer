@@ -8,8 +8,6 @@
 
 class GUIOscillatorsPanel : public GUIPanel {
   private:
-    const std::string label = "Oscillators";
-
     struct CurrentOscillator {
         int generator_index = -1;
         std::string type = "";
@@ -40,7 +38,7 @@ class GUIOscillatorsPanel : public GUIPanel {
     void draw() override;
 
   public:
-    GUIOscillatorsPanel(const bool visible = true);
+    GUIOscillatorsPanel(const bool visible = true, const bool windowed = true);
     void update() override;
     void set_index(const int index) override;
 

@@ -12,8 +12,6 @@
 
 class GUIOrdersPanel : public GUIPanel {
   private:
-    const std::string label = "Orders";
-
     struct CurrentOrder {
         int length = 0;
         std::vector<int> sequences = {};
@@ -35,7 +33,7 @@ class GUIOrdersPanel : public GUIPanel {
     void check_keyboard_input() override;
 
   public:
-    GUIOrdersPanel(const bool visible = true);
+    GUIOrdersPanel(const bool visible = true, const bool windowed = true);
     void update() override;
     void set_index(const int index) override;
     void set_sequence(const size_t sequence_index, const size_t new_sequence);

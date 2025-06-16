@@ -9,62 +9,12 @@
 #include "menu.hpp"
 
 GUIMenu::GUIMenu(const bool visible, const bool windowed)
-    : GUIPanel(visible, windowed) {
-    shortcut_manager.register_shortcut(
-        ShortcutAction::FileNew,
-        [this]() { file_new_confirm(); }
-    );
-    shortcut_manager.register_shortcut(
-        ShortcutAction::FileOpen,
-        [this]() { file_open(); }
-    );
-    shortcut_manager.register_shortcut(
-        ShortcutAction::FileSave,
-        [this]() { file_save(); }
-    );
-    shortcut_manager.register_shortcut(
-        ShortcutAction::FileSaveAs,
-        [this]() { file_save_as(); }
-    );
-    shortcut_manager.register_shortcut(
-        ShortcutAction::FileRender,
-        [this]() { file_render(); }
-    );
-    shortcut_manager.register_shortcut(
-        ShortcutAction::FileCompileCompressed,
-        [this]() { file_compile(CompilationScheme::Compressed, CompilationTarget::Linux); }
-    );
-    shortcut_manager.register_shortcut(
-        ShortcutAction::FileCompileUncompressed,
-        [this]() { file_compile(CompilationScheme::Uncompressed, CompilationTarget::Linux); }
-    );
-    shortcut_manager.register_shortcut(
-        ShortcutAction::FileCompileDebug,
-        [this]() { file_compile(CompilationScheme::Debug, CompilationTarget::Linux); }
-    );
-    shortcut_manager.register_shortcut(
-        ShortcutAction::FileExit,
-        [this]() { file_exit_confirm(); }
-    );
-
-    shortcut_manager.register_shortcut(
-        ShortcutAction::EditUndo,
-        []() { history_manager.undo(); }
-    );
-
-    shortcut_manager.register_shortcut(
-        ShortcutAction::EditRedo,
-        []() { history_manager.redo(); }
-    );
+    : GUIPanel("Menu", visible, windowed) {
+    register_shortcuts();
 }
 
 void GUIMenu::draw() {
-    ImGui::BeginDisabled(is_disabled());
-
     draw_menu();
-    post_actions();
-
-    ImGui::EndDisabled();
 }
 
 void GUIMenu::draw_menu() {
@@ -237,7 +187,7 @@ void GUIMenu::file_exit_confirm() {
     open_exit_confirmation_popup = true;
 }
 
-void GUIMenu::post_actions() {
+void GUIMenu::draw_dialog_box() {
     if (compilation_status.has_value()) {
         ImGui::OpenPopup(compilation_status.value() ? "Compilation success" : "Compilation failure");
         compilation_status = std::nullopt;
@@ -280,4 +230,53 @@ void GUIMenu::post_actions() {
         const std::string message = "Do you want to exit the program?\nAny unsaved changes will be lost.";
         draw_confirmation_popup(message, [this]() { file_exit(); }, [this]() { file_save(); });
     }
+}
+
+void GUIMenu::register_shortcuts() {
+    shortcut_manager.register_shortcut(
+        ShortcutAction::FileNew,
+        [this]() { file_new_confirm(); }
+    );
+    shortcut_manager.register_shortcut(
+        ShortcutAction::FileOpen,
+        [this]() { file_open(); }
+    );
+    shortcut_manager.register_shortcut(
+        ShortcutAction::FileSave,
+        [this]() { file_save(); }
+    );
+    shortcut_manager.register_shortcut(
+        ShortcutAction::FileSaveAs,
+        [this]() { file_save_as(); }
+    );
+    shortcut_manager.register_shortcut(
+        ShortcutAction::FileRender,
+        [this]() { file_render(); }
+    );
+    shortcut_manager.register_shortcut(
+        ShortcutAction::FileCompileCompressed,
+        [this]() { file_compile(CompilationScheme::Compressed, CompilationTarget::Linux); }
+    );
+    shortcut_manager.register_shortcut(
+        ShortcutAction::FileCompileUncompressed,
+        [this]() { file_compile(CompilationScheme::Uncompressed, CompilationTarget::Linux); }
+    );
+    shortcut_manager.register_shortcut(
+        ShortcutAction::FileCompileDebug,
+        [this]() { file_compile(CompilationScheme::Debug, CompilationTarget::Linux); }
+    );
+    shortcut_manager.register_shortcut(
+        ShortcutAction::FileExit,
+        [this]() { file_exit_confirm(); }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::EditUndo,
+        []() { history_manager.undo(); }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::EditRedo,
+        []() { history_manager.redo(); }
+    );
 }

@@ -5,8 +5,6 @@
 
 class GUIDSPsPanel : public GUIPanel {
   private:
-    const std::string label = "DSPs";
-
     struct CurrentDSP {
         int effect_index = -1;
         std::string type = "";
@@ -45,7 +43,7 @@ class GUIDSPsPanel : public GUIPanel {
     void draw() override;
 
   public:
-    GUIDSPsPanel(const bool visible = true);
+    GUIDSPsPanel(const bool visible = true, const bool windowed = true);
     void update() override;
     void set_index(const int index) override;
 

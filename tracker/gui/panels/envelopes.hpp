@@ -9,8 +9,6 @@
 
 class GUIEnvelopesPanel : public GUIPanel {
   private:
-    const std::string label = "Envelopes";
-
     struct CurrentEnvelope {
         float base_volume = 0.0f;
         float sustain_level = 0.0f;
@@ -43,7 +41,7 @@ class GUIEnvelopesPanel : public GUIPanel {
     void draw() override;
 
   public:
-    GUIEnvelopesPanel(const bool visible = true);
+    GUIEnvelopesPanel(const bool visible = true, const bool windowed = true);
     void update() override;
     void set_index(const int index) override;
 

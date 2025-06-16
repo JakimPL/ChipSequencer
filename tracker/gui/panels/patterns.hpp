@@ -20,8 +20,6 @@ struct VariantChannelIndex {
 
 class GUIPatternsPanel : public GUIPanel {
   private:
-    const std::string label = "Patterns";
-
     struct CurrentPatterns {
         uint16_t total_rows = 0;
         std::map<size_t, std::vector<Pattern>> patterns;
@@ -69,12 +67,14 @@ class GUIPatternsPanel : public GUIPanel {
     void to_sequences() const;
     void to_commands_sequences() const;
 
+    void register_shortcuts() override;
     void draw() override;
     void check_keyboard_input() override;
     void shortcut_actions() override;
+    void pre_actions() override;
 
   public:
-    GUIPatternsPanel(const bool visible = true);
+    GUIPatternsPanel(const bool visible = true, const bool windowed = true);
     void set_index(const int index) override;
 
     void from() override;

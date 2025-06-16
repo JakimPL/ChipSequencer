@@ -4,8 +4,6 @@
 
 class GUICommandsChannelsPanel : public GUIPanel {
   private:
-    const std::string label = "Commands channels";
-
     struct CurrentCommandsChannel {
         int order_index = -1;
         bool bypass = false;
@@ -24,7 +22,7 @@ class GUICommandsChannelsPanel : public GUIPanel {
     void draw() override;
 
   public:
-    GUICommandsChannelsPanel(const bool visible = true);
+    GUICommandsChannelsPanel(const bool visible = true, const bool windowed = true);
     void update() override;
     void set_index(const int index) override;
 

@@ -3,88 +3,12 @@
 #include "../utils.hpp"
 #include "patterns.hpp"
 
-GUIPatternsPanel::GUIPatternsPanel(const bool visible)
-    : GUIPanel(visible) {
-    from();
-    update();
-
-    shortcut_manager.register_shortcut(
-        ShortcutAction::PatternTransposeUp,
-        [this]() {
-            selection_action = PatternSelectionAction::TransposeUp;
-        }
-    );
-
-    shortcut_manager.register_shortcut(
-        ShortcutAction::PatternTransposeDown,
-        [this]() {
-            selection_action = PatternSelectionAction::TransposeDown;
-        }
-    );
-
-    shortcut_manager.register_shortcut(
-        ShortcutAction::PatternTransposeOctaveUp,
-        [this]() {
-            selection_action = PatternSelectionAction::TransposeOctaveUp;
-        }
-    );
-
-    shortcut_manager.register_shortcut(
-        ShortcutAction::PatternTransposeOctaveDown,
-        [this]() {
-            selection_action = PatternSelectionAction::TransposeOctaveDown;
-        }
-    );
-
-    shortcut_manager.register_shortcut(
-        ShortcutAction::PatternSelectAll,
-        [this]() {
-            selection_action = PatternSelectionAction::SelectAll;
-        }
-    );
-
-    shortcut_manager.register_shortcut(
-        ShortcutAction::PatternSelectChannel,
-        [this]() {
-            selection_action = PatternSelectionAction::SelectChannel;
-        }
-    );
-
-    shortcut_manager.register_shortcut(
-        ShortcutAction::PatternSelectNone,
-        [this]() {
-            selection_action = PatternSelectionAction::DeselectAll;
-        }
-    );
-
-    shortcut_manager.register_shortcut(
-        ShortcutAction::PatternClear,
-        [this]() {
-            selection_action = PatternSelectionAction::Clear;
-        }
-    );
+GUIPatternsPanel::GUIPatternsPanel(const bool visible, const bool windowed)
+    : GUIPanel("Patterns", visible, windowed) {
 }
 
 void GUIPatternsPanel::draw() {
-    ImGui::Begin(label.c_str());
-    ImGui::BeginDisabled(is_disabled());
-
-    if (select_item()) {
-        from();
-        prepare_secondary_selection();
-        draw_channels();
-        shortcut_actions();
-        transpose_selected_rows();
-        check_keyboard_input();
-        to();
-        history_actions();
-        post_actions();
-    } else {
-        empty();
-    }
-
-    ImGui::EndDisabled();
-    ImGui::End();
+    draw_channels();
 }
 
 void GUIPatternsPanel::draw_pages() {
@@ -344,6 +268,7 @@ void GUIPatternsPanel::shortcut_actions() {
     }
 
     selection_action = PatternSelectionAction::None;
+    transpose_selected_rows();
 }
 
 void GUIPatternsPanel::select_all() {
@@ -803,4 +728,66 @@ bool GUIPatternsPanel::is_active() const {
 
 bool GUIPatternsPanel::is_commands_view_active() const {
     return is_active() && current_channel.command;
+}
+
+void GUIPatternsPanel::pre_actions() {
+    prepare_secondary_selection();
+}
+
+void GUIPatternsPanel::register_shortcuts() {
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternTransposeUp,
+        [this]() {
+            selection_action = PatternSelectionAction::TransposeUp;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternTransposeDown,
+        [this]() {
+            selection_action = PatternSelectionAction::TransposeDown;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternTransposeOctaveUp,
+        [this]() {
+            selection_action = PatternSelectionAction::TransposeOctaveUp;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternTransposeOctaveDown,
+        [this]() {
+            selection_action = PatternSelectionAction::TransposeOctaveDown;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSelectAll,
+        [this]() {
+            selection_action = PatternSelectionAction::SelectAll;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSelectChannel,
+        [this]() {
+            selection_action = PatternSelectionAction::SelectChannel;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSelectNone,
+        [this]() {
+            selection_action = PatternSelectionAction::DeselectAll;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternClear,
+        [this]() {
+            selection_action = PatternSelectionAction::Clear;
+        }
+    );
 }

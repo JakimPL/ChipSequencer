@@ -11,8 +11,6 @@
 
 class GUIGeneralPanel : public GUIPanel {
   private:
-    const std::string label = "General";
-
     struct CurrentSong {
         char title[GUI_MAX_STRING_LENGTH] = "";
         char author[GUI_MAX_STRING_LENGTH] = "";
@@ -43,11 +41,12 @@ class GUIGeneralPanel : public GUIPanel {
     void play();
     std::string get_error_message(const ValidationResult result, const int index) const;
 
+    void register_shortcuts() override;
     void draw() override;
-    void post_actions() override;
+    void draw_dialog_box() override;
 
   public:
-    GUIGeneralPanel(const bool visible = true);
+    GUIGeneralPanel(const bool visible = true, const bool windowed = true);
     void update() override;
 
     void from() override;

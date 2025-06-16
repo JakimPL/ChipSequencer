@@ -15,8 +15,6 @@ typedef std::array<uint8_t, MAX_OUTPUT_CHANNELS> Splitter;
 
 class GUIRoutingsPanel : public GUIPanel {
   private:
-    const std::string label = "Routings";
-
     std::vector<RoutingNode> nodes;
     std::map<InputKey, OutputKey> nodes_links;
     std::map<OutputKey, ImVec2> input_pins;
@@ -54,7 +52,7 @@ class GUIRoutingsPanel : public GUIPanel {
     void draw() override;
 
   public:
-    GUIRoutingsPanel(const bool visible = true);
+    GUIRoutingsPanel(const bool visible = true, const bool windowed = true);
 
     void from() override;
     void to() const override;

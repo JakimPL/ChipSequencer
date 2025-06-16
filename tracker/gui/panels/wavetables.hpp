@@ -12,8 +12,6 @@
 
 class GUIWavetablesPanel : public GUIPanel {
   private:
-    const std::string label = "Wavetables";
-
     struct CurrentWavetable {
         std::vector<float> wave = {};
         int size = 0;
@@ -43,7 +41,7 @@ class GUIWavetablesPanel : public GUIPanel {
     void draw() override;
 
   public:
-    GUIWavetablesPanel(const bool visible = true);
+    GUIWavetablesPanel(const bool visible = true, const bool windowed = true);
     void update();
     void set_index(const int index) override;
 

@@ -3,29 +3,16 @@
 #include "../../utils.hpp"
 #include "channels.hpp"
 
-GUICommandsChannelsPanel::GUICommandsChannelsPanel(const bool visible)
-    : GUIPanel(visible) {
-    from();
-    update();
+GUICommandsChannelsPanel::GUICommandsChannelsPanel(
+    const bool visible,
+    const bool windowed
+)
+    : GUIPanel("Commands channels", visible, windowed) {
+    initialize();
 }
 
 void GUICommandsChannelsPanel::draw() {
-    ImGui::Begin(label.c_str());
-    ImGui::BeginDisabled(is_disabled());
-
-    if (select_item()) {
-        from();
-        draw_channel();
-        check_keyboard_input();
-        to();
-        history_actions();
-        post_actions();
-    } else {
-        empty();
-    }
-
-    ImGui::EndDisabled();
-    ImGui::End();
+    draw_channel();
 }
 
 bool GUICommandsChannelsPanel::is_disabled() const {

@@ -20,29 +20,14 @@
 #include "../utils.hpp"
 #include "routings.hpp"
 
-GUIRoutingsPanel::GUIRoutingsPanel(const bool visible)
-    : GUIPanel(visible) {
+GUIRoutingsPanel::GUIRoutingsPanel(const bool visible, const bool windowed)
+    : GUIPanel("Routings", visible, windowed) {
 }
 
 void GUIRoutingsPanel::draw() {
-    ImGui::Begin(label.c_str());
-    ImGui::BeginDisabled(is_disabled());
-
-    if (select_item()) {
-        from();
-        draw_reset_button();
-        draw_nodes();
-        draw_all_links();
-        check_keyboard_input();
-        to();
-        history_actions();
-        post_actions();
-    } else {
-        empty();
-    }
-
-    ImGui::EndDisabled();
-    ImGui::End();
+    draw_reset_button();
+    draw_nodes();
+    draw_all_links();
 }
 
 bool GUIRoutingsPanel::is_disabled() const {

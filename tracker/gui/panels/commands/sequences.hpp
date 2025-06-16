@@ -9,8 +9,6 @@
 
 class GUICommandsSequencesPanel : public GUIPanel {
   private:
-    const std::string label = "Commands sequences";
-
     struct CurrentCommandsSequence {
         CommandsPattern pattern;
     } current_sequence;
@@ -42,10 +40,10 @@ class GUICommandsSequencesPanel : public GUIPanel {
     void draw_sequence();
     void draw_sequence_length();
     void open_edit_dialog_box(const int item);
-    void draw_edit_dialog_box();
     void draw_output_section();
     void set_current_command();
 
+    void register_shortcuts() override;
     bool is_disabled() const override;
     bool select_item() override;
     void empty() override;
@@ -53,12 +51,13 @@ class GUICommandsSequencesPanel : public GUIPanel {
     void duplicate() override;
     void remove() override;
     void draw() override;
+    void draw_dialog_box() override;
     void check_keyboard_input() override;
     void shortcut_actions() override;
     void post_actions() override;
 
   public:
-    GUICommandsSequencesPanel(const bool visible = true);
+    GUICommandsSequencesPanel(const bool visible = true, const bool windowed = true);
     void update() override;
     void set_index(const int index) override;
 

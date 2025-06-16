@@ -5,17 +5,8 @@
 #include "../utils.hpp"
 #include "general.hpp"
 
-GUIGeneralPanel::GUIGeneralPanel(const bool visible)
-    : GUIPanel(visible) {
-
-    shortcut_manager.register_shortcut(
-        ShortcutAction::SongPlayPause,
-        [this]() { this->play(); }
-    );
-    shortcut_manager.register_shortcut(
-        ShortcutAction::SongStop,
-        [this]() { gui.stop(); }
-    );
+GUIGeneralPanel::GUIGeneralPanel(const bool visible, const bool windowed)
+    : GUIPanel("General", visible, windowed) {
 }
 
 void GUIGeneralPanel::update() {
@@ -24,23 +15,8 @@ void GUIGeneralPanel::update() {
 }
 
 void GUIGeneralPanel::draw() {
-    ImGui::Begin(label.c_str());
-    ImGui::BeginDisabled(is_disabled());
-
-    if (select_item()) {
-        from();
-        draw_play_button();
-        draw_tabs();
-        check_keyboard_input();
-        to();
-        history_actions();
-        post_actions();
-    } else {
-        empty();
-    }
-
-    ImGui::EndDisabled();
-    ImGui::End();
+    draw_play_button();
+    draw_tabs();
 }
 
 void GUIGeneralPanel::from() {
@@ -271,7 +247,7 @@ std::string GUIGeneralPanel::get_error_message(const ValidationResult result, co
     return stream.str();
 }
 
-void GUIGeneralPanel::post_actions() {
+void GUIGeneralPanel::draw_dialog_box() {
     if (error) {
         ImGui::OpenPopup("Error");
         error = false;
@@ -280,4 +256,15 @@ void GUIGeneralPanel::post_actions() {
     if (ImGui::BeginPopupModal("Error", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         draw_popup(error_message);
     }
+}
+
+void GUIGeneralPanel::register_shortcuts() {
+    shortcut_manager.register_shortcut(
+        ShortcutAction::SongPlayPause,
+        [this]() { this->play(); }
+    );
+    shortcut_manager.register_shortcut(
+        ShortcutAction::SongStop,
+        [this]() { gui.stop(); }
+    );
 }

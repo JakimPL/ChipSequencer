@@ -4,29 +4,12 @@
 #include "../utils.hpp"
 #include "orders.hpp"
 
-GUIOrdersPanel::GUIOrdersPanel(const bool visible)
-    : GUIPanel(visible) {
-    from();
-    update();
+GUIOrdersPanel::GUIOrdersPanel(const bool visible, const bool windowed)
+    : GUIPanel("Orders", visible, windowed) {
 }
 
 void GUIOrdersPanel::draw() {
-    ImGui::Begin(label.c_str());
-    ImGui::BeginDisabled(is_disabled());
-
-    if (select_item()) {
-        from();
-        draw_order();
-        check_keyboard_input();
-        to();
-        history_actions();
-        post_actions();
-    } else {
-        empty();
-    }
-
-    ImGui::EndDisabled();
-    ImGui::End();
+    draw_order();
 }
 
 bool GUIOrdersPanel::select_item() {

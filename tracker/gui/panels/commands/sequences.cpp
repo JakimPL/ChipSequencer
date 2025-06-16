@@ -5,52 +5,12 @@
 #include "../../utils.hpp"
 #include "sequences.hpp"
 
-GUICommandsSequencesPanel::GUICommandsSequencesPanel(const bool visible)
-    : GUIPanel(visible) {
-    from();
-    update();
-
-    shortcut_manager.register_shortcut(
-        ShortcutAction::PatternSelectAll,
-        [this]() {
-            selection_action = PatternSelectionAction::SelectAll;
-        }
-    );
-
-    shortcut_manager.register_shortcut(
-        ShortcutAction::PatternSelectNone,
-        [this]() {
-            selection_action = PatternSelectionAction::DeselectAll;
-        }
-    );
-
-    shortcut_manager.register_shortcut(
-        ShortcutAction::PatternClear,
-        [this]() {
-            selection_action = PatternSelectionAction::Clear;
-        }
-    );
+GUICommandsSequencesPanel::GUICommandsSequencesPanel(const bool visible, const bool windowed)
+    : GUIPanel("Commands sequences", visible, windowed) {
 }
 
 void GUICommandsSequencesPanel::draw() {
-    ImGui::Begin(label.c_str());
-    ImGui::BeginDisabled(is_disabled());
-
-    if (select_item()) {
-        from();
-        draw_sequence();
-        shortcut_actions();
-        check_keyboard_input();
-        draw_edit_dialog_box();
-        to();
-        history_actions();
-        post_actions();
-    } else {
-        empty();
-    }
-
-    ImGui::EndDisabled();
-    ImGui::End();
+    draw_sequence();
 }
 
 bool GUICommandsSequencesPanel::is_disabled() const {
@@ -358,7 +318,7 @@ void GUICommandsSequencesPanel::draw_output_section() {
     pop_secondary_style();
 }
 
-void GUICommandsSequencesPanel::draw_edit_dialog_box() {
+void GUICommandsSequencesPanel::draw_dialog_box() {
     if (!edit_dialog_box.visible) {
         return;
     }
@@ -522,4 +482,27 @@ bool GUICommandsSequencesPanel::is_active() const {
 
 void GUICommandsSequencesPanel::post_actions() {
     dialog_box_open = edit_dialog_box.visible;
+}
+
+void GUICommandsSequencesPanel::register_shortcuts() {
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSelectAll,
+        [this]() {
+            selection_action = PatternSelectionAction::SelectAll;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSelectNone,
+        [this]() {
+            selection_action = PatternSelectionAction::DeselectAll;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternClear,
+        [this]() {
+            selection_action = PatternSelectionAction::Clear;
+        }
+    );
 }

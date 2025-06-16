@@ -12,19 +12,13 @@
 #include "../names.hpp"
 #include "summary.hpp"
 
-GUISummaryPanel::GUISummaryPanel(const bool visible)
-    : GUIPanel(visible) {
+GUISummaryPanel::GUISummaryPanel(const bool visible, const bool windowed)
+    : GUIPanel("Summary", visible, windowed) {
 }
 
 void GUISummaryPanel::draw() {
-    ImGui::Begin(label.c_str());
-    ImGui::BeginDisabled(is_disabled());
-
     draw_summary();
     draw_optimizations();
-
-    ImGui::EndDisabled();
-    ImGui::End();
 }
 
 void GUISummaryPanel::draw_table_row(bool highlight, const char *label, std::optional<size_t> count, size_t size) {

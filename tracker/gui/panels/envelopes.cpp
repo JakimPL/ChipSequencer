@@ -4,29 +4,12 @@
 #include "../utils.hpp"
 #include "envelopes.hpp"
 
-GUIEnvelopesPanel::GUIEnvelopesPanel(const bool visible)
-    : GUIPanel(visible) {
-    from();
-    update();
+GUIEnvelopesPanel::GUIEnvelopesPanel(const bool visible, const bool windowed)
+    : GUIPanel("Envelopes", visible, windowed) {
 }
 
 void GUIEnvelopesPanel::draw() {
-    ImGui::Begin(label.c_str());
-    ImGui::BeginDisabled(is_disabled());
-
-    if (select_item()) {
-        from();
-        draw_envelope();
-        check_keyboard_input();
-        to();
-        history_actions();
-        post_actions();
-    } else {
-        empty();
-    }
-
-    ImGui::EndDisabled();
-    ImGui::End();
+    draw_envelope();
 }
 
 bool GUIEnvelopesPanel::select_item() {

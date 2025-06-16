@@ -6,8 +6,6 @@
 
 class GUISummaryPanel : public GUIPanel {
   private:
-    const std::string label = "Summary";
-
     void draw_summary();
     void draw_table_row(bool highlight, const char *label, size_t size);
     void draw_table_row(bool highlight, const char *label, std::optional<size_t> count, size_t size);
@@ -18,5 +16,5 @@ class GUISummaryPanel : public GUIPanel {
     void draw() override;
 
   public:
-    GUISummaryPanel(const bool visible = true);
+    GUISummaryPanel(const bool visible = true, const bool windowed = true);
 };

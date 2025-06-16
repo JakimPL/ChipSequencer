@@ -10,8 +10,6 @@
 
 class GUIChannelsPanel : public GUIPanel {
   private:
-    const std::string label = "Channels";
-
     struct CurrentChannel {
         int envelope_index = 0;
         int order_index = -1;
@@ -42,7 +40,7 @@ class GUIChannelsPanel : public GUIPanel {
     void draw() override;
 
   public:
-    GUIChannelsPanel(const bool visible = true);
+    GUIChannelsPanel(const bool visible = true, const bool windowed = true);
     void update() override;
     void set_index(const int index) override;
 

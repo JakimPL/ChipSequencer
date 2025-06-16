@@ -11,8 +11,6 @@
 
 class GUISequencesPanel : public GUIPanel {
   private:
-    const std::string label = "Sequences";
-
     struct CurrentSequence {
         Pattern pattern;
     } current_sequence;
@@ -29,6 +27,7 @@ class GUISequencesPanel : public GUIPanel {
     void draw_sequence_length();
     void draw_sequence();
 
+    void register_shortcuts() override;
     bool select_item() override;
     void empty() override;
     void add() override;
@@ -39,7 +38,7 @@ class GUISequencesPanel : public GUIPanel {
     void shortcut_actions() override;
 
   public:
-    GUISequencesPanel(const bool visible = true);
+    GUISequencesPanel(const bool visible = true, const bool windowed = true);
     void update() override;
     void set_index(const int index) override;
 
