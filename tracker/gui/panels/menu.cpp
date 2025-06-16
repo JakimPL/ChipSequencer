@@ -59,8 +59,12 @@ GUIMenu::GUIMenu(const bool visible)
 }
 
 void GUIMenu::draw() {
+    ImGui::BeginDisabled(is_disabled());
+
     draw_menu();
     post_actions();
+
+    ImGui::EndDisabled();
 }
 
 void GUIMenu::draw_menu() {

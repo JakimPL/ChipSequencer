@@ -14,6 +14,7 @@ GUIOscillatorsPanel::GUIOscillatorsPanel(const bool visible)
 
 void GUIOscillatorsPanel::draw() {
     ImGui::Begin(label.c_str());
+    ImGui::BeginDisabled(is_disabled());
 
     if (select_item()) {
         from();
@@ -26,6 +27,7 @@ void GUIOscillatorsPanel::draw() {
         empty();
     }
 
+    ImGui::EndDisabled();
     ImGui::End();
 }
 

@@ -9,6 +9,7 @@ GUIEditorPanel::GUIEditorPanel(const bool visible, int &octave, int &step, int &
 
 void GUIEditorPanel::draw() {
     ImGui::Begin(label.c_str());
+    ImGui::BeginDisabled(is_disabled());
 
     if (select_item()) {
         check_keyboard_input();
@@ -17,6 +18,7 @@ void GUIEditorPanel::draw() {
         empty();
     }
 
+    ImGui::EndDisabled();
     ImGui::End();
 }
 

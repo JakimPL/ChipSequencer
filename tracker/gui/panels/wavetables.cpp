@@ -16,6 +16,7 @@ GUIWavetablesPanel::GUIWavetablesPanel(const bool visible)
 
 void GUIWavetablesPanel::draw() {
     ImGui::Begin(label.c_str());
+    ImGui::BeginDisabled(is_disabled());
 
     if (select_item()) {
         from();
@@ -29,6 +30,7 @@ void GUIWavetablesPanel::draw() {
         empty();
     }
 
+    ImGui::EndDisabled();
     ImGui::End();
 }
 

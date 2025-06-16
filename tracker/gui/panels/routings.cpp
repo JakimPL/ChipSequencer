@@ -26,6 +26,7 @@ GUIRoutingsPanel::GUIRoutingsPanel(const bool visible)
 
 void GUIRoutingsPanel::draw() {
     ImGui::Begin(label.c_str());
+    ImGui::BeginDisabled(is_disabled());
 
     if (select_item()) {
         from();
@@ -40,7 +41,12 @@ void GUIRoutingsPanel::draw() {
         empty();
     }
 
+    ImGui::EndDisabled();
     ImGui::End();
+}
+
+bool GUIRoutingsPanel::is_disabled() const {
+    return gui.is_playing();
 }
 
 void GUIRoutingsPanel::from() {

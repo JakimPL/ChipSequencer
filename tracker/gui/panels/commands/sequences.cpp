@@ -34,7 +34,7 @@ GUICommandsSequencesPanel::GUICommandsSequencesPanel(const bool visible)
 
 void GUICommandsSequencesPanel::draw() {
     ImGui::Begin(label.c_str());
-    ImGui::BeginDisabled(gui.is_playing());
+    ImGui::BeginDisabled(is_disabled());
 
     if (select_item()) {
         from();
@@ -51,6 +51,10 @@ void GUICommandsSequencesPanel::draw() {
 
     ImGui::EndDisabled();
     ImGui::End();
+}
+
+bool GUICommandsSequencesPanel::is_disabled() const {
+    return gui.is_playing();
 }
 
 bool GUICommandsSequencesPanel::select_item() {

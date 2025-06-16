@@ -46,6 +46,7 @@ class GUICommandsSequencesPanel : public GUIPanel {
     void draw_output_section();
     void set_current_command();
 
+    bool is_disabled() const override;
     bool select_item() override;
     void empty() override;
     void add() override;

@@ -12,7 +12,7 @@ GUIDSPsPanel::GUIDSPsPanel(const bool visible)
 
 void GUIDSPsPanel::draw() {
     ImGui::Begin(label.c_str());
-    ImGui::BeginDisabled(gui.is_playing());
+    ImGui::BeginDisabled(is_disabled());
 
     if (select_item()) {
         from();
@@ -27,6 +27,10 @@ void GUIDSPsPanel::draw() {
 
     ImGui::EndDisabled();
     ImGui::End();
+}
+
+bool GUIDSPsPanel::is_disabled() const {
+    return gui.is_playing();
 }
 
 bool GUIDSPsPanel::select_item() {

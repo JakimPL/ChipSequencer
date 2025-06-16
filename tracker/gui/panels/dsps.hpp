@@ -36,6 +36,7 @@ class GUIDSPsPanel : public GUIPanel {
     void update_dsp_names();
     void update_dsp_name(const int index, const int effect_index = -1) const;
 
+    bool is_disabled() const override;
     bool select_item() override;
     void empty() override;
     void add() override;

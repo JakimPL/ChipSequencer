@@ -12,6 +12,7 @@ GUIEnvelopesPanel::GUIEnvelopesPanel(const bool visible)
 
 void GUIEnvelopesPanel::draw() {
     ImGui::Begin(label.c_str());
+    ImGui::BeginDisabled(is_disabled());
 
     if (select_item()) {
         from();
@@ -24,6 +25,7 @@ void GUIEnvelopesPanel::draw() {
         empty();
     }
 
+    ImGui::EndDisabled();
     ImGui::End();
 }
 

@@ -32,6 +32,7 @@ class GUIPanel {
         const std::vector<std::pair<ItemType, uint8_t>> &link_dependencies = {}
     );
 
+    virtual bool is_disabled() const { return false; };
     virtual bool select_item() { return true; };
     virtual void empty() {};
     virtual void add() {};

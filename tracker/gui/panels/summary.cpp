@@ -18,10 +18,12 @@ GUISummaryPanel::GUISummaryPanel(const bool visible)
 
 void GUISummaryPanel::draw() {
     ImGui::Begin(label.c_str());
+    ImGui::BeginDisabled(is_disabled());
 
     draw_summary();
     draw_optimizations();
 
+    ImGui::EndDisabled();
     ImGui::End();
 }
 

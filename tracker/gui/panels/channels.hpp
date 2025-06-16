@@ -33,6 +33,7 @@ class GUIChannelsPanel : public GUIPanel {
     void update_channel_name(const int index, const int target_id = -1);
     void update_channel_names();
 
+    bool is_disabled() const override;
     bool select_item() override;
     void empty() override;
     void add() override;

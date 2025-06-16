@@ -11,7 +11,7 @@ GUICommandsChannelsPanel::GUICommandsChannelsPanel(const bool visible)
 
 void GUICommandsChannelsPanel::draw() {
     ImGui::Begin(label.c_str());
-    ImGui::BeginDisabled(gui.is_playing());
+    ImGui::BeginDisabled(is_disabled());
 
     if (select_item()) {
         from();
@@ -26,6 +26,10 @@ void GUICommandsChannelsPanel::draw() {
 
     ImGui::EndDisabled();
     ImGui::End();
+}
+
+bool GUICommandsChannelsPanel::is_disabled() const {
+    return gui.is_playing();
 }
 
 bool GUICommandsChannelsPanel::select_item() {

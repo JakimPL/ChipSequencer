@@ -25,6 +25,7 @@ void GUIGeneralPanel::update() {
 
 void GUIGeneralPanel::draw() {
     ImGui::Begin(label.c_str());
+    ImGui::BeginDisabled(is_disabled());
 
     if (select_item()) {
         from();
@@ -38,6 +39,7 @@ void GUIGeneralPanel::draw() {
         empty();
     }
 
+    ImGui::EndDisabled();
     ImGui::End();
 }
 

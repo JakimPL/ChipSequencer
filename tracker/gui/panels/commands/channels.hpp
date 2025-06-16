@@ -15,6 +15,7 @@ class GUICommandsChannelsPanel : public GUIPanel {
     bool is_index_valid() const;
     void draw_channel();
 
+    bool is_disabled() const override;
     bool select_item() override;
     void empty() override;
     void add() override;
