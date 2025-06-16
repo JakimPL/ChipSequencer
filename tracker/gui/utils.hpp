@@ -25,7 +25,7 @@ extern std::unordered_map<LinkKey, bool> slider_states;
 extern std::unordered_map<LinkKey, float> slider_float_values;
 
 int clamp_index(int index, const int size);
-void draw_number_of_items(const std::string &label, const char *label_id, int &value, int min, int max, float label_length = 50.0f);
+void draw_number_of_items(GUIPanel *owner, const std::string &label, const char *label_id, int &value, int min, int max, const LinkKey key = {}, float label_length = 50.0f);
 
 void draw_checkbox(GUIPanel *owner, const char *label, bool &reference, const LinkKey key);
 void draw_int_slider(GUIPanel *owner, const char *label, int &reference, const LinkKey key, int min = 0, int max = 1);
@@ -94,14 +94,14 @@ std::string get_note_octave(uint8_t note_value);
 uint8_t get_note_value(const std::string &note_name, const int octave);
 
 template <typename T>
-void add_action(
+void perform_action(
     GUIPanel *owner,
     const LinkKey key,
     T &reference,
     const T old_value
 );
 
-void add_action_float(
+void perform_action_float(
     GUIPanel *owner,
     const LinkKey key,
     float &reference,

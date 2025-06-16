@@ -12,7 +12,6 @@ GUIOrdersPanel::GUIOrdersPanel(const bool visible)
 
 void GUIOrdersPanel::draw() {
     ImGui::Begin("Orders");
-    ImGui::Columns(1, "order_columns");
 
     if (select_item()) {
         from();
@@ -25,7 +24,6 @@ void GUIOrdersPanel::draw() {
         empty();
     }
 
-    ImGui::Columns(1);
     ImGui::End();
 }
 
@@ -67,7 +65,7 @@ void GUIOrdersPanel::from() {
 
 void GUIOrdersPanel::to() const {
     if (!save &&
-        (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
+        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
          !is_index_valid())) {
         return;
     }
@@ -128,7 +126,8 @@ void GUIOrdersPanel::update() {
 
 void GUIOrdersPanel::draw_order_length() {
     const size_t old_size = current_order.length;
-    draw_number_of_items("Sequences", "##SequenceLength", current_order.length, 1, MAX_ORDER_ITEMS);
+    const LinkKey key = {Target::ORDER, order_index, ORDER_LENGTH};
+    draw_number_of_items(this, "Sequences", "##SequenceLength", current_order.length, 1, MAX_ORDER_ITEMS, key);
 
     if (old_size != current_order.length) {
         current_order.sequences.resize(current_order.length);

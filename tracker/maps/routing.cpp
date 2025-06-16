@@ -29,7 +29,9 @@ const std::map<Target, RoutingItems> routing_variables = {
     },
     {
         Target::ORDER,
-        RoutingItems({}),
+        RoutingItems({
+            {"Order length", ORDER_LENGTH, TargetVariableType::Byte, ROUTING_HIDDEN},
+        }),
     },
     {
         Target::OSCILLATOR,
@@ -41,7 +43,9 @@ const std::map<Target, RoutingItems> routing_variables = {
     },
     {
         Target::WAVETABLE,
-        RoutingItems({}),
+        RoutingItems({
+            {"Wavetable size", WAVETABLE_SIZE, TargetVariableType::Word, ROUTING_HIDDEN},
+        }),
     },
     {
         Target::DSP,
@@ -96,9 +100,13 @@ const std::map<Target, RoutingItems> routing_variables = {
             {"Bypass channel", SPECIAL_CHANNEL_BYPASS, TargetVariableType::Byte, ROUTING_HIDDEN},
             {"Constant pitch", SPECIAL_CHANNEL_CONSTANT_PITCH, TargetVariableType::Byte, ROUTING_HIDDEN},
             {"Synchronize", SPECIAL_CHANNEL_SYNCHRONIZE, TargetVariableType::Byte, ROUTING_HIDDEN},
+            {"Sync numerator", SPECIAL_CHANNEL_SYNC_NUMERATOR, TargetVariableType::Byte, ROUTING_HIDDEN},
+            {"Sync denominator", SPECIAL_CHANNEL_SYNC_DENOMINATOR, TargetVariableType::Byte, ROUTING_HIDDEN},
             {"Bypass DSP", SPECIAL_DSP_BYPASS, TargetVariableType::Byte, ROUTING_HIDDEN},
             {"Bypass command channel", SPECIAL_COMMAND_CHANNEL_BYPASS, TargetVariableType::Byte, ROUTING_HIDDEN},
             {"Hide command channel", SPECIAL_COMMAND_CHANNEL_HIDE, TargetVariableType::Byte, ROUTING_HIDDEN},
+            {"Sequence length", SPECIAL_SEQUENCE_LENGTH, TargetVariableType::Byte, ROUTING_HIDDEN},
+            {"Commands sequence length", SPECIAL_COMMANDS_SEQUENCE_LENGTH, TargetVariableType::Byte, ROUTING_HIDDEN},
         }),
     },
 };

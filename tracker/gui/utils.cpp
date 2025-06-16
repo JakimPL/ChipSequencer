@@ -16,12 +16,16 @@ int clamp_index(int index, const int size) {
     return std::clamp(index, 0, size - 1);
 }
 
-void draw_number_of_items(const std::string &label, const char *label_id, int &value, int min, int max, float label_length) {
+void draw_number_of_items(GUIPanel *owner, const std::string &label, const char *label_id, int &value, int min, int max, const LinkKey key, float label_length) {
+    const int old_value = value;
+
     ImGui::PushID(label_id);
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - label_length);
     ImGui::InputInt("Items", &value, min, max);
     ImGui::PopID();
+
     value = std::clamp(value, min, max);
+    perform_action(owner, key, value, old_value);
 }
 
 void draw_checkbox(GUIPanel *owner, const char *label, bool &reference, const LinkKey key) {
@@ -34,7 +38,7 @@ void draw_checkbox(GUIPanel *owner, const char *label, bool &reference, const Li
     ImGui::PopID();
     ImGui::EndDisabled();
 
-    add_action(owner, key, reference, old_value);
+    perform_action(owner, key, reference, old_value);
 }
 
 void draw_int_slider(GUIPanel *owner, const char *label, int &reference, const LinkKey key, int min, int max) {
@@ -55,7 +59,7 @@ void draw_int_slider(GUIPanel *owner, const char *label, int &reference, const L
     ImGui::EndDisabled();
 
     reference = std::clamp(reference, min, max);
-    add_action(owner, key, reference, old_value);
+    perform_action(owner, key, reference, old_value);
 }
 
 void draw_float_slider(GUIPanel *owner, const char *label, float &reference, const LinkKey key, float min, float max, const GUIScale scale, const char *format) {
@@ -112,7 +116,7 @@ void draw_float_slider(GUIPanel *owner, const char *label, float &reference, con
     ImGui::EndDisabled();
 
     reference = std::clamp(reference, min, max);
-    add_action_float(owner, key, reference, old_value, format);
+    perform_action_float(owner, key, reference, old_value, format);
 }
 
 void draw_knob(GUIPanel *owner, const char *label, float &reference, const LinkKey key, float min, float max) {
@@ -127,7 +131,7 @@ void draw_knob(GUIPanel *owner, const char *label, float &reference, const LinkK
     ImGui::EndDisabled();
 
     reference = std::clamp(reference, min, max);
-    add_action_float(owner, key, reference, old_value);
+    perform_action_float(owner, key, reference, old_value);
 }
 
 void draw_link_tooltip(const LinkKey &key) {
@@ -920,7 +924,7 @@ uint8_t get_note_value(const std::string &note_name, const int octave) {
 }
 
 template <typename T>
-void add_action(
+void perform_action(
     GUIPanel *owner,
     const LinkKey key,
     T &reference,
@@ -935,7 +939,7 @@ void add_action(
     }
 }
 
-void add_action_float(
+void perform_action_float(
     GUIPanel *owner,
     const LinkKey key,
     float &reference,

@@ -225,6 +225,8 @@ void GUIChannelsPanel::draw_channel() {
     const LinkKey key = {Target::CHANNEL, channel_index, CHANNEL_PITCH};
     if (current_channel.constant_pitch) {
         if (current_channel.sync) {
+            const int previous_numerator = current_channel.sync_numerator;
+            const int previous_denominator = current_channel.sync_denominator;
             ImGui::Text("Ratio:");
             ImGui::SameLine();
             ImGui::SetNextItemWidth(50);
@@ -236,6 +238,8 @@ void GUIChannelsPanel::draw_channel() {
             ImGui::InputInt("##Denominator", &current_channel.sync_denominator, 0, 0);
             current_channel.sync_numerator = std::clamp(current_channel.sync_numerator, 1, 16);
             current_channel.sync_denominator = std::clamp(current_channel.sync_denominator, 1, 16);
+            perform_action(this, {Target::SPECIAL, channel_index, SPECIAL_CHANNEL_SYNC_NUMERATOR}, current_channel.sync_numerator, previous_numerator);
+            perform_action(this, {Target::SPECIAL, channel_index, SPECIAL_CHANNEL_SYNC_DENOMINATOR}, current_channel.sync_denominator, previous_denominator);
         } else {
             draw_float_slider(this, "Pitch (Hz)", current_channel.pitch, key, GUI_MIN_PITCH, GUI_MAX_PITCH, GUIScale::Logarithmic);
         }
