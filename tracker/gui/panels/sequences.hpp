@@ -39,6 +39,8 @@ class GUISequencesPanel : public GUIPanel {
 
   public:
     GUISequencesPanel(const bool visible = true, const bool windowed = true);
+    GUIElement get_element() const override;
+
     void update() override;
     void set_index(const int index) override;
 

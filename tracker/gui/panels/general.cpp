@@ -9,6 +9,10 @@ GUIGeneralPanel::GUIGeneralPanel(const bool visible, const bool windowed)
     : GUIPanel("General", visible, windowed) {
 }
 
+GUIElement GUIGeneralPanel::get_element() const {
+    return GUIElement::General;
+}
+
 void GUIGeneralPanel::update() {
     current_song.edo = scale_composer.get_edo();
     current_song.a4_frequency = frequency_table.get_a4_frequency();

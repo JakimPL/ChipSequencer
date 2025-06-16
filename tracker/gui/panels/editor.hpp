@@ -16,4 +16,5 @@ class GUIEditorPanel : public GUIPanel {
 
   public:
     GUIEditorPanel(const bool visible = true, const bool windowed = true);
+    GUIElement get_element() const override;
 };

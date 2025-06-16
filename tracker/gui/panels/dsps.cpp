@@ -9,6 +9,10 @@ GUIDSPsPanel::GUIDSPsPanel(const bool visible, const bool windowed)
     initialize();
 }
 
+GUIElement GUIDSPsPanel::get_element() const {
+    return GUIElement::DSPs;
+}
+
 void GUIDSPsPanel::draw() {
     draw_dsp();
 }

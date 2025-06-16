@@ -1,8 +1,13 @@
 #pragma once
 
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
+#include "../../song/links/type.hpp"
 #include "../init.hpp"
+#include "../enums.hpp"
 
 class Action;
 
@@ -15,28 +20,22 @@ class GUIPanel {
     );
     virtual ~GUIPanel() = default;
 
-    bool visible = true;
-    const bool windowed;
-
+    virtual GUIElement get_element() const = 0;
     virtual void update() {};
     virtual void set_index(const int) {};
-    void frame();
     virtual void from() {};
     virtual void to() const {};
 
+    bool visible = true;
+    const bool windowed;
+
+    void frame();
     void add_action(Action *action, const bool undo);
 
   protected:
     bool save = false;
     const std::string label;
     std::vector<std::pair<Action *, bool>> pending_actions;
-
-    void initialize();
-    void history_actions();
-    void draw_add_or_remove(
-        const std::vector<std::string> &dependencies = {},
-        const std::vector<std::pair<ItemType, uint8_t>> &link_dependencies = {}
-    );
 
     virtual void register_shortcuts() {};
     virtual bool is_disabled() const { return false; };
@@ -51,4 +50,11 @@ class GUIPanel {
     virtual void shortcut_actions() {};
     virtual void pre_actions() {};
     virtual void post_actions() { save = false; };
+
+    void initialize();
+    void history_actions();
+    void draw_add_or_remove(
+        const std::vector<std::string> &dependencies = {},
+        const std::vector<std::pair<ItemType, uint8_t>> &link_dependencies = {}
+    );
 };

@@ -9,6 +9,10 @@ GUICommandsSequencesPanel::GUICommandsSequencesPanel(const bool visible, const b
     : GUIPanel("Commands sequences", visible, windowed) {
 }
 
+GUIElement GUICommandsSequencesPanel::get_element() const {
+    return GUIElement::CommandsSequences;
+}
+
 void GUICommandsSequencesPanel::draw() {
     draw_sequence();
 }

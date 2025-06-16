@@ -75,6 +75,8 @@ class GUIPatternsPanel : public GUIPanel {
 
   public:
     GUIPatternsPanel(const bool visible = true, const bool windowed = true);
+    GUIElement get_element() const override;
+
     void set_index(const int index) override;
 
     void from() override;

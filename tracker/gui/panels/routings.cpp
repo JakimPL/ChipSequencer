@@ -24,6 +24,10 @@ GUIRoutingsPanel::GUIRoutingsPanel(const bool visible, const bool windowed)
     : GUIPanel("Routings", visible, windowed) {
 }
 
+GUIElement GUIRoutingsPanel::get_element() const {
+    return GUIElement::Routings;
+}
+
 void GUIRoutingsPanel::draw() {
     draw_reset_button();
     draw_nodes();

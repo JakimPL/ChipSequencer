@@ -8,6 +8,10 @@ GUIOrdersPanel::GUIOrdersPanel(const bool visible, const bool windowed)
     : GUIPanel("Orders", visible, windowed) {
 }
 
+GUIElement GUIOrdersPanel::get_element() const {
+    return GUIElement::Orders;
+}
+
 void GUIOrdersPanel::draw() {
     draw_order();
 }

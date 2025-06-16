@@ -12,6 +12,10 @@ GUIWavetablesPanel::GUIWavetablesPanel(const bool visible, const bool windowed)
     : GUIPanel("Wavetables", visible, windowed) {
 }
 
+GUIElement GUIWavetablesPanel::get_element() const {
+    return GUIElement::Wavetables;
+}
+
 void GUIWavetablesPanel::draw() {
     draw_waveform();
     draw_status();

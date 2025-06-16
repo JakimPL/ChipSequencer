@@ -47,6 +47,8 @@ class GUIGeneralPanel : public GUIPanel {
 
   public:
     GUIGeneralPanel(const bool visible = true, const bool windowed = true);
+    GUIElement get_element() const override;
+
     void update() override;
 
     void from() override;

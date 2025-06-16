@@ -11,6 +11,10 @@ GUIChannelsPanel::GUIChannelsPanel(const bool visible, const bool windowed)
     : GUIPanel("Channels", visible, windowed) {
 }
 
+GUIElement GUIChannelsPanel::get_element() const {
+    return GUIElement::Channels;
+}
+
 void GUIChannelsPanel::draw() {
     draw_channel();
 }

@@ -13,6 +13,10 @@ GUIMenu::GUIMenu(const bool visible, const bool windowed)
     register_shortcuts();
 }
 
+GUIElement GUIMenu::get_element() const {
+    return GUIElement::Menu;
+}
+
 void GUIMenu::draw() {
     draw_menu();
 }

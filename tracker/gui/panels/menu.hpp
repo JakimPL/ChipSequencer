@@ -34,4 +34,5 @@ class GUIMenu : public GUIPanel {
 
   public:
     GUIMenu(const bool visible = true, const bool windowed = false);
+    GUIElement get_element() const override;
 };

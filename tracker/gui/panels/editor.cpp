@@ -7,6 +7,10 @@ GUIEditorPanel::GUIEditorPanel(const bool visible, const bool windowed)
     : GUIPanel("Editor", visible, windowed) {
 }
 
+GUIElement GUIEditorPanel::get_element() const {
+    return GUIElement::Editor;
+}
+
 void GUIEditorPanel::draw() {
     draw_tabs();
 }

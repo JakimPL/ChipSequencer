@@ -34,6 +34,8 @@ class GUIOrdersPanel : public GUIPanel {
 
   public:
     GUIOrdersPanel(const bool visible = true, const bool windowed = true);
+    GUIElement get_element() const override;
+
     void update() override;
     void set_index(const int index) override;
     void set_sequence(const size_t sequence_index, const size_t new_sequence);

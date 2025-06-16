@@ -23,6 +23,8 @@ class GUICommandsChannelsPanel : public GUIPanel {
 
   public:
     GUICommandsChannelsPanel(const bool visible = true, const bool windowed = true);
+    GUIElement get_element() const override;
+
     void update() override;
     void set_index(const int index) override;
 

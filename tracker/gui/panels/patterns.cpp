@@ -7,6 +7,10 @@ GUIPatternsPanel::GUIPatternsPanel(const bool visible, const bool windowed)
     : GUIPanel("Patterns", visible, windowed) {
 }
 
+GUIElement GUIPatternsPanel::get_element() const {
+    return GUIElement::Patterns;
+}
+
 void GUIPatternsPanel::draw() {
     draw_channels();
 }

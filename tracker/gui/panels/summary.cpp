@@ -16,6 +16,10 @@ GUISummaryPanel::GUISummaryPanel(const bool visible, const bool windowed)
     : GUIPanel("Summary", visible, windowed) {
 }
 
+GUIElement GUISummaryPanel::get_element() const {
+    return GUIElement::Summary;
+}
+
 void GUISummaryPanel::draw() {
     draw_summary();
     draw_optimizations();

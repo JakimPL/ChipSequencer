@@ -8,6 +8,10 @@ GUIEnvelopesPanel::GUIEnvelopesPanel(const bool visible, const bool windowed)
     : GUIPanel("Envelopes", visible, windowed) {
 }
 
+GUIElement GUIEnvelopesPanel::get_element() const {
+    return GUIElement::Envelopes;
+}
+
 void GUIEnvelopesPanel::draw() {
     draw_envelope();
 }

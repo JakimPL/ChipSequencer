@@ -11,6 +11,10 @@ GUICommandsChannelsPanel::GUICommandsChannelsPanel(
     initialize();
 }
 
+GUIElement GUICommandsChannelsPanel::get_element() const {
+    return GUIElement::CommandsChannels;
+}
+
 void GUICommandsChannelsPanel::draw() {
     draw_channel();
 }

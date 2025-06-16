@@ -53,6 +53,7 @@ class GUIRoutingsPanel : public GUIPanel {
 
   public:
     GUIRoutingsPanel(const bool visible = true, const bool windowed = true);
+    GUIElement get_element() const override;
 
     void from() override;
     void to() const override;
