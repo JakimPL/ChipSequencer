@@ -5,6 +5,7 @@
 #include "action.hpp"
 #include "../names.hpp"
 #include "../panels/panel.hpp"
+#include "../panels/routings.hpp"
 
 Action::Action(const std::string &nm, GUIPanel *own, const LinkKey k)
     : name(nm), owner(own), key(k) {
@@ -45,12 +46,12 @@ ChangeValueAction<T>::ChangeValueAction(
 
 template <typename T>
 void ChangeValueAction<T>::redo() {
-    value_change.redo();
+    value_change.parameter = value_change.new_value;
 }
 
 template <typename T>
 void ChangeValueAction<T>::undo() {
-    value_change.undo();
+    value_change.parameter = value_change.old_value;
 }
 
 template <typename T>
@@ -87,17 +88,19 @@ ChangeRoutingAction::ChangeRoutingAction(
     const std::string &nm,
     GUIPanel *own,
     const LinkKey k,
-    const ValueChange<LinkKey> &rout_ch
+    const RoutingChange &rout_ch
 )
     : Action(nm, own, k), routing_change(rout_ch) {
 }
 
 void ChangeRoutingAction::redo() {
-    routing_change.redo();
+    GUIRoutingsPanel *panel = dynamic_cast<GUIRoutingsPanel *>(owner);
+    panel->set_link(routing_change.input_key, routing_change.new_routing);
 }
 
 void ChangeRoutingAction::undo() {
-    routing_change.undo();
+    GUIRoutingsPanel *panel = dynamic_cast<GUIRoutingsPanel *>(owner);
+    panel->set_link(routing_change.input_key, routing_change.old_routing);
 }
 
 bool ChangeRoutingAction::can_merge(const Action *other) const {
@@ -110,17 +113,17 @@ bool ChangeRoutingAction::can_merge(const Action *other) const {
 void ChangeRoutingAction::merge(const Action *other) {
     const auto *other_change = dynamic_cast<const ChangeRoutingAction *>(other);
     if (other_change) {
-        routing_change.new_value = other_change->routing_change.new_value;
+        routing_change.new_routing = other_change->routing_change.new_routing;
     }
 }
 
 std::string ChangeRoutingAction::get_name() const {
     std::ostringstream stream;
-    const std::string old_value_target = target_names.at(routing_change.old_value.target);
-    const std::string new_value_target = target_names.at(routing_change.new_value.target);
+    const std::string old_value_target = target_names.at(routing_change.old_routing.target);
+    const std::string new_value_target = target_names.at(routing_change.new_routing.target);
     stream << "Change routing for " << name
-           << " from " << old_value_target << " " << routing_change.old_value.index
-           << " to " << new_value_target << " " << routing_change.new_value.index;
+           << " from " << old_value_target << " " << routing_change.old_routing.index
+           << " to " << new_value_target << " " << routing_change.new_routing.index;
 
     return stream.str();
 }

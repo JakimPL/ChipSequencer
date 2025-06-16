@@ -963,13 +963,14 @@ void perform_action_float(
 void perform_action_routing(
     GUIPanel *owner,
     const LinkKey key,
-    LinkKey &reference,
-    const LinkKey old_value
+    const InputKey &input_key,
+    const LinkKey &new_value,
+    const LinkKey &old_value
 ) {
-    if (old_value != reference) {
+    if (old_value != new_value) {
         std::string label = key.target == Target::CHANNEL ? "Channel " : "DSP ";
         label += std::to_string(key.index);
-        const auto value_change = ValueChange<LinkKey>(reference, old_value);
+        const auto value_change = RoutingChange(input_key, old_value, new_value);
         history_manager.add_action(
             std::make_unique<ChangeRoutingAction>(label, owner, key, value_change)
         );

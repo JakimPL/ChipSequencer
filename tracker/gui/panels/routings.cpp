@@ -305,20 +305,20 @@ void GUIRoutingsPanel::draw_nodes() {
     ImGui::EndChild();
 }
 
-void GUIRoutingsPanel::draw_link(const InputKey source, const OutputKey target, uint8_t alpha) {
+void GUIRoutingsPanel::draw_link(const InputKey &source_key, const OutputKey &target_key, uint8_t alpha) {
     const float line_thickness = GUI_ROUTING_LINK_THICKNESS;
     const ImU32 audio_color = IM_COL32(0, 200, 0, alpha);
     const ImU32 parameter_color = IM_COL32(200, 150, 0, alpha);
     const ImU32 dragging_color = IM_COL32(150, 150, 150, 255);
 
     /* don't show invalid DSP links */
-    if (!is_linking_possible(source, target)) {
+    if (!is_linking_possible(source_key, target_key)) {
         return;
     }
 
-    const bool dragging = link_dragging_source_key.has_value() && link_dragging_source_key.value() == source;
-    auto source_pin_it = output_pins.find(source);
-    auto dest_pin_it = input_pins.find(target);
+    const bool dragging = link_dragging_source_key.has_value() && link_dragging_source_key.value() == source_key;
+    auto source_pin_it = output_pins.find(source_key);
+    auto dest_pin_it = input_pins.find(target_key);
 
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
     if (source_pin_it != output_pins.end() && dest_pin_it != input_pins.end()) {
@@ -332,7 +332,7 @@ void GUIRoutingsPanel::draw_link(const InputKey source, const OutputKey target, 
         } else {
             p1 = source_pin_it->second;
             p4 = dest_pin_it->second;
-            const bool is_audio_link = target.target == Target::DIRECT_OUTPUT || target.target == Target::DIRECT_DSP;
+            const bool is_audio_link = target_key.target == Target::DIRECT_OUTPUT || target_key.target == Target::DIRECT_DSP;
             color = is_audio_link ? audio_color : parameter_color;
         }
 
@@ -585,7 +585,7 @@ RoutingNode *GUIRoutingsPanel::handle_node_dragging(const ImVec2 &canvas_origin)
     return current_dragging_node_ptr;
 }
 
-void GUIRoutingsPanel::set_source_key(const ImVec2 pin_position, const InputKey &key) {
+void GUIRoutingsPanel::set_source_key(const ImVec2 pin_position, const InputKey &source_key) {
     if (gui.is_playing()) {
         return;
     }
@@ -593,13 +593,13 @@ void GUIRoutingsPanel::set_source_key(const ImVec2 pin_position, const InputKey 
     const ImVec2 radius = ImVec2(GUI_ROUTING_PIN_RADIUS, GUI_ROUTING_PIN_RADIUS);
     const bool is_pin_hovered = ImGui::IsMouseHoveringRect(pin_position - radius, pin_position + radius);
     if (is_pin_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
-        link_dragging_source_key = key;
+        link_dragging_source_key = source_key;
     } else if (ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
         link_dragging_source_key = std::nullopt;
     }
 }
 
-void GUIRoutingsPanel::set_target_key(const ImVec2 pin_position, const OutputKey &key) {
+void GUIRoutingsPanel::set_target_key(const ImVec2 pin_position, const OutputKey &target_key) {
     if (gui.is_playing()) {
         return;
     }
@@ -609,10 +609,10 @@ void GUIRoutingsPanel::set_target_key(const ImVec2 pin_position, const OutputKey
     if (link_dragging_source_key.has_value() && is_pin_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
         const InputKey source_key = link_dragging_source_key.value();
         const OutputKey old_value = nodes_links[source_key];
-        nodes_links[source_key] = key;
+        set_link(source_key, target_key);
         link_dragging_source_key = std::nullopt;
         const LinkKey link_key = from_input_key(source_key);
-        perform_action_routing(this, link_key, nodes_links[source_key], old_value);
+        perform_action_routing(this, link_key, source_key, target_key, old_value);
     }
 }
 
@@ -650,6 +650,10 @@ void GUIRoutingsPanel::clear_nodes() {
     nodes_links.clear();
     dragging_node_id.reset();
     link_dragging_source_key.reset();
+}
+
+void GUIRoutingsPanel::set_link(const InputKey &source_key, const OutputKey &target_key) {
+    nodes_links[source_key] = target_key;
 }
 
 std::vector<std::pair<NodeIdentifier, ImVec2>> GUIRoutingsPanel::get_nodes_positions() const {

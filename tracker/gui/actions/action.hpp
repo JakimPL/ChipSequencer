@@ -47,14 +47,14 @@ class ChangeValueAction : public Action {
 
 class ChangeRoutingAction : public Action {
   private:
-    ValueChange<LinkKey> routing_change;
+    RoutingChange routing_change;
 
   public:
     ChangeRoutingAction(
         const std::string &nm,
         GUIPanel *own,
         const LinkKey k,
-        const ValueChange<LinkKey> &rout_ch
+        const RoutingChange &rout_ch
     );
 
     void redo() override;

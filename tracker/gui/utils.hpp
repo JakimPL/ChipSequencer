@@ -10,6 +10,7 @@
 #include "../song/links/key.hpp"
 #include "init.hpp"
 #include "enums.hpp"
+#include "node.hpp"
 #include "panels/panel.hpp"
 #include "actions/shortcuts.hpp"
 #include "patterns/commands.hpp"
@@ -112,6 +113,7 @@ void perform_action_float(
 void perform_action_routing(
     GUIPanel *owner,
     const LinkKey key,
-    LinkKey &reference,
-    const LinkKey old_value
+    const InputKey &input_key,
+    const LinkKey &new_value,
+    const LinkKey &old_value
 );
