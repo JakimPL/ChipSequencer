@@ -18,8 +18,8 @@ void GUIDSPsPanel::draw() {
         from();
         draw_dsp();
         check_keyboard_input();
-        actions();
         to();
+        history_actions();
         post_actions();
     } else {
         empty();

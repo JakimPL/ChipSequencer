@@ -102,18 +102,22 @@ void GUIPanel::add_action(Action *action, const bool undo) {
     }
 }
 
-void GUIPanel::actions() {
+void GUIPanel::history_actions() {
     if (pending_actions.empty()) {
         return;
     }
 
     save = true;
     for (const auto &[action, undo] : pending_actions) {
+        const int index = action->key.index;
+        set_index(index);
+        from();
         if (undo) {
             action->undo();
         } else {
             action->redo();
         }
+        to();
     }
     pending_actions.clear();
 }

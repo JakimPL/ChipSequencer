@@ -17,8 +17,8 @@ void GUIEnvelopesPanel::draw() {
         from();
         draw_envelope();
         check_keyboard_input();
-        actions();
         to();
+        history_actions();
         post_actions();
     } else {
         empty();

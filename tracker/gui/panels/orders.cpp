@@ -17,8 +17,8 @@ void GUIOrdersPanel::draw() {
         from();
         draw_order();
         check_keyboard_input();
-        actions();
         to();
+        history_actions();
         post_actions();
     } else {
         empty();

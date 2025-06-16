@@ -20,8 +20,8 @@ void GUIOscillatorsPanel::draw() {
         from();
         draw_oscillator();
         check_keyboard_input();
-        actions();
         to();
+        history_actions();
         post_actions();
     } else {
         empty();

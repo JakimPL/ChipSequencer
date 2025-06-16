@@ -76,6 +76,8 @@ void GUIPatternsPanel::draw() {
         transpose_selected_rows();
         check_keyboard_input();
         to();
+        history_actions();
+        post_actions();
     } else {
         empty();
     }

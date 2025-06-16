@@ -25,7 +25,7 @@ class GUIPanel {
     bool save = false;
     std::vector<std::pair<Action *, bool>> pending_actions;
 
-    void actions();
+    void history_actions();
     void draw_add_or_remove(
         const std::vector<std::string> &dependencies = {},
         const std::vector<std::pair<ItemType, uint8_t>> &link_dependencies = {}

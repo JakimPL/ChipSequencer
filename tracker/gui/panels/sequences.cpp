@@ -72,8 +72,8 @@ void GUISequencesPanel::draw() {
         shortcut_actions();
         transpose_selected_rows();
         check_keyboard_input();
-        actions();
         to();
+        history_actions();
         post_actions();
     } else {
         empty();

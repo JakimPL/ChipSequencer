@@ -42,8 +42,8 @@ void GUICommandsSequencesPanel::draw() {
         shortcut_actions();
         check_keyboard_input();
         draw_edit_dialog_box();
-        actions();
         to();
+        history_actions();
         post_actions();
     } else {
         empty();

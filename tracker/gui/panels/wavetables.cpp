@@ -22,8 +22,8 @@ void GUIWavetablesPanel::draw() {
         draw_waveform();
         draw_status();
         check_keyboard_input();
-        actions();
         to();
+        history_actions();
         post_actions();
     } else {
         empty();

@@ -33,8 +33,8 @@ void GUIRoutingsPanel::draw() {
         draw_nodes();
         draw_all_links();
         check_keyboard_input();
-        actions();
         to();
+        history_actions();
         post_actions();
     } else {
         empty();
