@@ -15,6 +15,8 @@ class GUIMenu : public GUIPanel {
     bool open_new_song_confirmation_popup = false;
     bool open_exit_confirmation_popup = false;
 
+    void draw_menu();
+
     void file_new_confirm();
     void file_new();
     void file_save();
@@ -26,6 +28,7 @@ class GUIMenu : public GUIPanel {
     void file_exit_confirm();
 
     void draw() override;
+    void post_actions() override;
 
   public:
     GUIMenu(const bool visible = true);

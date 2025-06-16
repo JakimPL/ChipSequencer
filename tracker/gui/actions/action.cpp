@@ -1,10 +1,130 @@
+
+#include <iomanip>
+#include <sstream>
+
 #include "action.hpp"
+#include "../names.hpp"
 #include "../panels/panel.hpp"
+
+Action::Action(const std::string &nm, GUIPanel *own, const LinkKey k)
+    : name(nm), owner(own), key(k) {
+}
+
+void Action::execute() {
+    redo();
+}
+
+void Action::redo() {
+    execute();
+}
 
 void Action::notify_panel(const bool undo) {
     owner->add_action(this, undo);
 }
 
-void Action::redo() {
-    execute();
-};
+bool Action::can_merge(const Action *other) const {
+    return key == other->key && !key.is_null();
+}
+
+void Action::merge(const Action *other) {
+}
+
+std::string Action::get_name() const {
+    return name;
+}
+
+template <typename T>
+ChangeValueAction<T>::ChangeValueAction(
+    const std::string &nm,
+    GUIPanel *own,
+    const LinkKey k,
+    const ValueChange<T> &val_ch
+)
+    : Action(nm, own, k), value_change(val_ch) {
+}
+
+template <typename T>
+void ChangeValueAction<T>::redo() {
+    value_change.redo();
+}
+
+template <typename T>
+void ChangeValueAction<T>::undo() {
+    value_change.undo();
+}
+
+template <typename T>
+bool ChangeValueAction<T>::can_merge(const Action *other) const {
+    if (!Action::can_merge(other)) {
+        return false;
+    }
+    return dynamic_cast<const ChangeValueAction<T> *>(other) != nullptr;
+}
+
+template <typename T>
+void ChangeValueAction<T>::merge(const Action *other) {
+    const auto *other_change = dynamic_cast<const ChangeValueAction<T> *>(other);
+    if (other_change) {
+        value_change.new_value = other_change->value_change.new_value;
+    }
+}
+
+template <typename T>
+std::string ChangeValueAction<T>::get_name() const {
+    std::ostringstream stream;
+    stream << "Change " << name;
+    if constexpr (std::is_floating_point_v<T>) {
+        stream << " from " << std::setprecision(4) << value_change.old_value
+               << " to " << std::setprecision(4) << value_change.new_value;
+    } else {
+        stream << " from " << value_change.old_value
+               << " to " << value_change.new_value;
+    }
+    return stream.str();
+}
+
+ChangeRoutingAction::ChangeRoutingAction(
+    const std::string &nm,
+    GUIPanel *own,
+    const LinkKey k,
+    const ValueChange<LinkKey> &rout_ch
+)
+    : Action(nm, own, k), routing_change(rout_ch) {
+}
+
+void ChangeRoutingAction::redo() {
+    routing_change.redo();
+}
+
+void ChangeRoutingAction::undo() {
+    routing_change.undo();
+}
+
+bool ChangeRoutingAction::can_merge(const Action *other) const {
+    if (!Action::can_merge(other)) {
+        return false;
+    }
+    return dynamic_cast<const ChangeRoutingAction *>(other) != nullptr;
+}
+
+void ChangeRoutingAction::merge(const Action *other) {
+    const auto *other_change = dynamic_cast<const ChangeRoutingAction *>(other);
+    if (other_change) {
+        routing_change.new_value = other_change->routing_change.new_value;
+    }
+}
+
+std::string ChangeRoutingAction::get_name() const {
+    std::ostringstream stream;
+    const std::string old_value_target = target_names.at(routing_change.old_value.target);
+    const std::string new_value_target = target_names.at(routing_change.new_value.target);
+    stream << "Change routing for " << name
+           << " from " << old_value_target << " " << routing_change.old_value.index
+           << " to " << new_value_target << " " << routing_change.new_value.index;
+
+    return stream.str();
+}
+
+template class ChangeValueAction<float>;
+template class ChangeValueAction<int>;
+template class ChangeValueAction<bool>;

@@ -959,3 +959,19 @@ void perform_action_float(
         );
     }
 }
+
+void perform_action_routing(
+    GUIPanel *owner,
+    const LinkKey key,
+    LinkKey &reference,
+    const LinkKey old_value
+) {
+    if (old_value != reference) {
+        std::string label = key.target == Target::CHANNEL ? "Channel " : "DSP ";
+        label += std::to_string(key.index);
+        const auto value_change = ValueChange<LinkKey>(reference, old_value);
+        history_manager.add_action(
+            std::make_unique<ChangeRoutingAction>(label, owner, key, value_change)
+        );
+    }
+}

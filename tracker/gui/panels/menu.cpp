@@ -59,6 +59,11 @@ GUIMenu::GUIMenu(const bool visible)
 }
 
 void GUIMenu::draw() {
+    draw_menu();
+    post_actions();
+}
+
+void GUIMenu::draw_menu() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("File")) {
             draw_menu_item("New", ShortcutAction::FileNew);
@@ -109,49 +114,6 @@ void GUIMenu::draw() {
             ImGui::EndMenu();
         }
         ImGui::EndMainMenuBar();
-    }
-
-    if (compilation_status.has_value()) {
-        ImGui::OpenPopup(compilation_status.value() ? "Compilation success" : "Compilation failure");
-        compilation_status = std::nullopt;
-    }
-
-    if (render_status.has_value()) {
-        ImGui::OpenPopup(render_status.value() ? "Render success" : "Render failure");
-        render_status = std::nullopt;
-    }
-
-    if (load_error.has_value()) {
-        ImGui::OpenPopup("Load error");
-        load_error = std::nullopt;
-    }
-
-    if (open_new_song_confirmation_popup) {
-        ImGui::OpenPopup("Confirm new song");
-        open_new_song_confirmation_popup = false;
-    }
-
-    if (open_exit_confirmation_popup) {
-        ImGui::OpenPopup("Confirm exit");
-        open_exit_confirmation_popup = false;
-    }
-
-    if (ImGui::BeginPopupModal("Compilation success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        draw_popup("File compiled successfully!");
-    } else if (ImGui::BeginPopupModal("Compilation failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        draw_popup("Compilation failed!");
-    } else if (ImGui::BeginPopupModal("Render success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        draw_popup("Song rendered successfully!");
-    } else if (ImGui::BeginPopupModal("Render failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        draw_popup("Song render failed!");
-    } else if (ImGui::BeginPopupModal("Load error", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        draw_popup("Failed to load file!");
-    } else if (ImGui::BeginPopupModal("Confirm new song", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-        const std::string message = "Do you want to create a new song?\nAny unsaved changes will be lost.";
-        draw_confirmation_popup(message, [this]() { file_new(); }, [this]() { file_save(); });
-    } else if (ImGui::BeginPopupModal("Confirm exit", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-        const std::string message = "Do you want to exit the program?\nAny unsaved changes will be lost.";
-        draw_confirmation_popup(message, [this]() { file_exit(); }, [this]() { file_save(); });
     }
 }
 
@@ -269,4 +231,49 @@ void GUIMenu::file_exit() {
 
 void GUIMenu::file_exit_confirm() {
     open_exit_confirmation_popup = true;
+}
+
+void GUIMenu::post_actions() {
+    if (compilation_status.has_value()) {
+        ImGui::OpenPopup(compilation_status.value() ? "Compilation success" : "Compilation failure");
+        compilation_status = std::nullopt;
+    }
+
+    if (render_status.has_value()) {
+        ImGui::OpenPopup(render_status.value() ? "Render success" : "Render failure");
+        render_status = std::nullopt;
+    }
+
+    if (load_error.has_value()) {
+        ImGui::OpenPopup("Load error");
+        load_error = std::nullopt;
+    }
+
+    if (open_new_song_confirmation_popup) {
+        ImGui::OpenPopup("Confirm new song");
+        open_new_song_confirmation_popup = false;
+    }
+
+    if (open_exit_confirmation_popup) {
+        ImGui::OpenPopup("Confirm exit");
+        open_exit_confirmation_popup = false;
+    }
+
+    if (ImGui::BeginPopupModal("Compilation success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("File compiled successfully!");
+    } else if (ImGui::BeginPopupModal("Compilation failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Compilation failed!");
+    } else if (ImGui::BeginPopupModal("Render success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Song rendered successfully!");
+    } else if (ImGui::BeginPopupModal("Render failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Song render failed!");
+    } else if (ImGui::BeginPopupModal("Load error", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Failed to load file!");
+    } else if (ImGui::BeginPopupModal("Confirm new song", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+        const std::string message = "Do you want to create a new song?\nAny unsaved changes will be lost.";
+        draw_confirmation_popup(message, [this]() { file_new(); }, [this]() { file_save(); });
+    } else if (ImGui::BeginPopupModal("Confirm exit", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+        const std::string message = "Do you want to exit the program?\nAny unsaved changes will be lost.";
+        draw_confirmation_popup(message, [this]() { file_exit(); }, [this]() { file_save(); });
+    }
 }

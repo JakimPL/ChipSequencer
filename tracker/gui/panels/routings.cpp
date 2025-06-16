@@ -611,8 +611,11 @@ void GUIRoutingsPanel::set_target_key(const ImVec2 pin_position, const OutputKey
     const bool is_pin_hovered = ImGui::IsMouseHoveringRect(pin_position - radius, pin_position + radius);
     if (link_dragging_source_key.has_value() && is_pin_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
         const InputKey source_key = link_dragging_source_key.value();
+        const OutputKey old_value = nodes_links[source_key];
         nodes_links[source_key] = key;
         link_dragging_source_key = std::nullopt;
+        const LinkKey link_key = from_input_key(source_key);
+        perform_action_routing(this, link_key, nodes_links[source_key], old_value);
     }
 }
 

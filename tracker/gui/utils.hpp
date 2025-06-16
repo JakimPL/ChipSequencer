@@ -108,3 +108,10 @@ void perform_action_float(
     const float old_value,
     const char *format = "%.4f"
 );
+
+void perform_action_routing(
+    GUIPanel *owner,
+    const LinkKey key,
+    LinkKey &reference,
+    const LinkKey old_value
+);
