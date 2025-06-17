@@ -9,6 +9,7 @@
 
 GUIChannelsPanel::GUIChannelsPanel(const bool visible, const bool windowed)
     : GUIPanel("Channels", visible, windowed) {
+    initialize();
 }
 
 GUIElement GUIChannelsPanel::get_element() const {

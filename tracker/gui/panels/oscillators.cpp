@@ -8,6 +8,7 @@
 
 GUIOscillatorsPanel::GUIOscillatorsPanel(const bool visible, const bool windowed)
     : GUIPanel("Oscillators", visible, windowed) {
+    initialize();
 }
 
 GUIElement GUIOscillatorsPanel::get_element() const {

@@ -7,6 +7,7 @@
 
 GUIGeneralPanel::GUIGeneralPanel(const bool visible, const bool windowed)
     : GUIPanel("General", visible, windowed) {
+    initialize();
 }
 
 GUIElement GUIGeneralPanel::get_element() const {

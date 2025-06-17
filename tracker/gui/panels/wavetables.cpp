@@ -10,6 +10,7 @@
 
 GUIWavetablesPanel::GUIWavetablesPanel(const bool visible, const bool windowed)
     : GUIPanel("Wavetables", visible, windowed) {
+    initialize();
 }
 
 GUIElement GUIWavetablesPanel::get_element() const {

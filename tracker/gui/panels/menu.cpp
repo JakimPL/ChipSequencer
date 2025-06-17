@@ -10,7 +10,7 @@
 
 GUIMenu::GUIMenu(const bool visible, const bool windowed)
     : GUIPanel("Menu", visible, windowed) {
-    register_shortcuts();
+    initialize();
 }
 
 GUIElement GUIMenu::get_element() const {

@@ -22,6 +22,7 @@
 
 GUIRoutingsPanel::GUIRoutingsPanel(const bool visible, const bool windowed)
     : GUIPanel("Routings", visible, windowed) {
+    initialize();
 }
 
 GUIElement GUIRoutingsPanel::get_element() const {
@@ -75,6 +76,10 @@ void GUIRoutingsPanel::collect_links() {
 }
 
 void GUIRoutingsPanel::collect_nodes() {
+    if (ImGui::GetCurrentContext() == nullptr) {
+        return;
+    }
+
     std::unordered_map<NodeIdentifier, size_t> existing_node_indices;
     for (size_t i = 0; i < nodes.size(); ++i) {
         existing_node_indices[nodes[i].identifier] = i;

@@ -10,6 +10,7 @@
 
 GUISequencesPanel::GUISequencesPanel(const bool visible, const bool windowed)
     : GUIPanel("Sequences", visible, windowed) {
+    initialize();
 }
 
 GUIElement GUISequencesPanel::get_element() const {

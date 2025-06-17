@@ -5,6 +5,7 @@
 
 GUIEditorPanel::GUIEditorPanel(const bool visible, const bool windowed)
     : GUIPanel("Editor", visible, windowed) {
+    initialize();
 }
 
 GUIElement GUIEditorPanel::get_element() const {
