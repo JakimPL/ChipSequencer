@@ -17,6 +17,10 @@ GUIElement GUIWaveformPanel::get_element() const {
 }
 
 void GUIWaveformPanel::draw() {
+    draw_waveform();
+}
+
+void GUIWaveformPanel::draw_waveform() {
     if (ImGui::IsWindowCollapsed()) {
         return;
     }
