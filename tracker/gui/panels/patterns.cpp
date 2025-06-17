@@ -113,17 +113,18 @@ void GUIPatternsPanel::draw_commands_channel(size_t channel_index) {
 void GUIPatternsPanel::from() {
     current_patterns.total_rows = 0;
     current_patterns.playing_rows.clear();
-    from_sequences();
-    from_commands_sequences();
-}
-
-void GUIPatternsPanel::from_sequences() {
     pattern_rows.clear();
     pattern_rows_by_sequence_row.clear();
     secondary_pattern_rows.clear();
     secondary_sequence_rows.clear();
     current_patterns.patterns.clear();
     current_patterns.patterns_max_rows.clear();
+    current_patterns.commands_patterns_max_rows.clear();
+    from_sequences();
+    from_commands_sequences();
+}
+
+void GUIPatternsPanel::from_sequences() {
     const bool playing = is_playing();
     for (size_t channel_index = 0; channel_index < channels.size(); ++channel_index) {
         const Channel *channel = channels[channel_index];
@@ -166,7 +167,6 @@ void GUIPatternsPanel::from_sequences() {
 
 void GUIPatternsPanel::from_commands_sequences() {
     const bool playing = is_playing();
-    current_patterns.commands_patterns_max_rows.clear();
     for (size_t channel_index = 0; channel_index < commands_channels.size(); ++channel_index) {
         const CommandsChannel *channel = commands_channels[channel_index];
         const uint8_t order_index = channel->order_index;
@@ -337,7 +337,7 @@ void GUIPatternsPanel::transpose_selected_rows() {
 
 void GUIPatternsPanel::to_sequences() const {
     std::set<const Pattern *> unique_patterns;
-    if (!selection.command && selection.is_active()) {
+    if (!selection.command && selection.is_active() && !selection.selecting) {
         for (const auto &[channel_index, pattern_id, row] : secondary_pattern_rows) {
             const Pattern &selected_pattern = current_patterns.patterns.at(channel_index).at(pattern_id);
             unique_patterns.insert(&selected_pattern);
@@ -359,7 +359,7 @@ void GUIPatternsPanel::to_sequences() const {
 
 void GUIPatternsPanel::to_commands_sequences() const {
     std::set<const CommandsPattern *> unique_patterns;
-    if (selection.command && selection.is_active()) {
+    if (selection.command && selection.is_active() && !selection.selecting) {
         for (const auto &[channel_index, pattern_id, row] : secondary_pattern_rows) {
             const CommandsPattern &selected_pattern = current_patterns.commands_patterns.at(channel_index).at(pattern_id);
             unique_patterns.insert(&selected_pattern);
