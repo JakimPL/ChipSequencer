@@ -407,6 +407,7 @@ std::pair<ValidationResult, int> GUI::play() const {
 void GUI::stop(const bool restore_parameters) const {
     if (audio_engine) {
         audio_engine->stop();
+        audio_engine->clear_history();
     }
 
     if (restore_parameters) {

@@ -158,6 +158,13 @@ const std::vector<std::deque<_Float32>> &AudioEngine::get_history() const {
     return history;
 }
 
+void AudioEngine::clear_history() {
+    for (auto &channel_history : history) {
+        channel_history.clear();
+        channel_history.resize(HISTORY_SIZE, 0.0f);
+    }
+}
+
 void AudioEngine::lock_history() const {
     history_mutex.lock();
 }
