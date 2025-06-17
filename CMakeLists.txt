@@ -37,8 +37,12 @@ if(NOT NASM_EXECUTABLE)
 endif()
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(GTK REQUIRED gtk+-3.0)
+pkg_check_modules(FFTW REQUIRED fftw3f)
+if (NOT FFTW_FOUND)
+    message(FATAL_ERROR "FFTW3 not found. Please install libfftw3-dev:i386.")
+endif()
 
+pkg_check_modules(GTK REQUIRED gtk+-3.0)
 if (NOT GTK_FOUND)
     message(FATAL_ERROR "GTK not found")
 endif()
@@ -97,6 +101,7 @@ target_link_libraries(nfd PUBLIC ${GTK_LIBRARIES})
 
 add_executable(ChipSequencer
     tracker/audio/engine.cpp
+    tracker/audio/fft.cpp
     tracker/audio/wave.cpp
     tracker/driver/file.cpp
     tracker/driver/port.cpp
@@ -168,6 +173,7 @@ target_include_directories(ChipSequencer PRIVATE
     ${CMAKE_SOURCE_DIR}/imgui
     ${CMAKE_SOURCE_DIR}/imgui-knobs
     ${SDL2_INCLUDE_DIRS}
+    ${FFTW_INCLUDE_DIRS}
 )
 target_link_libraries(ChipSequencer
     song
@@ -182,6 +188,7 @@ target_link_libraries(ChipSequencer
     z
     nfd
     ${SNDFILE_LIBRARIES}
+    ${FFTW_LIBRARIES}
 )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")

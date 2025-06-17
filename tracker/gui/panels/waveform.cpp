@@ -174,17 +174,25 @@ void GUIWaveformPanel::draw_spectrogram() {
         return;
     }
 
+    static int fft_size = 1024;
+    static float min_db = -60.0f;
+
+    ImGui::PushItemWidth(150);
+    if (ImGui::SliderInt("FFT Size", &fft_size, 256, 4096)) {
+        fft_size = 1 << (int) std::log2(fft_size);
+    }
+    ImGui::SameLine();
+    ImGui::SliderFloat("Min dB", &min_db, -100.0f, -20.0f);
+    ImGui::PopItemWidth();
+
     const ImVec2 available_size = ImGui::GetContentRegionAvail();
     const float channel_height = available_size.y / output_channels_count;
 
     for (size_t i = 0; i < output_channels_count; i++) {
         ImGui::PushID(static_cast<int>(i));
-
         const ImVec2 channel_size(available_size.x, channel_height - 4);
         const ImVec2 channel_pos = ImGui::GetCursorScreenPos();
-
         draw_channel_spectrogram(i, channel_size, channel_pos);
-
         ImGui::Dummy(channel_size);
         ImGui::PopID();
     }
@@ -205,9 +213,107 @@ void GUIWaveformPanel::draw_channel_spectrogram(const int output_channel_index, 
         IM_COL32(60, 60, 60, 255)
     );
 
+    const auto &audio_history = gui.get_audio_history();
+    if (output_channel_index >= audio_history.size() || audio_history[output_channel_index].empty()) {
+        draw_list->AddText(
+            ImVec2(position.x + 5, position.y + 5),
+            IM_COL32(255, 255, 255, 255),
+            ("Spectrogram for Channel " + std::to_string(output_channel_index) + " (No data)").c_str()
+        );
+        return;
+    }
+
+    gui.lock_audio_history();
+    if (fft.get_size() != fft_parameters.fft_size) {
+        // TODO: we need to reinitialize the FFT with the new size
+    }
+
+    fft.compute(audio_history[output_channel_index]);
+    const auto &magnitudes = fft.get_magnitudes();
+
+    float max_magnitude = 0.001f;
+    for (const auto &mag : magnitudes) {
+        max_magnitude = std::max(max_magnitude, mag);
+    }
+
+    const float log_min = std::log10(20.0f);
+    const float log_max = std::log10(20000.0f);
+    const float log_range = log_max - log_min;
+    const int num_bins = magnitudes.size();
+    const float sample_rate = 44100.0f;
+
+    for (int i = 1; i < num_bins; i++) {
+        const float freq = i * sample_rate / (2.0f * num_bins);
+        if (freq < 20.0f || freq > 20000.0f) {
+            continue;
+        }
+
+        const float log_freq = std::log10(freq);
+        const float x_pos = position.x + ((log_freq - log_min) / log_range) * size.x;
+
+        const float magnitude = magnitudes[i];
+        float db = 20.0f * std::log10(magnitude / max_magnitude);
+        db = std::clamp(db, fft_parameters.min_db, 0.0f);
+
+        const float normalized_db = (db - fft_parameters.min_db) / -fft_parameters.min_db;
+        const float height = normalized_db * size.y;
+
+        ImU32 color;
+        if (normalized_db < 0.2f) {
+            const float t = normalized_db / 0.2f;
+            color = IM_COL32(0, (int) (255 * t), 255, 255);
+        } else if (normalized_db < 0.4f) {
+            const float t = (normalized_db - 0.2f) / 0.2f;
+            color = IM_COL32(0, 255, (int) (255 * (1 - t)), 255);
+        } else if (normalized_db < 0.6f) {
+            const float t = (normalized_db - 0.4f) / 0.2f;
+            color = IM_COL32((int) (255 * t), 255, 0, 255);
+        } else if (normalized_db < 0.8f) {
+            const float t = (normalized_db - 0.6f) / 0.2f;
+            color = IM_COL32(255, (int) (255 * (1 - t)), 0, 255);
+        } else {
+            const float t = (normalized_db - 0.8f) / 0.2f;
+            color = IM_COL32(255, (int) (255 * t), (int) (255 * t), 255);
+        }
+
+        const float bin_width = std::max(1.0f, (size.x / log_range) / 100.0f);
+        draw_list->AddRectFilled(
+            ImVec2(x_pos, position.y + size.y),
+            ImVec2(x_pos + bin_width, position.y + size.y - height),
+            color
+        );
+    }
+
+    const int freq_labels[] = {50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000};
+    for (int freq : freq_labels) {
+        const float log_freq = std::log10(static_cast<float>(freq));
+        const float x_pos = position.x + (log_freq - log_min) / log_range * size.x;
+
+        draw_list->AddLine(
+            ImVec2(x_pos, position.y + size.y),
+            ImVec2(x_pos, position.y + size.y - 5),
+            IM_COL32(180, 180, 180, 100)
+        );
+
+        char label[16];
+        if (freq >= 1000) {
+            snprintf(label, sizeof(label), "%dk", freq / 1000);
+        } else {
+            snprintf(label, sizeof(label), "%d", freq);
+        }
+
+        draw_list->AddText(
+            ImVec2(x_pos - 10, position.y + size.y - 15),
+            IM_COL32(180, 180, 180, 150),
+            label
+        );
+    }
+
     draw_list->AddText(
         ImVec2(position.x + 5, position.y + 5),
         IM_COL32(255, 255, 255, 255),
-        ("Spectrogram for Channel " + std::to_string(output_channel_index)).c_str()
+        ("Channel " + std::to_string(output_channel_index)).c_str()
     );
+
+    gui.unlock_audio_history();
 }

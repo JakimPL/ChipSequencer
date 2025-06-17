@@ -3,11 +3,18 @@
 #include <vector>
 #include <deque>
 
+#include "../../audio/fft.hpp"
 #include "../constants.hpp"
 #include "panel.hpp"
 
 class GUIWaveformPanel : public GUIPanel {
   private:
+    struct FFTParameters {
+        int fft_size = 1024;
+        float min_db = -100.0f;
+    } fft_parameters;
+
+    FFT fft;
     size_t history_size = GUI_MIN_WAVEFORM_HISTORY_SIZE;
 
     void draw_waveform();
