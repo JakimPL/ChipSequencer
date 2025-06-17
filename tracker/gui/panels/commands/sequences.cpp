@@ -195,8 +195,8 @@ void GUICommandsSequencesPanel::draw_sequence() {
         }
     }
 
-    PatternRows secondary_pattern_rows;
-    draw_commands_pattern(current_sequence.pattern, selection, secondary_pattern_rows, false);
+    SequenceRows secondary_sequence_rows;
+    draw_commands_pattern(current_sequence.pattern, selection, secondary_sequence_rows, false);
 }
 
 void GUICommandsSequencesPanel::open_edit_dialog_box(const int item) {
@@ -487,6 +487,7 @@ bool GUICommandsSequencesPanel::is_active() const {
 
 void GUICommandsSequencesPanel::post_actions() {
     dialog_box_open = edit_dialog_box.visible;
+    selection_action = PatternSelectionAction::None;
 }
 
 void GUICommandsSequencesPanel::register_shortcuts() {

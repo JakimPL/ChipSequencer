@@ -19,6 +19,7 @@ struct CommandsPattern {
     CommandsPattern();
     CommandsPattern(const uint8_t sequence_index);
 
+    size_t id = 0;
     int starting_row = 0;
     int current_row = -1;
     CommandSelection selection = CommandSelection::None;

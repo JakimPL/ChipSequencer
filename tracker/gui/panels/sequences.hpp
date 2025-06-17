@@ -36,6 +36,7 @@ class GUISequencesPanel : public GUIPanel {
     void draw() override;
     void check_keyboard_input() override;
     void shortcut_actions() override;
+    void post_actions() override;
 
   public:
     GUISequencesPanel(const bool visible = true, const bool windowed = true);

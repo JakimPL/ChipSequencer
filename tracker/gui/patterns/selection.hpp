@@ -26,6 +26,7 @@ struct SequenceRow {
 };
 
 typedef std::set<PatternRow> PatternRows;
+typedef std::set<SequenceRow> SequenceRows;
 typedef std::map<SequenceRow, std::set<PatternRow>> PatternRowsBySequenceRow;
 
 struct PatternSelection {

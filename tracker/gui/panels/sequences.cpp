@@ -140,6 +140,11 @@ void GUISequencesPanel::shortcut_actions() {
     transpose_selected_rows();
 }
 
+void GUISequencesPanel::post_actions() {
+    selection_action = PatternSelectionAction::None;
+    transpose_by = 0;
+}
+
 void GUISequencesPanel::select_all() {
     selection.select(0, current_sequence.pattern.steps - 1);
 }
@@ -204,10 +209,10 @@ void GUISequencesPanel::draw_sequence() {
     ImGui::Text("Pattern:");
     PatternSelection empty_selection;
     PatternSelection &sequence_selection = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ? selection : empty_selection;
-    PatternRows secondary_pattern_rows;
+    SequenceRows secondary_sequence_rows;
 
     draw_sequence_length();
-    draw_pattern(current_sequence.pattern, sequence_selection, secondary_pattern_rows, false);
+    draw_pattern(current_sequence.pattern, sequence_selection, secondary_sequence_rows, false);
 }
 
 void GUISequencesPanel::check_keyboard_input() {

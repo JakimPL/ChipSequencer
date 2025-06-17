@@ -63,7 +63,7 @@ bool get_menu_item(const std::string &name, const std::optional<ShortcutAction> 
 std::pair<size_t, bool> draw_pattern(
     Pattern &pattern,
     PatternSelection &selection,
-    PatternRows &selected_rows,
+    SequenceRows &selected_rows,
     const bool pattern_view,
     const size_t channel_index = 0,
     const bool header = true,
@@ -75,7 +75,7 @@ std::pair<size_t, bool> draw_pattern(
 std::pair<size_t, bool> draw_commands_pattern(
     CommandsPattern &pattern,
     PatternSelection &selection,
-    PatternRows &selected_rows,
+    SequenceRows &selected_rows,
     const bool pattern_view,
     const size_t channel_index = 0,
     const bool header = true,

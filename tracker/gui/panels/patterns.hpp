@@ -56,6 +56,7 @@ class GUIPatternsPanel : public GUIPanel {
     PatternSelectionAction selection_action = PatternSelectionAction::None;
     PatternRows pattern_rows;
     PatternRows secondary_pattern_rows;
+    SequenceRows secondary_sequence_rows;
     PatternRowsBySequenceRow pattern_rows_by_sequence_row;
     size_t current_index = -1;
     int current_row = -1;
@@ -93,6 +94,7 @@ class GUIPatternsPanel : public GUIPanel {
     void check_keyboard_input() override;
     void shortcut_actions() override;
     void pre_actions() override;
+    void post_actions() override;
 
   public:
     GUIPatternsPanel(const bool visible = true, const bool windowed = true);

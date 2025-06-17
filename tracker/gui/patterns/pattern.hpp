@@ -10,6 +10,7 @@ struct Pattern {
     Pattern();
     Pattern(const uint8_t sequence_index);
 
+    size_t id = 0;
     int starting_row = 0;
     int current_row = -1;
     uint8_t sequence_index = -1;

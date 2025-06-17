@@ -292,7 +292,7 @@ bool draw_button(const char *label, const float button_padding) {
 std::pair<size_t, bool> draw_pattern(
     Pattern &pattern,
     PatternSelection &selection,
-    PatternRows &selected_rows,
+    SequenceRows &selected_rows,
     const bool pattern_view,
     const size_t channel_index,
     const bool header,
@@ -326,7 +326,7 @@ std::pair<size_t, bool> draw_pattern(
             const int j = i + index;
             const bool is_current = (pattern.current_row == i);
             const bool is_selected = !selection.command && selection.is_row_selected(channel_index, j);
-            const bool is_secondary_selected = !selection.command && selected_rows.count({channel_index, pattern.sequence_index, i}) > 0;
+            const bool is_secondary_selected = !selection.command && selected_rows.count({pattern.sequence_index, i}) > 0;
 
             ImGui::TableNextRow();
             if (playing_row == j) {
@@ -389,7 +389,7 @@ std::pair<size_t, bool> draw_pattern(
 std::pair<size_t, bool> draw_commands_pattern(
     CommandsPattern &pattern,
     PatternSelection &selection,
-    PatternRows &selected_rows,
+    SequenceRows &selected_rows,
     const bool pattern_view,
     const size_t channel_index,
     const bool header,
@@ -424,7 +424,7 @@ std::pair<size_t, bool> draw_commands_pattern(
             const bool is_command_current = (pattern.current_row == i && pattern.selection == CommandSelection::Command);
             const bool is_value_current = (pattern.current_row == i && pattern.selection == CommandSelection::Value);
             const bool is_selected = selection.command && selection.is_row_selected(channel_index, j);
-            const bool is_secondary_selected = selection.command && selected_rows.count({channel_index, pattern.sequence_index, i}) > 0;
+            const bool is_secondary_selected = selection.command && selected_rows.count({pattern.sequence_index, i}) > 0;
 
             ImGui::TableNextRow();
             if (playing_row == j) {
