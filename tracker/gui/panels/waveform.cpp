@@ -248,15 +248,14 @@ void GUIWaveformPanel::draw_channel_spectrogram(const int output_channel_index, 
         max_magnitude = std::max(max_magnitude, mag);
     }
 
-    const float log_min = std::log10(20.0f);
-    const float log_max = std::log10(20000.0f);
+    const float log_min = std::log10(GUI_MIN_SPECTROGRAM_FREQUENCY);
+    const float log_max = std::log10(GUI_MAX_SPECTROGRAM_FREQUENCY);
     const float log_range = log_max - log_min;
     const int num_bins = magnitudes.size();
-    const float sample_rate = 44100.0f;
 
     for (int i = 1; i < num_bins; i++) {
         const float freq = i * sample_rate / (2.0f * num_bins);
-        if (freq < 20.0f || freq > 20000.0f) {
+        if (freq < GUI_MIN_SPECTROGRAM_FREQUENCY || freq > GUI_MAX_SPECTROGRAM_FREQUENCY) {
             continue;
         }
 
@@ -296,10 +295,9 @@ void GUIWaveformPanel::draw_channel_spectrogram(const int output_channel_index, 
         );
     }
 
-    const int freq_labels[] = {50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000};
-    for (int freq : freq_labels) {
-        const float log_freq = std::log10(static_cast<float>(freq));
-        const float x_pos = position.x + (log_freq - log_min) / log_range * size.x;
+    for (const int frequency : frequencies) {
+        const float log_frequency = std::log10(static_cast<float>(frequency));
+        const float x_pos = position.x + (log_frequency - log_min) / log_range * size.x;
 
         draw_list->AddLine(
             ImVec2(x_pos, position.y + size.y),
@@ -307,17 +305,11 @@ void GUIWaveformPanel::draw_channel_spectrogram(const int output_channel_index, 
             IM_COL32(180, 180, 180, 100)
         );
 
-        char label[16];
-        if (freq >= 1000) {
-            snprintf(label, sizeof(label), "%dk", freq / 1000);
-        } else {
-            snprintf(label, sizeof(label), "%d", freq);
-        }
-
+        const std::string frequency_name = get_frequency_name(frequency);
         draw_list->AddText(
             ImVec2(x_pos - 10, position.y + size.y - 15),
             IM_COL32(180, 180, 180, 150),
-            label
+            frequency_name.c_str()
         );
     }
 
@@ -328,4 +320,15 @@ void GUIWaveformPanel::draw_channel_spectrogram(const int output_channel_index, 
     );
 
     gui.unlock_audio_history();
+}
+
+std::string GUIWaveformPanel::get_frequency_name(const int frequency) const {
+    char label[16];
+    if (frequency >= 1000) {
+        snprintf(label, sizeof(label), "%dk", frequency / 1000);
+    } else {
+        snprintf(label, sizeof(label), "%d", frequency);
+    }
+
+    return std::string(label);
 }

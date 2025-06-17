@@ -51,6 +51,8 @@ constexpr int GUI_MIN_FFT_SIZE = 256;
 constexpr int GUI_MAX_FFT_SIZE = 65536;
 constexpr float GUI_MIN_FFT_DB = -100.0f;
 constexpr float GUI_MAX_FFT_DB = -20.0f;
+constexpr float GUI_MIN_SPECTROGRAM_FREQUENCY = 20.0f;
+constexpr float GUI_MAX_SPECTROGRAM_FREQUENCY = 20000.0f;
 
 #define GUI_ROW_COLOR_PLAYING IM_COL32(128, 255, 128, 64)
 #define GUI_ROW_COLOR_SELECTED IM_COL32(128, 128, 255, 64)
