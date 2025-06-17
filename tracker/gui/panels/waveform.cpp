@@ -43,8 +43,8 @@ void GUIWaveformPanel::draw_waveform() {
 
     int hist_size = static_cast<int>(history_size);
     ImGui::PushItemWidth(200);
-    if (ImGui::SliderInt("History size", &hist_size, GUI_MIN_WAVEFORM_HISTORY_SIZE, HISTORY_SIZE)) {
-        history_size = static_cast<size_t>(std::clamp(hist_size, GUI_MIN_WAVEFORM_HISTORY_SIZE, HISTORY_SIZE));
+    if (ImGui::SliderInt("History size", &hist_size, GUI_MIN_WAVEFORM_HISTORY_SIZE, GUI_MAX_WAVEFORM_HISTORY_SIZE)) {
+        history_size = static_cast<size_t>(std::clamp(hist_size, GUI_MIN_WAVEFORM_HISTORY_SIZE, GUI_MAX_WAVEFORM_HISTORY_SIZE));
     }
     ImGui::PopItemWidth();
 
@@ -174,15 +174,12 @@ void GUIWaveformPanel::draw_spectrogram() {
         return;
     }
 
-    static int fft_size = 1024;
-    static float min_db = -60.0f;
-
     ImGui::PushItemWidth(150);
-    if (ImGui::SliderInt("FFT Size", &fft_size, 256, 4096)) {
-        fft_size = 1 << (int) std::log2(fft_size);
+    if (ImGui::SliderInt("FFT size", &fft_parameters.fft_size, GUI_MIN_FFT_SIZE, GUI_MAX_FFT_SIZE)) {
+        fft_parameters.fft_size = 1 << (int) std::log2(fft_parameters.fft_size);
     }
     ImGui::SameLine();
-    ImGui::SliderFloat("Min dB", &min_db, -100.0f, -20.0f);
+    ImGui::SliderFloat("Min dB", &fft_parameters.min_db, GUI_MIN_FFT_DB, GUI_MAX_FFT_DB);
     ImGui::PopItemWidth();
 
     const ImVec2 available_size = ImGui::GetContentRegionAvail();

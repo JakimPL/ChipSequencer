@@ -11,7 +11,7 @@ class GUIWaveformPanel : public GUIPanel {
   private:
     struct FFTParameters {
         int fft_size = 1024;
-        float min_db = -100.0f;
+        float min_db = -60.0f;
     } fft_parameters;
 
     FFT fft;

@@ -9,7 +9,7 @@
 #include "../driver/port.hpp"
 
 constexpr int BUFFER_SIZE = 128;
-constexpr int HISTORY_SIZE = 4096;
+constexpr int HISTORY_SIZE = 65536;
 
 typedef std::array<std::deque<_Float32>, MAX_OUTPUT_CHANNELS> AudioHistory;
 
