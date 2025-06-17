@@ -3,23 +3,17 @@
 #include <vector>
 #include <deque>
 
+#include "../constants.hpp"
 #include "panel.hpp"
 
 class GUIWaveformPanel : public GUIPanel {
   private:
-    static constexpr size_t DEFAULT_HISTORY_SIZE = 1024;
-    size_t history_size = DEFAULT_HISTORY_SIZE;
-    std::vector<std::deque<float>> channel_histories;
+    size_t history_size = GUI_MIN_WAVEFORM_HISTORY_SIZE;
 
     void draw() override;
-
-    void update_histories();
-    void draw_channel_waveform(int channel_index, const ImVec2 &size, const ImVec2 &pos);
+    void draw_channel_waveform(const int output_channel_index, const ImVec2 &size, const ImVec2 &position);
 
   public:
     GUIWaveformPanel(const bool visible = true, const bool windowed = true);
     GUIElement get_element() const override;
-
-    void from() override;
-    void update() override;
 };

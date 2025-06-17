@@ -42,6 +42,7 @@ class GUI {
     void stop(const bool restore_parameters = true) const;
     bool is_playing() const;
     bool is_paused() const;
+    const std::vector<std::deque<_Float32>> &get_audio_history() const;
 
     void new_song();
     void save(const std::string &filename);
@@ -124,6 +125,8 @@ class GUI {
     ImGuiIO *io;
     ImFont *font;
     bool done = false;
+
+    std::vector<std::deque<_Float32>> empty_history;
 
     void update_all();
     void frame_all();

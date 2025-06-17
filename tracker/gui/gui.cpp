@@ -430,6 +430,14 @@ bool GUI::is_paused() const {
     return false;
 }
 
+const std::vector<std::deque<_Float32>> &GUI::get_audio_history() const {
+    if (audio_engine) {
+        return audio_engine->get_history();
+    }
+
+    return empty_history;
+}
+
 void GUI::deselect_all_rows() {
     gui.patterns_panel.deselect_all_rows();
 }

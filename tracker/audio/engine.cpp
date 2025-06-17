@@ -17,6 +17,10 @@ static void segfault_handler(int signal) {
 AudioEngine::AudioEngine(PortAudioDriver &driver)
     : driver(driver), playing(false), paused(false) {
     std::cout << "Starting playback with " << sample_rate << " Hz" << std::endl;
+    history.resize(MAX_OUTPUT_CHANNELS);
+    for (auto &channel_history : history) {
+        channel_history.resize(HISTORY_SIZE, 0.0f);
+    }
 }
 
 AudioEngine::~AudioEngine() {
@@ -126,6 +130,10 @@ void AudioEngine::playback_function() {
                         size_t offset = sample_offset + x * output_channels;
                         for (size_t i = 0; i < output_channels; ++i) {
                             driver.pingpong_buffer[offset + i] = output[i];
+                            history[i].push_back(output[i]);
+                            if (history[i].size() > buffer_size) {
+                                history[i].pop_front();
+                            }
                         }
                     }
                 }
@@ -143,4 +151,8 @@ void AudioEngine::join_thread() {
 
 void AudioEngine::set_output_channels(const int channels) {
     driver.set_output_channels(channels);
+}
+
+const std::vector<std::deque<_Float32>> &AudioEngine::get_history() const {
+    return history;
 }
