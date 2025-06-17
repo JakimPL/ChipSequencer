@@ -50,6 +50,7 @@ void GUIGeneralPanel::to() const {
     sample_rate = 4 * std::round(static_cast<float>(current_song.sample_rate) / 4);
     normalizer = current_song.normalizer;
     if (current_song.output_channels != song.get_output_channels()) {
+        gui.stop();
         song.set_output_channels(current_song.output_channels);
     }
 

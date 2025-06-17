@@ -11,6 +11,8 @@
 constexpr int BUFFER_SIZE = 128;
 constexpr int HISTORY_SIZE = 4096;
 
+typedef std::array<std::deque<_Float32>, MAX_OUTPUT_CHANNELS> AudioHistory;
+
 class AudioEngine {
   public:
     AudioEngine(PortAudioDriver &driver);
@@ -25,7 +27,7 @@ class AudioEngine {
 
     void set_output_channels(const int channels);
 
-    const std::vector<std::deque<_Float32>> &get_history() const;
+    const AudioHistory &get_history() const;
     void clear_history();
     void lock_history() const;
     void unlock_history() const;
@@ -39,7 +41,7 @@ class AudioEngine {
     std::atomic<bool> paused;
     std::thread playback_thread;
 
-    std::vector<std::deque<_Float32>> history;
+    std::array<std::deque<_Float32>, MAX_OUTPUT_CHANNELS> history;
     mutable std::mutex history_mutex;
     static constexpr size_t buffer_size = BUFFER_SIZE;
 

@@ -17,7 +17,17 @@ GUIElement GUIWaveformPanel::get_element() const {
 }
 
 void GUIWaveformPanel::draw() {
-    draw_waveform();
+    if (ImGui::BeginTabBar("WaveformPanelTabBar")) {
+        if (ImGui::BeginTabItem("Waveform")) {
+            draw_waveform();
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Spectrogram")) {
+            draw_spectrogram();
+            ImGui::EndTabItem();
+        }
+        ImGui::EndTabBar();
+    }
 }
 
 void GUIWaveformPanel::draw_waveform() {
@@ -151,4 +161,53 @@ void GUIWaveformPanel::draw_channel_waveform(const int output_channel_index, con
     }
 
     gui.unlock_audio_history();
+}
+
+void GUIWaveformPanel::draw_spectrogram() {
+    if (ImGui::IsWindowCollapsed()) {
+        return;
+    }
+
+    const size_t output_channels_count = song.get_output_channels();
+    if (output_channels_count == 0) {
+        ImGui::Text("No output channels available.");
+        return;
+    }
+
+    const ImVec2 available_size = ImGui::GetContentRegionAvail();
+    const float channel_height = available_size.y / output_channels_count;
+
+    for (size_t i = 0; i < output_channels_count; i++) {
+        ImGui::PushID(static_cast<int>(i));
+
+        const ImVec2 channel_size(available_size.x, channel_height - 4);
+        const ImVec2 channel_pos = ImGui::GetCursorScreenPos();
+
+        draw_channel_spectrogram(i, channel_size, channel_pos);
+
+        ImGui::Dummy(channel_size);
+        ImGui::PopID();
+    }
+}
+
+void GUIWaveformPanel::draw_channel_spectrogram(const int output_channel_index, const ImVec2 &size, const ImVec2 &position) {
+    ImDrawList *draw_list = ImGui::GetWindowDrawList();
+
+    draw_list->AddRectFilled(
+        position,
+        ImVec2(position.x + size.x, position.y + size.y),
+        IM_COL32(20, 20, 20, 255)
+    );
+
+    draw_list->AddRect(
+        position,
+        ImVec2(position.x + size.x, position.y + size.y),
+        IM_COL32(60, 60, 60, 255)
+    );
+
+    draw_list->AddText(
+        ImVec2(position.x + 5, position.y + 5),
+        IM_COL32(255, 255, 255, 255),
+        ("Spectrogram for Channel " + std::to_string(output_channel_index)).c_str()
+    );
 }

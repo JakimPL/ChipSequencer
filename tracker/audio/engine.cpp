@@ -17,7 +17,6 @@ static void segfault_handler(int signal) {
 AudioEngine::AudioEngine(PortAudioDriver &driver)
     : driver(driver), playing(false), paused(false) {
     std::cout << "Starting playback with " << sample_rate << " Hz" << std::endl;
-    history.resize(MAX_OUTPUT_CHANNELS);
     for (auto &channel_history : history) {
         channel_history.resize(HISTORY_SIZE, 0.0f);
     }
@@ -154,7 +153,7 @@ void AudioEngine::set_output_channels(const int channels) {
     driver.set_output_channels(channels);
 }
 
-const std::vector<std::deque<_Float32>> &AudioEngine::get_history() const {
+const AudioHistory &AudioEngine::get_history() const {
     return history;
 }
 

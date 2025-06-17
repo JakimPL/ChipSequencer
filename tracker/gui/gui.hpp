@@ -43,7 +43,7 @@ class GUI {
     bool is_playing() const;
     bool is_paused() const;
 
-    const std::vector<std::deque<_Float32>> &get_audio_history() const;
+    const AudioHistory &get_audio_history() const;
     void lock_audio_history() const;
     void unlock_audio_history() const;
 
@@ -105,6 +105,7 @@ class GUI {
 
   private:
     AudioEngine *audio_engine;
+    AudioHistory empty_history;
 
     GUIMenu menu = GUIMenu(true, false);
     GUIEditorPanel editor;
@@ -128,8 +129,6 @@ class GUI {
     ImGuiIO *io;
     ImFont *font;
     bool done = false;
-
-    std::vector<std::deque<_Float32>> empty_history;
 
     void update_all();
     void frame_all();
