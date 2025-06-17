@@ -214,6 +214,9 @@ void GUI::set_index(const GUIElement element, const int index) {
     case GUIElement::Sequences:
         sequences_panel.set_index(index);
         break;
+    case GUIElement::Waveform:
+        waveform_panel.set_index(index);
+        break;
     case GUIElement::Wavetables:
         wavetables_panel.set_index(index);
         break;
@@ -254,6 +257,8 @@ void GUI::update(GUIElement element) {
         return sequences_panel.update();
     case GUIElement::Summary:
         return summary_panel.update();
+    case GUIElement::Waveform:
+        return waveform_panel.update();
     case GUIElement::Wavetables:
         return wavetables_panel.update();
     }
@@ -274,6 +279,7 @@ void GUI::update_all() {
     routing_panel.update();
     sequences_panel.update();
     summary_panel.update();
+    waveform_panel.update();
     wavetables_panel.update();
 }
 
@@ -322,6 +328,7 @@ void GUI::frame_all() {
     routing_panel.frame();
     sequences_panel.frame();
     summary_panel.frame();
+    waveform_panel.frame();
     wavetables_panel.frame();
 }
 
@@ -340,6 +347,7 @@ void GUI::from() {
     routing_panel.from();
     sequences_panel.from();
     summary_panel.from();
+    waveform_panel.from();
     wavetables_panel.from();
 }
 
@@ -358,6 +366,7 @@ void GUI::to() const {
     routing_panel.to();
     sequences_panel.to();
     summary_panel.to();
+    waveform_panel.to();
     wavetables_panel.to();
 }
 
@@ -376,6 +385,7 @@ void GUI::set_visibility_all(const bool visible) {
     routing_panel.visible = visible;
     sequences_panel.visible = visible;
     summary_panel.visible = visible;
+    waveform_panel.visible = visible;
     wavetables_panel.visible = visible;
 }
 
@@ -471,6 +481,9 @@ void GUI::set_visibility(const GUIElement element, const bool visible) {
     case GUIElement::Summary:
         summary_panel.visible = visible;
         break;
+    case GUIElement::Waveform:
+        waveform_panel.visible = visible;
+        break;
     case GUIElement::Wavetables:
         wavetables_panel.visible = visible;
         break;
@@ -510,6 +523,8 @@ bool GUI::get_visibility(const GUIElement element) const {
         return sequences_panel.visible;
     case GUIElement::Summary:
         return summary_panel.visible;
+    case GUIElement::Waveform:
+        return waveform_panel.visible;
     case GUIElement::Wavetables:
         return wavetables_panel.visible;
     }

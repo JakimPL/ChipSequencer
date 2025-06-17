@@ -63,6 +63,7 @@ const std::vector<std::pair<GUIElement, const char *>> menu_items = {
     {GUIElement::Routings, "Routing"},
     {GUIElement::Sequences, "Sequences"},
     {GUIElement::Summary, "Summary"},
+    {GUIElement::Waveform, "Waveform"},
     {GUIElement::Wavetables, "Wavetables"},
 };
 const std::map<Instruction, const char *> instruction_names = {

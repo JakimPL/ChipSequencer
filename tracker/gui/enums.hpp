@@ -17,6 +17,7 @@ enum class GUIElement {
     Sequences,
     Wavetables,
     Summary,
+    Waveform,
     Count,
 };
 

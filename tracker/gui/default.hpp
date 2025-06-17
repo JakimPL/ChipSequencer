@@ -142,12 +142,21 @@ Size=359,430
 Collapsed=0
 DockId=0x00000011,1
 
+[Window][Waveform]
+Pos=236,509
+Size=1251,500
+Collapsed=0
+DockId=0x0000000F,3
+
 [Table][0x8E77C46A,2]
 Column 0  Weight=1.0000
 Column 1  Weight=1.0000
 
-[Table][0x0957609C,1]
+[Table][0x0957609C,4]
 Column 0  Weight=1.0000
+Column 1  Weight=1.0000
+Column 2  Weight=1.0000
+Column 3  Weight=1.0000
 
 [Docking][Data]
 DockSpace           ID=0xE241FA1E Window=0xA7EE3C72 Pos=0,19 Size=1848,990 Split=Y Selected=0xAAA808CD
