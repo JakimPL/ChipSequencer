@@ -7,33 +7,36 @@
 #include "../utils.hpp"
 #include "channels.hpp"
 
-GUIChannelsPanel::GUIChannelsPanel(const bool visible)
-    : GUIPanel(visible) {
-    from();
-    update();
+GUIChannelsPanel::GUIChannelsPanel(const bool visible, const bool windowed)
+    : GUIPanel("Channels", visible, windowed) {
+    initialize();
+}
+
+GUIElement GUIChannelsPanel::get_element() const {
+    return GUIElement::Channels;
 }
 
 void GUIChannelsPanel::draw() {
-    ImGui::Begin("Channels");
-    ImGui::Columns(1, "channel_columns");
+    draw_channel();
+}
 
-    ImGui::BeginDisabled(gui.is_playing());
+bool GUIChannelsPanel::is_disabled() const {
+    return gui.is_playing();
+}
+
+bool GUIChannelsPanel::select_item() {
     std::vector<std::pair<ItemType, uint8_t>> link_dependencies = link_manager.find_dependencies(Target::CHANNEL, channel_index);
     push_tertiary_style();
     draw_add_or_remove({}, link_dependencies);
-    prepare_combo(channel_names, "##ChannelCombo", channel_index);
+    prepare_combo(this, channel_names, "##ChannelCombo", channel_index);
     pop_tertiary_style();
-
     ImGui::Separator();
 
-    from();
-    draw_channel();
-    check_keyboard_input();
-    to();
+    return !channels.empty();
+}
 
-    ImGui::EndDisabled();
-    ImGui::Columns(1);
-    ImGui::End();
+void GUIChannelsPanel::empty() {
+    ImGui::Text("No channel available.");
 }
 
 bool GUIChannelsPanel::is_index_valid() const {
@@ -74,7 +77,10 @@ void GUIChannelsPanel::from() {
 }
 
 void GUIChannelsPanel::to() const {
-    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || !is_index_valid() || gui.is_playing()) {
+    if (!save &&
+        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
+         !is_index_valid() ||
+         gui.is_playing())) {
         return;
     }
 
@@ -182,40 +188,37 @@ void GUIChannelsPanel::update_channel_name(const int index, const int target_id)
 }
 
 void GUIChannelsPanel::draw_channel() {
-    if (channels.empty()) {
-        ImGui::Text("No channels available.");
-        return;
-    }
-
-    ImGui::Checkbox("Bypass", &current_channel.output_type.bypass);
-    ImGui::Checkbox("Hide in pattern view", &current_channel.hide);
+    draw_checkbox(this, "Bypass", current_channel.output_type.bypass, {Target::SPECIAL, channel_index, SPECIAL_CHANNEL_BYPASS});
+    draw_checkbox(this, "Hide in pattern view", current_channel.hide, {Target::SPECIAL, channel_index, SPECIAL_CHANNEL_HIDE});
     ImGui::Separator();
 
     ImGui::Text("Envelope:");
-    if (prepare_combo(envelope_names, "##EnvelopeCombo", current_channel.envelope_index, true).right_clicked) {
+    if (prepare_combo(this, envelope_names, "##EnvelopeCombo", current_channel.envelope_index, {Target::CHANNEL, channel_index, CHANNEL_ENVELOPE_INDEX}, true).right_clicked) {
         gui.set_index(GUIElement::Envelopes, current_channel.envelope_index);
     }
 
     ImGui::Text("Oscillator:");
-    if (prepare_combo(oscillator_names, "##OscillatorCombo", current_channel.oscillator_index, true).right_clicked) {
+    if (prepare_combo(this, oscillator_names, "##OscillatorCombo", current_channel.oscillator_index, {Target::CHANNEL, channel_index, CHANNEL_OSCILLATOR_INDEX}, true).right_clicked) {
         gui.set_index(GUIElement::Oscillators, current_channel.oscillator_index);
     }
 
     ImGui::Text("Order:");
-    if (prepare_combo(order_names, "##OrderCombo", current_channel.order_index, !current_channel.constant_pitch).right_clicked) {
+    if (prepare_combo(this, order_names, "##OrderCombo", current_channel.order_index, {Target::CHANNEL, channel_index, CHANNEL_ORDER_INDEX}, !current_channel.constant_pitch).right_clicked) {
         gui.set_index(GUIElement::Orders, current_channel.order_index);
     }
 
     ImGui::Separator();
     ImGui::Text("Pitch/transpose:");
-    ImGui::Checkbox("Constant pitch", &current_channel.constant_pitch);
+    draw_checkbox(this, "Constant pitch", current_channel.constant_pitch, {Target::SPECIAL, channel_index, SPECIAL_CHANNEL_CONSTANT_PITCH});
     ImGui::BeginDisabled(!current_channel.constant_pitch);
-    ImGui::Checkbox("Synchronize", &current_channel.sync);
+    draw_checkbox(this, "Synchronize", current_channel.sync, {Target::SPECIAL, channel_index, SPECIAL_CHANNEL_SYNCHRONIZE});
     ImGui::EndDisabled();
 
     const LinkKey key = {Target::CHANNEL, channel_index, CHANNEL_PITCH};
     if (current_channel.constant_pitch) {
         if (current_channel.sync) {
+            const int previous_numerator = current_channel.sync_numerator;
+            const int previous_denominator = current_channel.sync_denominator;
             ImGui::Text("Ratio:");
             ImGui::SameLine();
             ImGui::SetNextItemWidth(50);
@@ -227,19 +230,18 @@ void GUIChannelsPanel::draw_channel() {
             ImGui::InputInt("##Denominator", &current_channel.sync_denominator, 0, 0);
             current_channel.sync_numerator = std::clamp(current_channel.sync_numerator, 1, 16);
             current_channel.sync_denominator = std::clamp(current_channel.sync_denominator, 1, 16);
+            perform_action(this, {Target::SPECIAL, channel_index, SPECIAL_CHANNEL_SYNC_NUMERATOR}, current_channel.sync_numerator, previous_numerator);
+            perform_action(this, {Target::SPECIAL, channel_index, SPECIAL_CHANNEL_SYNC_DENOMINATOR}, current_channel.sync_denominator, previous_denominator);
         } else {
-            draw_float_slider("Pitch (Hz)", current_channel.pitch, key, GUI_MIN_PITCH, GUI_MAX_PITCH, GUIScale::Logarithmic);
+            draw_float_slider(this, "Pitch (Hz)", current_channel.pitch, key, GUI_MIN_PITCH, GUI_MAX_PITCH, GUIScale::Logarithmic);
         }
     } else {
-        draw_float_slider("Transpose", current_channel.transpose, key, GUI_MIN_TRANSPOSE, GUI_MAX_TRANSPOSE);
+        draw_float_slider(this, "Transpose", current_channel.transpose, key, GUI_MIN_TRANSPOSE, GUI_MAX_TRANSPOSE);
     }
 
-    if (draw_output(current_channel.output_type, {Target::CHANNEL, channel_index, CHANNEL_SPLITTER})) {
+    if (draw_output(this, current_channel.output_type, {Target::CHANNEL, channel_index, CHANNEL_SPLITTER})) {
         update_channel_name(channel_index, current_channel.output_type.target);
     }
-}
-
-void GUIChannelsPanel::check_keyboard_input() {
 }
 
 void GUIChannelsPanel::set_index(const int index) {

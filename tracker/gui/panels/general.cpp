@@ -1,20 +1,17 @@
 #include "../../general.hpp"
 #include "../../song/functions.hpp"
+#include "../../structures/offsets.hpp"
 #include "../../utils/string.hpp"
 #include "../utils.hpp"
 #include "general.hpp"
 
-GUIGeneralPanel::GUIGeneralPanel(const bool visible)
-    : GUIPanel(visible) {
+GUIGeneralPanel::GUIGeneralPanel(const bool visible, const bool windowed)
+    : GUIPanel("General", visible, windowed) {
+    initialize();
+}
 
-    shortcut_manager.register_shortcut(
-        ShortcutAction::SongPlayPause,
-        [this]() { this->play(); }
-    );
-    shortcut_manager.register_shortcut(
-        ShortcutAction::SongStop,
-        [this]() { gui.stop(); }
-    );
+GUIElement GUIGeneralPanel::get_element() const {
+    return GUIElement::General;
 }
 
 void GUIGeneralPanel::update() {
@@ -23,51 +20,8 @@ void GUIGeneralPanel::update() {
 }
 
 void GUIGeneralPanel::draw() {
-    ImGui::Begin("General");
-    from();
     draw_play_button();
-
-    if (gui.is_playing()) {
-        if (gui.check_audio_error()) {
-            error = true;
-            error_message = "Audio error: segfault occurred during playback.";
-            ImGui::OpenPopup("Error");
-        }
-    }
-
-    if (ImGui::BeginTabBar("GeneralTabs")) {
-        if (ImGui::BeginTabItem("Song")) {
-            draw_song_info();
-            ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Tempo")) {
-            draw_tempo();
-            ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Output")) {
-            draw_output();
-            ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("Tuning")) {
-            draw_tuning_settings();
-            ImGui::EndTabItem();
-        }
-        ImGui::EndTabBar();
-    }
-
-    check_keyboard_input();
-    to();
-
-    if (error) {
-        ImGui::OpenPopup("Error");
-        error = false;
-    }
-
-    if (ImGui::BeginPopupModal("Error", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        draw_popup(error_message);
-    }
-
-    ImGui::End();
+    draw_tabs();
 }
 
 void GUIGeneralPanel::from() {
@@ -110,6 +64,36 @@ void GUIGeneralPanel::play() {
     } else {
         error = false;
         error_message = "";
+    }
+}
+
+void GUIGeneralPanel::draw_tabs() {
+    if (gui.is_playing()) {
+        if (gui.check_audio_error()) {
+            error = true;
+            error_message = "Audio error: segfault occurred during playback.";
+            ImGui::OpenPopup("Error");
+        }
+    }
+
+    if (ImGui::BeginTabBar("GeneralTabs")) {
+        if (ImGui::BeginTabItem("Song")) {
+            draw_song_info();
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Tempo")) {
+            draw_tempo();
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Output")) {
+            draw_output();
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Tuning")) {
+            draw_tuning_settings();
+            ImGui::EndTabItem();
+        }
+        ImGui::EndTabBar();
     }
 }
 
@@ -203,35 +187,35 @@ void GUIGeneralPanel::draw_stop_square() const {
 
 void GUIGeneralPanel::draw_song_info() {
     ImGui::Text("Song Details");
-    ImGui::InputText("Title", current_song.title, IM_ARRAYSIZE(current_song.title));
-    ImGui::InputText("Author", current_song.author, IM_ARRAYSIZE(current_song.author));
-    ImGui::InputText("Message", current_song.message, IM_ARRAYSIZE(current_song.message));
+    draw_text(this, "Title", current_song.title, {Target::SPECIAL, 0, SPECIAL_TITLE});
+    draw_text(this, "Author", current_song.author, {Target::SPECIAL, 0, SPECIAL_AUTHOR});
+    draw_text(this, "Message", current_song.message, {Target::SPECIAL, 0, SPECIAL_MESSAGE});
 }
 
 void GUIGeneralPanel::draw_tempo() {
     ImGui::Text("Tempo");
     ImGui::BeginDisabled(gui.is_playing());
-    draw_int_slider("BPM", current_song.bpm, {}, GUI_MIN_BPM, GUI_MAX_BPM);
+    draw_int_slider(this, "BPM", current_song.bpm, {Target::SPECIAL, 0, SPECIAL_BPM}, GUI_MIN_BPM, GUI_MAX_BPM);
     if (ImGui::IsItemHovered()) {
         ImGui::SetTooltip("Real BPM: %s", std::to_string(song.calculate_real_bpm()).c_str());
     }
-    draw_int_slider("Division", current_song.division, {}, GUI_MIN_DIVISION, GUI_MAX_DIVISION);
+    draw_int_slider(this, "Division", current_song.division, {Target::SPECIAL, 0, SPECIAL_DIVISION}, GUI_MIN_DIVISION, GUI_MAX_DIVISION);
     ImGui::EndDisabled();
 }
 
 void GUIGeneralPanel::draw_output() {
     ImGui::Text("Output");
     ImGui::BeginDisabled(gui.is_playing());
-    draw_float_slider("Master gainer", current_song.normalizer, {}, 0.01f, 2.0f);
-    draw_float_slider("Sample rate", current_song.sample_rate, {}, GUI_MIN_SAMPLE_RATE, GUI_MAX_SAMPLE_RATE, GUIScale::Linear, "%.0f");
-    draw_int_slider("Output channels", current_song.output_channels, {}, 1, MAX_OUTPUT_CHANNELS);
+    draw_float_slider(this, "Master gainer", current_song.normalizer, {Target::SPECIAL, 0, SPECIAL_MASTER_GAINER}, 0.01f, 2.0f);
+    draw_float_slider(this, "Sample rate", current_song.sample_rate, {Target::SPECIAL, 0, SPECIAL_SAMPLE_RATE}, GUI_MIN_SAMPLE_RATE, GUI_MAX_SAMPLE_RATE, GUIScale::Linear, "%.0f");
+    draw_int_slider(this, "Output channels", current_song.output_channels, {Target::SPECIAL, 0, SPECIAL_OUTPUT_CHANNELS}, 1, MAX_OUTPUT_CHANNELS);
     ImGui::EndDisabled();
 }
 
 void GUIGeneralPanel::draw_tuning_settings() {
     ImGui::Text("Tuning Settings");
-    draw_int_slider("EDO", current_song.edo, {}, MIN_EDO, MAX_EDO);
-    draw_float_slider("A4 Frequency", current_song.a4_frequency, {}, MIN_A4_FREQUENCY, MAX_A4_FREQUENCY);
+    draw_int_slider(this, "EDO", current_song.edo, {Target::SPECIAL, 0, SPECIAL_EDO}, MIN_EDO, MAX_EDO);
+    draw_float_slider(this, "A4 Frequency", current_song.a4_frequency, {Target::SPECIAL, 0, SPECIAL_A4_FREQUENCY}, MIN_A4_FREQUENCY, MAX_A4_FREQUENCY);
 
     if (draw_button("Apply Tuning", 100.0f)) {
         gui.stop();
@@ -266,4 +250,26 @@ std::string GUIGeneralPanel::get_error_message(const ValidationResult result, co
     }
 
     return stream.str();
+}
+
+void GUIGeneralPanel::draw_dialog_box() {
+    if (error) {
+        ImGui::OpenPopup("Error");
+        error = false;
+    }
+
+    if (ImGui::BeginPopupModal("Error", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup(error_message);
+    }
+}
+
+void GUIGeneralPanel::register_shortcuts() {
+    shortcut_manager.register_shortcut(
+        ShortcutAction::SongPlayPause,
+        [this]() { this->play(); }
+    );
+    shortcut_manager.register_shortcut(
+        ShortcutAction::SongStop,
+        [this]() { gui.stop(); }
+    );
 }

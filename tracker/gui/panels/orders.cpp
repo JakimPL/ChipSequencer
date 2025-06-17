@@ -4,34 +4,35 @@
 #include "../utils.hpp"
 #include "orders.hpp"
 
-GUIOrdersPanel::GUIOrdersPanel(const bool visible)
-    : GUIPanel(visible) {
-    from();
-    update();
+GUIOrdersPanel::GUIOrdersPanel(const bool visible, const bool windowed)
+    : GUIPanel("Orders", visible, windowed) {
+    initialize();
+}
+
+GUIElement GUIOrdersPanel::get_element() const {
+    return GUIElement::Orders;
 }
 
 void GUIOrdersPanel::draw() {
-    ImGui::Begin("Orders");
-    ImGui::Columns(1, "order_columns");
+    draw_order();
+}
 
+bool GUIOrdersPanel::select_item() {
     std::vector<std::string> dependencies = song.find_order_dependencies(order_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
-    if (prepare_combo(order_names, "##OrderCombo", order_index).value_changed) {
+    if (prepare_combo(this, order_names, "##OrderCombo", order_index).value_changed) {
         input_handler.clear();
     }
     show_dependency_tooltip(dependencies);
     pop_tertiary_style();
-
     ImGui::Separator();
 
-    from();
-    draw_order();
-    check_keyboard_input();
-    to();
+    return !orders.empty();
+}
 
-    ImGui::Columns(1);
-    ImGui::End();
+void GUIOrdersPanel::empty() {
+    ImGui::Text("No order available.");
 }
 
 bool GUIOrdersPanel::is_index_valid() const {
@@ -53,7 +54,9 @@ void GUIOrdersPanel::from() {
 }
 
 void GUIOrdersPanel::to() const {
-    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || !is_index_valid()) {
+    if (!save &&
+        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
+         !is_index_valid())) {
         return;
     }
 
@@ -113,7 +116,8 @@ void GUIOrdersPanel::update() {
 
 void GUIOrdersPanel::draw_order_length() {
     const size_t old_size = current_order.length;
-    draw_number_of_items("Sequences", "##SequenceLength", current_order.length, 1, MAX_ORDER_ITEMS);
+    const LinkKey key = {Target::ORDER, order_index, ORDER_LENGTH};
+    draw_number_of_items(this, "Sequences", "##SequenceLength", current_order.length, 1, MAX_ORDER_ITEMS, key);
 
     if (old_size != current_order.length) {
         current_order.sequences.resize(current_order.length);
@@ -126,11 +130,6 @@ void GUIOrdersPanel::draw_order_length() {
 }
 
 void GUIOrdersPanel::draw_order() {
-    if (!is_index_valid()) {
-        ImGui::Text("No order available.");
-        return;
-    }
-
     ImGui::Text("Order:");
 
     draw_order_length();
@@ -188,11 +187,28 @@ void GUIOrdersPanel::check_keyboard_input() {
         return;
     }
 
+    const int old_sequence_index = selected_sequence;
+    const int old_sequence = current_order.sequences[selected_sequence];
     const size_t size = std::max(sequences.size(), commands_sequences.size());
     input_handler.set_limit(static_cast<int>(size) - 1);
     input_handler.handle_input(current_order.sequences, selected_sequence);
+    if (old_sequence_index == selected_sequence) {
+        const LinkKey key = {Target::ORDER, order_index, static_cast<uint16_t>(ORDER_SEQUENCES + selected_sequence)};
+        perform_action_order_sequence(
+            this, key, selected_sequence, old_sequence, current_order.sequences[selected_sequence]
+        );
+    }
 }
 
 void GUIOrdersPanel::set_index(const int index) {
     order_index = clamp_index(index, orders.size());
+}
+
+void GUIOrdersPanel::set_sequence(const size_t sequence_index, const size_t new_sequence) {
+    if (sequence_index >= current_order.sequences.size()) {
+        return;
+    }
+
+    current_order.sequences[sequence_index] = new_sequence;
+    input_handler.clear(true);
 }

@@ -18,6 +18,7 @@ GUI::~GUI() {
 
 void GUI::new_song() {
     clear_input_buffers();
+    history_manager.clear();
     song.new_song();
 }
 
@@ -29,6 +30,7 @@ void GUI::save(const std::string &filename) {
 
 void GUI::open(const std::string &filename) {
     clear_input_buffers();
+    history_manager.clear();
     song.load_from_file(filename);
     current_path = filename;
 
@@ -185,10 +187,10 @@ void GUI::set_index(const GUIElement element, const int index) {
     case GUIElement::Channels:
         channels_panel.set_index(index);
         break;
-    case GUIElement::CommandsChannel:
+    case GUIElement::CommandsChannels:
         commands_channels_panel.set_index(index);
         break;
-    case GUIElement::CommandsSequence:
+    case GUIElement::CommandsSequences:
         commands_sequences_panel.set_index(index);
         break;
     case GUIElement::DSPs:
@@ -206,7 +208,7 @@ void GUI::set_index(const GUIElement element, const int index) {
     case GUIElement::Patterns:
         patterns_panel.set_index(index);
         break;
-    case GUIElement::Routing:
+    case GUIElement::Routings:
         routing_panel.set_index(index);
         break;
     case GUIElement::Sequences:
@@ -232,9 +234,9 @@ void GUI::update(GUIElement element) {
         return general_panel.update();
     case GUIElement::Channels:
         return channels_panel.update();
-    case GUIElement::CommandsChannel:
+    case GUIElement::CommandsChannels:
         return commands_channels_panel.update();
-    case GUIElement::CommandsSequence:
+    case GUIElement::CommandsSequences:
         return commands_sequences_panel.update();
     case GUIElement::DSPs:
         return dsps_panel.update();
@@ -246,7 +248,7 @@ void GUI::update(GUIElement element) {
         return oscillators_panel.update();
     case GUIElement::Patterns:
         return patterns_panel.update();
-    case GUIElement::Routing:
+    case GUIElement::Routings:
         return routing_panel.update();
     case GUIElement::Sequences:
         return sequences_panel.update();
@@ -439,10 +441,10 @@ void GUI::set_visibility(const GUIElement element, const bool visible) {
     case GUIElement::Channels:
         channels_panel.visible = visible;
         break;
-    case GUIElement::CommandsChannel:
+    case GUIElement::CommandsChannels:
         commands_channels_panel.visible = visible;
         break;
-    case GUIElement::CommandsSequence:
+    case GUIElement::CommandsSequences:
         commands_sequences_panel.visible = visible;
         break;
     case GUIElement::DSPs:
@@ -460,7 +462,7 @@ void GUI::set_visibility(const GUIElement element, const bool visible) {
     case GUIElement::Patterns:
         patterns_panel.visible = visible;
         break;
-    case GUIElement::Routing:
+    case GUIElement::Routings:
         routing_panel.visible = visible;
         break;
     case GUIElement::Sequences:
@@ -488,9 +490,9 @@ bool GUI::get_visibility(const GUIElement element) const {
         return general_panel.visible;
     case GUIElement::Channels:
         return channels_panel.visible;
-    case GUIElement::CommandsChannel:
+    case GUIElement::CommandsChannels:
         return commands_channels_panel.visible;
-    case GUIElement::CommandsSequence:
+    case GUIElement::CommandsSequences:
         return commands_sequences_panel.visible;
     case GUIElement::DSPs:
         return dsps_panel.visible;
@@ -502,7 +504,7 @@ bool GUI::get_visibility(const GUIElement element) const {
         return oscillators_panel.visible;
     case GUIElement::Patterns:
         return patterns_panel.visible;
-    case GUIElement::Routing:
+    case GUIElement::Routings:
         return routing_panel.visible;
     case GUIElement::Sequences:
         return sequences_panel.visible;
@@ -613,4 +615,15 @@ std::vector<std::pair<NodeIdentifier, ImVec2>> GUI::get_routing_nodes_positions(
 
 void GUI::set_routing_nodes_positions(const std::vector<std::pair<NodeIdentifier, ImVec2>> &nodes_positions) {
     routing_panel.set_nodes_positions(nodes_positions);
+}
+
+bool GUI::is_pattern_view_active() const {
+    return patterns_panel.is_active() ||
+           commands_sequences_panel.is_active() ||
+           sequences_panel.is_active();
+}
+
+bool GUI::is_commands_pattern_view_active() const {
+    return commands_sequences_panel.is_active() ||
+           (patterns_panel.is_active() && patterns_panel.is_commands_view_active());
 }

@@ -34,22 +34,22 @@ class GUIGeneralPanel : public GUIPanel {
     void draw_play_triangle();
     void draw_stop_square() const;
     void draw_song_info();
+    void draw_tabs();
     void draw_tempo();
     void draw_output();
     void draw_tuning_settings();
     void play();
     std::string get_error_message(const ValidationResult result, const int index) const;
 
-    void add() override {};
-    void duplicate() override {};
-    void remove() override {};
+    void register_shortcuts() override;
     void draw() override;
-    void check_keyboard_input() override {};
+    void draw_dialog_box() override;
 
   public:
-    GUIGeneralPanel(const bool visible = true);
+    GUIGeneralPanel(const bool visible = true, const bool windowed = true);
+    GUIElement get_element() const override;
+
     void update() override;
-    void set_index(const int index) override {};
 
     void from() override;
     void to() const override;

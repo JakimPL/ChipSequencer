@@ -3,32 +3,38 @@
 #include "../../utils.hpp"
 #include "channels.hpp"
 
-GUICommandsChannelsPanel::GUICommandsChannelsPanel(const bool visible)
-    : GUIPanel(visible) {
-    from();
-    update();
+GUICommandsChannelsPanel::GUICommandsChannelsPanel(
+    const bool visible,
+    const bool windowed
+)
+    : GUIPanel("Commands channels", visible, windowed) {
+    initialize();
+}
+
+GUIElement GUICommandsChannelsPanel::get_element() const {
+    return GUIElement::CommandsChannels;
 }
 
 void GUICommandsChannelsPanel::draw() {
-    ImGui::Begin("Commands channels");
-    ImGui::Columns(1, "commands_channel_columns");
+    draw_channel();
+}
 
-    ImGui::BeginDisabled(gui.is_playing());
+bool GUICommandsChannelsPanel::is_disabled() const {
+    return gui.is_playing();
+}
+
+bool GUICommandsChannelsPanel::select_item() {
     push_tertiary_style();
     draw_add_or_remove();
-    prepare_combo(commands_channel_names, "##CommandsChannelCombo", channel_index);
+    prepare_combo(this, commands_channel_names, "##CommandsChannelCombo", channel_index);
     pop_tertiary_style();
-
     ImGui::Separator();
 
-    from();
-    draw_channel();
-    check_keyboard_input();
-    to();
+    return !commands_channels.empty();
+}
 
-    ImGui::EndDisabled();
-    ImGui::Columns(1);
-    ImGui::End();
+void GUICommandsChannelsPanel::empty() {
+    ImGui::Text("No command channel available.");
 }
 
 bool GUICommandsChannelsPanel::is_index_valid() const {
@@ -47,7 +53,10 @@ void GUICommandsChannelsPanel::from() {
 }
 
 void GUICommandsChannelsPanel::to() const {
-    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || !is_index_valid() || gui.is_playing()) {
+    if (!save &&
+        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
+         !is_index_valid() ||
+         gui.is_playing())) {
         return;
     }
 
@@ -91,22 +100,14 @@ void GUICommandsChannelsPanel::update() {
 }
 
 void GUICommandsChannelsPanel::draw_channel() {
-    if (commands_channels.empty()) {
-        ImGui::Text("No channels available.");
-        return;
-    }
-
-    ImGui::Checkbox("Bypass", &current_channel.bypass);
-    ImGui::Checkbox("Hide in pattern view", &current_channel.hide);
+    draw_checkbox(this, "Bypass", current_channel.bypass, {Target::SPECIAL, channel_index, SPECIAL_COMMAND_CHANNEL_BYPASS});
+    draw_checkbox(this, "Hide in pattern view", current_channel.hide, {Target::SPECIAL, channel_index, SPECIAL_COMMAND_CHANNEL_HIDE});
     ImGui::Separator();
 
     ImGui::Text("Order:");
-    if (prepare_combo(order_names, "##OrderCombo", current_channel.order_index, true).right_clicked) {
+    if (prepare_combo(this, order_names, "##OrderCombo", current_channel.order_index, {Target::COMMANDS_CHANNEL, channel_index, COMMANDS_CHANNEL_ORDER_INDEX}, true).right_clicked) {
         gui.set_index(GUIElement::Orders, current_channel.order_index);
     }
-}
-
-void GUICommandsChannelsPanel::check_keyboard_input() {
 }
 
 void GUICommandsChannelsPanel::set_index(const int index) {

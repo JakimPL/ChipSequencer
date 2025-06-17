@@ -14,8 +14,16 @@ struct LinkKey {
         return target == other.target && index == other.index && offset == other.offset;
     }
 
+    bool operator!=(const LinkKey &other) const {
+        return !(*this == other);
+    }
+
     bool operator<(const LinkKey &other) const {
         return std::tie(target, index, offset) < std::tie(other.target, other.index, other.offset);
+    }
+
+    bool is_null() const {
+        return target == Target::COUNT && index == -1 && offset == static_cast<uint16_t>(-1);
     }
 };
 

@@ -8,47 +8,20 @@
 #include "../utils.hpp"
 #include "menu.hpp"
 
-GUIMenu::GUIMenu(const bool visible)
-    : GUIPanel(visible) {
-    shortcut_manager.register_shortcut(
-        ShortcutAction::FileNew,
-        [this]() { file_new_confirm(); }
-    );
-    shortcut_manager.register_shortcut(
-        ShortcutAction::FileOpen,
-        [this]() { file_open(); }
-    );
-    shortcut_manager.register_shortcut(
-        ShortcutAction::FileSave,
-        [this]() { file_save(); }
-    );
-    shortcut_manager.register_shortcut(
-        ShortcutAction::FileSaveAs,
-        [this]() { file_save_as(); }
-    );
-    shortcut_manager.register_shortcut(
-        ShortcutAction::FileRender,
-        [this]() { file_render(); }
-    );
-    shortcut_manager.register_shortcut(
-        ShortcutAction::FileCompileCompressed,
-        [this]() { file_compile(CompilationScheme::Compressed, CompilationTarget::Linux); }
-    );
-    shortcut_manager.register_shortcut(
-        ShortcutAction::FileCompileUncompressed,
-        [this]() { file_compile(CompilationScheme::Uncompressed, CompilationTarget::Linux); }
-    );
-    shortcut_manager.register_shortcut(
-        ShortcutAction::FileCompileDebug,
-        [this]() { file_compile(CompilationScheme::Debug, CompilationTarget::Linux); }
-    );
-    shortcut_manager.register_shortcut(
-        ShortcutAction::FileExit,
-        [this]() { file_exit_confirm(); }
-    );
+GUIMenu::GUIMenu(const bool visible, const bool windowed)
+    : GUIPanel("Menu", visible, windowed) {
+    initialize();
+}
+
+GUIElement GUIMenu::get_element() const {
+    return GUIElement::Menu;
 }
 
 void GUIMenu::draw() {
+    draw_menu();
+}
+
+void GUIMenu::draw_menu() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("File")) {
             draw_menu_item("New", ShortcutAction::FileNew);
@@ -69,6 +42,29 @@ void GUIMenu::draw() {
             draw_menu_item("Exit", ShortcutAction::FileExit);
             ImGui::EndMenu();
         }
+        if (ImGui::BeginMenu("Edit")) {
+            draw_menu_item("Undo", ShortcutAction::EditUndo);
+            draw_menu_item("Redo", ShortcutAction::EditRedo);
+            ImGui::Separator();
+            draw_menu_item("Delete", ShortcutAction::EditDelete);
+            draw_menu_item("Cut", ShortcutAction::EditCut);
+            draw_menu_item("Copy", ShortcutAction::EditCopy);
+            draw_menu_item("Paste", ShortcutAction::EditPaste);
+            if (gui.is_pattern_view_active()) {
+                ImGui::Separator();
+                draw_menu_item("Select all", ShortcutAction::PatternSelectAll);
+                draw_menu_item("Select channel", ShortcutAction::PatternSelectChannel);
+                draw_menu_item("Deselect all", ShortcutAction::PatternSelectNone);
+                if (!gui.is_commands_pattern_view_active()) {
+                    ImGui::Separator();
+                    draw_menu_item("Transpose up", ShortcutAction::PatternTransposeUp);
+                    draw_menu_item("Transpose down", ShortcutAction::PatternTransposeDown);
+                    draw_menu_item("Transpose octave up", ShortcutAction::PatternTransposeOctaveUp);
+                    draw_menu_item("Transpose octave down", ShortcutAction::PatternTransposeOctaveDown);
+                }
+            }
+            ImGui::EndMenu();
+        }
         if (ImGui::BeginMenu("View")) {
             for (const auto &[element, name] : menu_items) {
                 const bool visible = gui.get_visibility(element);
@@ -78,53 +74,24 @@ void GUIMenu::draw() {
         }
         ImGui::EndMainMenuBar();
     }
-
-    if (compilation_status.has_value()) {
-        ImGui::OpenPopup(compilation_status.value() ? "Compilation success" : "Compilation failure");
-        compilation_status = std::nullopt;
-    }
-
-    if (render_status.has_value()) {
-        ImGui::OpenPopup(render_status.value() ? "Render success" : "Render failure");
-        render_status = std::nullopt;
-    }
-
-    if (load_error.has_value()) {
-        ImGui::OpenPopup("Load error");
-        load_error = std::nullopt;
-    }
-
-    if (open_new_song_confirmation_popup) {
-        ImGui::OpenPopup("Confirm new song");
-        open_new_song_confirmation_popup = false;
-    }
-
-    if (open_exit_confirmation_popup) {
-        ImGui::OpenPopup("Confirm exit");
-        open_exit_confirmation_popup = false;
-    }
-
-    if (ImGui::BeginPopupModal("Compilation success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        draw_popup("File compiled successfully!");
-    } else if (ImGui::BeginPopupModal("Compilation failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        draw_popup("Compilation failed!");
-    } else if (ImGui::BeginPopupModal("Render success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        draw_popup("Song rendered successfully!");
-    } else if (ImGui::BeginPopupModal("Render failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        draw_popup("Song render failed!");
-    } else if (ImGui::BeginPopupModal("Load error", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        draw_popup("Failed to load file!");
-    } else if (ImGui::BeginPopupModal("Confirm new song", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-        const std::string message = "Do you want to create a new song?\nAny unsaved changes will be lost.";
-        draw_confirmation_popup(message, [this]() { file_new(); }, [this]() { file_save(); });
-    } else if (ImGui::BeginPopupModal("Confirm exit", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-        const std::string message = "Do you want to exit the program?\nAny unsaved changes will be lost.";
-        draw_confirmation_popup(message, [this]() { file_exit(); }, [this]() { file_save(); });
-    }
 }
 
 void GUIMenu::file_new_confirm() {
+    if (history_manager.empty()) {
+        file_new();
+        return;
+    }
+
     open_new_song_confirmation_popup = true;
+}
+
+void GUIMenu::file_open_confirm() {
+    if (history_manager.empty()) {
+        file_open();
+        return;
+    }
+
+    open_open_song_confirmation_popup = true;
 }
 
 void GUIMenu::file_new() {
@@ -236,5 +203,112 @@ void GUIMenu::file_exit() {
 }
 
 void GUIMenu::file_exit_confirm() {
+    if (history_manager.empty()) {
+        file_exit();
+        return;
+    }
+
     open_exit_confirmation_popup = true;
+}
+
+void GUIMenu::draw_dialog_box() {
+    if (compilation_status.has_value()) {
+        ImGui::OpenPopup(compilation_status.value() ? "Compilation success" : "Compilation failure");
+        compilation_status = std::nullopt;
+    }
+
+    if (render_status.has_value()) {
+        ImGui::OpenPopup(render_status.value() ? "Render success" : "Render failure");
+        render_status = std::nullopt;
+    }
+
+    if (load_error.has_value()) {
+        ImGui::OpenPopup("Load error");
+        load_error = std::nullopt;
+    }
+
+    if (open_new_song_confirmation_popup) {
+        ImGui::OpenPopup("Confirm new song");
+        open_new_song_confirmation_popup = false;
+    }
+
+    if (open_open_song_confirmation_popup) {
+        ImGui::OpenPopup("Confirm open song");
+        open_open_song_confirmation_popup = false;
+    }
+
+    if (open_exit_confirmation_popup) {
+        ImGui::OpenPopup("Confirm exit");
+        open_exit_confirmation_popup = false;
+    }
+
+    if (ImGui::BeginPopupModal("Compilation success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("File compiled successfully!");
+    } else if (ImGui::BeginPopupModal("Compilation failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Compilation failed!");
+    } else if (ImGui::BeginPopupModal("Render success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Song rendered successfully!");
+    } else if (ImGui::BeginPopupModal("Render failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Song render failed!");
+    } else if (ImGui::BeginPopupModal("Load error", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Failed to load file!");
+    } else if (ImGui::BeginPopupModal("Confirm new song", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+        const std::string message = "Do you want to create a new song?\nAny unsaved changes will be lost.";
+        draw_confirmation_popup(message, [this]() { file_new(); }, [this]() { file_save(); });
+    } else if (ImGui::BeginPopupModal("Confirm open song", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+        const std::string message = "Do you want to open a new song?\nAny unsaved changes will be lost.";
+        draw_confirmation_popup(message, [this]() { file_open(); }, [this]() { file_save(); });
+    } else if (ImGui::BeginPopupModal("Confirm exit", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+        const std::string message = "Do you want to exit the program?\nAny unsaved changes will be lost.";
+        draw_confirmation_popup(message, [this]() { file_exit(); }, [this]() { file_save(); });
+    }
+}
+
+void GUIMenu::register_shortcuts() {
+    shortcut_manager.register_shortcut(
+        ShortcutAction::FileNew,
+        [this]() { file_new_confirm(); }
+    );
+    shortcut_manager.register_shortcut(
+        ShortcutAction::FileOpen,
+        [this]() { file_open_confirm(); }
+    );
+    shortcut_manager.register_shortcut(
+        ShortcutAction::FileSave,
+        [this]() { file_save(); }
+    );
+    shortcut_manager.register_shortcut(
+        ShortcutAction::FileSaveAs,
+        [this]() { file_save_as(); }
+    );
+    shortcut_manager.register_shortcut(
+        ShortcutAction::FileRender,
+        [this]() { file_render(); }
+    );
+    shortcut_manager.register_shortcut(
+        ShortcutAction::FileCompileCompressed,
+        [this]() { file_compile(CompilationScheme::Compressed, CompilationTarget::Linux); }
+    );
+    shortcut_manager.register_shortcut(
+        ShortcutAction::FileCompileUncompressed,
+        [this]() { file_compile(CompilationScheme::Uncompressed, CompilationTarget::Linux); }
+    );
+    shortcut_manager.register_shortcut(
+        ShortcutAction::FileCompileDebug,
+        [this]() { file_compile(CompilationScheme::Debug, CompilationTarget::Linux); }
+    );
+    shortcut_manager.register_shortcut(
+        ShortcutAction::FileExit,
+        [this]() { file_exit_confirm(); }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::EditUndo,
+        []() { history_manager.undo(); }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::EditRedo,
+        []() { history_manager.redo(); }
+    );
 }

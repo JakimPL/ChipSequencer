@@ -5,62 +5,40 @@
 #include "../../utils.hpp"
 #include "sequences.hpp"
 
-GUICommandsSequencesPanel::GUICommandsSequencesPanel(const bool visible)
-    : GUIPanel(visible) {
-    from();
-    update();
+GUICommandsSequencesPanel::GUICommandsSequencesPanel(const bool visible, const bool windowed)
+    : GUIPanel("Commands sequences", visible, windowed) {
+    initialize();
+}
 
-    shortcut_manager.register_shortcut(
-        ShortcutAction::PatternSelectAll,
-        [this]() {
-            selection_action = PatternSelectionAction::SelectAll;
-        }
-    );
-
-    shortcut_manager.register_shortcut(
-        ShortcutAction::PatternSelectNone,
-        [this]() {
-            selection_action = PatternSelectionAction::DeselectAll;
-        }
-    );
-
-    shortcut_manager.register_shortcut(
-        ShortcutAction::PatternClear,
-        [this]() {
-            selection_action = PatternSelectionAction::Clear;
-        }
-    );
+GUIElement GUICommandsSequencesPanel::get_element() const {
+    return GUIElement::CommandsSequences;
 }
 
 void GUICommandsSequencesPanel::draw() {
-    ImGui::Begin("Commands sequences");
-    ImGui::Columns(1, "commands_sequence_columns");
-    ImGui::BeginDisabled(gui.is_playing());
+    draw_sequence();
+}
 
+bool GUICommandsSequencesPanel::is_disabled() const {
+    return gui.is_playing();
+}
+
+bool GUICommandsSequencesPanel::select_item() {
     std::vector<std::string> dependencies = song.find_commands_sequence_dependencies(sequence_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
-    if (prepare_combo(commands_sequence_names, "##CommandsSequenceCombo", sequence_index).value_changed) {
+    if (prepare_combo(this, commands_sequence_names, "##CommandsSequenceCombo", sequence_index).value_changed) {
         current_sequence.pattern.values_handler.clear();
         current_sequence.pattern.commands_handler.clear();
     }
     show_dependency_tooltip(dependencies);
     pop_tertiary_style();
-
     ImGui::Separator();
 
-    from();
-    draw_sequence();
-    action();
-    check_keyboard_input();
-    draw_edit_dialog_box();
-    to();
+    return !commands_sequences.empty();
+}
 
-    dialog_box_open = edit_dialog_box.visible;
-
-    ImGui::EndDisabled();
-    ImGui::Columns(1);
-    ImGui::End();
+void GUICommandsSequencesPanel::empty() {
+    ImGui::Text("No commands sequences available.");
 }
 
 bool GUICommandsSequencesPanel::is_index_valid() const {
@@ -77,11 +55,10 @@ void GUICommandsSequencesPanel::from() {
 
 void GUICommandsSequencesPanel::to() const {
     const bool focus = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
-    if (
-        (!focus && !dialog_box_open) ||
-        !is_index_valid() ||
-        gui.is_playing()
-    ) {
+    if (!save &&
+        ((!focus && !dialog_box_open) ||
+         !is_index_valid() ||
+         gui.is_playing())) {
         return;
     }
 
@@ -135,7 +112,7 @@ void GUICommandsSequencesPanel::update() {
     gui.update(GUIElement::Orders);
 }
 
-void GUICommandsSequencesPanel::action() {
+void GUICommandsSequencesPanel::shortcut_actions() {
     if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
@@ -150,7 +127,7 @@ void GUICommandsSequencesPanel::action() {
         deselect_all();
         break;
     }
-    case PatternSelectionAction::Clear: {
+    case PatternSelectionAction::Delete: {
         delete_selection();
         break;
     }
@@ -188,7 +165,8 @@ void GUICommandsSequencesPanel::delete_selection() {
 
 void GUICommandsSequencesPanel::draw_sequence_length() {
     const size_t old_size = current_sequence.pattern.steps;
-    draw_number_of_items("Steps", "##SequenceLength", current_sequence.pattern.steps, 1, MAX_STEPS);
+    const LinkKey key = {Target::SPECIAL, sequence_index, SPECIAL_COMMANDS_SEQUENCE_LENGTH};
+    draw_number_of_items(this, "Steps", "##SequenceLength", current_sequence.pattern.steps, 1, MAX_STEPS, key);
 
     if (old_size != current_sequence.pattern.steps) {
         current_sequence.pattern.commands.resize(current_sequence.pattern.steps);
@@ -210,23 +188,15 @@ void GUICommandsSequencesPanel::draw_sequence() {
     }
 
     ImGui::Text("Pattern:");
-
-    if (!is_index_valid()) {
-        ImGui::Text("No sequence available.");
-        ImGui::Columns(1);
-        return;
-    }
-
     draw_sequence_length();
-
     if (current_sequence.pattern.steps > 0) {
         if (ImGui::Button("Edit")) {
             open_edit_dialog_box(current_sequence.pattern.current_row);
         }
     }
 
-    PatternRows secondary_pattern_rows;
-    draw_commands_pattern(current_sequence.pattern, selection, secondary_pattern_rows, false);
+    SequenceRows secondary_sequence_rows;
+    draw_commands_pattern(current_sequence.pattern, selection, secondary_sequence_rows, false);
 }
 
 void GUICommandsSequencesPanel::open_edit_dialog_box(const int item) {
@@ -324,26 +294,26 @@ void GUICommandsSequencesPanel::draw_output_section() {
     push_secondary_style();
     ImGui::Text("Output:");
 
-    draw_output_parameter(edit_dialog_box.output_type, {});
+    draw_output_parameter(this, edit_dialog_box.output_type, {});
     ImGui::Text("Operation:");
-    prepare_combo(simple_operation_names, "##OutputTypeOperation", edit_dialog_box.output_type.operation);
+    prepare_combo(this, simple_operation_names, "##OutputTypeOperation", edit_dialog_box.output_type.operation);
     ImGui::Text("Variable:");
-    prepare_combo(variable_types, "##OutputTypeCombo", edit_dialog_box.output_type.variable_type);
+    prepare_combo(this, variable_types, "##OutputTypeCombo", edit_dialog_box.output_type.variable_type);
     switch (static_cast<TargetVariableType>(edit_dialog_box.output_type.variable_type)) {
     case TargetVariableType::Byte: {
-        draw_int_slider("Value", edit_dialog_box.value_integer, {}, 0, UINT8_MAX);
+        draw_int_slider(this, "Value", edit_dialog_box.value_integer, {}, 0, UINT8_MAX);
         break;
     }
     case TargetVariableType::Word: {
-        draw_int_slider("Value", edit_dialog_box.value_integer, {}, 0, UINT16_MAX);
+        draw_int_slider(this, "Value", edit_dialog_box.value_integer, {}, 0, UINT16_MAX);
         break;
     }
     case TargetVariableType::Dword: {
-        draw_int_slider("Value", edit_dialog_box.value_integer, {}, 0, UINT32_MAX);
+        draw_int_slider(this, "Value", edit_dialog_box.value_integer, {}, 0, UINT32_MAX);
         break;
     }
     case TargetVariableType::Float: {
-        draw_float_slider("Value", edit_dialog_box.value_float, {}, 0.0f, 1.0f);
+        draw_float_slider(this, "Value", edit_dialog_box.value_float, {}, 0.0f, 1.0f);
         break;
     }
     case TargetVariableType::Count:
@@ -353,7 +323,7 @@ void GUICommandsSequencesPanel::draw_output_section() {
     pop_secondary_style();
 }
 
-void GUICommandsSequencesPanel::draw_edit_dialog_box() {
+void GUICommandsSequencesPanel::draw_dialog_box() {
     if (!edit_dialog_box.visible) {
         return;
     }
@@ -369,7 +339,7 @@ void GUICommandsSequencesPanel::draw_edit_dialog_box() {
 
         ImGui::Text("Command:");
         push_tertiary_style();
-        prepare_combo(names, "##EditCommand", edit_dialog_box.instruction);
+        prepare_combo(this, names, "##EditCommand", edit_dialog_box.instruction);
         pop_tertiary_style();
         ImGui::Separator();
 
@@ -381,20 +351,20 @@ void GUICommandsSequencesPanel::draw_edit_dialog_box() {
         case Instruction::PortamentoUp:
         case Instruction::PortamentoDown: {
             ImGui::Text("Channel:");
-            prepare_combo(channel_names, "##EditCommandChannel", edit_dialog_box.portamento_channel);
-            draw_float_slider("Semitones", edit_dialog_box.portamento_value, {}, 0.0f, MAX_PORTAMENTO);
+            prepare_combo(this, channel_names, "##EditCommandChannel", edit_dialog_box.portamento_channel);
+            draw_float_slider(this, "Semitones", edit_dialog_box.portamento_value, {}, 0.0f, MAX_PORTAMENTO);
             break;
         }
         case Instruction::SetMasterGainer: {
-            draw_float_slider("Gainer", edit_dialog_box.gainer, {}, 0.0f, 1.0f);
+            draw_float_slider(this, "Gainer", edit_dialog_box.gainer, {}, 0.0f, 1.0f);
             break;
         }
         case Instruction::SetBPM: {
-            draw_int_slider("BPM", edit_dialog_box.bpm, {}, GUI_MIN_BPM, GUI_MAX_BPM);
+            draw_int_slider(this, "BPM", edit_dialog_box.bpm, {}, GUI_MIN_BPM, GUI_MAX_BPM);
             break;
         }
         case Instruction::SetDivision: {
-            draw_int_slider("Division", edit_dialog_box.division, {}, GUI_MIN_DIVISION, GUI_MAX_DIVISION);
+            draw_int_slider(this, "Division", edit_dialog_box.division, {}, GUI_MIN_DIVISION, GUI_MAX_DIVISION);
             break;
         }
         case Instruction::ChangeByteValue:
@@ -509,4 +479,36 @@ void GUICommandsSequencesPanel::set_index(const int index) {
 void GUICommandsSequencesPanel::clear_input_buffers() {
     current_sequence.pattern.commands_handler.clear();
     current_sequence.pattern.values_handler.clear();
+}
+
+bool GUICommandsSequencesPanel::is_active() const {
+    return visible && ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+}
+
+void GUICommandsSequencesPanel::post_actions() {
+    dialog_box_open = edit_dialog_box.visible;
+    selection_action = PatternSelectionAction::None;
+}
+
+void GUICommandsSequencesPanel::register_shortcuts() {
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSelectAll,
+        [this]() {
+            selection_action = PatternSelectionAction::SelectAll;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSelectNone,
+        [this]() {
+            selection_action = PatternSelectionAction::DeselectAll;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::EditDelete,
+        [this]() {
+            selection_action = PatternSelectionAction::Delete;
+        }
+    );
 }

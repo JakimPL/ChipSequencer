@@ -34,14 +34,18 @@ class GUIDSPsPanel : public GUIPanel {
     void update_dsp_names();
     void update_dsp_name(const int index, const int effect_index = -1) const;
 
+    bool is_disabled() const override;
+    bool select_item() override;
+    void empty() override;
     void add() override;
     void duplicate() override;
     void remove() override;
     void draw() override;
-    void check_keyboard_input() override;
 
   public:
-    GUIDSPsPanel(const bool visible = true);
+    GUIDSPsPanel(const bool visible = true, const bool windowed = true);
+    GUIElement get_element() const override;
+
     void update() override;
     void set_index(const int index) override;
 

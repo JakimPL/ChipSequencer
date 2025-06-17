@@ -13,17 +13,9 @@ class GUISummaryPanel : public GUIPanel {
     size_t draw_summary_song_data();
     void draw_optimizations();
 
-    void add() override {};
-    void duplicate() override {};
-    void remove() override {};
     void draw() override;
-    void check_keyboard_input() override {};
 
   public:
-    GUISummaryPanel(const bool visible = true);
-    void update() override {};
-    void set_index(const int index) override {};
-
-    void from() override {};
-    void to() const override {};
+    GUISummaryPanel(const bool visible = true, const bool windowed = true);
+    GUIElement get_element() const override;
 };

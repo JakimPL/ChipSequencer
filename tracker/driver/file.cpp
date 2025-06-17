@@ -6,9 +6,6 @@
 #include "../song/functions.hpp"
 #include "file.hpp"
 
-FileDriver::FileDriver() {
-}
-
 void FileDriver::terminate() {
     return;
 }

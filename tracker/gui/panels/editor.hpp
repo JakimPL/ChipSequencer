@@ -7,29 +7,14 @@
 
 class GUIEditorPanel : public GUIPanel {
   private:
-    int &current_octave;
-    int &jump_step;
-    int &page_size;
+    void draw_tabs();
+    void draw_options();
+    void draw_history();
 
-    void draw_panels();
-
-    void add() override {};
-    void duplicate() override {};
-    void remove() override {};
     void draw() override;
     void check_keyboard_input() override;
 
   public:
-    GUIEditorPanel(
-        const bool visible,
-        int &current_octave,
-        int &jump_step,
-        int &page_size
-    );
-
-    void update() override {};
-    void set_index(const int index) override {};
-
-    void from() override {};
-    void to() const override {};
+    GUIEditorPanel(const bool visible = true, const bool windowed = true);
+    GUIElement get_element() const override;
 };

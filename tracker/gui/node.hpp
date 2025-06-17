@@ -14,6 +14,8 @@
 typedef std::pair<ItemType, int> InputKey;
 typedef LinkKey OutputKey;
 
+OutputKey from_input_key(const InputKey &source_key);
+
 struct NodeIdentifier {
     Target type;
     size_t id;

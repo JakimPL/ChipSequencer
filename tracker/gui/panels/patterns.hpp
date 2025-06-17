@@ -13,8 +13,29 @@
 struct VariantChannelIndex {
     bool command;
     size_t index;
+
     bool operator<(const VariantChannelIndex &other) const {
         return std::tie(command, index) < std::tie(other.command, other.index);
+    }
+};
+
+struct PatternIndex {
+    Pattern *pattern;
+    size_t pattern_id;
+    uint16_t index;
+
+    bool operator<(const PatternIndex &other) const {
+        return std::tie(pattern_id, index) < std::tie(other.pattern_id, other.index);
+    }
+};
+
+struct CommandsPatternIndex {
+    CommandsPattern *pattern;
+    size_t pattern_id;
+    uint16_t index;
+
+    bool operator<(const CommandsPatternIndex &other) const {
+        return std::tie(pattern_id, index) < std::tie(other.pattern_id, other.index);
     }
 };
 
@@ -35,6 +56,7 @@ class GUIPatternsPanel : public GUIPanel {
     PatternSelectionAction selection_action = PatternSelectionAction::None;
     PatternRows pattern_rows;
     PatternRows secondary_pattern_rows;
+    SequenceRows secondary_sequence_rows;
     PatternRowsBySequenceRow pattern_rows_by_sequence_row;
     size_t current_index = -1;
     int current_row = -1;
@@ -45,7 +67,6 @@ class GUIPatternsPanel : public GUIPanel {
     void draw_channel(size_t channel_index);
     void draw_commands_channel(size_t channel_index);
 
-    void action();
     void select_channel();
     void select_all();
     void deselect_all();
@@ -55,8 +76,8 @@ class GUIPatternsPanel : public GUIPanel {
     void mark_selected_rows(const bool command, const size_t channel_index, const size_t pattern_id, const int row);
     void mark_selected_pattern_rows(const size_t channel_index, const size_t pattern_id, const int row);
     void mark_selected_commands_pattern_rows(const size_t channel_index, const size_t pattern_id, const int row);
-    std::pair<Pattern *, uint16_t> find_pattern_by_current_row() const;
-    std::pair<CommandsPattern *, uint16_t> find_commands_pattern_by_current_row() const;
+    PatternIndex find_pattern_by_current_row() const;
+    CommandsPatternIndex find_commands_pattern_by_current_row() const;
 
     void handle_pattern_input(Pattern *pattern, uint16_t index);
     void handle_commands_pattern_input(CommandsPattern *pattern, uint16_t index);
@@ -68,19 +89,23 @@ class GUIPatternsPanel : public GUIPanel {
     void to_sequences() const;
     void to_commands_sequences() const;
 
-    void add() override {};
-    void duplicate() override {};
-    void remove() override {};
+    void register_shortcuts() override;
     void draw() override;
     void check_keyboard_input() override;
+    void shortcut_actions() override;
+    void pre_actions() override;
+    void post_actions() override;
 
   public:
-    GUIPatternsPanel(const bool visible = true);
-    void update() override;
-    void set_index(const int index) override;
+    GUIPatternsPanel(const bool visible = true, const bool windowed = true);
+    GUIElement get_element() const override;
+
+    void set_note(const size_t channel_index, const size_t pattern_id, const int row, const uint8_t note);
 
     void from() override;
     void to() const override;
 
     void deselect_all_rows();
+    bool is_active() const;
+    bool is_commands_view_active() const;
 };

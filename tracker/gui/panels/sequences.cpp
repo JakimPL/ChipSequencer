@@ -8,83 +8,33 @@
 #include "../patterns/selection.hpp"
 #include "sequences.hpp"
 
-GUISequencesPanel::GUISequencesPanel(const bool visible)
-    : GUIPanel(visible) {
-    from();
-    update();
+GUISequencesPanel::GUISequencesPanel(const bool visible, const bool windowed)
+    : GUIPanel("Sequences", visible, windowed) {
+    initialize();
+}
 
-    shortcut_manager.register_shortcut(
-        ShortcutAction::PatternTransposeUp,
-        [this]() {
-            selection_action = PatternSelectionAction::TransposeUp;
-        }
-    );
-
-    shortcut_manager.register_shortcut(
-        ShortcutAction::PatternTransposeDown,
-        [this]() {
-            selection_action = PatternSelectionAction::TransposeDown;
-        }
-    );
-
-    shortcut_manager.register_shortcut(
-        ShortcutAction::PatternTransposeOctaveUp,
-        [this]() {
-            selection_action = PatternSelectionAction::TransposeOctaveUp;
-        }
-    );
-
-    shortcut_manager.register_shortcut(
-        ShortcutAction::PatternTransposeOctaveDown,
-        [this]() {
-            selection_action = PatternSelectionAction::TransposeOctaveDown;
-        }
-    );
-
-    shortcut_manager.register_shortcut(
-        ShortcutAction::PatternSelectAll,
-        [this]() {
-            selection_action = PatternSelectionAction::SelectAll;
-        }
-    );
-
-    shortcut_manager.register_shortcut(
-        ShortcutAction::PatternSelectNone,
-        [this]() {
-            selection_action = PatternSelectionAction::DeselectAll;
-        }
-    );
-
-    shortcut_manager.register_shortcut(
-        ShortcutAction::PatternClear,
-        [this]() {
-            selection_action = PatternSelectionAction::Clear;
-        }
-    );
+GUIElement GUISequencesPanel::get_element() const {
+    return GUIElement::Sequences;
 }
 
 void GUISequencesPanel::draw() {
-    ImGui::Begin("Sequences");
-    ImGui::Columns(1, "sequence_columns");
+    draw_sequence();
+}
 
+bool GUISequencesPanel::select_item() {
     std::vector<std::string> dependencies = song.find_sequence_dependencies(sequence_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
-    prepare_combo(sequence_names, "##SequenceCombo", sequence_index);
+    prepare_combo(this, sequence_names, "##SequenceCombo", sequence_index);
     show_dependency_tooltip(dependencies);
     pop_tertiary_style();
-
     ImGui::Separator();
 
-    from();
-    draw_sequence();
-    action();
-    transpose_selected_rows();
-    check_keyboard_input();
-    to();
+    return !sequences.empty();
+}
 
-    ImGui::Columns(1);
-    ImGui::End();
+void GUISequencesPanel::empty() {
+    ImGui::Text("No sequence available.");
 }
 
 bool GUISequencesPanel::is_index_valid() const {
@@ -100,7 +50,9 @@ void GUISequencesPanel::from() {
 }
 
 void GUISequencesPanel::to() const {
-    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || !is_index_valid()) {
+    if (!save &&
+        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
+         !is_index_valid())) {
         return;
     }
 
@@ -143,7 +95,7 @@ void GUISequencesPanel::update() {
     gui.update(GUIElement::Orders);
 }
 
-void GUISequencesPanel::action() {
+void GUISequencesPanel::shortcut_actions() {
     if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
@@ -174,7 +126,7 @@ void GUISequencesPanel::action() {
         deselect_all();
         break;
     }
-    case PatternSelectionAction::Clear: {
+    case PatternSelectionAction::Delete: {
         delete_selection();
         break;
     }
@@ -185,6 +137,12 @@ void GUISequencesPanel::action() {
     }
 
     selection_action = PatternSelectionAction::None;
+    transpose_selected_rows();
+}
+
+void GUISequencesPanel::post_actions() {
+    selection_action = PatternSelectionAction::None;
+    transpose_by = 0;
 }
 
 void GUISequencesPanel::select_all() {
@@ -228,7 +186,8 @@ void GUISequencesPanel::transpose_selected_rows() {
 
 void GUISequencesPanel::draw_sequence_length() {
     const size_t old_size = current_sequence.pattern.steps;
-    draw_number_of_items("Steps", "##SequenceLength", current_sequence.pattern.steps, 1, MAX_STEPS);
+    const LinkKey key = {Target::SPECIAL, sequence_index, SPECIAL_SEQUENCE_LENGTH};
+    draw_number_of_items(this, "Steps", "##SequenceLength", current_sequence.pattern.steps, 1, MAX_STEPS, key);
 
     if (old_size != current_sequence.pattern.steps) {
         current_sequence.pattern.notes.resize(current_sequence.pattern.steps);
@@ -248,19 +207,12 @@ void GUISequencesPanel::draw_sequence() {
     }
 
     ImGui::Text("Pattern:");
-
-    if (!is_index_valid()) {
-        ImGui::Text("No sequence available.");
-        ImGui::Columns(1);
-        return;
-    }
-
     PatternSelection empty_selection;
     PatternSelection &sequence_selection = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ? selection : empty_selection;
-    PatternRows secondary_pattern_rows;
+    SequenceRows secondary_sequence_rows;
 
     draw_sequence_length();
-    draw_pattern(current_sequence.pattern, sequence_selection, secondary_pattern_rows, false);
+    draw_pattern(current_sequence.pattern, sequence_selection, secondary_sequence_rows, false);
 }
 
 void GUISequencesPanel::check_keyboard_input() {
@@ -272,9 +224,78 @@ void GUISequencesPanel::check_keyboard_input() {
         return;
     }
 
+    const int old_row = current_sequence.pattern.current_row;
+    const uint8_t old_note = current_sequence.pattern.is_row_valid(current_sequence.pattern.current_row) ? current_sequence.pattern.notes[old_row] : NOTES;
     current_sequence.pattern.handle_input();
+    if (old_note != NOTES) {
+        const uint8_t new_note = current_sequence.pattern.notes[old_row];
+        const PatternRow pattern_row = {0, 0, old_row};
+        const uint16_t offset = SEQUENCE_NOTES + sizeof(Note) * old_row;
+        const LinkKey key = {Target::SEQUENCE, sequence_index, offset};
+        perform_action_note(this, key, pattern_row, old_note, new_note);
+    }
+}
+
+void GUISequencesPanel::set_note(const size_t channel_index, const int row, const uint8_t note) {
+    current_sequence.pattern.set_note(row, note);
+    current_sequence.pattern.current_row = row;
 }
 
 void GUISequencesPanel::set_index(const int index) {
     sequence_index = clamp_index(index, sequences.size());
+}
+
+bool GUISequencesPanel::is_active() const {
+    return visible && ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+}
+
+void GUISequencesPanel::register_shortcuts() {
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternTransposeUp,
+        [this]() {
+            selection_action = PatternSelectionAction::TransposeUp;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternTransposeDown,
+        [this]() {
+            selection_action = PatternSelectionAction::TransposeDown;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternTransposeOctaveUp,
+        [this]() {
+            selection_action = PatternSelectionAction::TransposeOctaveUp;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternTransposeOctaveDown,
+        [this]() {
+            selection_action = PatternSelectionAction::TransposeOctaveDown;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSelectAll,
+        [this]() {
+            selection_action = PatternSelectionAction::SelectAll;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSelectNone,
+        [this]() {
+            selection_action = PatternSelectionAction::DeselectAll;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::EditDelete,
+        [this]() {
+            selection_action = PatternSelectionAction::Delete;
+        }
+    );
 }

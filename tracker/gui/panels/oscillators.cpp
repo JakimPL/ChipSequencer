@@ -6,34 +6,35 @@
 #include "../names.hpp"
 #include "../utils.hpp"
 
-GUIOscillatorsPanel::GUIOscillatorsPanel(const bool visible)
-    : GUIPanel(visible) {
-    from();
-    update();
+GUIOscillatorsPanel::GUIOscillatorsPanel(const bool visible, const bool windowed)
+    : GUIPanel("Oscillators", visible, windowed) {
+    initialize();
+}
+
+GUIElement GUIOscillatorsPanel::get_element() const {
+    return GUIElement::Oscillators;
 }
 
 void GUIOscillatorsPanel::draw() {
-    ImGui::Begin("Oscillators");
-    ImGui::Columns(1, "oscillator_columns");
+    draw_oscillator();
+}
 
+bool GUIOscillatorsPanel::select_item() {
     std::vector<std::string> dependencies = song.find_oscillator_dependencies(oscillator_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
-    prepare_combo(oscillator_names, "##OscillatorCombo", oscillator_index);
+    prepare_combo(this, oscillator_names, "##OscillatorCombo", oscillator_index);
     show_dependency_tooltip(dependencies);
-
     pop_tertiary_style();
-
     ImGui::Separator();
 
-    from();
-    draw_oscillator();
-    check_keyboard_input();
-    to();
-
-    ImGui::Columns(1);
-    ImGui::End();
+    return !oscillators.empty();
 }
+
+void GUIOscillatorsPanel::empty() {
+    ImGui::Text("No oscillator available.");
+}
+
 bool GUIOscillatorsPanel::is_index_valid() const {
     return oscillator_index >= 0 && oscillator_index < oscillators.size();
 }
@@ -82,7 +83,9 @@ void GUIOscillatorsPanel::from() {
 }
 
 void GUIOscillatorsPanel::to() const {
-    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || !is_index_valid()) {
+    if (!save &&
+        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
+         !is_index_valid())) {
         return;
     }
 
@@ -194,7 +197,7 @@ void GUIOscillatorsPanel::draw_oscillator_type() {
     ImGui::Text("Type");
     ImGui::NextColumn();
 
-    if (prepare_combo(generator_names, "##GeneratorCombo", current_oscillator.generator_index).value_changed) {
+    if (prepare_combo(this, generator_names, "##GeneratorCombo", current_oscillator.generator_index, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_GENERATOR_INDEX}).value_changed) {
         update_oscillator_name(oscillator_index, current_oscillator.generator_index);
         if (current_oscillator.generator_index == GENERATOR_WAVETABLE && wavetables.empty()) {
             song.add_wavetable();
@@ -208,13 +211,6 @@ void GUIOscillatorsPanel::draw_oscillator_type() {
 
 void GUIOscillatorsPanel::draw_oscillator() {
     ImGui::Text("Oscillator:");
-
-    if (oscillators.empty()) {
-        ImGui::Text("No oscillator available");
-        ImGui::Columns(1);
-        return;
-    }
-
     ImGui::Columns(2, "oscillator_columns", false);
     ImGui::SetColumnWidth(0, 150.0f);
     draw_oscillator_type();
@@ -226,22 +222,22 @@ void GUIOscillatorsPanel::draw_oscillator() {
     case Generator::Square: {
         ImGui::Text("Duty Cycle");
         ImGui::NextColumn();
-        draw_float_slider("##DutyCycle", current_oscillator.square_duty_cycle, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_SQUARE_DUTY_CYCLE}, 0.0f, 1.0f, GUIScale::Linear, "%.6f");
+        draw_float_slider(this, "##DutyCycle", current_oscillator.square_duty_cycle, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_SQUARE_DUTY_CYCLE}, 0.0f, 1.0f, GUIScale::Linear, "%.6f");
         break;
     }
     case Generator::Saw: {
-        draw_checkbox("Bypass", current_oscillator.saw_reverse, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_SAW_REVERSE});
+        draw_checkbox(this, "Bypass", current_oscillator.saw_reverse, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_SAW_REVERSE});
         break;
     }
     case Generator::Wavetable: {
         ImGui::Text("Wavetable");
         ImGui::NextColumn();
-        if (prepare_combo(wavetable_names, "##WavetableCombo", current_oscillator.wavetable_index, true).right_clicked) {
+        if (prepare_combo(this, wavetable_names, "##WavetableCombo", current_oscillator.wavetable_index, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_WAVETABLE_WAVETABLE_INDEX}, true).right_clicked) {
             gui.set_index(GUIElement::Wavetables, current_oscillator.wavetable_index);
         }
 
         ImGui::NextColumn();
-        draw_checkbox("Interpolation", current_oscillator.wavetable_interpolation, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_WAVETABLE_INTERPOLATION});
+        draw_checkbox(this, "Interpolation", current_oscillator.wavetable_interpolation, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_WAVETABLE_INTERPOLATION});
         break;
     }
     case Generator::Count:
@@ -251,9 +247,6 @@ void GUIOscillatorsPanel::draw_oscillator() {
     }
 
     ImGui::Columns(1);
-}
-
-void GUIOscillatorsPanel::check_keyboard_input() {
 }
 
 void GUIOscillatorsPanel::set_index(const int index) {

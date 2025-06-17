@@ -4,35 +4,38 @@
 #include "../utils.hpp"
 #include "dsps.hpp"
 
-GUIDSPsPanel::GUIDSPsPanel(const bool visible)
-    : GUIPanel(visible) {
-    from();
-    update();
+GUIDSPsPanel::GUIDSPsPanel(const bool visible, const bool windowed)
+    : GUIPanel("DSPs", visible, windowed) {
+    initialize();
+}
+
+GUIElement GUIDSPsPanel::get_element() const {
+    return GUIElement::DSPs;
 }
 
 void GUIDSPsPanel::draw() {
-    ImGui::Begin("DSPs");
-    ImGui::Columns(1, "dsp_columns");
+    draw_dsp();
+}
 
-    ImGui::BeginDisabled(gui.is_playing());
+bool GUIDSPsPanel::is_disabled() const {
+    return gui.is_playing();
+}
+
+bool GUIDSPsPanel::select_item() {
     std::vector<std::string> dependencies = song.find_dsp_dependencies(dsp_index);
     std::vector<std::pair<ItemType, uint8_t>> link_dependencies = link_manager.find_dependencies(Target::DSP, dsp_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies, link_dependencies);
-    prepare_combo(dsp_names, "##DSPCombo", dsp_index);
+    prepare_combo(this, dsp_names, "##DSPCombo", dsp_index);
     show_dependency_tooltip(dependencies);
     pop_tertiary_style();
-
     ImGui::Separator();
 
-    from();
-    draw_dsp();
-    check_keyboard_input();
-    to();
+    return !dsps.empty();
+}
 
-    ImGui::EndDisabled();
-    ImGui::Columns(1);
-    ImGui::End();
+void GUIDSPsPanel::empty() {
+    ImGui::Text("No DSP available.");
 }
 
 bool GUIDSPsPanel::is_index_valid() const {
@@ -88,7 +91,10 @@ void GUIDSPsPanel::from() {
 }
 
 void GUIDSPsPanel::to() const {
-    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || !is_index_valid() || gui.is_playing()) {
+    if (!save &&
+        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
+         !is_index_valid() ||
+         gui.is_playing())) {
         return;
     }
 
@@ -200,7 +206,7 @@ void GUIDSPsPanel::draw_dsp_type() {
     ImGui::Text("Type");
     ImGui::NextColumn();
 
-    if (prepare_combo(effect_names, "##GeneratorCombo", current_dsp.effect_index).value_changed) {
+    if (prepare_combo(this, effect_names, "##GeneratorCombo", current_dsp.effect_index, {Target::DSP, dsp_index, DSP_EFFECT_INDEX}).value_changed) {
         update_dsp_name(dsp_index, current_dsp.effect_index);
     }
 
@@ -208,47 +214,42 @@ void GUIDSPsPanel::draw_dsp_type() {
 }
 
 void GUIDSPsPanel::draw_dsp() {
-    if (dsps.empty()) {
-        ImGui::Text("No DSPs available.");
-        return;
-    }
-
     draw_dsp_type();
     ImGui::NextColumn();
     draw_effect();
     ImGui::NewLine();
 
-    draw_output(current_dsp.output_type, {Target::DSP, dsp_index, DSP_SPLITTER});
+    draw_output(this, current_dsp.output_type, {Target::DSP, dsp_index, DSP_SPLITTER});
 }
 
 void GUIDSPsPanel::draw_effect() {
-    ImGui::Checkbox("Bypass", &current_dsp.output_type.bypass);
+    draw_checkbox(this, "Bypass", current_dsp.output_type.bypass, {Target::SPECIAL, dsp_index, SPECIAL_DSP_BYPASS});
     ImGui::Separator();
 
     switch (static_cast<Effect>(current_dsp.effect_index)) {
     case Effect::Gainer: {
-        draw_knob("Gain", current_dsp.gainer_gain, {Target::DSP, dsp_index, DSP_GAINER_VOLUME}, 0.0f, 1.0f);
+        draw_knob(this, "Gain", current_dsp.gainer_gain, {Target::DSP, dsp_index, DSP_GAINER_VOLUME}, 0.0f, 1.0f);
         break;
     }
     case Effect::Distortion: {
-        draw_knob("Level", current_dsp.distortion_level, {Target::DSP, dsp_index, DSP_DISTORTION_LEVEL}, 0.0f, 1.0f);
+        draw_knob(this, "Level", current_dsp.distortion_level, {Target::DSP, dsp_index, DSP_DISTORTION_LEVEL}, 0.0f, 1.0f);
         ImGui::SameLine();
         break;
     }
     case Effect::Filter: {
-        draw_checkbox("High-pass", current_dsp.filter_mode, {Target::DSP, dsp_index, DSP_FILTER_MODE});
+        draw_checkbox(this, "High-pass", current_dsp.filter_mode, {Target::DSP, dsp_index, DSP_FILTER_MODE});
         ImGui::NewLine();
-        draw_knob("Frequency", current_dsp.filter_cutoff, {Target::DSP, dsp_index, DSP_FILTER_FREQUENCY}, 0.0f, 1.0f);
+        draw_knob(this, "Frequency", current_dsp.filter_cutoff, {Target::DSP, dsp_index, DSP_FILTER_FREQUENCY}, 0.0f, 1.0f);
         break;
     }
     case Effect::Delay: {
-        draw_knob("Dry", current_dsp.delay_dry, {Target::DSP, dsp_index, DSP_DELAY_DRY}, 0.0f, 1.0f);
+        draw_knob(this, "Dry", current_dsp.delay_dry, {Target::DSP, dsp_index, DSP_DELAY_DRY}, 0.0f, 1.0f);
         ImGui::SameLine();
-        draw_knob("Wet", current_dsp.delay_wet, {Target::DSP, dsp_index, DSP_DELAY_WET}, 0.0f, 1.0f);
+        draw_knob(this, "Wet", current_dsp.delay_wet, {Target::DSP, dsp_index, DSP_DELAY_WET}, 0.0f, 1.0f);
         ImGui::SameLine();
-        draw_knob("Feedback", current_dsp.delay_feedback, {Target::DSP, dsp_index, DSP_DELAY_FEEDBACK}, 0.0f, 1.0f);
+        draw_knob(this, "Feedback", current_dsp.delay_feedback, {Target::DSP, dsp_index, DSP_DELAY_FEEDBACK}, 0.0f, 1.0f);
         ImGui::SameLine();
-        draw_knob("Time", current_dsp.delay_time, {Target::DSP, dsp_index, DSP_DELAY_TIME}, 0.01f, 10.0f);
+        draw_knob(this, "Time", current_dsp.delay_time, {Target::DSP, dsp_index, DSP_DELAY_TIME}, 0.01f, 10.0f);
         break;
     }
     case Effect::Count:
@@ -256,9 +257,6 @@ void GUIDSPsPanel::draw_effect() {
         throw std::runtime_error("Unknown DSP type: " + std::to_string(current_dsp.effect_index));
     }
     }
-}
-
-void GUIDSPsPanel::check_keyboard_input() {
 }
 
 void GUIDSPsPanel::set_index(const int index) {

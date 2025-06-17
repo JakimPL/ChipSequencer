@@ -91,11 +91,18 @@ class GUI {
 
     void deselect_all_rows();
 
+    bool is_pattern_view_active() const;
+    bool is_commands_pattern_view_active() const;
+
+    int current_octave = GUI_DEFAULT_CURRENT_OCTAVE;
+    int jump_step = GUI_DEFAULT_JUMP_STEP;
+    int page_size = GUI_DEFAULT_PAGE_SIZE;
+
   private:
     AudioEngine *audio_engine;
 
-    GUIMenu menu;
-    GUIEditorPanel editor = GUIEditorPanel(true, current_octave, jump_step, page_size);
+    GUIMenu menu = GUIMenu(true, false);
+    GUIEditorPanel editor;
     GUIGeneralPanel general_panel;
     GUIChannelsPanel channels_panel;
     GUICommandsChannelsPanel commands_channels_panel;
@@ -115,10 +122,6 @@ class GUI {
     ImGuiIO *io;
     ImFont *font;
     bool done = false;
-
-    int current_octave = GUI_DEFAULT_CURRENT_OCTAVE;
-    int jump_step = GUI_DEFAULT_JUMP_STEP;
-    int page_size = GUI_DEFAULT_PAGE_SIZE;
 
     void update_all();
     void frame_all();

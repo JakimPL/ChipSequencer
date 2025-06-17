@@ -19,9 +19,11 @@ struct CommandsPattern {
     CommandsPattern();
     CommandsPattern(const uint8_t sequence_index);
 
+    size_t id = 0;
+    int starting_row = 0;
+    int current_row = -1;
     CommandSelection selection = CommandSelection::None;
     uint8_t sequence_index = -1;
-    int current_row = -1;
     int steps = 0;
     std::vector<std::string> commands = {};
     std::vector<std::string> values = {};

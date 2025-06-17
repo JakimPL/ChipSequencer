@@ -33,14 +33,17 @@ class GUIWavetablesPanel : public GUIPanel {
     std::vector<std::vector<float>> prepare_wave_to_save() const;
     void prepare_wave_from_load(Samples samples);
 
+    bool select_item() override;
+    void empty() override;
     void add() override;
     void duplicate() override;
     void remove() override;
     void draw() override;
-    void check_keyboard_input() override;
 
   public:
-    GUIWavetablesPanel(const bool visible = true);
+    GUIWavetablesPanel(const bool visible = true, const bool windowed = true);
+    GUIElement get_element() const override;
+
     void update();
     void set_index(const int index) override;
 

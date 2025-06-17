@@ -16,6 +16,7 @@ enum class Target : uint8_t {
     DSP,
     CHANNEL,
     COMMANDS_CHANNEL,
+    SPECIAL,
     COUNT,
 };
 

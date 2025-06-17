@@ -3,8 +3,8 @@
 #include <array>
 #include <cstdint>
 
-#include "../sizes.hpp"
 #include "../structures/oscillator.hpp"
+#include "../structures/sizes.hpp"
 
 template <typename... T>
 constexpr std::array<uint8_t, sizeof...(T)> make_oscillators_sizes(T... args) {

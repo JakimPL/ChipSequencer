@@ -4,6 +4,7 @@
 #include "structures/sequence.hpp"
 #include "structures/commands/sequence.hpp"
 #include "structures/commands/channel.hpp"
+#include "structures/offsets.hpp"
 #include "structures/order.hpp"
 #include "structures/oscillator.hpp"
 #include "structures/wavetable.hpp"

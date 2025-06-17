@@ -4,43 +4,34 @@
 #include "../utils.hpp"
 #include "envelopes.hpp"
 
-GUIEnvelopesPanel::GUIEnvelopesPanel(const bool visible)
-    : GUIPanel(visible) {
-    from();
-    update();
+GUIEnvelopesPanel::GUIEnvelopesPanel(const bool visible, const bool windowed)
+    : GUIPanel("Envelopes", visible, windowed) {
+    initialize();
+}
+
+GUIElement GUIEnvelopesPanel::get_element() const {
+    return GUIElement::Envelopes;
 }
 
 void GUIEnvelopesPanel::draw() {
-    ImGui::Begin("Envelopes");
+    draw_envelope();
+}
 
+bool GUIEnvelopesPanel::select_item() {
     std::vector<std::string> dependencies = song.find_envelope_dependencies(envelope_index);
     std::vector<std::pair<ItemType, uint8_t>> link_dependencies = link_manager.find_dependencies(Target::ENVELOPE, envelope_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies, link_dependencies);
-    prepare_combo(envelope_names, "##EnvelopeCombo", envelope_index);
+    prepare_combo(this, envelope_names, "##EnvelopeCombo", envelope_index);
     show_dependency_tooltip(dependencies);
     pop_tertiary_style();
-
     ImGui::Separator();
-    if (envelopes.empty()) {
-        ImGui::Text("No envelopes available.");
-        ImGui::End();
-        return;
-    }
 
-    from();
+    return !envelopes.empty();
+}
 
-    ImGui::Columns(2, "envelope_top_columns");
-    draw_levels();
-    ImGui::NextColumn();
-    draw_timers();
-
-    ImGui::Columns(1, "envelope_bottom_columns");
-    draw_envelope_graph();
-    check_keyboard_input();
-    to();
-
-    ImGui::End();
+void GUIEnvelopesPanel::empty() {
+    ImGui::Text("No envelope available.");
 }
 
 bool GUIEnvelopesPanel::is_index_valid() const {
@@ -102,7 +93,9 @@ void GUIEnvelopesPanel::gather_envelope_positions() {
 }
 
 void GUIEnvelopesPanel::to() const {
-    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || !is_index_valid()) {
+    if (!save &&
+        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
+         !is_index_valid())) {
         return;
     }
 
@@ -148,18 +141,28 @@ void GUIEnvelopesPanel::update() {
     gui.update(GUIElement::Channels);
 }
 
+void GUIEnvelopesPanel::draw_envelope() {
+    ImGui::Columns(2, "envelope_top_columns");
+    draw_levels();
+    ImGui::NextColumn();
+    draw_timers();
+
+    ImGui::Columns(1, "envelope_bottom_columns");
+    draw_envelope_graph();
+}
+
 void GUIEnvelopesPanel::draw_levels() {
     ImGui::Text("Levels");
-    draw_float_slider("Base Volume", current_envelope.base_volume, {Target::ENVELOPE, envelope_index, ENVELOPE_BASE_VOLUME}, 0.0f, 1.0f);
-    draw_float_slider("Sustain Level", current_envelope.sustain_level, {Target::ENVELOPE, envelope_index, ENVELOPE_SUSTAIN_LEVEL}, 0.0f, 1.0f);
+    draw_float_slider(this, "Base volume", current_envelope.base_volume, {Target::ENVELOPE, envelope_index, ENVELOPE_BASE_VOLUME}, 0.0f, 1.0f);
+    draw_float_slider(this, "Sustain level", current_envelope.sustain_level, {Target::ENVELOPE, envelope_index, ENVELOPE_SUSTAIN_LEVEL}, 0.0f, 1.0f);
 }
 
 void GUIEnvelopesPanel::draw_timers() {
     ImGui::Text("Timers");
-    draw_float_slider("Attack", current_envelope.attack, {Target::ENVELOPE, envelope_index, ENVELOPE_ATTACK}, 0.0f, GUI_ENVELOPE_MAX_TIMER, GUIScale::Quadratic);
-    draw_float_slider("Decay", current_envelope.decay, {Target::ENVELOPE, envelope_index, ENVELOPE_DECAY}, 0.0f, GUI_ENVELOPE_MAX_TIMER, GUIScale::Quadratic);
-    draw_float_slider("Hold", current_envelope.hold, {Target::ENVELOPE, envelope_index, ENVELOPE_HOLD}, 0.0f, GUI_ENVELOPE_MAX_TIMER, GUIScale::Quadratic);
-    draw_float_slider("Release", current_envelope.release, {Target::ENVELOPE, envelope_index, ENVELOPE_RELEASE}, 0.0f, GUI_ENVELOPE_MAX_TIMER, GUIScale::Quadratic);
+    draw_float_slider(this, "Attack", current_envelope.attack, {Target::ENVELOPE, envelope_index, ENVELOPE_ATTACK}, 0.0f, GUI_ENVELOPE_MAX_TIMER, GUIScale::Quadratic);
+    draw_float_slider(this, "Decay", current_envelope.decay, {Target::ENVELOPE, envelope_index, ENVELOPE_DECAY}, 0.0f, GUI_ENVELOPE_MAX_TIMER, GUIScale::Quadratic);
+    draw_float_slider(this, "Hold", current_envelope.hold, {Target::ENVELOPE, envelope_index, ENVELOPE_HOLD}, 0.0f, GUI_ENVELOPE_MAX_TIMER, GUIScale::Quadratic);
+    draw_float_slider(this, "Release", current_envelope.release, {Target::ENVELOPE, envelope_index, ENVELOPE_RELEASE}, 0.0f, GUI_ENVELOPE_MAX_TIMER, GUIScale::Quadratic);
 }
 
 void GUIEnvelopesPanel::draw_envelope_graph() {
@@ -249,9 +252,6 @@ void GUIEnvelopesPanel::draw_envelope_graph() {
         const float x = canvas_p0.x + size.x * (position / static_cast<float>(total_time));
         draw_list->AddLine(ImVec2(x, canvas_p0.y), ImVec2(x, canvas_p1.y), IM_COL32(255, 255, 0, 128), 1.0f);
     }
-}
-
-void GUIEnvelopesPanel::check_keyboard_input() {
 }
 
 void GUIEnvelopesPanel::set_index(const int index) {

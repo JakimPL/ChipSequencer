@@ -4,7 +4,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "init.hpp"
+#include "../init.hpp"
 
 enum class ShortcutAction {
     FileNew,
@@ -20,6 +20,10 @@ enum class ShortcutAction {
     SongStop,
     EditUndo,
     EditRedo,
+    EditDelete,
+    EditCut,
+    EditCopy,
+    EditPaste,
     PatternTransposeUp,
     PatternTransposeDown,
     PatternTransposeOctaveUp,
@@ -27,7 +31,6 @@ enum class ShortcutAction {
     PatternSelectAll,
     PatternSelectChannel,
     PatternSelectNone,
-    PatternClear,
 };
 
 struct Shortcut {
@@ -70,7 +73,11 @@ class ShortcutManager {
         {ShortcutAction::SongPlayPause, {false, false, false, ImGuiKey_Space}},
         {ShortcutAction::SongStop, {false, false, false, ImGuiKey_Escape}},
         {ShortcutAction::EditUndo, {true, false, false, ImGuiKey_Z}},
-        {ShortcutAction::EditRedo, {true, false, true, ImGuiKey_Z}},
+        {ShortcutAction::EditRedo, {true, true, false, ImGuiKey_Z}},
+        {ShortcutAction::EditDelete, {true, false, false, ImGuiKey_Delete}},
+        {ShortcutAction::EditCut, {true, false, false, ImGuiKey_X}},
+        {ShortcutAction::EditCopy, {true, false, false, ImGuiKey_C}},
+        {ShortcutAction::EditPaste, {true, false, false, ImGuiKey_V}},
         {ShortcutAction::PatternTransposeUp, {true, false, false, ImGuiKey_KeypadAdd}},
         {ShortcutAction::PatternTransposeDown, {true, false, false, ImGuiKey_KeypadSubtract}},
         {ShortcutAction::PatternTransposeOctaveUp, {true, true, false, ImGuiKey_KeypadAdd}},
@@ -78,6 +85,5 @@ class ShortcutManager {
         {ShortcutAction::PatternSelectAll, {true, false, false, ImGuiKey_A}},
         {ShortcutAction::PatternSelectChannel, {true, false, false, ImGuiKey_P}},
         {ShortcutAction::PatternSelectNone, {true, true, false, ImGuiKey_A}},
-        {ShortcutAction::PatternClear, {true, false, false, ImGuiKey_Delete}},
     };
 };

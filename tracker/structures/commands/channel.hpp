@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "../../sizes.hpp"
+#include "../../structures/sizes.hpp"
 
 struct CommandsChannel {
     uint8_t flag;

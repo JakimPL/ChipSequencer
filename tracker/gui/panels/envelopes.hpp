@@ -27,19 +27,23 @@ class GUIEnvelopesPanel : public GUIPanel {
     static uint16_t cast_to_int(float value, float scale = 1.0f);
 
     bool is_index_valid() const;
+    void draw_envelope();
     void draw_levels();
     void draw_timers();
     void draw_envelope_graph();
     void gather_envelope_positions();
 
+    bool select_item() override;
+    void empty() override;
     void add() override;
     void duplicate() override;
     void remove() override;
     void draw() override;
-    void check_keyboard_input() override;
 
   public:
-    GUIEnvelopesPanel(const bool visible = true);
+    GUIEnvelopesPanel(const bool visible = true, const bool windowed = true);
+    GUIElement get_element() const override;
+
     void update() override;
     void set_index(const int index) override;
 

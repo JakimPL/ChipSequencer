@@ -9,50 +9,93 @@
 #include "constants.hpp"
 #include "names.hpp"
 #include "utils.hpp"
+#include "history/actions/note.hpp"
+#include "history/actions/routing.hpp"
+#include "history/actions/sequence.hpp"
+#include "history/actions/text.hpp"
+#include "history/actions/value.hpp"
 #include "patterns/selection.hpp"
 
 int clamp_index(int index, const int size) {
     return std::clamp(index, 0, size - 1);
 }
 
-void draw_number_of_items(const std::string &label, const char *label_id, int &value, int min, int max, float label_length) {
+void draw_number_of_items(GUIPanel *owner, const std::string &label, const char *label_id, int &value, int min, int max, const LinkKey key, float label_length) {
+    const int old_value = value;
+
     ImGui::PushID(label_id);
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - label_length);
-    ImGui::InputInt("Items", &value, min, max);
+    const bool action = ImGui::InputInt("Items", &value, min, max);
     ImGui::PopID();
+
     value = std::clamp(value, min, max);
+    if (action) {
+        perform_action(owner, key, value, old_value);
+    }
 }
 
-void draw_checkbox(const char *label, bool &reference, const LinkKey key) {
+template <size_t n>
+void draw_text(GUIPanel *owner, const char *label, char (&text)[n], const LinkKey key) {
     ImGui::BeginDisabled(link_manager.is_linked(key));
 
+    const std::string old_value = text;
+
     ImGui::PushID(label);
-    ImGui::Checkbox(label, &reference);
+    if (ImGui::InputText(label, text, IM_ARRAYSIZE(text))) {
+        perform_action_string<n>(owner, key, text, old_value);
+    }
     draw_link_tooltip(key);
     ImGui::PopID();
     ImGui::EndDisabled();
 }
 
-void draw_int_slider(const char *label, int &reference, const LinkKey key, int min, int max) {
+void draw_checkbox(GUIPanel *owner, const char *label, bool &reference, const LinkKey key) {
     ImGui::BeginDisabled(link_manager.is_linked(key));
+
+    const bool old_value = reference;
+
+    ImGui::PushID(label);
+    const bool action = ImGui::Checkbox(label, &reference);
+
+    draw_link_tooltip(key);
+    ImGui::PopID();
+    ImGui::EndDisabled();
+
+    if (action) {
+        perform_action(owner, key, reference, old_value);
+    }
+}
+
+void draw_int_slider(GUIPanel *owner, const char *label, int &reference, const LinkKey key, int min, int max) {
+    ImGui::BeginDisabled(link_manager.is_linked(key));
+
+    const int old_value = reference;
 
     const std::string slider_id = std::string("##") + label + "Slider";
     const std::string input_id = std::string("##") + label + "Input";
     ImGui::PushID(label);
-    ImGui::SliderInt(slider_id.c_str(), &reference, min, max, label);
+    bool action = ImGui::SliderInt(slider_id.c_str(), &reference, min, max, label);
     draw_link_tooltip(key);
+
     ImGui::SameLine();
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-    ImGui::InputInt(input_id.c_str(), &reference, 0, 0);
+    action |= ImGui::InputInt(input_id.c_str(), &reference, 0, 0);
     draw_link_tooltip(key);
+
     ImGui::PopID();
     ImGui::EndDisabled();
 
     reference = std::clamp(reference, min, max);
+    if (action) {
+        perform_action(owner, key, reference, old_value);
+    }
 }
 
-void draw_float_slider(const char *label, float &reference, const LinkKey key, float min, float max, const GUIScale scale, const char *format) {
+void draw_float_slider(GUIPanel *owner, const char *label, float &reference, const LinkKey key, float min, float max, const GUIScale scale, const char *format) {
     ImGui::BeginDisabled(link_manager.is_linked(key));
+
+    const float old_value = reference;
+    bool action = false;
 
     const std::string slider_id = std::string("##") + label + "Slider";
     const std::string input_id = std::string("##") + label + "Input";
@@ -77,6 +120,7 @@ void draw_float_slider(const char *label, float &reference, const LinkKey key, f
 
     const bool non_linear_scale = scale != GUIScale::Linear;
     if (ImGui::SliderFloat(slider_id.c_str(), &display_value, non_linear_scale ? 0.0f : min, non_linear_scale ? 1.0f : max, label)) {
+        action = true;
         switch (scale) {
         case GUIScale::Logarithmic: {
             reference = min * std::pow(max / min, display_value);
@@ -97,24 +141,37 @@ void draw_float_slider(const char *label, float &reference, const LinkKey key, f
     draw_link_tooltip(key);
     ImGui::SameLine();
     ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-    ImGui::InputFloat(input_id.c_str(), &reference, 0.0f, 0.0f, format);
+    if (ImGui::InputFloat(input_id.c_str(), &reference, 0.0f, 0.0f, format)) {
+        action = true;
+    }
+
     draw_link_tooltip(key);
     ImGui::PopID();
     ImGui::EndDisabled();
 
     reference = std::clamp(reference, min, max);
+    if (action) {
+        perform_action_float(owner, key, reference, old_value, format);
+    }
 }
 
-void draw_knob(const char *label, float &reference, const LinkKey key, float min, float max) {
+void draw_knob(GUIPanel *owner, const char *label, float &reference, const LinkKey key, float min, float max) {
     ImGui::BeginDisabled(link_manager.is_linked(key));
+
+    const float old_value = reference;
+    bool action = false;
+
     ImGui::PushID(label);
-    ImGuiKnobs::Knob(label, &reference, min, max);
+    action = ImGuiKnobs::Knob(label, &reference, min, max);
     draw_link_tooltip(key);
     ImGui::SameLine();
     ImGui::PopID();
     ImGui::EndDisabled();
 
     reference = std::clamp(reference, min, max);
+    if (action) {
+        perform_action_float(owner, key, reference, old_value);
+    }
 }
 
 void draw_link_tooltip(const LinkKey &key) {
@@ -235,7 +292,7 @@ bool draw_button(const char *label, const float button_padding) {
 std::pair<size_t, bool> draw_pattern(
     Pattern &pattern,
     PatternSelection &selection,
-    PatternRows &selected_rows,
+    SequenceRows &selected_rows,
     const bool pattern_view,
     const size_t channel_index,
     const bool header,
@@ -269,7 +326,7 @@ std::pair<size_t, bool> draw_pattern(
             const int j = i + index;
             const bool is_current = (pattern.current_row == i);
             const bool is_selected = !selection.command && selection.is_row_selected(channel_index, j);
-            const bool is_secondary_selected = !selection.command && selected_rows.count({channel_index, pattern.sequence_index, i}) > 0;
+            const bool is_secondary_selected = !selection.command && selected_rows.count({pattern.sequence_index, i}) > 0;
 
             ImGui::TableNextRow();
             if (playing_row == j) {
@@ -316,7 +373,7 @@ std::pair<size_t, bool> draw_pattern(
             draw_menu_item("Transpose octave +1", ShortcutAction::PatternTransposeOctaveUp);
             draw_menu_item("Transpose octave -1", ShortcutAction::PatternTransposeOctaveDown);
             ImGui::Separator();
-            draw_menu_item("Delete", ShortcutAction::PatternClear);
+            draw_menu_item("Delete", ShortcutAction::EditDelete);
             ImGui::EndPopup();
         }
 
@@ -332,7 +389,7 @@ std::pair<size_t, bool> draw_pattern(
 std::pair<size_t, bool> draw_commands_pattern(
     CommandsPattern &pattern,
     PatternSelection &selection,
-    PatternRows &selected_rows,
+    SequenceRows &selected_rows,
     const bool pattern_view,
     const size_t channel_index,
     const bool header,
@@ -367,7 +424,7 @@ std::pair<size_t, bool> draw_commands_pattern(
             const bool is_command_current = (pattern.current_row == i && pattern.selection == CommandSelection::Command);
             const bool is_value_current = (pattern.current_row == i && pattern.selection == CommandSelection::Value);
             const bool is_selected = selection.command && selection.is_row_selected(channel_index, j);
-            const bool is_secondary_selected = selection.command && selected_rows.count({channel_index, pattern.sequence_index, i}) > 0;
+            const bool is_secondary_selected = selection.command && selected_rows.count({pattern.sequence_index, i}) > 0;
 
             ImGui::TableNextRow();
             if (playing_row == j) {
@@ -448,7 +505,7 @@ std::pair<size_t, bool> draw_commands_pattern(
             }
             draw_menu_item("Clear selection", ShortcutAction::PatternSelectNone);
             ImGui::Separator();
-            draw_menu_item("Delete", ShortcutAction::PatternClear);
+            draw_menu_item("Delete", ShortcutAction::EditDelete);
             ImGui::EndPopup();
         }
 
@@ -462,24 +519,24 @@ std::pair<size_t, bool> draw_commands_pattern(
     return {index + pattern.commands.size(), current};
 }
 
-void draw_output_output_splitter(OutputType &output_type, const LinkKey key) {
+void draw_output_output_splitter(GUIPanel *owner, OutputType &output_type, const LinkKey key) {
     const size_t output_channels = song.get_output_channels();
     ImGui::Text("Splitter:");
     for (size_t i = 0; i < output_channels; ++i) {
         const LinkKey splitter_key = {key.target, key.index, static_cast<uint16_t>(key.offset + i)};
         const std::string label = "Channel " + std::to_string(i);
-        draw_float_slider(label.c_str(), output_type.splitter[i], splitter_key, 0.0f, 1.0f);
+        draw_float_slider(owner, label.c_str(), output_type.splitter[i], splitter_key, 0.0f, 1.0f);
     }
 }
 
-void draw_output_dsp_splitter(OutputType &output_type, const int dsp_index, const LinkKey key) {
+void draw_output_dsp_splitter(GUIPanel *owner, OutputType &output_type, const int dsp_index, const LinkKey key) {
     if (dsps.empty() || dsp_index >= static_cast<int>(dsps.size()) - 1) {
         ImGui::Text("No DSP available.");
         return;
     }
 
     ImGui::Text("Initial DSP:");
-    draw_int_slider("DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
+    draw_int_slider(owner, "DSP", output_type.dsp_channel, {Target::SPECIAL, dsp_index, SPECIAL_DSP_INDEX}, dsp_index + 1, dsps.size() - 1);
     ImGui::Text("Splitter:");
     int start = output_type.dsp_channel;
     int end = start + std::clamp(static_cast<int>(dsps.size()) - start, 0, MAX_OUTPUT_CHANNELS);
@@ -487,31 +544,31 @@ void draw_output_dsp_splitter(OutputType &output_type, const int dsp_index, cons
         const size_t j = i - output_type.dsp_channel;
         const std::string label = dsp_names[i];
         const LinkKey splitter_key = {key.target, key.index, static_cast<uint16_t>(key.offset + j)};
-        draw_float_slider(label.c_str(), output_type.splitter[j], splitter_key, 0.0f, 1.0f);
+        draw_float_slider(owner, label.c_str(), output_type.splitter[j], splitter_key, 0.0f, 1.0f);
     }
 }
 
-void draw_output_direct_output(OutputType &output_type, const LinkKey key) {
+void draw_output_direct_output(GUIPanel *owner, OutputType &output_type, const LinkKey key) {
     const size_t output_channels = song.get_output_channels();
-    draw_int_slider("Channel", output_type.output_channel, {}, 0, output_channels - 1);
+    draw_int_slider(owner, "Channel", output_type.output_channel, {Target::SPECIAL, key.index, SPECIAL_CHANNEL_INDEX}, 0, output_channels - 1);
 }
 
-void draw_output_direct_dsp(OutputType &output_type, const int dsp_index, const LinkKey key) {
+void draw_output_direct_dsp(GUIPanel *owner, OutputType &output_type, const int dsp_index, const LinkKey key) {
     if (dsps.empty() || dsp_index >= static_cast<int>(dsps.size()) - 1) {
         ImGui::Text("No DSP available.");
         return;
     }
 
-    draw_int_slider("DSP", output_type.dsp_channel, {}, dsp_index + 1, dsps.size() - 1);
+    draw_int_slider(owner, "DSP", output_type.dsp_channel, {Target::SPECIAL, dsp_index, SPECIAL_DSP_INDEX}, dsp_index + 1, dsps.size() - 1);
 }
 
-bool draw_output_parameter(OutputType &output_type, const LinkKey key) {
+bool draw_output_parameter(GUIPanel *owner, OutputType &output_type, const LinkKey key) {
     ImGui::Separator();
-    bool value_changed = prepare_combo(parameter_types, "##OutputParameterCombo", output_type.parameter_type).value_changed;
+    bool value_changed = prepare_combo(owner, parameter_types, "##OutputParameterCombo", output_type.parameter_type).value_changed;
     output_type.target = output_type.parameter_type + static_cast<int>(OutputTarget::Parameter);
     switch (static_cast<Target>(output_type.target)) {
     case Target::ENVELOPE: {
-        draw_output_parameter_generic(output_type, envelope_names, "Envelope");
+        draw_output_parameter_generic(owner, output_type, envelope_names, "Envelope");
         break;
     }
     case Target::SEQUENCE:
@@ -523,21 +580,22 @@ bool draw_output_parameter(OutputType &output_type, const LinkKey key) {
         break;
     }
     case Target::OSCILLATOR: {
-        draw_output_parameter_oscillator(output_type);
+        draw_output_parameter_oscillator(owner, output_type);
         break;
     }
     case Target::DSP: {
-        draw_output_parameter_dsp(output_type);
+        draw_output_parameter_dsp(owner, output_type);
         break;
     }
     case Target::CHANNEL: {
-        draw_output_parameter_generic(output_type, channel_names, "Channel");
+        draw_output_parameter_generic(owner, output_type, channel_names, "Channel");
         break;
     }
     case Target::SPLITTER_OUTPUT:
     case Target::SPLITTER_DSP:
     case Target::DIRECT_OUTPUT:
     case Target::DIRECT_DSP:
+    case Target::SPECIAL:
     case Target::COUNT:
     default: {
         throw std::runtime_error("Invalid target type: " + std::to_string(output_type.target));
@@ -547,7 +605,7 @@ bool draw_output_parameter(OutputType &output_type, const LinkKey key) {
     return value_changed;
 }
 
-void draw_output_parameter_generic(OutputType &output_type, const std::vector<std::string> &names, const std::string label) {
+void draw_output_parameter_generic(GUIPanel *owner, OutputType &output_type, const std::vector<std::string> &names, const std::string label) {
     if (names.empty()) {
         const std::string text = "No " + to_lower(label) + "s available.";
         ImGui::Text("%s", text.c_str());
@@ -558,11 +616,11 @@ void draw_output_parameter_generic(OutputType &output_type, const std::vector<st
     const RoutingItems &routing = routing_variables.at(target);
     int &item = output_type.routing_item;
 
-    if (prepare_combo(names, "##OutputParameter" + label + "Combo", output_type.index, true).value_changed) {
+    if (prepare_combo(owner, names, "##OutputParameter" + label + "Combo", output_type.index, {Target::SPECIAL, 0, SPECIAL_OUTPUT_PARAMETER_INDEX}, true).value_changed) {
         item = 0;
     }
 
-    prepare_combo(routing.labels, "##OutputParameter" + label + "ParameterCombo", item);
+    prepare_combo(owner, routing.labels, "##OutputParameter" + label + "ParameterCombo", item, {Target::SPECIAL, 0, SPECIAL_OUTPUT_ROUTING_ITEM});
     if (item >= routing.labels.size()) {
         item = 0;
     }
@@ -572,7 +630,7 @@ void draw_output_parameter_generic(OutputType &output_type, const std::vector<st
     output_type.variable_type = static_cast<int>(routing.types[item]);
 }
 
-void draw_output_parameter_oscillator(OutputType &output_type) {
+void draw_output_parameter_oscillator(GUIPanel *owner, OutputType &output_type) {
     if (oscillators.empty()) {
         ImGui::Text("No oscillator available.");
         return;
@@ -581,7 +639,7 @@ void draw_output_parameter_oscillator(OutputType &output_type) {
     const RoutingItems &routing = routing_variables.at(Target::OSCILLATOR);
     int &item = output_type.routing_item;
 
-    if (prepare_combo(oscillator_names, "##OutputParameterOscillatorCombo", output_type.index, true).value_changed) {
+    if (prepare_combo(owner, oscillator_names, "##OutputParameterOscillatorCombo", output_type.index, {Target::SPECIAL, 0, SPECIAL_OUTPUT_PARAMETER_INDEX}, true).value_changed) {
         item = 0;
     }
 
@@ -593,7 +651,7 @@ void draw_output_parameter_oscillator(OutputType &output_type) {
         return;
     }
 
-    prepare_combo(labels, "##OutputParameterOscillatorParameterCombo", item);
+    prepare_combo(owner, labels, "##OutputParameterOscillatorParameterCombo", item, {Target::SPECIAL, 0, SPECIAL_OUTPUT_ROUTING_ITEM});
     if (item >= labels.size()) {
         item = 0;
     }
@@ -603,7 +661,7 @@ void draw_output_parameter_oscillator(OutputType &output_type) {
     output_type.variable_type = static_cast<int>(routing.types[output_type.routing_index]);
 }
 
-void draw_output_parameter_dsp(OutputType &output_type) {
+void draw_output_parameter_dsp(GUIPanel *owner, OutputType &output_type) {
     if (dsps.empty()) {
         ImGui::Text("No DPS available.");
         return;
@@ -612,7 +670,7 @@ void draw_output_parameter_dsp(OutputType &output_type) {
     const RoutingItems &routing = routing_variables.at(Target::DSP);
     int &item = output_type.routing_item;
 
-    if (prepare_combo(dsp_names, "##OutputParameterDSPCombo", output_type.index, true).value_changed) {
+    if (prepare_combo(owner, dsp_names, "##OutputParameterDSPCombo", output_type.index, {Target::SPECIAL, 0, SPECIAL_OUTPUT_PARAMETER_INDEX}, true).value_changed) {
         item = 0;
     }
 
@@ -625,7 +683,7 @@ void draw_output_parameter_dsp(OutputType &output_type) {
         return;
     }
 
-    prepare_combo(labels, "##OutputParameterDSPParameterCombo", item);
+    prepare_combo(owner, labels, "##OutputParameterDSPParameterCombo", item, {Target::SPECIAL, 0, SPECIAL_OUTPUT_ROUTING_ITEM});
     if (item >= labels.size()) {
         item = 0;
     }
@@ -635,16 +693,16 @@ void draw_output_parameter_dsp(OutputType &output_type) {
     output_type.variable_type = static_cast<int>(routing.types[output_type.routing_index]);
 }
 
-bool draw_output(OutputType &output_type, const LinkKey key) {
+bool draw_output(GUIPanel *owner, OutputType &output_type, const LinkKey key) {
     push_secondary_style();
     ImGui::Separator();
     ImGui::Text("Output:");
-    bool value_changed = prepare_combo(target_types, "##OutputTargetCombo", output_type.target).value_changed;
+    bool value_changed = prepare_combo(owner, target_types, "##OutputTargetCombo", output_type.target, {Target::SPECIAL, 0, SPECIAL_OUTPUT_TARGET}).value_changed;
     const int dsp_index = key.target == Target::DSP ? key.index : -1;
 
     switch (static_cast<OutputTarget>(output_type.target)) {
     case OutputTarget::OutputSplitter: {
-        draw_output_output_splitter(output_type, key);
+        draw_output_output_splitter(owner, output_type, key);
 
         if (value_changed) {
             output_type.operation = static_cast<int>(OutputOperation::Add);
@@ -653,7 +711,7 @@ bool draw_output(OutputType &output_type, const LinkKey key) {
         break;
     }
     case OutputTarget::DSPSplitter: {
-        draw_output_dsp_splitter(output_type, dsp_index, key);
+        draw_output_dsp_splitter(owner, output_type, dsp_index, key);
 
         if (value_changed) {
             output_type.operation = static_cast<int>(OutputOperation::Add);
@@ -662,7 +720,7 @@ bool draw_output(OutputType &output_type, const LinkKey key) {
         break;
     }
     case OutputTarget::DirectOutput: {
-        draw_output_direct_output(output_type, key);
+        draw_output_direct_output(owner, output_type, key);
 
         if (value_changed) {
             output_type.operation = static_cast<int>(OutputOperation::Add);
@@ -671,7 +729,7 @@ bool draw_output(OutputType &output_type, const LinkKey key) {
         break;
     }
     case OutputTarget::DirectDSP: {
-        draw_output_direct_dsp(output_type, dsp_index, key);
+        draw_output_direct_dsp(owner, output_type, dsp_index, key);
 
         if (value_changed) {
             output_type.operation = static_cast<int>(OutputOperation::Add);
@@ -680,7 +738,7 @@ bool draw_output(OutputType &output_type, const LinkKey key) {
         break;
     }
     case OutputTarget::Parameter: {
-        value_changed |= draw_output_parameter(output_type, key);
+        value_changed |= draw_output_parameter(owner, output_type, key);
 
         if (value_changed) {
             output_type.operation = static_cast<int>(OutputOperation::Set);
@@ -692,11 +750,11 @@ bool draw_output(OutputType &output_type, const LinkKey key) {
 
     ImGui::Separator();
     ImGui::Text("Operation:");
-    prepare_combo(operation_names, "##OutputTypeOperation", output_type.operation);
+    prepare_combo(owner, operation_names, "##OutputTypeOperation", output_type.operation, {Target::SPECIAL, key.index, SPECIAL_OPERATION_TYPE});
     ImGui::Text("Variable:");
-    prepare_combo(variable_types, "##OutputTypeCombo", output_type.variable_type);
+    prepare_combo(owner, variable_types, "##OutputTypeCombo", output_type.variable_type, {Target::SPECIAL, key.index, SPECIAL_VARIABLE_TYPE});
     ImGui::BeginDisabled(output_type.variable_type == 0);
-    draw_int_slider("Shift", output_type.shift, {}, 0, 15);
+    draw_int_slider(owner, "Shift", output_type.shift, {Target::SPECIAL, key.index, SPECIAL_SHIFT}, 0, 15);
     ImGui::EndDisabled();
     pop_secondary_style();
 
@@ -802,7 +860,7 @@ bool get_menu_item(const std::string &name, const std::optional<ShortcutAction> 
     return ImGui::MenuItem(name.c_str(), nullptr, checked);
 }
 
-GUIState prepare_combo(const std::vector<std::string> &names, std::string label, int &index, const bool error_if_empty) {
+GUIState prepare_combo(GUIPanel *owner, const std::vector<std::string> &names, std::string label, int &index, const LinkKey key, const bool error_if_empty) {
     std::vector<const char *> names_cstr;
     for (const auto &name : names) {
         names_cstr.push_back(name.c_str());
@@ -816,6 +874,7 @@ GUIState prepare_combo(const std::vector<std::string> &names, std::string label,
         ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.0f);
     }
 
+    const int old_value = index;
     const bool value_changed = ImGui::Combo(label.c_str(), &index, names_cstr.data(), names_cstr.size());
     const bool right_clicked = ImGui::IsItemClicked(ImGuiMouseButton_Right);
 
@@ -824,6 +883,7 @@ GUIState prepare_combo(const std::vector<std::string> &names, std::string label,
         ImGui::PopStyleColor();
     }
 
+    perform_action(owner, key, index, old_value);
     return {value_changed, right_clicked};
 }
 
@@ -880,27 +940,111 @@ void pop_tertiary_style() {
     ImGui::PopStyleColor(13);
 }
 
-std::string get_note_name(uint8_t note_value) {
-    if (note_value == NOTE_REST) return "...";
-    if (note_value == NOTE_OFF) return "===";
-    if (note_value < NOTES) {
-        return frequency_table.get_note_name(note_value);
+template <typename T>
+void perform_action(
+    GUIPanel *owner,
+    const LinkKey key,
+    T &reference,
+    const T old_value
+) {
+    if (old_value != reference) {
+        const std::string label = get_key_name(key);
+        const auto value_change = ValueChange<T>(reference, old_value);
+        history_manager.add_action(
+            std::make_unique<ChangeValueAction<T>>(label, owner, key, value_change)
+        );
     }
-    return "???";
 }
 
-std::string get_note_octave(uint8_t note_value) {
-    if (note_value == NOTE_REST) return "...";
-    if (note_value == NOTE_OFF) return "===";
-    if (note_value < NOTES) {
-        return std::to_string(frequency_table.get_note_octave(note_value));
+void perform_action_float(
+    GUIPanel *owner,
+    const LinkKey key,
+    float &reference,
+    const float old_value,
+    const char *format
+) {
+    std::string old_value_string = convert_double_to_string(old_value, format);
+    std::string new_value_string = convert_double_to_string(reference, format);
+
+    if (old_value != reference && old_value_string != new_value_string) {
+        const std::string label = get_key_name(key);
+        const auto value_change = ValueChange<float>(reference, old_value);
+        history_manager.add_action(
+            std::make_unique<ChangeValueAction<float>>(label, owner, key, value_change)
+        );
     }
-    return 0;
 }
 
-uint8_t get_note_value(const std::string &note_name, const int octave) {
-    if (note_name == "...") return NOTE_REST;
-    if (note_name == "===") return NOTE_OFF;
-    if (note_name == "???") return NOTES;
-    return frequency_table.get_note_value(note_name, octave);
+void perform_action_routing(
+    GUIPanel *owner,
+    const LinkKey key,
+    const InputKey &input_key,
+    const LinkKey &new_value,
+    const LinkKey &old_value
+) {
+    if (old_value != new_value) {
+        std::string label = key.target == Target::CHANNEL ? "Channel " : "DSP ";
+        label += std::to_string(key.index);
+        const auto value_change = RoutingChange(input_key, old_value, new_value);
+        history_manager.add_action(
+            std::make_unique<ChangeRoutingAction>(label, owner, key, value_change)
+        );
+    }
+}
+
+void perform_action_order_sequence(
+    GUIPanel *owner,
+    const LinkKey key,
+    const size_t sequence_index,
+    const size_t old_sequence,
+    const size_t new_sequence
+) {
+    if (old_sequence != new_sequence) {
+        const std::string label = "Order " + std::to_string(key.index);
+        const OrderSequenceChange value_change = {sequence_index, old_sequence, new_sequence};
+        history_manager.add_action(
+            std::make_unique<ChangeOrderSequenceAction>(label, owner, key, value_change)
+        );
+    }
+}
+
+template <size_t n>
+void perform_action_string(
+    GUIPanel *owner,
+    const LinkKey key,
+    char (&buffer)[n],
+    const std::string &old_value
+) {
+    const std::string new_value = buffer;
+    if (old_value != new_value) {
+        std::string label = get_key_name(key);
+        const auto value_change = TextChange<n>(buffer, old_value, new_value);
+        history_manager.add_action(
+            std::make_unique<ChangeTextAction<n>>(label, owner, key, value_change)
+        );
+    }
+}
+
+template void draw_text<GUI_MAX_STRING_LENGTH>(GUIPanel *owner, const char *label, char (&text)[GUI_MAX_STRING_LENGTH], const LinkKey key);
+template void perform_action_string<GUI_MAX_STRING_LENGTH>(
+    GUIPanel *owner,
+    const LinkKey key,
+    char (&buffer)[GUI_MAX_STRING_LENGTH],
+    const std::string &old_value
+);
+
+void perform_action_note(
+    GUIPanel *owner,
+    const LinkKey key,
+    const PatternRow pattern_row,
+    const uint8_t old_note,
+    const uint8_t new_note
+) {
+    if (old_note != new_note) {
+        const std::string label = "Sequence " + std::to_string(key.index);
+        const NoteChange value_change = {pattern_row, old_note, new_note};
+        history_manager.add_action(
+            std::make_unique<ChangeNoteAction>(label, owner, key, value_change)
+        );
+    }
 }

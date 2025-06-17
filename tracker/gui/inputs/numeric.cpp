@@ -30,8 +30,10 @@ bool NumericInputHandler::handle_input(std::vector<int> &vector, int &index) {
     }
 
     if (ImGui::IsKeyPressed(ImGuiKey_KeypadAdd)) {
+        buffer = std::to_string(vector[index]);
         assign_value(vector, index, 1);
     } else if (ImGui::IsKeyPressed(ImGuiKey_KeypadSubtract)) {
+        buffer = std::to_string(vector[index]);
         assign_value(vector, index, -1);
     } else {
         assign_value(vector, index);

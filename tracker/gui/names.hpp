@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <map>
 #include <string>
 #include <vector>
@@ -40,6 +41,7 @@ const std::map<Target, std::string> target_names = {
     {Target::DSP, "DSP"},
     {Target::CHANNEL, "Channel"},
     {Target::COMMANDS_CHANNEL, "Commands channel"},
+    {Target::SPECIAL, "Special"},
     {Target::COUNT, "Unused"},
 };
 const std::map<ItemType, std::string> item_types_names = {
@@ -51,14 +53,14 @@ const std::vector<std::pair<GUIElement, const char *>> menu_items = {
     {GUIElement::Editor, "Editor"},
     {GUIElement::General, "General"},
     {GUIElement::Channels, "Channels"},
-    {GUIElement::CommandsChannel, "Commands channel"},
-    {GUIElement::CommandsSequence, "Commands sequence"},
+    {GUIElement::CommandsChannels, "Commands channel"},
+    {GUIElement::CommandsSequences, "Commands sequence"},
     {GUIElement::DSPs, "DSPs"},
     {GUIElement::Envelopes, "Envelopes"},
     {GUIElement::Orders, "Orders"},
     {GUIElement::Oscillators, "Oscillators"},
     {GUIElement::Patterns, "Patterns"},
-    {GUIElement::Routing, "Routing"},
+    {GUIElement::Routings, "Routing"},
     {GUIElement::Sequences, "Sequences"},
     {GUIElement::Summary, "Summary"},
     {GUIElement::Wavetables, "Wavetables"},
@@ -88,3 +90,8 @@ const std::map<Instruction, const char *> simple_instruction_names = {
     {Instruction::SetDivision, "Set division"},
     {Instruction::ChangeByteValue, "Change value"},
 };
+
+std::string get_note_name(const uint8_t note_value);
+std::string get_note_octave(const uint8_t note_value);
+uint8_t get_note_value(const std::string &note_name, const int octave);
+std::string get_full_note_name(const uint8_t note_value);

@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "../constants.hpp"
-#include "../sizes.hpp"
+#include "../structures/sizes.hpp"
 
 enum class Effect : uint8_t {
     Gainer = EFFECT_GAINER,

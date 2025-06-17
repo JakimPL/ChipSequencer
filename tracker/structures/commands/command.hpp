@@ -6,7 +6,7 @@
 #include <fstream>
 
 #include "../../constants.hpp"
-#include "../../sizes.hpp"
+#include "../../structures/sizes.hpp"
 #include "../../song/links/target.hpp"
 
 enum class Instruction : uint8_t {

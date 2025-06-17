@@ -1,8 +1,16 @@
+
 #include "../names.hpp"
+#include "../history/actions/action.hpp"
 #include "panel.hpp"
 
-GUIPanel::GUIPanel(const bool visible)
-    : visible(visible) {
+GUIPanel::GUIPanel(
+    const std::string label,
+    const bool visible,
+    const bool windowed
+)
+    : label(label),
+      visible(visible),
+      windowed(windowed) {
 }
 
 void GUIPanel::draw_add_or_remove(
@@ -89,7 +97,65 @@ void GUIPanel::draw_add_or_remove(
 }
 
 void GUIPanel::frame() {
-    if (visible) {
-        draw();
+    if (!visible) {
+        return;
     }
+
+    if (windowed) {
+        ImGui::Begin(label.c_str());
+    }
+
+    ImGui::BeginDisabled(is_disabled());
+
+    if (select_item()) {
+        from();
+        pre_actions();
+        draw();
+        shortcut_actions();
+        check_keyboard_input();
+        draw_dialog_box();
+        to();
+        history_actions();
+        post_actions();
+    } else {
+        empty();
+    }
+
+    ImGui::EndDisabled();
+
+    if (windowed) {
+        ImGui::End();
+    }
+}
+
+void GUIPanel::add_action(Action *action, const bool undo) {
+    if (action != nullptr) {
+        pending_actions.emplace_back(action, undo);
+    }
+}
+
+void GUIPanel::initialize() {
+    from();
+    update();
+    register_shortcuts();
+}
+
+void GUIPanel::history_actions() {
+    if (pending_actions.empty()) {
+        return;
+    }
+
+    save = true;
+    for (const auto &[action, undo] : pending_actions) {
+        const int index = action->key.index;
+        set_index(index);
+        from();
+        if (undo) {
+            action->undo();
+        } else {
+            action->redo();
+        }
+        to();
+    }
+    pending_actions.clear();
 }

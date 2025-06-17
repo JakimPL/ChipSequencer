@@ -7,8 +7,8 @@
 #include "miniz-cpp/zip_file.hpp"
 
 #include "../general.hpp"
-#include "../sizes.hpp"
 #include "../gui/names.hpp"
+#include "../structures/sizes.hpp"
 #include "../utils/file.hpp"
 #include "../utils/temp.hpp"
 #include "core.hpp"

@@ -112,15 +112,31 @@ void Pattern::jump(const int max_row) {
     current_row = std::min(current_row + gui.get_jump_step(), max - 1);
 }
 
-void Pattern::set_note(const int note_index, const int edo, const int max_row) {
+void Pattern::insert_note(const int note_index, const int edo, const int max_row) {
     const int a4_index = frequency_table.get_a4_index();
     const int note = note_index + a4_index + edo * (gui.get_current_octave() - 5);
+    set_note(current_row, note);
+    jump(max_row);
+}
+
+int Pattern::get_note(const int row) const {
+    if (!is_row_valid(row)) {
+        return NOTES;
+    }
+
+    return notes[row];
+}
+
+void Pattern::set_note(const int row, const int note) {
+    if (!is_row_valid(row)) {
+        return;
+    }
+
     if (note < 0 || note >= NOTES) {
         return;
     }
 
-    notes[current_row] = note;
-    jump(max_row);
+    notes[row] = static_cast<uint8_t>(note);
 }
 
 void Pattern::transpose(const int value, std::optional<int> row) {
@@ -151,14 +167,14 @@ void Pattern::handle_input(const int min_row, const int max_row) {
         if (edo == DEFAULT_EDO) {
             for (const auto &m : key_note_12_edo_mapping) {
                 if (ImGui::IsKeyPressed(m.key)) {
-                    set_note(m.note_index, edo, max_row);
+                    insert_note(m.note_index, edo, max_row);
                     break;
                 }
             }
         } else {
             for (const auto &m : key_note_linear_mapping) {
                 if (ImGui::IsKeyPressed(m.key)) {
-                    set_note(m.note_index, edo, max_row);
+                    insert_note(m.note_index, edo, max_row);
                     break;
                 }
             }

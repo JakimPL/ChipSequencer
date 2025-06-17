@@ -26,6 +26,7 @@ class LinkTarget(Enum):
     DSP = "dsp"
     CHANNEL = "channel"
     COMMANDS_CHANNEL = "commands_channel"
+    SPECIAL = "special"
     COUNT = "count"
 
     @staticmethod
@@ -44,7 +45,8 @@ class LinkTarget(Enum):
             10: LinkTarget.DSP,
             11: LinkTarget.CHANNEL,
             12: LinkTarget.COMMANDS_CHANNEL,
-            13: LinkTarget.COUNT,
+            13: LinkTarget.SPECIAL,
+            14: LinkTarget.COUNT,
         }
 
         return dictionary[integer]

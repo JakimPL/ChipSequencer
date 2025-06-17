@@ -8,37 +8,34 @@
 #include "../utils.hpp"
 #include "wavetables.hpp"
 
-GUIWavetablesPanel::GUIWavetablesPanel(const bool visible)
-    : GUIPanel(visible) {
-    from();
-    update();
+GUIWavetablesPanel::GUIWavetablesPanel(const bool visible, const bool windowed)
+    : GUIPanel("Wavetables", visible, windowed) {
+    initialize();
+}
+
+GUIElement GUIWavetablesPanel::get_element() const {
+    return GUIElement::Wavetables;
 }
 
 void GUIWavetablesPanel::draw() {
-    ImGui::Begin("Wavetables");
+    draw_waveform();
+    draw_status();
+}
 
+bool GUIWavetablesPanel::select_item() {
     std::vector<std::string> dependencies = song.find_wavetable_dependencies(wavetable_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
-    prepare_combo(wavetable_names, "##WavetableCombo", wavetable_index);
+    prepare_combo(this, wavetable_names, "##WavetableCombo", wavetable_index);
     show_dependency_tooltip(dependencies);
     pop_tertiary_style();
-
     ImGui::Separator();
 
-    if (wavetables.empty()) {
-        ImGui::Text("No wavetables available.");
-        ImGui::End();
-        return;
-    }
+    return !wavetables.empty();
+}
 
-    from();
-    draw_waveform();
-    draw_status();
-    check_keyboard_input();
-    to();
-
-    ImGui::End();
+void GUIWavetablesPanel::empty() {
+    ImGui::Text("No wavetable available.");
 }
 
 bool GUIWavetablesPanel::is_index_valid() const {
@@ -76,7 +73,9 @@ void GUIWavetablesPanel::from() {
 }
 
 void GUIWavetablesPanel::to() const {
-    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || !is_index_valid()) {
+    if (!save &&
+        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
+         !is_index_valid())) {
         return;
     }
 
@@ -126,7 +125,8 @@ void GUIWavetablesPanel::remove() {
 
 void GUIWavetablesPanel::draw_wavetable_length() {
     const size_t old_size = current_wavetable.size;
-    draw_number_of_items("Points", "##WavetableLength", current_wavetable.size, 1, MAX_WAVETABLE_SIZE);
+    const LinkKey key = {Target::WAVETABLE, wavetable_index, WAVETABLE_SIZE};
+    draw_number_of_items(this, "Points", "##WavetableLength", current_wavetable.size, 1, MAX_WAVETABLE_SIZE, key);
 
     if (old_size != current_wavetable.size) {
         current_wavetable.wave.resize(current_wavetable.size);
@@ -139,11 +139,6 @@ void GUIWavetablesPanel::draw_wavetable_length() {
 }
 
 void GUIWavetablesPanel::draw_waveform() {
-    if (wavetables.empty()) {
-        ImGui::Text("No wavetables available.");
-        return;
-    }
-
     ImGui::Checkbox("Show interpolation", &current_wavetable.interpolation);
 
     ImGui::Text("Waveform:");
@@ -259,9 +254,6 @@ void GUIWavetablesPanel::draw_status() {
 void GUIWavetablesPanel::update() {
     update_items(wavetable_names, wavetables.size(), "Wavetable ", wavetable_index);
     gui.update(GUIElement::Oscillators);
-}
-
-void GUIWavetablesPanel::check_keyboard_input() {
 }
 
 void GUIWavetablesPanel::set_index(const int index) {
