@@ -222,17 +222,11 @@ void GUISequencesPanel::check_keyboard_input() {
     const uint8_t old_note = current_sequence.pattern.is_row_valid(current_sequence.pattern.current_row) ? current_sequence.pattern.notes[old_row] : NOTES;
     current_sequence.pattern.handle_input();
     if (old_note != NOTES) {
-        const uint16_t offset = SEQUENCE_NOTES + sizeof(Note) * old_row;
         const uint8_t new_note = current_sequence.pattern.notes[old_row];
+        const uint16_t offset = SEQUENCE_NOTES + sizeof(Note) * old_row;
+        const LinkKey key = {Target::SEQUENCE, sequence_index, offset};
         perform_action_note(
-            this,
-            {Target::SEQUENCE, sequence_index, offset},
-            sequence_index,
-            0,
-            0,
-            old_row,
-            old_note,
-            new_note
+            this, key, 0, 0, old_row, old_note, new_note
         );
     }
 }

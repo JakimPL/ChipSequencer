@@ -119,6 +119,14 @@ void Pattern::insert_note(const int note_index, const int edo, const int max_row
     jump(max_row);
 }
 
+int Pattern::get_note(const int row) const {
+    if (!is_row_valid(row)) {
+        return NOTES;
+    }
+
+    return notes[row];
+}
+
 void Pattern::set_note(const int row, const int note) {
     if (!is_row_valid(row)) {
         return;
