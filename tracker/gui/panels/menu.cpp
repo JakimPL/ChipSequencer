@@ -76,7 +76,21 @@ void GUIMenu::draw_menu() {
 }
 
 void GUIMenu::file_new_confirm() {
+    if (history_manager.empty()) {
+        file_new();
+        return;
+    }
+
     open_new_song_confirmation_popup = true;
+}
+
+void GUIMenu::file_open_confirm() {
+    if (history_manager.empty()) {
+        file_open();
+        return;
+    }
+
+    open_open_song_confirmation_popup = true;
 }
 
 void GUIMenu::file_new() {
@@ -188,6 +202,11 @@ void GUIMenu::file_exit() {
 }
 
 void GUIMenu::file_exit_confirm() {
+    if (history_manager.empty()) {
+        file_exit();
+        return;
+    }
+
     open_exit_confirmation_popup = true;
 }
 
@@ -212,6 +231,11 @@ void GUIMenu::draw_dialog_box() {
         open_new_song_confirmation_popup = false;
     }
 
+    if (open_open_song_confirmation_popup) {
+        ImGui::OpenPopup("Confirm open song");
+        open_open_song_confirmation_popup = false;
+    }
+
     if (open_exit_confirmation_popup) {
         ImGui::OpenPopup("Confirm exit");
         open_exit_confirmation_popup = false;
@@ -230,6 +254,9 @@ void GUIMenu::draw_dialog_box() {
     } else if (ImGui::BeginPopupModal("Confirm new song", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
         const std::string message = "Do you want to create a new song?\nAny unsaved changes will be lost.";
         draw_confirmation_popup(message, [this]() { file_new(); }, [this]() { file_save(); });
+    } else if (ImGui::BeginPopupModal("Confirm open song", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+        const std::string message = "Do you want to open a new song?\nAny unsaved changes will be lost.";
+        draw_confirmation_popup(message, [this]() { file_open(); }, [this]() { file_save(); });
     } else if (ImGui::BeginPopupModal("Confirm exit", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
         const std::string message = "Do you want to exit the program?\nAny unsaved changes will be lost.";
         draw_confirmation_popup(message, [this]() { file_exit(); }, [this]() { file_save(); });

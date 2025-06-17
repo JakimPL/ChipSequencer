@@ -21,6 +21,7 @@ class HistoryManager {
     bool can_undo() const;
     bool can_redo() const;
     void clear();
+    bool empty() const;
 
     size_t get_current_index() const;
     size_t get_history_size() const;

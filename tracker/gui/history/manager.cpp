@@ -59,6 +59,10 @@ void HistoryManager::clear() {
     current_index = 0;
 }
 
+bool HistoryManager::empty() const {
+    return actions.empty();
+}
+
 size_t HistoryManager::get_current_index() const {
     return current_index;
 }
