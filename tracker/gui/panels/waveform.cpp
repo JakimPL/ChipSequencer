@@ -16,6 +16,22 @@ GUIElement GUIWaveformPanel::get_element() const {
     return GUIElement::Waveform;
 }
 
+void GUIWaveformPanel::update() {
+    update_fft_sizes();
+}
+
+void GUIWaveformPanel::update_fft_sizes() {
+    fft_sizes.clear();
+    for (int size = GUI_MIN_FFT_SIZE; size <= GUI_MAX_FFT_SIZE; size *= 2) {
+        fft_sizes.push_back(std::to_string(size));
+    }
+
+    fft_sizes_labels.clear();
+    for (const auto &size : fft_sizes) {
+        fft_sizes_labels.push_back(size.c_str());
+    }
+}
+
 void GUIWaveformPanel::draw() {
     if (ImGui::BeginTabBar("WaveformPanelTabBar")) {
         if (ImGui::BeginTabItem("Waveform")) {
@@ -100,7 +116,7 @@ void GUIWaveformPanel::draw_channel_waveform(const int output_channel_index, con
         draw_list->AddText(
             ImVec2(position.x + 5, position.y + 5),
             IM_COL32(255, 255, 255, 255),
-            ("Channel " + std::to_string(output_channel_index) + " (No data)").c_str()
+            ("Output channel " + std::to_string(output_channel_index) + " (No data)").c_str()
         );
         return;
     }
@@ -147,7 +163,7 @@ void GUIWaveformPanel::draw_channel_waveform(const int output_channel_index, con
     draw_list->AddText(
         ImVec2(position.x + 5, position.y + 5),
         IM_COL32(255, 255, 255, 255),
-        ("Channel " + std::to_string(output_channel_index)).c_str()
+        ("Output channel " + std::to_string(output_channel_index)).c_str()
     );
 
     if (!history.empty()) {
@@ -175,9 +191,11 @@ void GUIWaveformPanel::draw_spectrogram() {
     }
 
     ImGui::PushItemWidth(150);
-    if (ImGui::SliderInt("FFT size", &fft_parameters.fft_size, GUI_MIN_FFT_SIZE, GUI_MAX_FFT_SIZE)) {
-        fft_parameters.fft_size = 1 << (int) std::log2(fft_parameters.fft_size);
+    if (ImGui::Combo("FFT Size", &fft_size_index, fft_sizes_labels.data(), fft_sizes_labels.size())) {
+        fft_parameters.fft_size = std::stoi(fft_sizes[fft_size_index]);
+        fft_parameters.fft_size = std::max(GUI_MIN_FFT_SIZE, std::min(GUI_MAX_FFT_SIZE, fft_parameters.fft_size));
     }
+
     ImGui::SameLine();
     ImGui::SliderFloat("Min dB", &fft_parameters.min_db, GUI_MIN_FFT_DB, GUI_MAX_FFT_DB);
     ImGui::PopItemWidth();
@@ -215,16 +233,13 @@ void GUIWaveformPanel::draw_channel_spectrogram(const int output_channel_index, 
         draw_list->AddText(
             ImVec2(position.x + 5, position.y + 5),
             IM_COL32(255, 255, 255, 255),
-            ("Spectrogram for Channel " + std::to_string(output_channel_index) + " (No data)").c_str()
+            ("Spectrogram for Output channel " + std::to_string(output_channel_index) + " (No data)").c_str()
         );
         return;
     }
 
     gui.lock_audio_history();
-    if (fft.get_size() != fft_parameters.fft_size) {
-        // TODO: we need to reinitialize the FFT with the new size
-    }
-
+    FFT fft(fft_parameters.fft_size);
     fft.compute(audio_history[output_channel_index]);
     const auto &magnitudes = fft.get_magnitudes();
 
@@ -309,7 +324,7 @@ void GUIWaveformPanel::draw_channel_spectrogram(const int output_channel_index, 
     draw_list->AddText(
         ImVec2(position.x + 5, position.y + 5),
         IM_COL32(255, 255, 255, 255),
-        ("Channel " + std::to_string(output_channel_index)).c_str()
+        ("Output channel " + std::to_string(output_channel_index)).c_str()
     );
 
     gui.unlock_audio_history();

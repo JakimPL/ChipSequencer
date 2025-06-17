@@ -14,9 +14,12 @@ class GUIWaveformPanel : public GUIPanel {
         float min_db = -60.0f;
     } fft_parameters;
 
-    FFT fft;
     size_t history_size = GUI_MIN_WAVEFORM_HISTORY_SIZE;
+    std::vector<std::string> fft_sizes;
+    std::vector<const char *> fft_sizes_labels;
+    int fft_size_index = 0;
 
+    void update_fft_sizes();
     void draw_waveform();
     void draw_spectrogram();
     void draw_channel_waveform(const int output_channel_index, const ImVec2 &size, const ImVec2 &position);
@@ -27,4 +30,6 @@ class GUIWaveformPanel : public GUIPanel {
   public:
     GUIWaveformPanel(const bool visible = true, const bool windowed = true);
     GUIElement get_element() const override;
+
+    void update() override;
 };
