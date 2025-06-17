@@ -269,7 +269,7 @@ void GUIPatternsPanel::shortcut_actions() {
         deselect_all();
         break;
     }
-    case PatternSelectionAction::Clear: {
+    case PatternSelectionAction::Delete: {
         delete_selection();
         break;
     }
@@ -816,9 +816,9 @@ void GUIPatternsPanel::register_shortcuts() {
     );
 
     shortcut_manager.register_shortcut(
-        ShortcutAction::PatternClear,
+        ShortcutAction::EditDelete,
         [this]() {
-            selection_action = PatternSelectionAction::Clear;
+            selection_action = PatternSelectionAction::Delete;
         }
     );
 }

@@ -61,5 +61,5 @@ enum class PatternSelectionAction {
     SelectAll,
     SelectChannel,
     DeselectAll,
-    Clear
+    Delete,
 };

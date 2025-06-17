@@ -58,8 +58,8 @@ std::string ChangeNoteAction::get_name() const {
     std::ostringstream oss;
     oss << "Change " << name
         << " row " << note_change.row
-        << " note " << get_note_name(note_change.old_note) << get_note_octave(note_change.old_note)
-        << " to " << get_note_name(note_change.new_note) << get_note_octave(note_change.new_note);
+        << " note " << get_full_note_name(note_change.old_note)
+        << " to " << get_full_note_name(note_change.new_note);
 
     return oss.str();
 }

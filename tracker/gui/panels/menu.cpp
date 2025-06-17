@@ -46,6 +46,7 @@ void GUIMenu::draw_menu() {
             draw_menu_item("Undo", ShortcutAction::EditUndo);
             draw_menu_item("Redo", ShortcutAction::EditRedo);
             ImGui::Separator();
+            draw_menu_item("Delete", ShortcutAction::EditDelete);
             draw_menu_item("Cut", ShortcutAction::EditCut);
             draw_menu_item("Copy", ShortcutAction::EditCopy);
             draw_menu_item("Paste", ShortcutAction::EditPaste);
