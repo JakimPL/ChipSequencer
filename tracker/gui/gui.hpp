@@ -42,7 +42,10 @@ class GUI {
     void stop(const bool restore_parameters = true) const;
     bool is_playing() const;
     bool is_paused() const;
+
     const std::vector<std::deque<_Float32>> &get_audio_history() const;
+    void lock_audio_history() const;
+    void unlock_audio_history() const;
 
     void new_song();
     void save(const std::string &filename);

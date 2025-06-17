@@ -130,6 +130,7 @@ void AudioEngine::playback_function() {
                         size_t offset = sample_offset + x * output_channels;
                         for (size_t i = 0; i < output_channels; ++i) {
                             driver.pingpong_buffer[offset + i] = output[i];
+                            std::lock_guard<std::mutex> lock(history_mutex);
                             history[i].push_back(output[i]);
                             if (history[i].size() > buffer_size) {
                                 history[i].pop_front();
@@ -155,4 +156,12 @@ void AudioEngine::set_output_channels(const int channels) {
 
 const std::vector<std::deque<_Float32>> &AudioEngine::get_history() const {
     return history;
+}
+
+void AudioEngine::lock_history() const {
+    history_mutex.lock();
+}
+
+void AudioEngine::unlock_history() const {
+    history_mutex.unlock();
 }

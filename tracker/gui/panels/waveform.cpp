@@ -17,6 +17,10 @@ GUIElement GUIWaveformPanel::get_element() const {
 }
 
 void GUIWaveformPanel::draw() {
+    if (ImGui::IsWindowCollapsed()) {
+        return;
+    }
+
     const size_t output_channels_count = song.get_output_channels();
     if (output_channels_count == 0) {
         ImGui::Text("No output channels available.");
@@ -87,6 +91,7 @@ void GUIWaveformPanel::draw_channel_waveform(const int output_channel_index, con
         return;
     }
 
+    gui.lock_audio_history();
     const auto &history = audio_history[output_channel_index];
     size_t display_count = std::min(history_size, history.size());
     size_t start_index = history.size() - display_count;
@@ -140,4 +145,6 @@ void GUIWaveformPanel::draw_channel_waveform(const int output_channel_index, con
             buffer
         );
     }
+
+    gui.unlock_audio_history();
 }

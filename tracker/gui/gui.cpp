@@ -438,6 +438,18 @@ const std::vector<std::deque<_Float32>> &GUI::get_audio_history() const {
     return empty_history;
 }
 
+void GUI::lock_audio_history() const {
+    if (audio_engine) {
+        audio_engine->lock_history();
+    }
+}
+
+void GUI::unlock_audio_history() const {
+    if (audio_engine) {
+        audio_engine->unlock_history();
+    }
+}
+
 void GUI::deselect_all_rows() {
     gui.patterns_panel.deselect_all_rows();
 }

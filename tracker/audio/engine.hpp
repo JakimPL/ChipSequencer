@@ -2,13 +2,14 @@
 
 #include <atomic>
 #include <deque>
+#include <mutex>
 #include <thread>
 #include <vector>
 
 #include "../driver/port.hpp"
 
-constexpr int BUFFER_SIZE = 512;
-constexpr int HISTORY_SIZE = 96000;
+constexpr int BUFFER_SIZE = 128;
+constexpr int HISTORY_SIZE = 4096;
 
 class AudioEngine {
   public:
@@ -24,6 +25,8 @@ class AudioEngine {
 
     void set_output_channels(const int channels);
     const std::vector<std::deque<_Float32>> &get_history() const;
+    void lock_history() const;
+    void unlock_history() const;
 
   private:
     void playback_function();
@@ -35,6 +38,7 @@ class AudioEngine {
     std::thread playback_thread;
 
     std::vector<std::deque<_Float32>> history;
+    mutable std::mutex history_mutex;
     static constexpr size_t buffer_size = BUFFER_SIZE;
 
     void join_thread();
