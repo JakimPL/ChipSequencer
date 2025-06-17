@@ -58,7 +58,6 @@ void GUIPatternsPanel::draw_channels() {
 void GUIPatternsPanel::draw_channel(size_t channel_index) {
     ImGui::PushID(channel_index);
     ImGui::Text("%s", channel_names[channel_index].c_str());
-    size_t index = 0;
 
     const uint16_t start = page * gui.get_page_size();
     const uint16_t end = start + gui.get_page_size();
@@ -66,16 +65,17 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
     PatternSelection empty_selection = {selection.command};
     PatternSelection &pattern_selection = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ? selection : empty_selection;
 
+    int row = 0;
     for (auto &pattern : current_patterns.patterns[channel_index]) {
         const int playing_row = current_patterns.playing_rows[{false, channel_index}];
-        auto [new_index, select] = draw_pattern(
-            pattern, pattern_selection, secondary_pattern_rows, true, channel_index, false, index, playing_row, start, end
+        auto [new_row, select] = draw_pattern(
+            pattern, pattern_selection, secondary_pattern_rows, true, channel_index, false, row, playing_row, start, end
         );
         if (select) {
             current_channel = {false, channel_index};
-            current_row = pattern.current_row + index;
+            current_row = pattern.current_row + row;
         }
-        index = new_index;
+        row = new_row;
     }
 
     ImGui::PopID();
@@ -84,7 +84,6 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
 void GUIPatternsPanel::draw_commands_channel(size_t channel_index) {
     ImGui::PushID(channel_index);
     ImGui::Text("%s", commands_channel_names[channel_index].c_str());
-    size_t index = 0;
 
     const uint16_t start = page * gui.get_page_size();
     const uint16_t end = start + gui.get_page_size();
@@ -92,16 +91,17 @@ void GUIPatternsPanel::draw_commands_channel(size_t channel_index) {
     PatternSelection empty_selection = {selection.command};
     PatternSelection &commands_selection = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ? selection : empty_selection;
 
+    int row = 0;
     for (auto &pattern : current_patterns.commands_patterns[channel_index]) {
         const int playing_row = current_patterns.playing_rows[{true, channel_index}];
-        auto [new_index, select] = draw_commands_pattern(
-            pattern, commands_selection, secondary_pattern_rows, true, channel_index, false, index, playing_row, start, end
+        auto [new_row, select] = draw_commands_pattern(
+            pattern, commands_selection, secondary_pattern_rows, true, channel_index, false, row, playing_row, start, end
         );
         if (select) {
             current_channel = {true, channel_index};
-            current_row = pattern.current_row + index;
+            current_row = pattern.current_row + row;
         }
-        index = new_index;
+        row = new_row;
     }
 
     ImGui::PopID();
@@ -143,6 +143,7 @@ void GUIPatternsPanel::from_sequences() {
             current_patterns.patterns[channel_index].emplace_back(sequence_index);
             const size_t pattern_id = current_patterns.patterns[channel_index].size() - 1;
             Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
+            pattern.starting_row = row;
             pattern.current_row = !current_channel.command && channel_index == current_channel.index ? current_row - row : -1;
             if (playing && playing_sequence == j) {
                 const int playing_row = pattern.calculate_playing_row(channel_index);
@@ -192,6 +193,7 @@ void GUIPatternsPanel::from_commands_sequences() {
             }
 
             CommandsPattern &pattern = current_patterns.commands_patterns[channel_index][j];
+            pattern.starting_row = row;
             pattern.current_row = current_channel.command && channel_index == current_channel.index ? current_row - row : -1;
             if (playing && playing_sequence == j) {
                 const int playing_row = pattern.calculate_playing_row(channel_index);
@@ -339,7 +341,7 @@ void GUIPatternsPanel::to_sequences() const {
         unique_patterns.insert(pattern);
     }
 
-    if (!selection.command) {
+    if (!selection.command && selection.is_active()) {
         for (const auto &[channel_index, pattern_id, row] : secondary_pattern_rows) {
             const Pattern &selected_pattern = current_patterns.patterns.at(channel_index).at(pattern_id);
             unique_patterns.insert(&selected_pattern);
@@ -361,7 +363,7 @@ void GUIPatternsPanel::to_commands_sequences() const {
         unique_patterns.insert(pattern);
     }
 
-    if (selection.command) {
+    if (selection.command && selection.is_active()) {
         for (const auto &[channel_index, pattern_id, row] : secondary_pattern_rows) {
             const CommandsPattern &selected_pattern = current_patterns.commands_patterns.at(channel_index).at(pattern_id);
             unique_patterns.insert(&selected_pattern);
@@ -733,12 +735,8 @@ void GUIPatternsPanel::set_note(const size_t channel_index, const size_t pattern
         Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
         pattern.set_note(row, note);
         current_channel = {false, channel_index};
-        current_row = row;
+        current_row = pattern.starting_row + row;
     }
-}
-
-void GUIPatternsPanel::set_index(const int index) {
-    current_index = static_cast<size_t>(index);
 }
 
 bool GUIPatternsPanel::is_playing() const {

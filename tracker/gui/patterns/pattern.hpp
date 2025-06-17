@@ -10,8 +10,9 @@ struct Pattern {
     Pattern();
     Pattern(const uint8_t sequence_index);
 
-    uint8_t sequence_index = -1;
+    int starting_row = 0;
     int current_row = -1;
+    uint8_t sequence_index = -1;
     int steps = 0;
     std::vector<uint8_t> notes = {};
     std::vector<uint8_t> durations = {};
