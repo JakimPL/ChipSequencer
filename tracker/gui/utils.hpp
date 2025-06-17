@@ -92,10 +92,6 @@ void pop_secondary_style();
 void push_tertiary_style();
 void pop_tertiary_style();
 
-std::string get_note_name(uint8_t note_value);
-std::string get_note_octave(uint8_t note_value);
-uint8_t get_note_value(const std::string &note_name, const int octave);
-
 template <typename T>
 void perform_action(
     GUIPanel *owner,
@@ -134,4 +130,15 @@ void perform_action_string(
     const LinkKey key,
     char (&buffer)[n],
     const std::string &old_value
+);
+
+void perform_action_note(
+    GUIPanel *owner,
+    const LinkKey key,
+    const size_t sequence_index,
+    const size_t channel_index,
+    const size_t pattern_id,
+    const int row,
+    const uint8_t old_note,
+    const uint8_t new_note
 );

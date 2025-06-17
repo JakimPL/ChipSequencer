@@ -218,7 +218,28 @@ void GUISequencesPanel::check_keyboard_input() {
         return;
     }
 
+    const int old_row = current_sequence.pattern.current_row;
+    const uint8_t old_note = current_sequence.pattern.is_row_valid(current_sequence.pattern.current_row) ? current_sequence.pattern.notes[old_row] : NOTES;
     current_sequence.pattern.handle_input();
+    if (old_note != NOTES) {
+        const uint16_t offset = SEQUENCE_NOTES + sizeof(Note) * old_row;
+        const uint8_t new_note = current_sequence.pattern.notes[old_row];
+        perform_action_note(
+            this,
+            {Target::SEQUENCE, sequence_index, offset},
+            sequence_index,
+            0,
+            0,
+            old_row,
+            old_note,
+            new_note
+        );
+    }
+}
+
+void GUISequencesPanel::set_note(const size_t channel_index, const int row, const uint8_t note) {
+    current_sequence.pattern.set_note(row, note);
+    current_sequence.pattern.current_row = row;
 }
 
 void GUISequencesPanel::set_index(const int index) {

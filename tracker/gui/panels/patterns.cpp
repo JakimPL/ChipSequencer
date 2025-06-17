@@ -718,6 +718,15 @@ void GUIPatternsPanel::deselect_all_rows() {
     }
 }
 
+void GUIPatternsPanel::set_note(const size_t channel_index, const size_t pattern_id, const int row, const uint8_t note) {
+    if (current_patterns.patterns.find(channel_index) != current_patterns.patterns.end()) {
+        Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
+        pattern.set_note(row, note);
+        current_channel = {false, channel_index};
+        current_row = row;
+    }
+}
+
 void GUIPatternsPanel::set_index(const int index) {
     current_index = static_cast<size_t>(index);
 }

@@ -9,6 +9,7 @@
 #include "constants.hpp"
 #include "names.hpp"
 #include "utils.hpp"
+#include "history/actions/note.hpp"
 #include "history/actions/routing.hpp"
 #include "history/actions/sequence.hpp"
 #include "history/actions/text.hpp"
@@ -939,31 +940,6 @@ void pop_tertiary_style() {
     ImGui::PopStyleColor(13);
 }
 
-std::string get_note_name(uint8_t note_value) {
-    if (note_value == NOTE_REST) return "...";
-    if (note_value == NOTE_OFF) return "===";
-    if (note_value < NOTES) {
-        return frequency_table.get_note_name(note_value);
-    }
-    return "???";
-}
-
-std::string get_note_octave(uint8_t note_value) {
-    if (note_value == NOTE_REST) return "...";
-    if (note_value == NOTE_OFF) return "===";
-    if (note_value < NOTES) {
-        return std::to_string(frequency_table.get_note_octave(note_value));
-    }
-    return 0;
-}
-
-uint8_t get_note_value(const std::string &note_name, const int octave) {
-    if (note_name == "...") return NOTE_REST;
-    if (note_name == "===") return NOTE_OFF;
-    if (note_name == "???") return NOTES;
-    return frequency_table.get_note_value(note_name, octave);
-}
-
 template <typename T>
 void perform_action(
     GUIPanel *owner,
@@ -1056,3 +1032,22 @@ template void perform_action_string<GUI_MAX_STRING_LENGTH>(
     char (&buffer)[GUI_MAX_STRING_LENGTH],
     const std::string &old_value
 );
+
+void perform_action_note(
+    GUIPanel *owner,
+    const LinkKey key,
+    const size_t sequence_index,
+    const size_t channel_index,
+    const size_t pattern_id,
+    const int row,
+    const uint8_t old_note,
+    const uint8_t new_note
+) {
+    if (old_note != new_note) {
+        const std::string label = "Sequence " + std::to_string(sequence_index);
+        const NoteChange value_change = {channel_index, pattern_id, row, old_note, new_note};
+        history_manager.add_action(
+            std::make_unique<ChangeNoteAction>(label, owner, key, value_change)
+        );
+    }
+}

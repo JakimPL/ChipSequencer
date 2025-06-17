@@ -78,6 +78,7 @@ class GUIPatternsPanel : public GUIPanel {
     GUIElement get_element() const override;
 
     void set_index(const int index) override;
+    void set_note(const size_t channel_index, const size_t pattern_id, const int row, const uint8_t note);
 
     void from() override;
     void to() const override;
