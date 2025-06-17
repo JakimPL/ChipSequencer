@@ -1036,15 +1036,13 @@ template void perform_action_string<GUI_MAX_STRING_LENGTH>(
 void perform_action_note(
     GUIPanel *owner,
     const LinkKey key,
-    const size_t channel_index,
-    const size_t pattern_id,
-    const int row,
+    const PatternRow pattern_row,
     const uint8_t old_note,
     const uint8_t new_note
 ) {
     if (old_note != new_note) {
         const std::string label = "Sequence " + std::to_string(key.index);
-        const NoteChange value_change = {channel_index, pattern_id, row, old_note, new_note};
+        const NoteChange value_change = {pattern_row, old_note, new_note};
         history_manager.add_action(
             std::make_unique<ChangeNoteAction>(label, owner, key, value_change)
         );

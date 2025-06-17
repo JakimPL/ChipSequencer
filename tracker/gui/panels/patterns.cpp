@@ -399,11 +399,10 @@ void GUIPatternsPanel::check_keyboard_input() {
         handle_pattern_input(pattern, index);
         if (old_note != NOTES) {
             const uint8_t new_note = pattern->notes[old_row];
+            const PatternRow pattern_row = {current_channel.index, pattern_id, old_row};
             const uint16_t offset = SEQUENCE_NOTES + sizeof(Note) * (current_row - index);
             const LinkKey key = {Target::SEQUENCE, pattern->sequence_index, offset};
-            perform_action_note(
-                this, key, current_channel.index, pattern_id, old_row, old_note, new_note
-            );
+            perform_action_note(this, key, pattern_row, old_note, new_note);
         }
     } else if (commands_pattern != nullptr) {
         handle_commands_pattern_input(commands_pattern, commands_index);

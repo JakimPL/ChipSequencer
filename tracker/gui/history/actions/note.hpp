@@ -20,4 +20,5 @@ class ChangeNoteAction : public Action {
     bool can_merge(const Action *other) const override;
     void merge(const Action *other) override;
     std::string get_name() const override;
+    PatternRow get_pattern_row() const;
 };

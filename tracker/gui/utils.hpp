@@ -135,9 +135,7 @@ void perform_action_string(
 void perform_action_note(
     GUIPanel *owner,
     const LinkKey key,
-    const size_t channel_index,
-    const size_t pattern_id,
-    const int row,
+    const PatternRow pattern_row,
     const uint8_t old_note,
     const uint8_t new_note
 );

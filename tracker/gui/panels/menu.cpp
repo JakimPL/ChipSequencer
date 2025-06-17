@@ -271,7 +271,7 @@ void GUIMenu::register_shortcuts() {
     );
     shortcut_manager.register_shortcut(
         ShortcutAction::FileOpen,
-        [this]() { file_open(); }
+        [this]() { file_open_confirm(); }
     );
     shortcut_manager.register_shortcut(
         ShortcutAction::FileSave,

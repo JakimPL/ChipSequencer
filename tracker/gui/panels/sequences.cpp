@@ -229,11 +229,10 @@ void GUISequencesPanel::check_keyboard_input() {
     current_sequence.pattern.handle_input();
     if (old_note != NOTES) {
         const uint8_t new_note = current_sequence.pattern.notes[old_row];
+        const PatternRow pattern_row = {0, 0, old_row};
         const uint16_t offset = SEQUENCE_NOTES + sizeof(Note) * old_row;
         const LinkKey key = {Target::SEQUENCE, sequence_index, offset};
-        perform_action_note(
-            this, key, 0, 0, old_row, old_note, new_note
-        );
+        perform_action_note(this, key, pattern_row, old_note, new_note);
     }
 }
 
