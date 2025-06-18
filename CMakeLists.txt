@@ -4,8 +4,22 @@ project(ChipSequencer)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32 -Wno-pointer-arith -Wno-address-of-packed-member")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32 -fsanitize=address -g -Wno-pointer-arith -Wno-address-of-packed-member")
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug)
+endif()
+
+set(COMMON_C_FLAGS "-m32 -Wno-pointer-arith -Wno-address-of-packed-member")
+set(COMMON_CXX_FLAGS "-m32 -Wno-pointer-arith -Wno-address-of-packed-member")
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(CMAKE_C_FLAGS "${COMMON_C_FLAGS} -g")
+    set(CMAKE_CXX_FLAGS "${COMMON_CXX_FLAGS} -fsanitize=address -g")
+    set(SANITIZER_FLAGS "-fsanitize=address")
+else()
+    set(CMAKE_C_FLAGS "${COMMON_C_FLAGS} -O2 -DNDEBUG")
+    set(CMAKE_CXX_FLAGS "${COMMON_CXX_FLAGS} -O2 -DNDEBUG")
+    set(SANITIZER_FLAGS "")
+endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
@@ -23,8 +37,12 @@ if(NOT NASM_EXECUTABLE)
 endif()
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(GTK REQUIRED gtk+-3.0)
+pkg_check_modules(FFTW REQUIRED fftw3f)
+if (NOT FFTW_FOUND)
+    message(FATAL_ERROR "FFTW3 not found. Please install libfftw3-dev:i386.")
+endif()
 
+pkg_check_modules(GTK REQUIRED gtk+-3.0)
 if (NOT GTK_FOUND)
     message(FATAL_ERROR "GTK not found")
 endif()
@@ -42,7 +60,6 @@ add_custom_target(asm_objects ALL
     COMMAND ${CMAKE_COMMAND} -E remove -f ${ASM_OBJECT_FILE}
     COMMAND ${NASM_EXECUTABLE} -d TRACKER -f elf32 -Fdwarf -g ${ASM_SOURCE_FILE} -o ${ASM_OBJECT_FILE}
     WORKING_DIRECTORY ${ASM_SOURCE_DIR}
-    COMMENT "Assembling ${ASM_SOURCE_FILE}"
 )
 
 file(GLOB IMGUI_SOURCES
@@ -84,6 +101,7 @@ target_link_libraries(nfd PUBLIC ${GTK_LIBRARIES})
 
 add_executable(ChipSequencer
     tracker/audio/engine.cpp
+    tracker/audio/fft.cpp
     tracker/audio/wave.cpp
     tracker/driver/file.cpp
     tracker/driver/port.cpp
@@ -117,6 +135,7 @@ add_executable(ChipSequencer
     tracker/gui/panels/routings.cpp
     tracker/gui/panels/sequences.cpp
     tracker/gui/panels/summary.cpp
+    tracker/gui/panels/waveform.cpp
     tracker/gui/panels/wavetables.cpp
     tracker/gui/patterns/commands.cpp
     tracker/gui/patterns/pattern.cpp
@@ -146,7 +165,7 @@ add_executable(ChipSequencer
 
 target_compile_options(ChipSequencer PRIVATE
     $<$<COMPILE_LANGUAGE:C>:-Werror=switch-enum>
-    $<$<COMPILE_LANGUAGE:CXX>:-Werror=switch-enum -fsanitize=address -g>
+    $<$<COMPILE_LANGUAGE:CXX>:-Werror=switch-enum ${SANITIZER_FLAGS}>
 )
 
 add_dependencies(ChipSequencer asm_objects)
@@ -154,6 +173,7 @@ target_include_directories(ChipSequencer PRIVATE
     ${CMAKE_SOURCE_DIR}/imgui
     ${CMAKE_SOURCE_DIR}/imgui-knobs
     ${SDL2_INCLUDE_DIRS}
+    ${FFTW_INCLUDE_DIRS}
 )
 target_link_libraries(ChipSequencer
     song
@@ -168,7 +188,12 @@ target_link_libraries(ChipSequencer
     z
     nfd
     ${SNDFILE_LIBRARIES}
+    ${FFTW_LIBRARIES}
 )
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_link_options(ChipSequencer PRIVATE ${SANITIZER_FLAGS})
+endif()
 
 set_target_properties(ChipSequencer PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../bin"

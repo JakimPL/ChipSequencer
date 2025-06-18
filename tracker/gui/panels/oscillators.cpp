@@ -226,7 +226,7 @@ void GUIOscillatorsPanel::draw_oscillator() {
         break;
     }
     case Generator::Saw: {
-        draw_checkbox(this, "Bypass", current_oscillator.saw_reverse, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_SAW_REVERSE});
+        draw_checkbox(this, "Reverse", current_oscillator.saw_reverse, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_SAW_REVERSE});
         break;
     }
     case Generator::Wavetable: {

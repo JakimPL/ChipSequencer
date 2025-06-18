@@ -19,6 +19,7 @@
 #include "panels/routings.hpp"
 #include "panels/sequences.hpp"
 #include "panels/summary.hpp"
+#include "panels/waveform.hpp"
 #include "panels/wavetables.hpp"
 #include "panels/commands/channels.hpp"
 #include "panels/commands/sequences.hpp"
@@ -41,6 +42,10 @@ class GUI {
     void stop(const bool restore_parameters = true) const;
     bool is_playing() const;
     bool is_paused() const;
+
+    const AudioHistory &get_audio_history() const;
+    void lock_audio_history() const;
+    void unlock_audio_history() const;
 
     void new_song();
     void save(const std::string &filename);
@@ -100,6 +105,7 @@ class GUI {
 
   private:
     AudioEngine *audio_engine;
+    AudioHistory empty_history;
 
     GUIMenu menu = GUIMenu(true, false);
     GUIEditorPanel editor;
@@ -116,6 +122,7 @@ class GUI {
     GUIPatternsPanel patterns_panel;
     GUIRoutingsPanel routing_panel;
     GUISummaryPanel summary_panel;
+    GUIWaveformPanel waveform_panel;
 
     SDL_Window *window;
     SDL_GLContext gl_context;

@@ -20,7 +20,7 @@ NASMFMT_INSTALLED := $(shell command -v nasmfmt 2> /dev/null)
 build:
 	@echo "Building the project..."
 	@mkdir -p build
-	@cd build && cmake .. && make --no-print-directory
+	@cd build && cmake -DCMAKE_BUILD_TYPE=Debug .. && make --no-print-directory
 
 clean:
 	@echo "Cleaning the project..."

@@ -1,12 +1,17 @@
 #pragma once
 
-#define BUFFER_SIZE 512
-
 #include <atomic>
+#include <deque>
+#include <mutex>
 #include <thread>
 #include <vector>
 
 #include "../driver/port.hpp"
+
+constexpr int BUFFER_SIZE = 128;
+constexpr int HISTORY_SIZE = 65536;
+
+typedef std::array<std::deque<_Float32>, MAX_OUTPUT_CHANNELS> AudioHistory;
 
 class AudioEngine {
   public:
@@ -22,6 +27,11 @@ class AudioEngine {
 
     void set_output_channels(const int channels);
 
+    const AudioHistory &get_history() const;
+    void clear_history();
+    void lock_history() const;
+    void unlock_history() const;
+
   private:
     void playback_function();
 
@@ -31,6 +41,8 @@ class AudioEngine {
     std::atomic<bool> paused;
     std::thread playback_thread;
 
+    std::array<std::deque<_Float32>, MAX_OUTPUT_CHANNELS> history;
+    mutable std::mutex history_mutex;
     static constexpr size_t buffer_size = BUFFER_SIZE;
 
     void join_thread();
