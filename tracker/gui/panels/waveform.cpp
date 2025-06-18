@@ -341,6 +341,10 @@ void GUIWaveformPanel::draw_channel_spectrogram(const int output_channel_index, 
     );
 
     gui.unlock_audio_history();
+
+    if (ImGui::IsMouseHoveringRect(position, ImVec2(position.x + size.x, position.y + size.y))) {
+        draw_frequency_tooltip(position, size, log_min, log_range);
+    }
 }
 
 std::string GUIWaveformPanel::get_frequency_name(const int frequency) const {
@@ -352,4 +356,29 @@ std::string GUIWaveformPanel::get_frequency_name(const int frequency) const {
     }
 
     return std::string(label);
+}
+
+std::string GUIWaveformPanel::find_nearest_note(double frequency) {
+    const double a4_frequency = frequency_table.get_a4_frequency();
+    const int edo = scale_composer.get_edo();
+    const int a4_index = frequency_table.get_a4_index();
+    const uint8_t note = a4_index + std::round(std::log2(frequency / a4_frequency) * edo);
+    return get_full_note_name(note);
+}
+
+void GUIWaveformPanel::draw_frequency_tooltip(const ImVec2 &position, const ImVec2 &size, const float log_min, const float log_range) {
+    float mouse_x = ImGui::GetMousePos().x - position.x;
+
+    float normalized_x = mouse_x / size.x;
+    float log_freq = log_min + normalized_x * log_range;
+    float freq = std::pow(10.0f, log_freq);
+
+    const std::string note_name = find_nearest_note(freq);
+
+    char tooltip[64];
+    snprintf(tooltip, sizeof(tooltip), "%s\n%.2f Hz", note_name.c_str(), freq);
+
+    ImGui::BeginTooltip();
+    ImGui::Text("%s", tooltip);
+    ImGui::EndTooltip();
 }

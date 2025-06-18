@@ -27,7 +27,10 @@ class GUIWaveformPanel : public GUIPanel {
     void draw_spectrogram();
     void draw_channel_waveform(const int output_channel_index, const ImVec2 &size, const ImVec2 &position);
     void draw_channel_spectrogram(const int output_channel_index, const ImVec2 &size, const ImVec2 &position);
+
     std::string get_frequency_name(const int frequency) const;
+    static std::string find_nearest_note(double frequency);
+    void draw_frequency_tooltip(const ImVec2 &position, const ImVec2 &size, const float log_min, const float log_range);
 
     void draw() override;
 
