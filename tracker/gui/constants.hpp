@@ -49,8 +49,8 @@ constexpr int GUI_MIN_WAVEFORM_HISTORY_SIZE = 256;
 constexpr int GUI_MAX_WAVEFORM_HISTORY_SIZE = 4096;
 constexpr int GUI_MIN_FFT_SIZE = 256;
 constexpr int GUI_MAX_FFT_SIZE = 65536;
-constexpr float GUI_MIN_FFT_DB = -100.0f;
-constexpr float GUI_MAX_FFT_DB = -20.0f;
+constexpr float GUI_MIN_FFT_DB = -60.0f;
+constexpr float GUI_MAX_FFT_DB = -10.0f;
 constexpr float GUI_MIN_SPECTROGRAM_FREQUENCY = 20.0f;
 constexpr float GUI_MAX_SPECTROGRAM_FREQUENCY = 20000.0f;
 

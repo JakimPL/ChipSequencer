@@ -10,14 +10,15 @@
 class GUIWaveformPanel : public GUIPanel {
   private:
     struct FFTParameters {
-        int fft_size = 1024;
-        float min_db = -60.0f;
+        int fft_size = 4096;
+        float min_db = -20.0f;
+        bool wide_bins = true;
     } fft_parameters;
 
     size_t history_size = GUI_MIN_WAVEFORM_HISTORY_SIZE;
     std::vector<std::string> fft_sizes;
     std::vector<const char *> fft_sizes_labels;
-    int fft_size_index = 0;
+    int fft_size_index = 4;
 
     const std::vector<int> frequencies = {50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000};
 
