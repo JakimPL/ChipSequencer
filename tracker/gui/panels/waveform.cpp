@@ -191,7 +191,7 @@ void GUIWaveformPanel::draw_spectrogram() {
     }
 
     ImGui::PushItemWidth(150);
-    if (ImGui::Combo("FFT Size", &fft_size_index, fft_sizes_labels.data(), fft_sizes_labels.size())) {
+    if (ImGui::Combo("FFT size", &fft_size_index, fft_sizes_labels.data(), fft_sizes_labels.size())) {
         fft_parameters.fft_size = std::stoi(fft_sizes[fft_size_index]);
         fft_parameters.fft_size = std::max(GUI_MIN_FFT_SIZE, std::min(GUI_MAX_FFT_SIZE, fft_parameters.fft_size));
     }
