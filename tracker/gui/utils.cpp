@@ -50,7 +50,7 @@ void draw_text(GUIPanel *owner, const char *label, char (&text)[n], const LinkKe
     ImGui::EndDisabled();
 }
 
-void draw_checkbox(GUIPanel *owner, const char *label, bool &reference, const LinkKey key) {
+bool draw_checkbox(GUIPanel *owner, const char *label, bool &reference, const LinkKey key) {
     ImGui::BeginDisabled(link_manager.is_linked(key));
 
     const bool old_value = reference;
@@ -65,9 +65,11 @@ void draw_checkbox(GUIPanel *owner, const char *label, bool &reference, const Li
     if (action) {
         perform_action(owner, key, reference, old_value);
     }
+
+    return action;
 }
 
-void draw_int_slider(GUIPanel *owner, const char *label, int &reference, const LinkKey key, int min, int max) {
+bool draw_int_slider(GUIPanel *owner, const char *label, int &reference, const LinkKey key, int min, int max) {
     ImGui::BeginDisabled(link_manager.is_linked(key));
 
     const int old_value = reference;
@@ -90,9 +92,11 @@ void draw_int_slider(GUIPanel *owner, const char *label, int &reference, const L
     if (action) {
         perform_action(owner, key, reference, old_value);
     }
+
+    return action;
 }
 
-void draw_float_slider(GUIPanel *owner, const char *label, float &reference, const LinkKey key, float min, float max, const GUIScale scale, const char *format) {
+bool draw_float_slider(GUIPanel *owner, const char *label, float &reference, const LinkKey key, float min, float max, const GUIScale scale, const char *format) {
     ImGui::BeginDisabled(link_manager.is_linked(key));
 
     const float old_value = reference;
@@ -154,9 +158,11 @@ void draw_float_slider(GUIPanel *owner, const char *label, float &reference, con
     if (action) {
         perform_action_float(owner, key, reference, old_value, format);
     }
+
+    return action;
 }
 
-void draw_knob(GUIPanel *owner, const char *label, float &reference, const LinkKey key, float min, float max) {
+bool draw_knob(GUIPanel *owner, const char *label, float &reference, const LinkKey key, float min, float max) {
     ImGui::BeginDisabled(link_manager.is_linked(key));
 
     const float old_value = reference;
@@ -173,6 +179,8 @@ void draw_knob(GUIPanel *owner, const char *label, float &reference, const LinkK
     if (action) {
         perform_action_float(owner, key, reference, old_value);
     }
+
+    return action;
 }
 
 void draw_link_tooltip(const LinkKey &key) {

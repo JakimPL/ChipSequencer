@@ -37,7 +37,10 @@ void GUIPatternsPanel::draw_pages() {
         }
     }
 
-    draw_int_slider(this, "Page", page, {}, 0, pages - 1);
+    if (draw_int_slider(this, "Page", page, {}, 0, pages - 1)) {
+        gui.follow_playback = false;
+    }
+
     if (page != previous_page) {
         deselect_all_rows();
     }
