@@ -186,7 +186,7 @@ void Pattern::handle_input(const int min_row, const int max_row) {
         }
     }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_Equal)) {
+    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::PatternSetNoteOff)) {
         notes[current_row] = NOTE_OFF;
         jump(max_row);
     }

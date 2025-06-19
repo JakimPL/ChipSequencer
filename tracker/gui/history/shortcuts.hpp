@@ -31,6 +31,9 @@ enum class ShortcutAction {
     PatternSelectAll,
     PatternSelectChannel,
     PatternSelectNone,
+    PatternSetNoteRest,
+    PatternSetNoteCut,
+    PatternSetNoteOff,
 };
 
 struct Shortcut {
@@ -57,6 +60,8 @@ class ShortcutManager {
     std::string get_shortcut_display(const ShortcutAction id) const;
     void process_shortcuts() const;
     void execute_action(const ShortcutAction id) const;
+    bool is_shortcut_pressed(const ShortcutAction &action) const;
+    bool is_shortcut_pressed(const Shortcut &shortcut) const;
 
   private:
     std::unordered_map<ShortcutAction, std::vector<std::function<void()>>> actions;
@@ -85,5 +90,8 @@ class ShortcutManager {
         {ShortcutAction::PatternSelectAll, {true, false, false, ImGuiKey_A}},
         {ShortcutAction::PatternSelectChannel, {true, false, false, ImGuiKey_P}},
         {ShortcutAction::PatternSelectNone, {true, true, false, ImGuiKey_A}},
+        {ShortcutAction::PatternSetNoteRest, {false, false, false, ImGuiKey_Backspace}},
+        {ShortcutAction::PatternSetNoteCut, {false, false, false, ImGuiKey_GraveAccent}},
+        {ShortcutAction::PatternSetNoteOff, {false, false, false, ImGuiKey_Equal}},
     };
 };

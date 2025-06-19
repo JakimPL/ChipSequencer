@@ -373,6 +373,10 @@ std::pair<size_t, bool> draw_pattern(
             draw_menu_item("Transpose octave +1", ShortcutAction::PatternTransposeOctaveUp);
             draw_menu_item("Transpose octave -1", ShortcutAction::PatternTransposeOctaveDown);
             ImGui::Separator();
+            draw_menu_item("Set rest", ShortcutAction::PatternSetNoteRest);
+            draw_menu_item("Set note cut", ShortcutAction::PatternSetNoteCut);
+            draw_menu_item("Set note off", ShortcutAction::PatternSetNoteOff);
+            ImGui::Separator();
             draw_menu_item("Delete", ShortcutAction::EditDelete);
             ImGui::EndPopup();
         }
