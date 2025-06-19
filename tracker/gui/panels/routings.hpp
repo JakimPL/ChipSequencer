@@ -24,8 +24,11 @@ class GUIRoutingsPanel : public GUIPanel {
     std::optional<NodeIdentifier> dragging_node_id;
     ImVec2 drag_node_offset = {0.0f, 0.0f};
 
-    void collect_links();
     void collect_nodes();
+    void collect_links();
+    void to_nodes() const;
+    void to_links() const;
+
     void draw_reset_button();
     void draw_node(RoutingNode &routing_node, const ImVec2 node_rect_min);
     void draw_nodes();

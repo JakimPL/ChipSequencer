@@ -44,4 +44,5 @@ struct RoutingNode {
     ImVec2 size;
     int lines = 1;
     bool bypass = false;
+    bool solo = false;
 };

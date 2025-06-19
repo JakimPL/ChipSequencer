@@ -52,6 +52,11 @@ void GUIRoutingsPanel::to() const {
         return;
     }
 
+    to_nodes();
+    to_links();
+}
+
+void GUIRoutingsPanel::to_nodes() const {
     for (const auto &node : nodes) {
         if (node.key.has_value()) {
             const InputKey &input_key = node.key.value();
@@ -66,7 +71,9 @@ void GUIRoutingsPanel::to() const {
             }
         }
     }
+}
 
+void GUIRoutingsPanel::to_links() const {
     for (const auto &[source_key, target_key] : nodes_links) {
         const ItemType type = source_key.first;
         const size_t id = source_key.second;
@@ -513,7 +520,12 @@ void GUIRoutingsPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_re
         is_hovered &&
         routing_node.key.has_value()
     ) {
-        routing_node.bypass = !routing_node.bypass;
+        if (ImGui::GetIO().KeyShift) {
+            routing_node.solo = !routing_node.solo;
+        } else {
+            routing_node.bypass = !routing_node.bypass;
+        }
+
         save = true;
     }
 
