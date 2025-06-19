@@ -41,8 +41,8 @@ bool GUIRoutingsPanel::is_disabled() const {
 }
 
 void GUIRoutingsPanel::from() {
-    collect_nodes();
-    collect_links();
+    from_nodes();
+    from_links();
 }
 
 void GUIRoutingsPanel::to() const {
@@ -89,7 +89,7 @@ void GUIRoutingsPanel::to_links() const {
     link_manager.save_targets();
 }
 
-void GUIRoutingsPanel::collect_links() {
+void GUIRoutingsPanel::from_links() {
     nodes_links.clear();
     for (const ItemType type : {ItemType::CHANNEL, ItemType::DSP}) {
         for (const auto &link : links[static_cast<size_t>(type)]) {
@@ -98,7 +98,7 @@ void GUIRoutingsPanel::collect_links() {
     }
 }
 
-void GUIRoutingsPanel::collect_nodes() {
+void GUIRoutingsPanel::from_nodes() {
     if (ImGui::GetCurrentContext() == nullptr) {
         return;
     }
@@ -294,8 +294,8 @@ void GUIRoutingsPanel::add_output_node(size_t index, std::vector<RoutingNode> &n
 void GUIRoutingsPanel::draw_reset_button() {
     if (ImGui::Button("Reset view", ImVec2(100.0f, 0))) {
         clear_nodes();
-        collect_nodes();
-        collect_links();
+        from_nodes();
+        from_links();
     }
 
     ImGui::Separator();
@@ -495,7 +495,7 @@ void GUIRoutingsPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_re
     const float node_padding_y = style.WindowPadding.y / 2.0f;
     const float line_height = ImGui::GetTextLineHeight();
 
-    const uint8_t node_alpha = routing_node.bypass ? 128 : 255;
+    const uint8_t node_alpha = get_bypass_state(routing_node) ? 128 : 255;
     const float node_content_height = routing_node.lines * line_height + (routing_node.lines > 1 ? (routing_node.lines - 1) * style.ItemSpacing.y : 0);
     const float node_actual_height = node_content_height + node_padding_y * 2.0f;
 
@@ -522,6 +522,7 @@ void GUIRoutingsPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_re
     ) {
         if (ImGui::GetIO().KeyShift) {
             routing_node.solo = !routing_node.solo;
+            routing_node.bypass = false;
         } else {
             routing_node.bypass = !routing_node.bypass;
         }
@@ -675,6 +676,27 @@ bool GUIRoutingsPanel::is_linking_possible(const InputKey &source_key, const Out
     const size_t item = target_key.index;
     const Target target = target_key.target;
     return (item > id || type != ItemType::DSP || (target != Target::DIRECT_DSP && target != Target::SPLITTER_DSP));
+}
+
+bool GUIRoutingsPanel::get_bypass_state(const RoutingNode &node) const {
+    if (!node.key.has_value()) {
+        return false;
+    }
+
+    const ItemType type = node.key->first;
+    const bool bypass = node.bypass;
+    const bool solo = node.solo;
+
+    return get_bypass_state(type, bypass, solo);
+}
+
+bool GUIRoutingsPanel::get_bypass_state(const ItemType type, const bool bypass, const bool solo) const {
+    if (type == ItemType::CHANNEL) {
+        return channel_solo ? bypass & solo : bypass;
+    } else if (type == ItemType::DSP) {
+        return dsp_solo ? bypass & solo : bypass;
+    }
+    return bypass;
 }
 
 bool GUIRoutingsPanel::get_splitter_bounds(const size_t j, size_t index, const Link &link) const {
