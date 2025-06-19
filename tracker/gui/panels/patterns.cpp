@@ -242,19 +242,19 @@ void GUIPatternsPanel::shortcut_actions() {
 
     switch (selection_action) {
     case PatternSelectionAction::TransposeUp: {
-        transpose_by = 1;
+        transpose_selected_rows(1);
         break;
     }
     case PatternSelectionAction::TransposeDown: {
-        transpose_by = -1;
+        transpose_selected_rows(-1);
         break;
     }
     case PatternSelectionAction::TransposeOctaveUp: {
-        transpose_by = scale_composer.get_edo();
+        transpose_selected_rows(scale_composer.get_edo());
         break;
     }
     case PatternSelectionAction::TransposeOctaveDown: {
-        transpose_by = -scale_composer.get_edo();
+        transpose_selected_rows(-scale_composer.get_edo());
         break;
     }
     case PatternSelectionAction::SelectAll: {
@@ -290,8 +290,6 @@ void GUIPatternsPanel::shortcut_actions() {
         break;
     }
     }
-
-    transpose_selected_rows();
 }
 
 void GUIPatternsPanel::select_all() {
@@ -343,12 +341,8 @@ void GUIPatternsPanel::delete_selection() {
     }
 }
 
-void GUIPatternsPanel::transpose_selected_rows() {
-    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
-        transpose_by = 0;
-    }
-
-    if (transpose_by == 0 || selection.command) {
+void GUIPatternsPanel::transpose_selected_rows(const int value) {
+    if (value == 0 || !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
 
@@ -357,10 +351,8 @@ void GUIPatternsPanel::transpose_selected_rows() {
         const size_t pattern_id = pattern_row.pattern_id;
         const int row = pattern_row.row;
         Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
-        pattern.transpose(transpose_by, row);
+        pattern.transpose(value, row);
     }
-
-    transpose_by = 0;
 }
 
 void GUIPatternsPanel::to_sequences() const {
@@ -789,7 +781,6 @@ void GUIPatternsPanel::pre_actions() {
 
 void GUIPatternsPanel::post_actions() {
     selection_action = PatternSelectionAction::None;
-    transpose_by = 0;
 }
 
 void GUIPatternsPanel::register_shortcuts() {
