@@ -56,6 +56,7 @@ class GUIPatternsPanel : public GUIPanel {
     PatternSelectionAction selection_action = PatternSelectionAction::None;
     PatternRows pattern_rows;
     PatternRows secondary_pattern_rows;
+    SequenceRows selection_starts;
     SequenceRows secondary_sequence_rows;
     PatternRowsBySequenceRow pattern_rows_by_sequence_row;
     size_t current_index = -1;

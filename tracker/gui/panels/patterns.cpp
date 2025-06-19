@@ -3,8 +3,6 @@
 #include "../utils.hpp"
 #include "patterns.hpp"
 
-#include <iostream>
-
 GUIPatternsPanel::GUIPatternsPanel(const bool visible, const bool windowed)
     : GUIPanel("Patterns", visible, windowed) {
     initialize();
@@ -117,6 +115,7 @@ void GUIPatternsPanel::from() {
     pattern_rows_by_sequence_row.clear();
     secondary_pattern_rows.clear();
     secondary_sequence_rows.clear();
+    selection_starts.clear();
     current_patterns.patterns.clear();
     current_patterns.patterns_max_rows.clear();
     current_patterns.commands_patterns_max_rows.clear();
@@ -311,12 +310,15 @@ void GUIPatternsPanel::deselect_all() {
 
 void GUIPatternsPanel::set_selection_note(const uint8_t note) {
     if (selection.is_active()) {
-        for (const PatternRow &pattern_row : secondary_pattern_rows) {
-            const size_t channel_index = pattern_row.channel_index;
-            const size_t pattern_id = pattern_row.pattern_id;
-            const int row = pattern_row.row;
-            Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
-            pattern.set_note(row, note);
+        for (const auto &[sequence_row, pattern_rows] : pattern_rows_by_sequence_row) {
+            for (const PatternRow &pattern_row : pattern_rows) {
+                const size_t channel_index = pattern_row.channel_index;
+                const size_t pattern_id = pattern_row.pattern_id;
+                const int row = pattern_row.row;
+                Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
+                const uint8_t row_note = (selection_starts.find(sequence_row) != selection_starts.end()) ? note : NOTE_REST;
+                pattern.set_note(row, row_note);
+            }
         }
     } else {
         auto [pattern, pattern_id, index] = find_pattern_by_current_row();
@@ -614,6 +616,9 @@ void GUIPatternsPanel::mark_selected_pattern_rows(const size_t channel_index, co
             const SequenceRow sequence_row = {pattern.sequence_index, i};
             pattern_rows.insert(pattern_row);
             pattern_rows_by_sequence_row[sequence_row].insert(pattern_row);
+            if (selection.start == j) {
+                selection_starts.insert(sequence_row);
+            }
         }
     }
 }
@@ -632,6 +637,9 @@ void GUIPatternsPanel::mark_selected_commands_pattern_rows(const size_t channel_
             const SequenceRow sequence_row = {pattern.sequence_index, i};
             pattern_rows.insert(pattern_row);
             pattern_rows_by_sequence_row[sequence_row].insert(pattern_row);
+            if (selection.start == j) {
+                selection_starts.insert(sequence_row);
+            }
         }
     }
 }
