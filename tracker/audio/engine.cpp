@@ -71,6 +71,10 @@ void AudioEngine::pause() {
 }
 
 void AudioEngine::stop() {
+    if (!playing) {
+        return;
+    }
+
     playing = false;
     driver.buffer_cv.notify_all();
     join_thread();

@@ -42,6 +42,16 @@ void GUIMenu::draw_menu() {
             draw_menu_item("Exit", ShortcutAction::FileExit);
             ImGui::EndMenu();
         }
+        if (ImGui::BeginMenu("Player")) {
+            const std::string play_pause_label = gui.is_playing() ? "Pause" : "Play";
+            draw_menu_item(play_pause_label, ShortcutAction::SongPlayPause);
+            draw_menu_item("Play from current page", ShortcutAction::SongPlayFromCurrentPage);
+            ImGui::BeginDisabled(gui.get_current_row() < 0);
+            draw_menu_item("Play from current position", ShortcutAction::SongPlayFromCurrentPosition);
+            ImGui::EndDisabled();
+            draw_menu_item("Stop", ShortcutAction::SongStop);
+            ImGui::EndMenu();
+        }
         if (ImGui::BeginMenu("Edit")) {
             draw_menu_item("Undo", ShortcutAction::EditUndo);
             draw_menu_item("Redo", ShortcutAction::EditRedo);
@@ -269,34 +279,42 @@ void GUIMenu::register_shortcuts() {
         ShortcutAction::FileNew,
         [this]() { file_new_confirm(); }
     );
+
     shortcut_manager.register_shortcut(
         ShortcutAction::FileOpen,
         [this]() { file_open_confirm(); }
     );
+
     shortcut_manager.register_shortcut(
         ShortcutAction::FileSave,
         [this]() { file_save(); }
     );
+
     shortcut_manager.register_shortcut(
         ShortcutAction::FileSaveAs,
         [this]() { file_save_as(); }
     );
+
     shortcut_manager.register_shortcut(
         ShortcutAction::FileRender,
         [this]() { file_render(); }
     );
+
     shortcut_manager.register_shortcut(
         ShortcutAction::FileCompileCompressed,
         [this]() { file_compile(CompilationScheme::Compressed, CompilationTarget::Linux); }
     );
+
     shortcut_manager.register_shortcut(
         ShortcutAction::FileCompileUncompressed,
         [this]() { file_compile(CompilationScheme::Uncompressed, CompilationTarget::Linux); }
     );
+
     shortcut_manager.register_shortcut(
         ShortcutAction::FileCompileDebug,
         [this]() { file_compile(CompilationScheme::Debug, CompilationTarget::Linux); }
     );
+
     shortcut_manager.register_shortcut(
         ShortcutAction::FileExit,
         [this]() { file_exit_confirm(); }

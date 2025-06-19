@@ -78,7 +78,12 @@ void GUIGeneralPanel::play_from_current_page() {
 }
 
 void GUIGeneralPanel::play_from_current_position() {
-    const auto [result, index] = gui.play_from(gui.get_current_row(), true);
+    const int current_row = gui.get_current_row();
+    if (current_row < 0) {
+        return;
+    }
+
+    const auto [result, index] = gui.play_from(current_row, true);
     validate_playback(result, index);
 }
 
