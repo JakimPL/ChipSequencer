@@ -89,9 +89,9 @@ reset_envelope:
     mov [envelope_timer + 4 * ecx], eax
     ret
 
-set_release:
+set_phase:
     movzx ecx, byte [current_channel]
-    mov byte [envelope_mode + ecx], PHASE_RELEASE
+    mov byte [envelope_mode + ecx], al
     ret
 
     SEGMENT_DATA

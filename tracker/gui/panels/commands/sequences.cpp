@@ -131,6 +131,9 @@ void GUICommandsSequencesPanel::shortcut_actions() {
         delete_selection();
         break;
     }
+    case PatternSelectionAction::SetNoteRest:
+    case PatternSelectionAction::SetNoteCut:
+    case PatternSelectionAction::SetNoteOff:
     case PatternSelectionAction::None:
     case PatternSelectionAction::TransposeUp:
     case PatternSelectionAction::TransposeDown:

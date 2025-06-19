@@ -45,10 +45,7 @@ std::string ShortcutManager::get_shortcut_display(const ShortcutAction id) const
 
 void ShortcutManager::process_shortcuts() const {
     for (const auto &[action, shortcut] : shortcuts) {
-        if (ImGui::IsKeyPressed(shortcut.key) &&
-            ImGui::GetIO().KeyCtrl == shortcut.ctrl &&
-            ImGui::GetIO().KeyShift == shortcut.shift &&
-            ImGui::GetIO().KeyAlt == shortcut.alt) {
+        if (is_shortcut_pressed(shortcut)) {
             execute_action(action);
         }
     }
@@ -61,4 +58,19 @@ void ShortcutManager::execute_action(const ShortcutAction id) const {
             action();
         }
     }
+}
+
+bool ShortcutManager::is_shortcut_pressed(const Shortcut &shortcut) const {
+    return ImGui::IsKeyPressed(shortcut.key) &&
+           ImGui::GetIO().KeyCtrl == shortcut.ctrl &&
+           ImGui::GetIO().KeyShift == shortcut.shift &&
+           ImGui::GetIO().KeyAlt == shortcut.alt;
+};
+
+bool ShortcutManager::is_shortcut_pressed(const ShortcutAction &id) const {
+    auto it = shortcuts.find(id);
+    if (it != shortcuts.end()) {
+        return is_shortcut_pressed(it->second);
+    }
+    return false;
 }

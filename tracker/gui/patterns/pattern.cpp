@@ -132,7 +132,7 @@ void Pattern::set_note(const int row, const int note) {
         return;
     }
 
-    if (note < 0 || note >= NOTES) {
+    if (note < 0 || (note >= NOTES && note < NOTE_CUT)) {
         return;
     }
 
@@ -179,19 +179,24 @@ void Pattern::handle_input(const int min_row, const int max_row) {
                 }
             }
         }
-
-        if (ImGui::IsKeyPressed(ImGuiKey_Delete)) {
-            notes[current_row] = NOTE_REST;
-            jump(max_row);
-        }
     }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_Apostrophe) || ImGui::IsKeyPressed(ImGuiKey_Equal)) {
+    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::SequenceNoteDelete)) {
+        notes[current_row] = NOTE_REST;
+        jump(max_row);
+    }
+
+    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::SequenceSetNoteOff)) {
         notes[current_row] = NOTE_OFF;
         jump(max_row);
     }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_Backspace)) {
+    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::SequenceSetNoteCut)) {
+        notes[current_row] = NOTE_CUT;
+        jump(max_row);
+    }
+
+    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::SequenceSetNoteRest)) {
         notes[current_row] = NOTE_REST;
     }
 
@@ -205,19 +210,19 @@ void Pattern::handle_input(const int min_row, const int max_row) {
         current_row = std::min(max - 1, current_row + 1);
     }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_KeypadAdd)) {
+    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::EditIncrement)) {
         steps = std::min(steps, MAX_STEPS);
     }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_KeypadSubtract)) {
+    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::EditDecrement)) {
         steps = std::max(steps, 1);
     }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_Home)) {
+    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::EditHome)) {
         current_row = 0;
     }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_End)) {
+    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::EditEnd)) {
         const int max = max_row == -1 ? steps : std::min(steps, max_row);
         current_row = max - 1;
     }

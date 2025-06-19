@@ -24,6 +24,10 @@ enum class ShortcutAction {
     EditCut,
     EditCopy,
     EditPaste,
+    EditIncrement,
+    EditDecrement,
+    EditHome,
+    EditEnd,
     PatternTransposeUp,
     PatternTransposeDown,
     PatternTransposeOctaveUp,
@@ -31,6 +35,13 @@ enum class ShortcutAction {
     PatternSelectAll,
     PatternSelectChannel,
     PatternSelectNone,
+    PatternSetNoteRest,
+    PatternSetNoteCut,
+    PatternSetNoteOff,
+    SequenceNoteDelete,
+    SequenceSetNoteRest,
+    SequenceSetNoteCut,
+    SequenceSetNoteOff,
 };
 
 struct Shortcut {
@@ -57,6 +68,8 @@ class ShortcutManager {
     std::string get_shortcut_display(const ShortcutAction id) const;
     void process_shortcuts() const;
     void execute_action(const ShortcutAction id) const;
+    bool is_shortcut_pressed(const ShortcutAction &action) const;
+    bool is_shortcut_pressed(const Shortcut &shortcut) const;
 
   private:
     std::unordered_map<ShortcutAction, std::vector<std::function<void()>>> actions;
@@ -78,6 +91,10 @@ class ShortcutManager {
         {ShortcutAction::EditCut, {true, false, false, ImGuiKey_X}},
         {ShortcutAction::EditCopy, {true, false, false, ImGuiKey_C}},
         {ShortcutAction::EditPaste, {true, false, false, ImGuiKey_V}},
+        {ShortcutAction::EditIncrement, {false, false, false, ImGuiKey_KeypadAdd}},
+        {ShortcutAction::EditDecrement, {false, false, false, ImGuiKey_KeypadSubtract}},
+        {ShortcutAction::EditHome, {false, false, false, ImGuiKey_Home}},
+        {ShortcutAction::EditEnd, {false, false, false, ImGuiKey_End}},
         {ShortcutAction::PatternTransposeUp, {true, false, false, ImGuiKey_KeypadAdd}},
         {ShortcutAction::PatternTransposeDown, {true, false, false, ImGuiKey_KeypadSubtract}},
         {ShortcutAction::PatternTransposeOctaveUp, {true, true, false, ImGuiKey_KeypadAdd}},
@@ -85,5 +102,12 @@ class ShortcutManager {
         {ShortcutAction::PatternSelectAll, {true, false, false, ImGuiKey_A}},
         {ShortcutAction::PatternSelectChannel, {true, false, false, ImGuiKey_P}},
         {ShortcutAction::PatternSelectNone, {true, true, false, ImGuiKey_A}},
+        {ShortcutAction::PatternSetNoteRest, {true, false, false, ImGuiKey_Backspace}},
+        {ShortcutAction::PatternSetNoteCut, {true, false, false, ImGuiKey_GraveAccent}},
+        {ShortcutAction::PatternSetNoteOff, {true, false, false, ImGuiKey_Equal}},
+        {ShortcutAction::SequenceNoteDelete, {false, false, false, ImGuiKey_Delete}},
+        {ShortcutAction::SequenceSetNoteRest, {false, false, false, ImGuiKey_Backspace}},
+        {ShortcutAction::SequenceSetNoteCut, {false, false, false, ImGuiKey_GraveAccent}},
+        {ShortcutAction::SequenceSetNoteOff, {false, false, false, ImGuiKey_Equal}},
     };
 };

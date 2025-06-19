@@ -1,3 +1,4 @@
+#include "../../general.hpp"
 #include "string.hpp"
 
 StringInputHandler::StringInputHandler(const std::vector<ImGuiKey> keys, const bool synchronize)
@@ -23,7 +24,7 @@ bool StringInputHandler::handle_input(std::vector<std::string> &strings, int &in
         if (!buffer.empty()) {
             buffer.pop_back();
         }
-    } else if (ImGui::IsKeyPressed(ImGuiKey_Delete)) {
+    } else if (shortcut_manager.is_shortcut_pressed(ShortcutAction::EditDelete)) {
         buffer.clear();
     }
 
@@ -69,12 +70,12 @@ bool StringInputHandler::handle_input(std::vector<std::string> &strings, int &in
         buffer = strings[index];
     }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_Home)) {
+    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::EditHome)) {
         index = 0;
         buffer = strings[index];
     }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_End)) {
+    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::EditEnd)) {
         index = static_cast<int>(strings.size()) - 1;
         buffer = strings[index];
     }

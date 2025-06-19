@@ -102,19 +102,19 @@ void GUISequencesPanel::shortcut_actions() {
 
     switch (selection_action) {
     case PatternSelectionAction::TransposeUp: {
-        transpose_by = 1;
+        transpose_selected_rows(1);
         break;
     }
     case PatternSelectionAction::TransposeDown: {
-        transpose_by = -1;
+        transpose_selected_rows(-1);
         break;
     }
     case PatternSelectionAction::TransposeOctaveUp: {
-        transpose_by = scale_composer.get_edo();
+        transpose_selected_rows(scale_composer.get_edo());
         break;
     }
     case PatternSelectionAction::TransposeOctaveDown: {
-        transpose_by = -scale_composer.get_edo();
+        transpose_selected_rows(-scale_composer.get_edo());
         break;
     }
     case PatternSelectionAction::SelectAll:
@@ -130,19 +130,27 @@ void GUISequencesPanel::shortcut_actions() {
         delete_selection();
         break;
     }
+    case PatternSelectionAction::SetNoteRest: {
+        set_selection_note(NOTE_REST);
+        break;
+    }
+    case PatternSelectionAction::SetNoteCut: {
+        set_selection_note(NOTE_CUT);
+        break;
+    }
+    case PatternSelectionAction::SetNoteOff: {
+        set_selection_note(NOTE_OFF);
+        break;
+    }
     case PatternSelectionAction::None:
     default: {
         break;
     }
     }
-
-    selection_action = PatternSelectionAction::None;
-    transpose_selected_rows();
 }
 
 void GUISequencesPanel::post_actions() {
     selection_action = PatternSelectionAction::None;
-    transpose_by = 0;
 }
 
 void GUISequencesPanel::select_all() {
@@ -151,6 +159,17 @@ void GUISequencesPanel::select_all() {
 
 void GUISequencesPanel::deselect_all() {
     selection.clear();
+}
+
+void GUISequencesPanel::set_selection_note(const uint8_t note) {
+    if (selection.is_active()) {
+        for (size_t row = selection.start; row <= selection.end; row++) {
+            const uint8_t row_note = row == selection.start ? note : NOTE_REST;
+            current_sequence.pattern.set_note(row, row_note);
+        }
+    } else {
+        current_sequence.pattern.set_note(current_sequence.pattern.current_row, note);
+    }
 }
 
 void GUISequencesPanel::delete_selection() {
@@ -164,24 +183,18 @@ void GUISequencesPanel::delete_selection() {
     }
 }
 
-void GUISequencesPanel::transpose_selected_rows() {
-    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
-        transpose_by = 0;
-    }
-
-    if (transpose_by == 0) {
+void GUISequencesPanel::transpose_selected_rows(const int value) {
+    if (value == 0 || !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
 
     if (selection.is_active()) {
         for (size_t i = selection.start; i <= selection.end; i++) {
-            current_sequence.pattern.transpose(transpose_by, i);
+            current_sequence.pattern.transpose(value, i);
         }
     } else {
-        current_sequence.pattern.transpose(transpose_by);
+        current_sequence.pattern.transpose(value);
     }
-
-    transpose_by = 0;
 }
 
 void GUISequencesPanel::draw_sequence_length() {
@@ -296,6 +309,27 @@ void GUISequencesPanel::register_shortcuts() {
         ShortcutAction::EditDelete,
         [this]() {
             selection_action = PatternSelectionAction::Delete;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSetNoteRest,
+        [this]() {
+            selection_action = PatternSelectionAction::SetNoteRest;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSetNoteCut,
+        [this]() {
+            selection_action = PatternSelectionAction::SetNoteCut;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSetNoteOff,
+        [this]() {
+            selection_action = PatternSelectionAction::SetNoteOff;
         }
     );
 }

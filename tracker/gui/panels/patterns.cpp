@@ -3,8 +3,6 @@
 #include "../utils.hpp"
 #include "patterns.hpp"
 
-#include <iostream>
-
 GUIPatternsPanel::GUIPatternsPanel(const bool visible, const bool windowed)
     : GUIPanel("Patterns", visible, windowed) {
     initialize();
@@ -117,6 +115,7 @@ void GUIPatternsPanel::from() {
     pattern_rows_by_sequence_row.clear();
     secondary_pattern_rows.clear();
     secondary_sequence_rows.clear();
+    selection_starts.clear();
     current_patterns.patterns.clear();
     current_patterns.patterns_max_rows.clear();
     current_patterns.commands_patterns_max_rows.clear();
@@ -242,19 +241,19 @@ void GUIPatternsPanel::shortcut_actions() {
 
     switch (selection_action) {
     case PatternSelectionAction::TransposeUp: {
-        transpose_by = 1;
+        transpose_selected_rows(1);
         break;
     }
     case PatternSelectionAction::TransposeDown: {
-        transpose_by = -1;
+        transpose_selected_rows(-1);
         break;
     }
     case PatternSelectionAction::TransposeOctaveUp: {
-        transpose_by = scale_composer.get_edo();
+        transpose_selected_rows(scale_composer.get_edo());
         break;
     }
     case PatternSelectionAction::TransposeOctaveDown: {
-        transpose_by = -scale_composer.get_edo();
+        transpose_selected_rows(-scale_composer.get_edo());
         break;
     }
     case PatternSelectionAction::SelectAll: {
@@ -273,14 +272,23 @@ void GUIPatternsPanel::shortcut_actions() {
         delete_selection();
         break;
     }
+    case PatternSelectionAction::SetNoteRest: {
+        set_selection_note(NOTE_REST);
+        break;
+    }
+    case PatternSelectionAction::SetNoteCut: {
+        set_selection_note(NOTE_CUT);
+        break;
+    }
+    case PatternSelectionAction::SetNoteOff: {
+        set_selection_note(NOTE_OFF);
+        break;
+    }
     case PatternSelectionAction::None:
     default: {
         break;
     }
     }
-
-    selection_action = PatternSelectionAction::None;
-    transpose_selected_rows();
 }
 
 void GUIPatternsPanel::select_all() {
@@ -300,6 +308,26 @@ void GUIPatternsPanel::deselect_all() {
     selection.clear();
 }
 
+void GUIPatternsPanel::set_selection_note(const uint8_t note) {
+    if (selection.is_active()) {
+        for (const auto &[sequence_row, pattern_rows] : pattern_rows_by_sequence_row) {
+            for (const PatternRow &pattern_row : pattern_rows) {
+                const size_t channel_index = pattern_row.channel_index;
+                const size_t pattern_id = pattern_row.pattern_id;
+                const int row = pattern_row.row;
+                Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
+                const uint8_t row_note = (selection_starts.find(sequence_row) != selection_starts.end()) ? note : NOTE_REST;
+                pattern.set_note(row, row_note);
+            }
+        }
+    } else {
+        auto [pattern, pattern_id, index] = find_pattern_by_current_row();
+        if (pattern != nullptr) {
+            pattern->set_note(pattern->current_row, note);
+        }
+    }
+}
+
 void GUIPatternsPanel::delete_selection() {
     for (const PatternRow &pattern_row : secondary_pattern_rows) {
         const size_t channel_index = pattern_row.channel_index;
@@ -315,12 +343,8 @@ void GUIPatternsPanel::delete_selection() {
     }
 }
 
-void GUIPatternsPanel::transpose_selected_rows() {
-    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
-        transpose_by = 0;
-    }
-
-    if (transpose_by == 0 || selection.command) {
+void GUIPatternsPanel::transpose_selected_rows(const int value) {
+    if (value == 0 || !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
 
@@ -329,15 +353,13 @@ void GUIPatternsPanel::transpose_selected_rows() {
         const size_t pattern_id = pattern_row.pattern_id;
         const int row = pattern_row.row;
         Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
-        pattern.transpose(transpose_by, row);
+        pattern.transpose(value, row);
     }
-
-    transpose_by = 0;
 }
 
 void GUIPatternsPanel::to_sequences() const {
     std::set<const Pattern *> unique_patterns;
-    if (!selection.command && selection.is_active() && !selection.selecting) {
+    if (!selection.command && selection_action != PatternSelectionAction::None && !selection.selecting) {
         for (const auto &[channel_index, pattern_id, row] : secondary_pattern_rows) {
             const Pattern &selected_pattern = current_patterns.patterns.at(channel_index).at(pattern_id);
             unique_patterns.insert(&selected_pattern);
@@ -359,7 +381,7 @@ void GUIPatternsPanel::to_sequences() const {
 
 void GUIPatternsPanel::to_commands_sequences() const {
     std::set<const CommandsPattern *> unique_patterns;
-    if (selection.command && selection.is_active() && !selection.selecting) {
+    if (selection.command && selection_action != PatternSelectionAction::None && !selection.selecting) {
         for (const auto &[channel_index, pattern_id, row] : secondary_pattern_rows) {
             const CommandsPattern &selected_pattern = current_patterns.commands_patterns.at(channel_index).at(pattern_id);
             unique_patterns.insert(&selected_pattern);
@@ -594,6 +616,9 @@ void GUIPatternsPanel::mark_selected_pattern_rows(const size_t channel_index, co
             const SequenceRow sequence_row = {pattern.sequence_index, i};
             pattern_rows.insert(pattern_row);
             pattern_rows_by_sequence_row[sequence_row].insert(pattern_row);
+            if (selection.start == j) {
+                selection_starts.insert(sequence_row);
+            }
         }
     }
 }
@@ -612,6 +637,9 @@ void GUIPatternsPanel::mark_selected_commands_pattern_rows(const size_t channel_
             const SequenceRow sequence_row = {pattern.sequence_index, i};
             pattern_rows.insert(pattern_row);
             pattern_rows_by_sequence_row[sequence_row].insert(pattern_row);
+            if (selection.start == j) {
+                selection_starts.insert(sequence_row);
+            }
         }
     }
 }
@@ -761,7 +789,6 @@ void GUIPatternsPanel::pre_actions() {
 
 void GUIPatternsPanel::post_actions() {
     selection_action = PatternSelectionAction::None;
-    transpose_by = 0;
 }
 
 void GUIPatternsPanel::register_shortcuts() {
@@ -818,6 +845,27 @@ void GUIPatternsPanel::register_shortcuts() {
         ShortcutAction::EditDelete,
         [this]() {
             selection_action = PatternSelectionAction::Delete;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSetNoteRest,
+        [this]() {
+            selection_action = PatternSelectionAction::SetNoteRest;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSetNoteCut,
+        [this]() {
+            selection_action = PatternSelectionAction::SetNoteCut;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSetNoteOff,
+        [this]() {
+            selection_action = PatternSelectionAction::SetNoteOff;
         }
     );
 }

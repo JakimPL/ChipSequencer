@@ -30,11 +30,19 @@ step:
 .check_note_rest:
     cmp al, NOTE_REST
     jz .progress_sequence
+.check_note_cut:
+    cmp al, NOTE_CUT
+    jnz .check_note_off
+.note_cut:
+    mov al, PHASE_NOTE_CUT
+    call set_phase
+    jmp .progress_sequence
 .check_note_off:
     cmp al, NOTE_OFF
     jnz .note_on
 .note_off:
-    call set_release
+    mov al, PHASE_RELEASE
+    call set_phase
     jmp .progress_sequence
 .note_on:
     movzx edx, byte [current_channel]
