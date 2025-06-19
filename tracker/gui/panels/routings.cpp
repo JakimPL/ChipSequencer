@@ -190,6 +190,7 @@ void GUIRoutingsPanel::update_channel_node(size_t index, RoutingNode &channel_no
     const auto labels = std::get<1>(filtered_items);
     const auto offsets = std::get<2>(filtered_items);
     channel_node.bypass = channel->flag & FLAG_BYPASS;
+    channel_solo |= channel_node.solo;
 
     for (size_t j = 0; j < labels.size(); ++j) {
         if (offsets[j] >= CHANNEL_SPLITTER && offsets[j] < CHANNEL_SPLITTER + MAX_OUTPUT_CHANNELS) {
@@ -234,6 +235,7 @@ void GUIRoutingsPanel::update_dsp_node(size_t index, RoutingNode &dsp_node) {
     const auto labels = std::get<1>(filtered_items);
     const auto offsets = std::get<2>(filtered_items);
     dsp_node.bypass = dsp->flag & FLAG_BYPASS;
+    dsp_solo |= dsp_node.solo;
 
     for (size_t j = 0; j < labels.size(); ++j) {
         if (offsets[j] >= DSP_SPLITTER && offsets[j] < DSP_SPLITTER + MAX_OUTPUT_CHANNELS) {
@@ -521,7 +523,16 @@ void GUIRoutingsPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_re
         routing_node.key.has_value()
     ) {
         if (ImGui::GetIO().KeyShift) {
-            routing_node.solo = !routing_node.solo;
+            const bool solo = !routing_node.solo;
+            const ItemType type = routing_node.key.has_value() ? routing_node.key.value().first : ItemType::COUNT;
+            for (RoutingNode &node : nodes) {
+                if (node.key.has_value() && node.key.value().first == type) {
+                    node.bypass = solo;
+                    node.solo = false;
+                }
+            }
+
+            routing_node.solo = solo;
             routing_node.bypass = false;
         } else {
             routing_node.bypass = !routing_node.bypass;
