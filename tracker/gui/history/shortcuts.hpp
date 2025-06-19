@@ -38,6 +38,10 @@ enum class ShortcutAction {
     PatternSetNoteRest,
     PatternSetNoteCut,
     PatternSetNoteOff,
+    SequenceNoteDelete,
+    SequenceSetNoteRest,
+    SequenceSetNoteCut,
+    SequenceSetNoteOff,
 };
 
 struct Shortcut {
@@ -83,7 +87,7 @@ class ShortcutManager {
         {ShortcutAction::SongStop, {false, false, false, ImGuiKey_Escape}},
         {ShortcutAction::EditUndo, {true, false, false, ImGuiKey_Z}},
         {ShortcutAction::EditRedo, {true, true, false, ImGuiKey_Z}},
-        {ShortcutAction::EditDelete, {false, false, false, ImGuiKey_Delete}},
+        {ShortcutAction::EditDelete, {true, false, false, ImGuiKey_Delete}},
         {ShortcutAction::EditCut, {true, false, false, ImGuiKey_X}},
         {ShortcutAction::EditCopy, {true, false, false, ImGuiKey_C}},
         {ShortcutAction::EditPaste, {true, false, false, ImGuiKey_V}},
@@ -98,8 +102,12 @@ class ShortcutManager {
         {ShortcutAction::PatternSelectAll, {true, false, false, ImGuiKey_A}},
         {ShortcutAction::PatternSelectChannel, {true, false, false, ImGuiKey_P}},
         {ShortcutAction::PatternSelectNone, {true, true, false, ImGuiKey_A}},
-        {ShortcutAction::PatternSetNoteRest, {false, false, false, ImGuiKey_Backspace}},
-        {ShortcutAction::PatternSetNoteCut, {false, false, false, ImGuiKey_GraveAccent}},
-        {ShortcutAction::PatternSetNoteOff, {false, false, false, ImGuiKey_Equal}},
+        {ShortcutAction::PatternSetNoteRest, {true, false, false, ImGuiKey_Backspace}},
+        {ShortcutAction::PatternSetNoteCut, {true, false, false, ImGuiKey_GraveAccent}},
+        {ShortcutAction::PatternSetNoteOff, {true, false, false, ImGuiKey_Equal}},
+        {ShortcutAction::SequenceNoteDelete, {false, false, false, ImGuiKey_Delete}},
+        {ShortcutAction::SequenceSetNoteRest, {false, false, false, ImGuiKey_Backspace}},
+        {ShortcutAction::SequenceSetNoteCut, {false, false, false, ImGuiKey_GraveAccent}},
+        {ShortcutAction::SequenceSetNoteOff, {false, false, false, ImGuiKey_Equal}},
     };
 };

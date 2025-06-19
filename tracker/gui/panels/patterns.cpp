@@ -291,7 +291,6 @@ void GUIPatternsPanel::shortcut_actions() {
     }
     }
 
-    selection_action = PatternSelectionAction::None;
     transpose_selected_rows();
 }
 
@@ -366,7 +365,7 @@ void GUIPatternsPanel::transpose_selected_rows() {
 
 void GUIPatternsPanel::to_sequences() const {
     std::set<const Pattern *> unique_patterns;
-    if (!selection.command && selection.is_active() && !selection.selecting) {
+    if (!selection.command && selection_action != PatternSelectionAction::None && !selection.selecting) {
         for (const auto &[channel_index, pattern_id, row] : secondary_pattern_rows) {
             const Pattern &selected_pattern = current_patterns.patterns.at(channel_index).at(pattern_id);
             unique_patterns.insert(&selected_pattern);
@@ -388,7 +387,7 @@ void GUIPatternsPanel::to_sequences() const {
 
 void GUIPatternsPanel::to_commands_sequences() const {
     std::set<const CommandsPattern *> unique_patterns;
-    if (selection.command && selection.is_active() && !selection.selecting) {
+    if (selection.command && selection_action != PatternSelectionAction::None && !selection.selecting) {
         for (const auto &[channel_index, pattern_id, row] : secondary_pattern_rows) {
             const CommandsPattern &selected_pattern = current_patterns.commands_patterns.at(channel_index).at(pattern_id);
             unique_patterns.insert(&selected_pattern);

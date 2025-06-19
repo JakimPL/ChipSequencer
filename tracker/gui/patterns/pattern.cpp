@@ -179,24 +179,24 @@ void Pattern::handle_input(const int min_row, const int max_row) {
                 }
             }
         }
-
-        if (shortcut_manager.is_shortcut_pressed(ShortcutAction::EditDelete)) {
-            notes[current_row] = NOTE_REST;
-            jump(max_row);
-        }
     }
 
-    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::PatternSetNoteOff)) {
+    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::SequenceNoteDelete)) {
+        notes[current_row] = NOTE_REST;
+        jump(max_row);
+    }
+
+    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::SequenceSetNoteOff)) {
         notes[current_row] = NOTE_OFF;
         jump(max_row);
     }
 
-    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::PatternSetNoteCut)) {
+    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::SequenceSetNoteCut)) {
         notes[current_row] = NOTE_CUT;
         jump(max_row);
     }
 
-    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::PatternSetNoteRest)) {
+    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::SequenceSetNoteRest)) {
         notes[current_row] = NOTE_REST;
     }
 

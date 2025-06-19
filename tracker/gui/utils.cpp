@@ -377,6 +377,9 @@ std::pair<size_t, bool> draw_pattern(
             draw_menu_item("Set note cut", ShortcutAction::PatternSetNoteCut);
             draw_menu_item("Set note off", ShortcutAction::PatternSetNoteOff);
             ImGui::Separator();
+            draw_menu_item("Cut", ShortcutAction::EditCut);
+            draw_menu_item("Copy", ShortcutAction::EditCopy);
+            draw_menu_item("Paste", ShortcutAction::EditPaste);
             draw_menu_item("Delete", ShortcutAction::EditDelete);
             ImGui::EndPopup();
         }
@@ -509,6 +512,9 @@ std::pair<size_t, bool> draw_commands_pattern(
             }
             draw_menu_item("Clear selection", ShortcutAction::PatternSelectNone);
             ImGui::Separator();
+            draw_menu_item("Cut", ShortcutAction::EditCut);
+            draw_menu_item("Copy", ShortcutAction::EditCopy);
+            draw_menu_item("Paste", ShortcutAction::EditPaste);
             draw_menu_item("Delete", ShortcutAction::EditDelete);
             ImGui::EndPopup();
         }

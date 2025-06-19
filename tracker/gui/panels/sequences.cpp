@@ -147,8 +147,6 @@ void GUISequencesPanel::shortcut_actions() {
         break;
     }
     }
-
-    selection_action = PatternSelectionAction::None;
 }
 
 void GUISequencesPanel::post_actions() {
