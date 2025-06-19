@@ -771,6 +771,14 @@ void GUIPatternsPanel::set_note(const size_t channel_index, const size_t pattern
     }
 }
 
+int GUIPatternsPanel::get_current_page() const {
+    return page;
+}
+
+int GUIPatternsPanel::get_current_row() const {
+    return current_row;
+}
+
 bool GUIPatternsPanel::is_playing() const {
     return gui.is_playing() && ticks_per_beat > 0;
 }

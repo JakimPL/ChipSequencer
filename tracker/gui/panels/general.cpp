@@ -72,8 +72,13 @@ void GUIGeneralPanel::play() {
     validate_playback(result, index);
 }
 
+void GUIGeneralPanel::play_from_current_page() {
+    const auto [result, index] = gui.play_from(gui.get_current_page() * gui.get_page_size(), true);
+    validate_playback(result, index);
+}
+
 void GUIGeneralPanel::play_from_current_position() {
-    const auto [result, index] = gui.play_from_current_position();
+    const auto [result, index] = gui.play_from(gui.get_current_row(), true);
     validate_playback(result, index);
 }
 
@@ -278,6 +283,17 @@ void GUIGeneralPanel::register_shortcuts() {
         ShortcutAction::SongPlayPause,
         [this]() { this->play(); }
     );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::SongPlayFromCurrentPosition,
+        [this]() { this->play_from_current_position(); }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::SongPlayFromCurrentPage,
+        [this]() { this->play_from_current_page(); }
+    );
+
     shortcut_manager.register_shortcut(
         ShortcutAction::SongStop,
         [this]() { gui.stop(); }

@@ -61,7 +61,7 @@ void AudioEngine::skip_rows(const uint16_t from_row) {
         return;
     }
 
-    while (global_row < from_row) {
+    while (global_row <= from_row) {
         frame();
     }
 }

@@ -63,6 +63,14 @@ int GUI::get_page_size() const {
     return std::clamp(page_size, GUI_MIN_PAGE_SIZE, GUI_MAX_PAGE_SIZE);
 }
 
+int GUI::get_current_page() const {
+    return patterns_panel.get_current_page();
+}
+
+int GUI::get_current_row() const {
+    return patterns_panel.get_current_row();
+}
+
 std::pair<int, int> GUI::get_page_start_end(const int page) const {
     const int start = page * get_page_size();
     const int end = start + get_page_size();
@@ -411,26 +419,18 @@ std::pair<ValidationResult, int> GUI::play() const {
     return {result, index};
 }
 
-std::pair<ValidationResult, int> GUI::play_from_current_page() const {
+std::pair<ValidationResult, int> GUI::play_from(const uint16_t row, const bool restart) const {
     const auto [result, index] = pre_play();
     if (result == ValidationResult::OK && audio_engine != nullptr) {
-        if (audio_engine->is_playing()) {
-            audio_engine->pause();
+        if (restart) {
+            audio_engine->stop();
+            audio_engine->play(row);
         } else {
-            audio_engine->play();
-        }
-    }
-
-    return {result, index};
-}
-
-std::pair<ValidationResult, int> GUI::play_from_current_position() const {
-    const auto [result, index] = pre_play();
-    if (result == ValidationResult::OK && audio_engine != nullptr) {
-        if (audio_engine->is_playing()) {
-            audio_engine->pause();
-        } else {
-            audio_engine->play();
+            if (audio_engine->is_playing()) {
+                audio_engine->pause();
+            } else {
+                audio_engine->play(row);
+            }
         }
     }
 

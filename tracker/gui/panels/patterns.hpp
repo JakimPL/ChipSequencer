@@ -109,4 +109,6 @@ class GUIPatternsPanel : public GUIPanel {
     void deselect_all_rows();
     bool is_active() const;
     bool is_commands_view_active() const;
+    int get_current_row() const;
+    int get_current_page() const;
 };

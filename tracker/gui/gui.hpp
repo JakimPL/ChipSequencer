@@ -40,8 +40,7 @@ class GUI {
     void frame();
     std::pair<ValidationResult, int> pre_play() const;
     std::pair<ValidationResult, int> play() const;
-    std::pair<ValidationResult, int> play_from_current_page() const;
-    std::pair<ValidationResult, int> play_from_current_position() const;
+    std::pair<ValidationResult, int> play_from(const uint16_t row, const bool restart) const;
     void stop(const bool restore_parameters = true) const;
     bool is_playing() const;
     bool is_paused() const;
@@ -67,6 +66,8 @@ class GUI {
     int get_current_octave() const;
     int get_jump_step() const;
     int get_page_size() const;
+    int get_current_page() const;
+    int get_current_row() const;
     std::pair<int, int> get_page_start_end(const int page) const;
 
     int get_current_channel_index() const;
