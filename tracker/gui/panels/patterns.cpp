@@ -1,4 +1,5 @@
 #include "../../general.hpp"
+#include "../../utils/math.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
 #include "patterns.hpp"
@@ -13,12 +14,22 @@ GUIElement GUIPatternsPanel::get_element() const {
 }
 
 void GUIPatternsPanel::draw() {
+    draw_pages();
     draw_channels();
 }
 
 void GUIPatternsPanel::draw_pages() {
     const int previous_page = page;
     const int pages = get_pages();
+    ImGui::Checkbox("Follow playback", &follow_playback);
+    if (follow_playback && gui.is_playing()) {
+        const int total_rows = current_patterns.total_rows;
+        const int playing_page = mod(global_row, total_rows) / gui.get_page_size();
+        if (playing_page != page) {
+            page = playing_page;
+        }
+    }
+
     draw_int_slider(this, "Page", page, {}, 0, pages - 1);
     if (page != previous_page) {
         deselect_all_rows();
@@ -31,8 +42,6 @@ void GUIPatternsPanel::draw_channels() {
         ImGui::Text("No channels available.");
         return;
     }
-
-    draw_pages();
 
     const float available = ImGui::GetContentRegionAvail().x;
     const float total_min = columns * GUI_MINIMAL_CHANNEL_COLUMN_WIDTH;
