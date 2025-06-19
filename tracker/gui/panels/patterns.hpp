@@ -6,6 +6,7 @@
 #include "../constants.hpp"
 #include "../utils.hpp"
 #include "../patterns/commands.hpp"
+#include "../patterns/display.hpp"
 #include "../patterns/pattern.hpp"
 #include "../patterns/selection.hpp"
 #include "panel.hpp"
@@ -49,6 +50,9 @@ class GUIPatternsPanel : public GUIPanel {
         std::map<size_t, uint16_t> commands_patterns_max_rows;
         std::map<VariantChannelIndex, int> playing_rows;
     } current_patterns;
+
+    int row_display_index = 0;
+    RowDisplayStyle row_display = RowDisplayStyle::Page;
 
     int page = 0;
     VariantChannelIndex current_channel = {false, 0};

@@ -26,6 +26,9 @@ void GUIPatternsPanel::draw_pages() {
         ImGui::SetTooltip("%s", shortcut_manager.get_shortcut_display(ShortcutAction::PlayerFollowPlayback).c_str());
     }
 
+    ImGui::Combo("Row display style", &row_display_index, row_display_style_names.data(), row_display_style_names.size());
+    row_display = static_cast<RowDisplayStyle>(row_display_index);
+
     if (gui.follow_playback && gui.is_playing()) {
         const int total_rows = current_patterns.total_rows;
         const int playing_page = mod(global_row, total_rows) / gui.get_page_size();
@@ -83,7 +86,7 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
     for (auto &pattern : current_patterns.patterns[channel_index]) {
         const int playing_row = current_patterns.playing_rows[{false, channel_index}];
         auto [new_row, select] = draw_pattern(
-            pattern, pattern_selection, secondary_sequence_rows, true, channel_index, false, row, playing_row, start, end
+            pattern, pattern_selection, secondary_sequence_rows, true, channel_index, false, row, playing_row, start, end, row_display
         );
         if (select) {
             current_channel = {false, channel_index};
@@ -109,7 +112,7 @@ void GUIPatternsPanel::draw_commands_channel(size_t channel_index) {
     for (auto &pattern : current_patterns.commands_patterns[channel_index]) {
         const int playing_row = current_patterns.playing_rows[{true, channel_index}];
         auto [new_row, select] = draw_commands_pattern(
-            pattern, commands_selection, secondary_sequence_rows, true, channel_index, false, row, playing_row, start, end
+            pattern, commands_selection, secondary_sequence_rows, true, channel_index, false, row, playing_row, start, end, row_display
         );
         if (select) {
             current_channel = {true, channel_index};

@@ -14,6 +14,7 @@
 #include "panels/panel.hpp"
 #include "history/shortcuts.hpp"
 #include "patterns/commands.hpp"
+#include "patterns/display.hpp"
 #include "patterns/pattern.hpp"
 #include "patterns/selection.hpp"
 
@@ -70,7 +71,8 @@ std::pair<size_t, bool> draw_pattern(
     const size_t index = 0,
     const int playing_row = -1,
     const uint16_t start = 0,
-    const uint16_t end = UINT16_MAX
+    const uint16_t end = UINT16_MAX,
+    const RowDisplayStyle row_display = RowDisplayStyle::Page
 );
 std::pair<size_t, bool> draw_commands_pattern(
     CommandsPattern &pattern,
@@ -82,7 +84,8 @@ std::pair<size_t, bool> draw_commands_pattern(
     const size_t index = 0,
     const int playing_row = -1,
     const uint16_t start = 0,
-    const uint16_t end = UINT16_MAX
+    const uint16_t end = UINT16_MAX,
+    const RowDisplayStyle row_display = RowDisplayStyle::Page
 );
 
 GUIState prepare_combo(GUIPanel *owner, const std::vector<std::string> &names, std::string label, int &index, const LinkKey = {}, const bool error_if_empty = false);
@@ -91,6 +94,12 @@ void push_secondary_style();
 void pop_secondary_style();
 void push_tertiary_style();
 void pop_tertiary_style();
+
+std::string get_displayed_row(
+    const int row,
+    const int absolute_row,
+    const RowDisplayStyle row_display
+);
 
 template <typename T>
 void perform_action(
