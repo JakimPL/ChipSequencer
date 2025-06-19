@@ -273,6 +273,18 @@ void GUIPatternsPanel::shortcut_actions() {
         delete_selection();
         break;
     }
+    case PatternSelectionAction::SetNoteRest: {
+        set_selection_note(NOTE_REST);
+        break;
+    }
+    case PatternSelectionAction::SetNoteCut: {
+        set_selection_note(NOTE_CUT);
+        break;
+    }
+    case PatternSelectionAction::SetNoteOff: {
+        set_selection_note(NOTE_OFF);
+        break;
+    }
     case PatternSelectionAction::None:
     default: {
         break;
@@ -298,6 +310,23 @@ void GUIPatternsPanel::select_channel() {
 
 void GUIPatternsPanel::deselect_all() {
     selection.clear();
+}
+
+void GUIPatternsPanel::set_selection_note(const uint8_t note) {
+    if (selection.is_active()) {
+        for (const PatternRow &pattern_row : secondary_pattern_rows) {
+            const size_t channel_index = pattern_row.channel_index;
+            const size_t pattern_id = pattern_row.pattern_id;
+            const int row = pattern_row.row;
+            Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
+            pattern.set_note(row, note);
+        }
+    } else {
+        auto [pattern, pattern_id, index] = find_pattern_by_current_row();
+        if (pattern != nullptr) {
+            pattern->set_note(pattern->current_row, note);
+        }
+    }
 }
 
 void GUIPatternsPanel::delete_selection() {
@@ -818,6 +847,27 @@ void GUIPatternsPanel::register_shortcuts() {
         ShortcutAction::EditDelete,
         [this]() {
             selection_action = PatternSelectionAction::Delete;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSetNoteRest,
+        [this]() {
+            selection_action = PatternSelectionAction::SetNoteRest;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSetNoteCut,
+        [this]() {
+            selection_action = PatternSelectionAction::SetNoteCut;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PatternSetNoteOff,
+        [this]() {
+            selection_action = PatternSelectionAction::SetNoteOff;
         }
     );
 }

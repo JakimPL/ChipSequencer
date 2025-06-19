@@ -132,7 +132,7 @@ void Pattern::set_note(const int row, const int note) {
         return;
     }
 
-    if (note < 0 || note >= NOTES) {
+    if (note < 0 || (note >= NOTES && note < NOTE_CUT)) {
         return;
     }
 

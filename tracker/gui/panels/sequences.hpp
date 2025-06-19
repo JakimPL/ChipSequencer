@@ -17,12 +17,12 @@ class GUISequencesPanel : public GUIPanel {
 
     PatternSelection selection;
     PatternSelectionAction selection_action = PatternSelectionAction::None;
-    int transpose_by = 0;
 
     bool is_index_valid() const;
-    void transpose_selected_rows();
+    void transpose_selected_rows(const int value);
     void select_all();
     void deselect_all();
+    void set_selection_note(const uint8_t note);
     void delete_selection();
     void draw_sequence_length();
     void draw_sequence();

@@ -70,6 +70,7 @@ class GUIPatternsPanel : public GUIPanel {
     void select_channel();
     void select_all();
     void deselect_all();
+    void set_selection_note(const uint8_t note);
     void delete_selection();
     void transpose_selected_rows();
     void prepare_secondary_selection();

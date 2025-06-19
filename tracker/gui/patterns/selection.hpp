@@ -80,4 +80,7 @@ enum class PatternSelectionAction {
     SelectChannel,
     DeselectAll,
     Delete,
+    SetNoteRest,
+    SetNoteCut,
+    SetNoteOff,
 };
