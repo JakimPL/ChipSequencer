@@ -122,6 +122,4 @@ class SizeChecker:
                     file.write(f'            {{"{component}", {size}}},\n')
                 file.write("        },\n")
                 file.write("    },\n")
-            file.write("};\n\n")
-
-            file.write("#endif // MAPS_SIZES_HPP\n")
+            file.write("};\n")
