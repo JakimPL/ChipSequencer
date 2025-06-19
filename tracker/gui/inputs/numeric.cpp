@@ -1,3 +1,4 @@
+#include "../../general.hpp"
 #include "numeric.hpp"
 
 bool NumericInputHandler::handle_input(std::vector<int> &vector, int &index) {
@@ -29,10 +30,10 @@ bool NumericInputHandler::handle_input(std::vector<int> &vector, int &index) {
         value_inserted = true;
     }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_KeypadAdd)) {
+    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::EditIncrement)) {
         buffer = std::to_string(vector[index]);
         assign_value(vector, index, 1);
-    } else if (ImGui::IsKeyPressed(ImGuiKey_KeypadSubtract)) {
+    } else if (shortcut_manager.is_shortcut_pressed(ShortcutAction::EditDecrement)) {
         buffer = std::to_string(vector[index]);
         assign_value(vector, index, -1);
     } else {
@@ -49,12 +50,12 @@ bool NumericInputHandler::handle_input(std::vector<int> &vector, int &index) {
         buffer.clear();
     }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_Home)) {
+    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::EditHome)) {
         index = 0;
         buffer.clear();
     }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_End)) {
+    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::EditEnd)) {
         index = static_cast<int>(vector.size()) - 1;
         buffer.clear();
     }

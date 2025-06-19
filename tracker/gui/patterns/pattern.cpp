@@ -180,7 +180,7 @@ void Pattern::handle_input(const int min_row, const int max_row) {
             }
         }
 
-        if (ImGui::IsKeyPressed(ImGuiKey_Delete)) {
+        if (shortcut_manager.is_shortcut_pressed(ShortcutAction::EditDelete)) {
             notes[current_row] = NOTE_REST;
             jump(max_row);
         }
@@ -191,12 +191,12 @@ void Pattern::handle_input(const int min_row, const int max_row) {
         jump(max_row);
     }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_GraveAccent)) {
+    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::PatternSetNoteCut)) {
         notes[current_row] = NOTE_CUT;
         jump(max_row);
     }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_Backspace)) {
+    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::PatternSetNoteRest)) {
         notes[current_row] = NOTE_REST;
     }
 
@@ -210,19 +210,19 @@ void Pattern::handle_input(const int min_row, const int max_row) {
         current_row = std::min(max - 1, current_row + 1);
     }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_KeypadAdd)) {
+    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::EditIncrement)) {
         steps = std::min(steps, MAX_STEPS);
     }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_KeypadSubtract)) {
+    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::EditDecrement)) {
         steps = std::max(steps, 1);
     }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_Home)) {
+    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::EditHome)) {
         current_row = 0;
     }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_End)) {
+    if (shortcut_manager.is_shortcut_pressed(ShortcutAction::EditEnd)) {
         const int max = max_row == -1 ? steps : std::min(steps, max_row);
         current_row = max - 1;
     }
