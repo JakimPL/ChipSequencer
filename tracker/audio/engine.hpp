@@ -18,13 +18,14 @@ class AudioEngine {
     AudioEngine(PortAudioDriver &driver);
     ~AudioEngine();
 
-    void play();
+    void play(const uint16_t from_row = 0);
     void pause();
     void stop();
     bool is_error();
     bool is_playing() const;
     bool is_paused() const;
 
+    void skip_rows(const uint16_t from_row = 0);
     void set_output_channels(const int channels);
 
     const AudioHistory &get_history() const;

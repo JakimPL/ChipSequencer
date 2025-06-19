@@ -57,8 +57,7 @@ void GUIGeneralPanel::to() const {
     calculate_ticks_per_beat();
 }
 
-void GUIGeneralPanel::play() {
-    const auto [result, index] = gui.play();
+void GUIGeneralPanel::validate_playback(const ValidationResult result, const int index) {
     if (result != ValidationResult::OK) {
         error = true;
         error_message = get_error_message(result, index);
@@ -66,6 +65,16 @@ void GUIGeneralPanel::play() {
         error = false;
         error_message = "";
     }
+}
+
+void GUIGeneralPanel::play() {
+    const auto [result, index] = gui.play();
+    validate_playback(result, index);
+}
+
+void GUIGeneralPanel::play_from_current_position() {
+    const auto [result, index] = gui.play_from_current_position();
+    validate_playback(result, index);
 }
 
 void GUIGeneralPanel::draw_tabs() {

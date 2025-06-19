@@ -39,6 +39,8 @@ class GUIGeneralPanel : public GUIPanel {
     void draw_output();
     void draw_tuning_settings();
     void play();
+    void play_from_current_position();
+    void validate_playback(const ValidationResult result, const int index);
     std::string get_error_message(const ValidationResult result, const int index) const;
 
     void register_shortcuts() override;

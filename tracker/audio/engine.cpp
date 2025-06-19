@@ -28,7 +28,7 @@ AudioEngine::~AudioEngine() {
     driver.close_stream();
 }
 
-void AudioEngine::play() {
+void AudioEngine::play(const uint16_t from_row) {
     if (!driver.initialize()) {
         std::cerr << "Failed to initialize PortAudio." << std::endl;
         return;
@@ -51,8 +51,19 @@ void AudioEngine::play() {
     paused = false;
     error = false;
     initialize();
+    skip_rows(from_row);
     join_thread();
     playback_thread = std::thread(&AudioEngine::playback_function, this);
+}
+
+void AudioEngine::skip_rows(const uint16_t from_row) {
+    if (from_row == 0) {
+        return;
+    }
+
+    while (global_row < from_row) {
+        frame();
+    }
 }
 
 void AudioEngine::pause() {

@@ -15,6 +15,9 @@
 
     global sequence_timer_row
     global commands_sequence_timer_row
+    %ifdef TRACKER
+    global global_row
+    %endif
 
     global dsp_input
     global dsp_timer

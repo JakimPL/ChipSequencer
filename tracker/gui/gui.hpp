@@ -38,7 +38,10 @@ class GUI {
     void to() const;
 
     void frame();
+    std::pair<ValidationResult, int> pre_play() const;
     std::pair<ValidationResult, int> play() const;
+    std::pair<ValidationResult, int> play_from_current_page() const;
+    std::pair<ValidationResult, int> play_from_current_position() const;
     void stop(const bool restore_parameters = true) const;
     bool is_playing() const;
     bool is_paused() const;

@@ -389,11 +389,44 @@ void GUI::set_visibility_all(const bool visible) {
     wavetables_panel.visible = visible;
 }
 
-std::pair<ValidationResult, int> GUI::play() const {
+std::pair<ValidationResult, int> GUI::pre_play() const {
     link_manager.capture_parameters();
     const auto [result, index] = song.validate();
-    if (result == ValidationResult::OK && audio_engine != nullptr) {
+    if (audio_engine != nullptr && result == ValidationResult::OK) {
         audio_engine->set_output_channels(song.get_output_channels());
+    }
+    return {result, index};
+}
+
+std::pair<ValidationResult, int> GUI::play() const {
+    const auto [result, index] = pre_play();
+    if (result == ValidationResult::OK && audio_engine != nullptr) {
+        if (audio_engine->is_playing()) {
+            audio_engine->pause();
+        } else {
+            audio_engine->play();
+        }
+    }
+
+    return {result, index};
+}
+
+std::pair<ValidationResult, int> GUI::play_from_current_page() const {
+    const auto [result, index] = pre_play();
+    if (result == ValidationResult::OK && audio_engine != nullptr) {
+        if (audio_engine->is_playing()) {
+            audio_engine->pause();
+        } else {
+            audio_engine->play();
+        }
+    }
+
+    return {result, index};
+}
+
+std::pair<ValidationResult, int> GUI::play_from_current_position() const {
+    const auto [result, index] = pre_play();
+    if (result == ValidationResult::OK && audio_engine != nullptr) {
         if (audio_engine->is_playing()) {
             audio_engine->pause();
         } else {
