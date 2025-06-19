@@ -186,8 +186,13 @@ void Pattern::handle_input(const int min_row, const int max_row) {
         }
     }
 
-    if (ImGui::IsKeyPressed(ImGuiKey_Apostrophe) || ImGui::IsKeyPressed(ImGuiKey_Equal)) {
+    if (ImGui::IsKeyPressed(ImGuiKey_Equal)) {
         notes[current_row] = NOTE_OFF;
+        jump(max_row);
+    }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_GraveAccent)) {
+        notes[current_row] = NOTE_CUT;
         jump(max_row);
     }
 
