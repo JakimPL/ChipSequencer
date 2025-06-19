@@ -158,7 +158,7 @@ void GUIGeneralPanel::draw_play_triangle() {
     ImGui::SetCursorScreenPos(p);
     ImGui::InvisibleButton("Play", ImVec2(sz, sz));
     if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
-        ImGui::SetTooltip("Play (%s)", shortcut_manager.get_shortcut_display(ShortcutAction::SongPlayPause).c_str());
+        ImGui::SetTooltip("Play (%s)", shortcut_manager.get_shortcut_display(ShortcutAction::PlayerPlayPause).c_str());
     }
     if (ImGui::IsItemClicked()) {
         play();
@@ -194,7 +194,7 @@ void GUIGeneralPanel::draw_play_from_page_button() {
     ImGui::SetCursorScreenPos(p);
     ImGui::InvisibleButton("PlayFromPage", ImVec2(sz, sz));
     if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
-        ImGui::SetTooltip("Play from current page (%s)", shortcut_manager.get_shortcut_display(ShortcutAction::SongPlayFromCurrentPage).c_str());
+        ImGui::SetTooltip("Play from current page (%s)", shortcut_manager.get_shortcut_display(ShortcutAction::PlayerPlayFromCurrentPage).c_str());
     }
     if (ImGui::IsItemClicked()) {
         play_from_current_page();
@@ -221,7 +221,7 @@ void GUIGeneralPanel::draw_pause_rectangles() {
     ImGui::SetCursorScreenPos(p);
     ImGui::InvisibleButton("Pause", ImVec2(sz, sz));
     if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
-        ImGui::SetTooltip("Pause (%s)", shortcut_manager.get_shortcut_display(ShortcutAction::SongPlayPause).c_str());
+        ImGui::SetTooltip("Pause (%s)", shortcut_manager.get_shortcut_display(ShortcutAction::PlayerPlayPause).c_str());
     }
     if (ImGui::IsItemClicked()) {
         play();
@@ -329,17 +329,17 @@ void GUIGeneralPanel::draw_dialog_box() {
 
 void GUIGeneralPanel::register_shortcuts() {
     shortcut_manager.register_shortcut(
-        ShortcutAction::SongPlayPause,
+        ShortcutAction::PlayerPlayPause,
         [this]() { this->play(); }
     );
 
     shortcut_manager.register_shortcut(
-        ShortcutAction::SongPlayFromCurrentPosition,
+        ShortcutAction::PlayerPlayFromCurrentPosition,
         [this]() { this->play_from_current_position(); }
     );
 
     shortcut_manager.register_shortcut(
-        ShortcutAction::SongPlayFromCurrentPage,
+        ShortcutAction::PlayerPlayFromCurrentPage,
         [this]() { this->play_from_current_page(); }
     );
 

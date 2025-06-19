@@ -103,6 +103,7 @@ class GUI {
     bool is_pattern_view_active() const;
     bool is_commands_pattern_view_active() const;
 
+    bool follow_playback = true;
     int current_octave = GUI_DEFAULT_CURRENT_OCTAVE;
     int jump_step = GUI_DEFAULT_JUMP_STEP;
     int page_size = GUI_DEFAULT_PAGE_SIZE;

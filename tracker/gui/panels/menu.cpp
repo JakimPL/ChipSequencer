@@ -44,12 +44,14 @@ void GUIMenu::draw_menu() {
         }
         if (ImGui::BeginMenu("Player")) {
             const std::string play_pause_label = gui.is_playing() ? "Pause" : "Play";
-            draw_menu_item(play_pause_label, ShortcutAction::SongPlayPause);
-            draw_menu_item("Play from current page", ShortcutAction::SongPlayFromCurrentPage);
+            draw_menu_item(play_pause_label, ShortcutAction::PlayerPlayPause);
+            draw_menu_item("Play from current page", ShortcutAction::PlayerPlayFromCurrentPage);
             ImGui::BeginDisabled(gui.get_current_row() < 0);
-            draw_menu_item("Play from current position", ShortcutAction::SongPlayFromCurrentPosition);
+            draw_menu_item("Play from current position", ShortcutAction::PlayerPlayFromCurrentPosition);
             ImGui::EndDisabled();
             draw_menu_item("Stop", ShortcutAction::SongStop);
+            ImGui::Separator();
+            draw_menu_item("Follow playback", ShortcutAction::PlayerFollowPlayback, gui.follow_playback);
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Edit")) {
@@ -328,5 +330,10 @@ void GUIMenu::register_shortcuts() {
     shortcut_manager.register_shortcut(
         ShortcutAction::EditRedo,
         []() { history_manager.redo(); }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::PlayerFollowPlayback,
+        [this]() { gui.follow_playback = !gui.follow_playback; }
     );
 }

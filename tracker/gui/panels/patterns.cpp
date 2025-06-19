@@ -21,8 +21,12 @@ void GUIPatternsPanel::draw() {
 void GUIPatternsPanel::draw_pages() {
     const int previous_page = page;
     const int pages = get_pages();
-    ImGui::Checkbox("Follow playback", &follow_playback);
-    if (follow_playback && gui.is_playing()) {
+    ImGui::Checkbox("Follow playback", &gui.follow_playback);
+    if (ImGui::IsItemHovered()) {
+        ImGui::SetTooltip("%s", shortcut_manager.get_shortcut_display(ShortcutAction::PlayerFollowPlayback).c_str());
+    }
+
+    if (gui.follow_playback && gui.is_playing()) {
         const int total_rows = current_patterns.total_rows;
         const int playing_page = mod(global_row, total_rows) / gui.get_page_size();
         if (playing_page != page) {
