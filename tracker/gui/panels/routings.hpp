@@ -24,8 +24,14 @@ class GUIRoutingsPanel : public GUIPanel {
     std::optional<NodeIdentifier> dragging_node_id;
     ImVec2 drag_node_offset = {0.0f, 0.0f};
 
-    void collect_links();
-    void collect_nodes();
+    bool channel_solo = false;
+    bool dsp_solo = false;
+
+    void from_nodes();
+    void from_links();
+    void to_nodes() const;
+    void to_links() const;
+
     void draw_reset_button();
     void draw_node(RoutingNode &routing_node, const ImVec2 node_rect_min);
     void draw_nodes();
@@ -33,6 +39,8 @@ class GUIRoutingsPanel : public GUIPanel {
     void draw_all_links();
     ImVec2 calculate_content_size() const;
 
+    void reset_dragging();
+    void reset_linking();
     bool is_linking_possible(const InputKey &source_key, const OutputKey &target_key) const;
     RoutingNode *handle_node_dragging(const ImVec2 &canvas_origin);
     void set_source_key(const ImVec2 pin_position, const InputKey &source_key);
@@ -45,6 +53,8 @@ class GUIRoutingsPanel : public GUIPanel {
     void add_dsp_node(size_t index, std::vector<RoutingNode> &nodes, std::map<float, float> &column_next_y);
     void add_output_node(size_t index, std::vector<RoutingNode> &nodes, std::map<float, float> &column_next_y);
 
+    bool get_bypass_state(const RoutingNode &node) const;
+    bool get_bypass_state(const ItemType type, const bool bypass, const bool solo) const;
     bool get_splitter_bounds(const size_t j, size_t index, const Link &link) const;
     Splitter get_splitter_from_input_key(const InputKey &source) const;
 

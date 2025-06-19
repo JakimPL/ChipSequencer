@@ -52,5 +52,3 @@ std::unordered_map<std::string, std::unordered_map<std::string, size_t>> compone
         },
     },
 };
-
-#endif // MAPS_SIZES_HPP
