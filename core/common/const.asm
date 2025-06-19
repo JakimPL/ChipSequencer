@@ -41,6 +41,7 @@
 
 ; Notes
     %define NOTES 250
+    %define NOTE_CUT 253
     %define NOTE_REST 254
     %define NOTE_OFF 255
 
