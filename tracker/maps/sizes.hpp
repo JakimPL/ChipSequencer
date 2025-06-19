@@ -4,9 +4,9 @@
 #include <unordered_map>
 
 std::unordered_map<const char *, size_t> module_sizes = {
-    {"Core", 2182},
+    {"Core", 2194},
     {"DSPs", 360},
-    {"Commands", 488},
+    {"Commands", 492},
 };
 
 std::unordered_map<std::string, std::unordered_map<std::string, size_t>> component_sizes = {
@@ -14,7 +14,7 @@ std::unordered_map<std::string, std::unordered_map<std::string, size_t>> compone
         "DSPs",
         {
             {"Gainer", 16},
-            {"Distortion", 52},
+            {"Distortion", 56},
             {"Filter", 140},
             {"Delay", 80},
         },
@@ -23,7 +23,7 @@ std::unordered_map<std::string, std::unordered_map<std::string, size_t>> compone
         "Oscillators",
         {
             {"Square", 48},
-            {"Sine", 156},
+            {"Sine", 160},
             {"Saw", 68},
             {"Wavetable", 112},
             {"Noise", 80},
@@ -33,22 +33,24 @@ std::unordered_map<std::string, std::unordered_map<std::string, size_t>> compone
         "Commands",
         {
             {"Portamento", 48},
-            {"Portamento up", 20},
+            {"Portamento up", 16},
             {"Portamento down", 20},
-            {"Set master gainer", 28},
+            {"Set master gainer", 24},
             {"Set BPM", 20},
-            {"Set division", 32},
+            {"Set division", 28},
             {"Load target", 12},
             {"Change 32bit value", 24},
-            {"Change byte value", 16},
+            {"Change byte value", 12},
             {"Change word value", 16},
             {"Change dword value", 8},
             {"Change float value", 8},
             {"Add 32bit value", 24},
-            {"Add byte value", 16},
+            {"Add byte value", 12},
             {"Add word value", 16},
             {"Add dword value", 8},
             {"Add float value", 8},
         },
     },
 };
+
+#endif // MAPS_SIZES_HPP
