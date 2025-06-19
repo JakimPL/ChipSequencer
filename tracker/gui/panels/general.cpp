@@ -124,6 +124,8 @@ void GUIGeneralPanel::draw_play_button() {
         draw_pause_rectangles();
     }
     ImGui::SameLine();
+    draw_play_from_page_button();
+    ImGui::SameLine();
     draw_stop_square();
 
     if (gui.is_playing()) {
@@ -140,16 +142,18 @@ void GUIGeneralPanel::draw_play_button() {
 
 void GUIGeneralPanel::draw_play_triangle() {
     ImVec2 p = ImGui::GetCursorScreenPos();
-    float sz = 20.0f;
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
-    ImVec2 center = ImVec2(p.x + sz * 0.5f, p.y + sz * 0.5f);
 
-    ImVec2 points[3] = {
+    const float sz = 20.0f;
+    const ImVec2 center = ImVec2(p.x + sz * 0.5f, p.y + sz * 0.5f);
+
+    const ImVec2 points[3] = {
         ImVec2(center.x - sz * 0.3f, center.y - sz * 0.5f),
         ImVec2(center.x + sz * 0.5f, center.y),
         ImVec2(center.x - sz * 0.3f, center.y + sz * 0.5f)
     };
-    draw_list->AddTriangleFilled(points[0], points[1], points[2], IM_COL32(0, 255, 0, 255));
+
+    draw_list->AddTriangleFilled(points[0], points[1], points[2], GUI_BUTTON_COLOR_PLAY);
 
     ImGui::SetCursorScreenPos(p);
     ImGui::InvisibleButton("Play", ImVec2(sz, sz));
@@ -161,21 +165,58 @@ void GUIGeneralPanel::draw_play_triangle() {
     }
 }
 
+void GUIGeneralPanel::draw_play_from_page_button() {
+    ImVec2 p = ImGui::GetCursorScreenPos();
+    ImDrawList *draw_list = ImGui::GetWindowDrawList();
+
+    const float sz = 20.0f;
+    const ImVec2 center = ImVec2(p.x + sz * 0.5f, p.y + sz * 0.5f);
+
+    const float line_x = center.x - sz * 0.3f;
+    const float line_height = 0.8f * sz;
+    const float bar_width = sz * 0.20f;
+    const float padding = sz * 0.15f;
+    const float height = sz * 0.05f;
+
+    const ImVec2 left_min = ImVec2(p.x + padding - 3.0f, p.y + height);
+    const ImVec2 left_max = ImVec2(p.x + padding - 3.0f + bar_width, p.y + sz - height);
+
+    draw_list->AddRectFilled(left_min, left_max, GUI_BUTTON_COLOR_PLAY_FROM_CURRENT_POSITION);
+
+    const ImVec2 points[3] = {
+        ImVec2(center.x - sz * 0.3f + 3.0f, center.y - sz * 0.5f),
+        ImVec2(center.x + sz * 0.5f + 3.0f, center.y),
+        ImVec2(center.x - sz * 0.3f + 3.0f, center.y + sz * 0.5f)
+    };
+
+    draw_list->AddTriangleFilled(points[0], points[1], points[2], GUI_BUTTON_COLOR_PLAY_FROM_CURRENT_POSITION);
+
+    ImGui::SetCursorScreenPos(p);
+    ImGui::InvisibleButton("PlayFromPage", ImVec2(sz, sz));
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+        ImGui::SetTooltip("Play from current page (%s)", shortcut_manager.get_shortcut_display(ShortcutAction::SongPlayFromCurrentPage).c_str());
+    }
+    if (ImGui::IsItemClicked()) {
+        play_from_current_page();
+    }
+}
+
 void GUIGeneralPanel::draw_pause_rectangles() {
     ImVec2 p = ImGui::GetCursorScreenPos();
-    float sz = 20.0f;
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
-    float bar_width = sz * 0.20f;
-    float padding = sz * 0.15f;
-    float height = sz * 0.05f;
 
-    ImVec2 left_min = ImVec2(p.x + padding, p.y + height);
-    ImVec2 left_max = ImVec2(p.x + padding + bar_width, p.y + sz - height);
-    ImVec2 right_min = ImVec2(p.x + sz - padding - bar_width, p.y + height);
-    ImVec2 right_max = ImVec2(p.x + sz - padding, p.y + sz - height);
+    const float sz = 20.0f;
+    const float bar_width = sz * 0.20f;
+    const float padding = sz * 0.15f;
+    const float height = sz * 0.05f;
 
-    draw_list->AddRectFilled(left_min, left_max, IM_COL32(0, 255, 0, 255));
-    draw_list->AddRectFilled(right_min, right_max, IM_COL32(0, 255, 0, 255));
+    const ImVec2 left_min = ImVec2(p.x + padding, p.y + height);
+    const ImVec2 left_max = ImVec2(p.x + padding + bar_width, p.y + sz - height);
+    const ImVec2 right_min = ImVec2(p.x + sz - padding - bar_width, p.y + height);
+    const ImVec2 right_max = ImVec2(p.x + sz - padding, p.y + sz - height);
+
+    draw_list->AddRectFilled(left_min, left_max, GUI_BUTTON_COLOR_PLAY);
+    draw_list->AddRectFilled(right_min, right_max, GUI_BUTTON_COLOR_PLAY);
 
     ImGui::SetCursorScreenPos(p);
     ImGui::InvisibleButton("Pause", ImVec2(sz, sz));
@@ -189,11 +230,14 @@ void GUIGeneralPanel::draw_pause_rectangles() {
 
 void GUIGeneralPanel::draw_stop_square() const {
     ImVec2 p = ImGui::GetCursorScreenPos();
-    float sz = 20.0f;
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
-    ImVec2 p_min = p;
-    ImVec2 p_max = ImVec2(p.x + sz, p.y + sz);
-    draw_list->AddRectFilled(p_min, p_max, IM_COL32(255, 0, 0, 255));
+
+    const float sz = 20.0f;
+    const float real_sz = sz * 0.85f;
+    const ImVec2 p_min = ImVec2(p.x + sz * 0.5f - real_sz * 0.5f, p.y + sz * 0.5f - real_sz * 0.5f);
+    const ImVec2 p_max = ImVec2(p.x + sz * 0.5f + real_sz * 0.5f, p.y + sz * 0.5f + real_sz * 0.5f);
+
+    draw_list->AddRectFilled(p_min, p_max, GUI_BUTTON_COLOR_STOP);
 
     ImGui::SetCursorScreenPos(p);
     ImGui::InvisibleButton("Stop", ImVec2(sz, sz));

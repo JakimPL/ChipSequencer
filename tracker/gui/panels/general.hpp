@@ -32,6 +32,7 @@ class GUIGeneralPanel : public GUIPanel {
     void draw_play_button();
     void draw_pause_rectangles();
     void draw_play_triangle();
+    void draw_play_from_page_button();
     void draw_stop_square() const;
     void draw_song_info();
     void draw_tabs();
