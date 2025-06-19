@@ -33,6 +33,8 @@ class GUIRoutingsPanel : public GUIPanel {
     void draw_all_links();
     ImVec2 calculate_content_size() const;
 
+    void reset_dragging();
+    void reset_linking();
     bool is_linking_possible(const InputKey &source_key, const OutputKey &target_key) const;
     RoutingNode *handle_node_dragging(const ImVec2 &canvas_origin);
     void set_source_key(const ImVec2 pin_position, const InputKey &source_key);

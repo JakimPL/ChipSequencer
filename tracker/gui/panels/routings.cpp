@@ -15,6 +15,7 @@
 #include "../../song/song.hpp"
 #include "../../structures/channel.hpp"
 #include "../../structures/dsp.hpp"
+#include "../../utils/math.hpp"
 #include "../constants.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
@@ -49,6 +50,21 @@ void GUIRoutingsPanel::to() const {
         (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
          gui.is_playing())) {
         return;
+    }
+
+    for (const auto &node : nodes) {
+        if (node.key.has_value()) {
+            const InputKey &input_key = node.key.value();
+            if (input_key.first == ItemType::CHANNEL) {
+                const size_t channel_index = input_key.second;
+                Channel *channel = channels[channel_index];
+                set_flag(channel->flag, FLAG_BYPASS, node.bypass);
+            } else if (input_key.first == ItemType::DSP) {
+                const size_t dsp_index = input_key.second;
+                DSP *dsp = static_cast<DSP *>(dsps[dsp_index]);
+                set_flag(dsp->flag, FLAG_BYPASS, node.bypass);
+            }
+        }
     }
 
     for (const auto &[source_key, target_key] : nodes_links) {
@@ -279,6 +295,12 @@ void GUIRoutingsPanel::draw_reset_button() {
 }
 
 void GUIRoutingsPanel::draw_nodes() {
+    if (ImGui::IsWindowCollapsed()) {
+        reset_dragging();
+        reset_linking();
+        return;
+    }
+
     input_pins.clear();
     output_pins.clear();
 
@@ -484,6 +506,17 @@ void GUIRoutingsPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_re
     routing_node.size = {node_actual_width, node_actual_height};
 
     const bool is_hovered = ImGui::IsMouseHoveringRect(node_rect_min, node_rect_max);
+
+    if (
+        ImGui::IsMouseClicked(ImGuiMouseButton_Right) &&
+        !gui.is_playing() &&
+        is_hovered &&
+        routing_node.key.has_value()
+    ) {
+        routing_node.bypass = !routing_node.bypass;
+        save = true;
+    }
+
     if (!dragging_node_id.has_value() && is_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
         dragging_node_id = routing_node.identifier;
         drag_node_offset = ImGui::GetMousePos() - node_rect_min;
@@ -614,6 +647,14 @@ void GUIRoutingsPanel::set_target_key(const ImVec2 pin_position, const OutputKey
         const LinkKey link_key = from_input_key(source_key);
         perform_action_routing(this, link_key, source_key, target_key, old_value);
     }
+}
+
+void GUIRoutingsPanel::reset_dragging() {
+    dragging_node_id = std::nullopt;
+}
+
+void GUIRoutingsPanel::reset_linking() {
+    link_dragging_source_key = std::nullopt;
 }
 
 bool GUIRoutingsPanel::is_linking_possible(const InputKey &source_key, const OutputKey &target_key) const {

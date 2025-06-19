@@ -3,6 +3,7 @@
 
 #include "../constants.hpp"
 #include "../song/core.hpp"
+#include "../utils/math.hpp"
 #include "output.hpp"
 
 uint8_t OutputType::set_output_flag(uint8_t &output_flag) const {
@@ -13,18 +14,8 @@ uint8_t OutputType::set_output_flag(uint8_t &output_flag) const {
 }
 
 uint8_t OutputType::set_item_flag(uint8_t &item_flag) const {
-    if (splitter_on) {
-        item_flag |= FLAG_SPLITTER;
-    } else {
-        item_flag &= ~FLAG_SPLITTER;
-    }
-
-    if (bypass) {
-        item_flag |= FLAG_BYPASS;
-    } else {
-        item_flag &= ~FLAG_BYPASS;
-    }
-
+    set_flag(item_flag, FLAG_SPLITTER, splitter_on);
+    set_flag(item_flag, FLAG_BYPASS, bypass);
     return item_flag;
 }
 
