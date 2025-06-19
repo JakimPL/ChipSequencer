@@ -1,4 +1,5 @@
 #include "../../general.hpp"
+#include "../../utils/math.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
 #include "patterns.hpp"
@@ -13,13 +14,33 @@ GUIElement GUIPatternsPanel::get_element() const {
 }
 
 void GUIPatternsPanel::draw() {
+    draw_pages();
     draw_channels();
 }
 
 void GUIPatternsPanel::draw_pages() {
     const int previous_page = page;
     const int pages = get_pages();
-    draw_int_slider(this, "Page", page, {}, 0, pages - 1);
+    ImGui::Checkbox("Follow playback", &gui.follow_playback);
+    if (ImGui::IsItemHovered()) {
+        ImGui::SetTooltip("%s", shortcut_manager.get_shortcut_display(ShortcutAction::PlayerFollowPlayback).c_str());
+    }
+
+    ImGui::Combo("Row display style", &row_display_index, row_display_style_names.data(), row_display_style_names.size());
+    row_display = static_cast<RowDisplayStyle>(row_display_index);
+
+    if (gui.follow_playback && gui.is_playing()) {
+        const int total_rows = current_patterns.total_rows;
+        const int playing_page = mod(global_row, total_rows) / gui.get_page_size();
+        if (playing_page != page) {
+            page = playing_page;
+        }
+    }
+
+    if (draw_int_slider(this, "Page", page, {}, 0, pages - 1)) {
+        gui.follow_playback = false;
+    }
+
     if (page != previous_page) {
         deselect_all_rows();
     }
@@ -31,8 +52,6 @@ void GUIPatternsPanel::draw_channels() {
         ImGui::Text("No channels available.");
         return;
     }
-
-    draw_pages();
 
     const float available = ImGui::GetContentRegionAvail().x;
     const float total_min = columns * GUI_MINIMAL_CHANNEL_COLUMN_WIDTH;
@@ -70,7 +89,7 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
     for (auto &pattern : current_patterns.patterns[channel_index]) {
         const int playing_row = current_patterns.playing_rows[{false, channel_index}];
         auto [new_row, select] = draw_pattern(
-            pattern, pattern_selection, secondary_sequence_rows, true, channel_index, false, row, playing_row, start, end
+            pattern, pattern_selection, secondary_sequence_rows, true, channel_index, false, row, playing_row, start, end, row_display
         );
         if (select) {
             current_channel = {false, channel_index};
@@ -96,7 +115,7 @@ void GUIPatternsPanel::draw_commands_channel(size_t channel_index) {
     for (auto &pattern : current_patterns.commands_patterns[channel_index]) {
         const int playing_row = current_patterns.playing_rows[{true, channel_index}];
         auto [new_row, select] = draw_commands_pattern(
-            pattern, commands_selection, secondary_sequence_rows, true, channel_index, false, row, playing_row, start, end
+            pattern, commands_selection, secondary_sequence_rows, true, channel_index, false, row, playing_row, start, end, row_display
         );
         if (select) {
             current_channel = {true, channel_index};
@@ -769,6 +788,14 @@ void GUIPatternsPanel::set_note(const size_t channel_index, const size_t pattern
         current_channel = {false, channel_index};
         current_row = pattern.starting_row + row;
     }
+}
+
+int GUIPatternsPanel::get_current_page() const {
+    return page;
+}
+
+int GUIPatternsPanel::get_current_row() const {
+    return current_row;
 }
 
 bool GUIPatternsPanel::is_playing() const {

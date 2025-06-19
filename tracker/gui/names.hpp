@@ -9,6 +9,7 @@
 #include "../song/links/type.hpp"
 #include "../structures/commands/sequence.hpp"
 #include "enums.hpp"
+#include "patterns/display.hpp"
 
 extern std::vector<std::string> channel_names;
 extern std::vector<std::string> dsp_names;
@@ -27,6 +28,8 @@ const std::vector<std::string> simple_operation_names = {"Add", "Set"};
 const std::vector<std::string> operation_names = {"Add", "Set", "Multiply", "Zero"};
 const std::vector<std::string> variable_types = {"Float", "Byte (int8)", "Word (int16)", "Dword (int32)"};
 const std::vector<std::string> generator_names = {"Square", "Saw", "Sine", "Wavetable", "Noise"};
+const std::vector<const char *> row_display_style_names = {"Page", "Absolute", "Relative"};
+
 const std::map<Target, std::string> target_names = {
     {Target::SPLITTER_OUTPUT, "Output splitter"},
     {Target::SPLITTER_DSP, "DSP splitter"},

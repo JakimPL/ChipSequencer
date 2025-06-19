@@ -5,6 +5,7 @@
 #include "../maps/commands.hpp"
 #include "../maps/keys.hpp"
 #include "../maps/routing.hpp"
+#include "../utils/math.hpp"
 #include "../utils/string.hpp"
 #include "constants.hpp"
 #include "names.hpp"
@@ -49,7 +50,7 @@ void draw_text(GUIPanel *owner, const char *label, char (&text)[n], const LinkKe
     ImGui::EndDisabled();
 }
 
-void draw_checkbox(GUIPanel *owner, const char *label, bool &reference, const LinkKey key) {
+bool draw_checkbox(GUIPanel *owner, const char *label, bool &reference, const LinkKey key) {
     ImGui::BeginDisabled(link_manager.is_linked(key));
 
     const bool old_value = reference;
@@ -64,9 +65,11 @@ void draw_checkbox(GUIPanel *owner, const char *label, bool &reference, const Li
     if (action) {
         perform_action(owner, key, reference, old_value);
     }
+
+    return action;
 }
 
-void draw_int_slider(GUIPanel *owner, const char *label, int &reference, const LinkKey key, int min, int max) {
+bool draw_int_slider(GUIPanel *owner, const char *label, int &reference, const LinkKey key, int min, int max) {
     ImGui::BeginDisabled(link_manager.is_linked(key));
 
     const int old_value = reference;
@@ -89,9 +92,11 @@ void draw_int_slider(GUIPanel *owner, const char *label, int &reference, const L
     if (action) {
         perform_action(owner, key, reference, old_value);
     }
+
+    return action;
 }
 
-void draw_float_slider(GUIPanel *owner, const char *label, float &reference, const LinkKey key, float min, float max, const GUIScale scale, const char *format) {
+bool draw_float_slider(GUIPanel *owner, const char *label, float &reference, const LinkKey key, float min, float max, const GUIScale scale, const char *format) {
     ImGui::BeginDisabled(link_manager.is_linked(key));
 
     const float old_value = reference;
@@ -153,9 +158,11 @@ void draw_float_slider(GUIPanel *owner, const char *label, float &reference, con
     if (action) {
         perform_action_float(owner, key, reference, old_value, format);
     }
+
+    return action;
 }
 
-void draw_knob(GUIPanel *owner, const char *label, float &reference, const LinkKey key, float min, float max) {
+bool draw_knob(GUIPanel *owner, const char *label, float &reference, const LinkKey key, float min, float max) {
     ImGui::BeginDisabled(link_manager.is_linked(key));
 
     const float old_value = reference;
@@ -172,6 +179,8 @@ void draw_knob(GUIPanel *owner, const char *label, float &reference, const LinkK
     if (action) {
         perform_action_float(owner, key, reference, old_value);
     }
+
+    return action;
 }
 
 void draw_link_tooltip(const LinkKey &key) {
@@ -299,7 +308,8 @@ std::pair<size_t, bool> draw_pattern(
     const size_t index,
     const int playing_row,
     const uint16_t start,
-    const uint16_t end
+    const uint16_t end,
+    const RowDisplayStyle row_display
 ) {
     bool current = false;
     const int min_row_to_draw = std::max(static_cast<int>(start) - static_cast<int>(index), 0);
@@ -342,8 +352,8 @@ std::pair<size_t, bool> draw_pattern(
             }
 
             ImGui::TableSetColumnIndex(0);
-            const std::string index_string = std::to_string(j);
-            if (ImGui::Selectable(index_string.c_str(), is_current, ImGuiSelectableFlags_SpanAllColumns)) {
+            const std::string displayed_row = get_displayed_row(i, j, row_display);
+            if (ImGui::Selectable(displayed_row.c_str(), is_current, ImGuiSelectableFlags_SpanAllColumns)) {
                 pattern.current_row = i;
                 current = true;
             }
@@ -403,7 +413,8 @@ std::pair<size_t, bool> draw_commands_pattern(
     const size_t index,
     const int playing_row,
     const uint16_t start,
-    const uint16_t end
+    const uint16_t end,
+    const RowDisplayStyle row_display
 ) {
     bool current = false;
     const int min = std::max(static_cast<int>(start) - static_cast<int>(index), 0);
@@ -451,8 +462,8 @@ std::pair<size_t, bool> draw_commands_pattern(
             }
 
             ImGui::TableSetColumnIndex(0);
-            const std::string index_string = std::to_string(j);
-            if (ImGui::Selectable(index_string.c_str(), false, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)) {
+            const std::string displayed_row = get_displayed_row(i, j, row_display);
+            if (ImGui::Selectable(displayed_row.c_str(), false, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)) {
             }
             selection.form(true, channel_index, j);
             ImGui::SameLine(0, 0);
@@ -948,6 +959,31 @@ void push_tertiary_style() {
 
 void pop_tertiary_style() {
     ImGui::PopStyleColor(13);
+}
+
+std::string get_displayed_row(
+    const int row,
+    const int absolute_row,
+    const RowDisplayStyle row_display
+) {
+    int displayed_row;
+    switch (row_display) {
+    case RowDisplayStyle::Absolute: {
+        displayed_row = absolute_row;
+        break;
+    }
+    case RowDisplayStyle::Relative: {
+        displayed_row = row;
+        break;
+    }
+    case RowDisplayStyle::Page:
+    default: {
+        displayed_row = absolute_row % gui.page_size;
+        break;
+    }
+    }
+
+    return std::to_string(displayed_row);
 }
 
 template <typename T>

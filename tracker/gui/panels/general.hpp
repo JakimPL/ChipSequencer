@@ -32,6 +32,7 @@ class GUIGeneralPanel : public GUIPanel {
     void draw_play_button();
     void draw_pause_rectangles();
     void draw_play_triangle();
+    void draw_play_from_page_button();
     void draw_stop_square() const;
     void draw_song_info();
     void draw_tabs();
@@ -39,6 +40,9 @@ class GUIGeneralPanel : public GUIPanel {
     void draw_output();
     void draw_tuning_settings();
     void play();
+    void play_from_current_page();
+    void play_from_current_position();
+    void validate_playback(const ValidationResult result, const int index);
     std::string get_error_message(const ValidationResult result, const int index) const;
 
     void register_shortcuts() override;

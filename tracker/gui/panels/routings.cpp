@@ -765,7 +765,6 @@ void GUIRoutingsPanel::set_nodes_positions(const std::vector<std::pair<NodeIdent
 }
 
 ImVec2 GUIRoutingsPanel::calculate_content_size() const {
-
     ImVec2 min_pos(FLT_MAX, FLT_MAX);
     ImVec2 max_pos(-FLT_MAX, -FLT_MAX);
 

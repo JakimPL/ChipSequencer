@@ -14,6 +14,7 @@
 #include "panels/panel.hpp"
 #include "history/shortcuts.hpp"
 #include "patterns/commands.hpp"
+#include "patterns/display.hpp"
 #include "patterns/pattern.hpp"
 #include "patterns/selection.hpp"
 
@@ -30,10 +31,10 @@ void draw_number_of_items(GUIPanel *owner, const std::string &label, const char 
 
 template <size_t n>
 void draw_text(GUIPanel *owner, const char *label, char (&text)[n], const LinkKey key);
-void draw_checkbox(GUIPanel *owner, const char *label, bool &reference, const LinkKey key);
-void draw_int_slider(GUIPanel *owner, const char *label, int &reference, const LinkKey key, int min = 0, int max = 1);
-void draw_float_slider(GUIPanel *owner, const char *label, float &reference, const LinkKey, float min = 0.0f, float max = 1.0f, const GUIScale scale = GUIScale::Linear, const char *format = "%.4f");
-void draw_knob(GUIPanel *owner, const char *label, float &reference, const LinkKey key, float min = 0.0f, float max = 1.0f);
+bool draw_checkbox(GUIPanel *owner, const char *label, bool &reference, const LinkKey key);
+bool draw_int_slider(GUIPanel *owner, const char *label, int &reference, const LinkKey key, int min = 0, int max = 1);
+bool draw_float_slider(GUIPanel *owner, const char *label, float &reference, const LinkKey, float min = 0.0f, float max = 1.0f, const GUIScale scale = GUIScale::Linear, const char *format = "%.4f");
+bool draw_knob(GUIPanel *owner, const char *label, float &reference, const LinkKey key, float min = 0.0f, float max = 1.0f);
 void draw_link_tooltip(const LinkKey &key);
 
 bool draw_button(const char *label, const float button_padding = 0.0f);
@@ -70,7 +71,8 @@ std::pair<size_t, bool> draw_pattern(
     const size_t index = 0,
     const int playing_row = -1,
     const uint16_t start = 0,
-    const uint16_t end = UINT16_MAX
+    const uint16_t end = UINT16_MAX,
+    const RowDisplayStyle row_display = RowDisplayStyle::Page
 );
 std::pair<size_t, bool> draw_commands_pattern(
     CommandsPattern &pattern,
@@ -82,7 +84,8 @@ std::pair<size_t, bool> draw_commands_pattern(
     const size_t index = 0,
     const int playing_row = -1,
     const uint16_t start = 0,
-    const uint16_t end = UINT16_MAX
+    const uint16_t end = UINT16_MAX,
+    const RowDisplayStyle row_display = RowDisplayStyle::Page
 );
 
 GUIState prepare_combo(GUIPanel *owner, const std::vector<std::string> &names, std::string label, int &index, const LinkKey = {}, const bool error_if_empty = false);
@@ -91,6 +94,12 @@ void push_secondary_style();
 void pop_secondary_style();
 void push_tertiary_style();
 void pop_tertiary_style();
+
+std::string get_displayed_row(
+    const int row,
+    const int absolute_row,
+    const RowDisplayStyle row_display
+);
 
 template <typename T>
 void perform_action(

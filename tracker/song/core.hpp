@@ -24,6 +24,7 @@ extern "C" std::array<uint32_t, MAX_COMMANDS_CHANNELS> commands_sequence_timer;
 extern "C" std::array<uint8_t, MAX_COMMANDS_CHANNELS> commands_sequence_timer_row;
 
 extern "C" uint32_t ticks_per_beat;
+extern "C" uint16_t global_row;
 
 /* Modifiable song data */
 extern uint16_t bpm;

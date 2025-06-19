@@ -57,6 +57,12 @@ step:
 .progress_sequence:
     movzx ecx, byte [current_channel]
     inc byte [sequence_current_note + ecx]
+    %ifdef TRACKER
+    cmp byte [current_channel], 0
+    jnz .set_timers
+    inc word [global_row]
+    %endif
+.set_timers:
     mov al, [NOTE_DURATION + esi]
     mov ebx, [ticks_per_beat]
     mov [sequence_timer + 4 * ecx], ebx
@@ -90,5 +96,16 @@ calculate_ticks_per_beat:
     fistp dword [ticks_per_beat]
     ret
 
+    %ifdef TRACKER
+reset_global_row:
+    xor ax, ax
+    mov [global_row], ax
+    ret
+    %endif
+
     SEGMENT_BSS
     ticks_per_beat resd 1
+
+    %ifdef TRACKER
+    global_row resw 1
+    %endif

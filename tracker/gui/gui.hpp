@@ -38,7 +38,9 @@ class GUI {
     void to() const;
 
     void frame();
+    std::pair<ValidationResult, int> pre_play() const;
     std::pair<ValidationResult, int> play() const;
+    std::pair<ValidationResult, int> play_from(const uint16_t row, const bool restart) const;
     void stop(const bool restore_parameters = true) const;
     bool is_playing() const;
     bool is_paused() const;
@@ -64,6 +66,8 @@ class GUI {
     int get_current_octave() const;
     int get_jump_step() const;
     int get_page_size() const;
+    int get_current_page() const;
+    int get_current_row() const;
     std::pair<int, int> get_page_start_end(const int page) const;
 
     int get_current_channel_index() const;
@@ -99,6 +103,7 @@ class GUI {
     bool is_pattern_view_active() const;
     bool is_commands_pattern_view_active() const;
 
+    bool follow_playback = true;
     int current_octave = GUI_DEFAULT_CURRENT_OCTAVE;
     int jump_step = GUI_DEFAULT_JUMP_STEP;
     int page_size = GUI_DEFAULT_PAGE_SIZE;
