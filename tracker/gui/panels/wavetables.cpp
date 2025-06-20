@@ -18,16 +18,19 @@ GUIElement GUIWavetablesPanel::get_element() const {
 }
 
 void GUIWavetablesPanel::draw() {
+    ImGui::BeginDisabled(lock_registry.is_locked(Target::WAVETABLE, wavetable_index));
     draw_waveform();
     draw_status();
+    ImGui::EndDisabled();
 }
 
 bool GUIWavetablesPanel::select_item() {
     std::vector<std::string> dependencies = song.find_wavetable_dependencies(wavetable_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
-    prepare_combo(this, wavetable_names, "##WavetableCombo", wavetable_index);
+    prepare_combo(this, wavetable_names, "##WavetableCombo", wavetable_index, {}, false, GUI_COMBO_MARGIN_RIGHT);
     show_dependency_tooltip(dependencies);
+    lock_item(Target::WAVETABLE, wavetable_index);
     pop_tertiary_style();
     ImGui::Separator();
 

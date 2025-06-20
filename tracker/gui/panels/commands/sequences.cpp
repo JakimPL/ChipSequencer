@@ -15,7 +15,9 @@ GUIElement GUICommandsSequencesPanel::get_element() const {
 }
 
 void GUICommandsSequencesPanel::draw() {
+    ImGui::BeginDisabled(lock_registry.is_locked(Target::COMMANDS_SEQUENCE, sequence_index));
     draw_sequence();
+    ImGui::EndDisabled();
 }
 
 bool GUICommandsSequencesPanel::is_disabled() const {
@@ -26,11 +28,12 @@ bool GUICommandsSequencesPanel::select_item() {
     std::vector<std::string> dependencies = song.find_commands_sequence_dependencies(sequence_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
-    if (prepare_combo(this, commands_sequence_names, "##CommandsSequenceCombo", sequence_index).value_changed) {
+    if (prepare_combo(this, commands_sequence_names, "##CommandsSequenceCombo", sequence_index, {}, false, GUI_COMBO_MARGIN_RIGHT).value_changed) {
         current_sequence.pattern.values_handler.clear();
         current_sequence.pattern.commands_handler.clear();
     }
     show_dependency_tooltip(dependencies);
+    lock_item(Target::COMMANDS_SEQUENCE, sequence_index);
     pop_tertiary_style();
     ImGui::Separator();
 

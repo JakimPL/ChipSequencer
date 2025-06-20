@@ -14,17 +14,20 @@ GUIElement GUIOrdersPanel::get_element() const {
 }
 
 void GUIOrdersPanel::draw() {
+    ImGui::BeginDisabled(lock_registry.is_locked(Target::ORDER, order_index));
     draw_order();
+    ImGui::EndDisabled();
 }
 
 bool GUIOrdersPanel::select_item() {
     std::vector<std::string> dependencies = song.find_order_dependencies(order_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
-    if (prepare_combo(this, order_names, "##OrderCombo", order_index).value_changed) {
+    if (prepare_combo(this, order_names, "##OrderCombo", order_index, {}, false, GUI_COMBO_MARGIN_RIGHT).value_changed) {
         input_handler.clear();
     }
     show_dependency_tooltip(dependencies);
+    lock_item(Target::ORDER, order_index);
     pop_tertiary_style();
     ImGui::Separator();
 

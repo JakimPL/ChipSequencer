@@ -17,7 +17,9 @@ GUIElement GUIChannelsPanel::get_element() const {
 }
 
 void GUIChannelsPanel::draw() {
+    ImGui::BeginDisabled(lock_registry.is_locked(Target::CHANNEL, channel_index));
     draw_channel();
+    ImGui::EndDisabled();
 }
 
 bool GUIChannelsPanel::is_disabled() const {
@@ -28,7 +30,8 @@ bool GUIChannelsPanel::select_item() {
     std::vector<std::pair<ItemType, uint8_t>> link_dependencies = link_manager.find_dependencies(Target::CHANNEL, channel_index);
     push_tertiary_style();
     draw_add_or_remove({}, link_dependencies);
-    prepare_combo(this, channel_names, "##ChannelCombo", channel_index);
+    prepare_combo(this, channel_names, "##ChannelCombo", channel_index, {}, false, GUI_COMBO_MARGIN_RIGHT);
+    lock_item(Target::CHANNEL, channel_index);
     pop_tertiary_style();
     ImGui::Separator();
 

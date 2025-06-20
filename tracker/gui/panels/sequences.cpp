@@ -18,15 +18,18 @@ GUIElement GUISequencesPanel::get_element() const {
 }
 
 void GUISequencesPanel::draw() {
+    ImGui::BeginDisabled(lock_registry.is_locked(Target::SEQUENCE, sequence_index));
     draw_sequence();
+    ImGui::EndDisabled();
 }
 
 bool GUISequencesPanel::select_item() {
     std::vector<std::string> dependencies = song.find_sequence_dependencies(sequence_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
-    prepare_combo(this, sequence_names, "##SequenceCombo", sequence_index);
+    prepare_combo(this, sequence_names, "##SequenceCombo", sequence_index, {}, false, GUI_COMBO_MARGIN_RIGHT);
     show_dependency_tooltip(dependencies);
+    lock_item(Target::SEQUENCE, sequence_index);
     pop_tertiary_style();
     ImGui::Separator();
 

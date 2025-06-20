@@ -27,7 +27,9 @@ void GUIPanel::lock_item(const Target target, const size_t index) {
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, GUI_UNLOCK_BUTTON_ACTIVE_COLOR);
     }
     if (ImGui::Button("L")) {
-        lock_registry.toggle_lock(target, index);
+        if (index != -1) {
+            lock_registry.toggle_lock(target, index);
+        }
     }
     ImGui::PopStyleColor(3);
     if (ImGui::IsItemHovered()) {
