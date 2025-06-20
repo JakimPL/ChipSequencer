@@ -250,7 +250,7 @@ void GUIGeneralPanel::draw_stop_square() const {
 }
 
 void GUIGeneralPanel::draw_song_info() {
-    ImGui::Text("Song Details");
+    ImGui::Text("Song details");
     draw_text(this, "Title", current_song.title, {Target::SPECIAL, 0, SPECIAL_TITLE});
     draw_text(this, "Author", current_song.author, {Target::SPECIAL, 0, SPECIAL_AUTHOR});
     draw_text(this, "Message", current_song.message, {Target::SPECIAL, 0, SPECIAL_MESSAGE});
@@ -277,11 +277,11 @@ void GUIGeneralPanel::draw_output() {
 }
 
 void GUIGeneralPanel::draw_tuning_settings() {
-    ImGui::Text("Tuning Settings");
+    ImGui::Text("Tuning settings");
     draw_int_slider(this, "EDO", current_song.edo, {Target::SPECIAL, 0, SPECIAL_EDO}, MIN_EDO, MAX_EDO);
-    draw_float_slider(this, "A4 Frequency", current_song.a4_frequency, {Target::SPECIAL, 0, SPECIAL_A4_FREQUENCY}, MIN_A4_FREQUENCY, MAX_A4_FREQUENCY);
+    draw_float_slider(this, "A4 frequency", current_song.a4_frequency, {Target::SPECIAL, 0, SPECIAL_A4_FREQUENCY}, MIN_A4_FREQUENCY, MAX_A4_FREQUENCY);
 
-    if (draw_button("Apply Tuning", 100.0f)) {
+    if (draw_button("Apply tuning", 100.0f)) {
         gui.stop();
         song.change_tuning(current_song.edo, current_song.a4_frequency);
         gui.update();

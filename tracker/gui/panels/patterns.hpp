@@ -51,6 +51,7 @@ class GUIPatternsPanel : public GUIPanel {
         std::map<VariantChannelIndex, int> playing_rows;
     } current_patterns;
 
+    bool repeat_patterns = false;
     int row_display_index = 0;
     RowDisplayStyle row_display = RowDisplayStyle::Page;
 
@@ -84,11 +85,28 @@ class GUIPatternsPanel : public GUIPanel {
     PatternIndex find_pattern_by_current_row() const;
     CommandsPatternIndex find_commands_pattern_by_current_row() const;
 
+    void process_sequence(
+        const size_t channel_index,
+        const size_t j,
+        const uint8_t sequence_index,
+        uint16_t &row
+    );
+
+    void process_commands_sequence(
+        const size_t channel_index,
+        const size_t j,
+        const uint8_t sequence_index,
+        uint16_t &row
+    );
+
     void handle_pattern_input(Pattern *pattern, uint16_t index);
     void handle_commands_pattern_input(CommandsPattern *pattern, uint16_t index);
     int get_pages() const;
     bool is_playing() const;
 
+    void clear();
+    void add_repeated_patterns();
+    void add_repeated_commands_patterns();
     void from_sequences();
     void from_commands_sequences();
     void to_sequences() const;

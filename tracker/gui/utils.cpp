@@ -341,6 +341,7 @@ std::pair<size_t, bool> draw_pattern(
             const bool is_secondary_selected = !selection.command && selected_rows.count({pattern.sequence_index, i}) > 0;
 
             ImGui::TableNextRow();
+
             if (playing_row == j) {
                 ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_PLAYING);
             } else if (is_selected) {

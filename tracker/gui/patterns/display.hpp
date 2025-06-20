@@ -1,7 +1,7 @@
 #pragma once
 
 enum class RowDisplayStyle {
-    Page,
     Absolute,
+    Page,
     Relative,
 };
