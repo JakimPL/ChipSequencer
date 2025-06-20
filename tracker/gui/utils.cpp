@@ -1097,10 +1097,9 @@ void perform_action_note(
 
 void perform_action_add(
     GUIPanel *owner,
-    const LinkKey key,
-    const Target target
+    const LinkKey key
 ) {
-    const std::string label = target_names.at(target) + " " + std::to_string(key.index);
+    const std::string label = target_names.at(key.target) + " " + std::to_string(key.index);
     AddFunction add = [owner]() -> void * {
         void *result = song.add_envelope();
         owner->update();

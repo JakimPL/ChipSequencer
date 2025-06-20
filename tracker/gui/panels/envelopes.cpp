@@ -119,6 +119,7 @@ void GUIEnvelopesPanel::add() {
     }
 
     envelope_index = envelopes.size() - 1;
+    perform_action_add(this, {Target::ENVELOPE, envelope_index, 0});
     update();
 }
 
