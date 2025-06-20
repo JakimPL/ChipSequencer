@@ -1100,13 +1100,108 @@ void perform_action_add(
     const LinkKey key
 ) {
     const std::string label = target_names.at(key.target) + " " + std::to_string(key.index);
-    AddFunction add = [owner]() -> void * {
-        void *result = song.add_envelope();
+    AddFunction add = [owner, key]() -> void * {
+        void *result;
+        switch (key.target) {
+        case Target::ENVELOPE: {
+            result = song.add_envelope();
+            break;
+        }
+        case Target::SEQUENCE: {
+            result = song.add_sequence();
+            break;
+        }
+        case Target::COMMANDS_SEQUENCE: {
+            result = song.add_commands_sequence();
+            break;
+        }
+        case Target::ORDER: {
+            result = song.add_order();
+            break;
+        }
+        case Target::OSCILLATOR: {
+            result = song.add_oscillator();
+            break;
+        }
+        case Target::WAVETABLE: {
+            result = song.add_wavetable();
+            break;
+        }
+        case Target::DSP: {
+            result = song.add_dsp();
+            break;
+        }
+        case Target::CHANNEL: {
+            result = song.add_channel();
+            break;
+        }
+        case Target::COMMANDS_CHANNEL: {
+            result = song.add_commands_channel();
+            break;
+        }
+        case Target::DIRECT_OUTPUT:
+        case Target::DIRECT_DSP:
+        case Target::SPLITTER_OUTPUT:
+        case Target::SPLITTER_DSP:
+        case Target::SPECIAL:
+        case Target::COUNT:
+        default: {
+            throw std::runtime_error("Invalid target type for add operation: " + std::to_string(static_cast<int>(key.target)));
+        }
+        }
+
         owner->update();
         return result;
     };
-    RemoveFunction remove = [owner](size_t index) -> void {
-        song.remove_envelope(index);
+    RemoveFunction remove = [owner, key](size_t index) -> void {
+        switch (key.target) {
+        case Target::ENVELOPE: {
+            song.remove_envelope(index);
+            break;
+        }
+        case Target::SEQUENCE: {
+            song.remove_sequence(index);
+            break;
+        }
+        case Target::COMMANDS_SEQUENCE: {
+            song.remove_commands_sequence(index);
+            break;
+        }
+        case Target::ORDER: {
+            song.remove_order(index);
+            break;
+        }
+        case Target::OSCILLATOR: {
+            song.remove_oscillator(index);
+            break;
+        }
+        case Target::WAVETABLE: {
+            song.remove_wavetable(index);
+            break;
+        }
+        case Target::DSP: {
+            song.remove_dsp(index);
+            break;
+        }
+        case Target::CHANNEL: {
+            song.remove_channel(index);
+            break;
+        }
+        case Target::COMMANDS_CHANNEL: {
+            song.remove_commands_channel(index);
+            break;
+        }
+        case Target::DIRECT_OUTPUT:
+        case Target::DIRECT_DSP:
+        case Target::SPLITTER_OUTPUT:
+        case Target::SPLITTER_DSP:
+        case Target::SPECIAL:
+        case Target::COUNT:
+        default: {
+            throw std::runtime_error("Invalid target type for remove operation: " + std::to_string(static_cast<int>(key.target)));
+        }
+        }
+
         owner->update();
     };
     history_manager.add_action(
@@ -1114,7 +1209,8 @@ void perform_action_add(
     );
 }
 
-template void draw_text<GUI_MAX_STRING_LENGTH>(GUIPanel *owner, const char *label, char (&text)[GUI_MAX_STRING_LENGTH], const LinkKey key);
+template void
+draw_text<GUI_MAX_STRING_LENGTH>(GUIPanel *owner, const char *label, char (&text)[GUI_MAX_STRING_LENGTH], const LinkKey key);
 template void perform_action_string<GUI_MAX_STRING_LENGTH>(
     GUIPanel *owner,
     const LinkKey key,
