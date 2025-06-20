@@ -51,6 +51,7 @@ class GUIPatternsPanel : public GUIPanel {
         std::map<VariantChannelIndex, int> playing_rows;
     } current_patterns;
 
+    bool repeat_patterns = false;
     int row_display_index = 0;
     RowDisplayStyle row_display = RowDisplayStyle::Page;
 

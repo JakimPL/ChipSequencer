@@ -26,6 +26,8 @@ void GUIPatternsPanel::draw_pages() {
         ImGui::SetTooltip("%s", shortcut_manager.get_shortcut_display(ShortcutAction::PlayerFollowPlayback).c_str());
     }
 
+    ImGui::Checkbox("Repeat patterns", &repeat_patterns);
+
     ImGui::Combo("Row display style", &row_display_index, row_display_style_names.data(), row_display_style_names.size());
     row_display = static_cast<RowDisplayStyle>(row_display_index);
 

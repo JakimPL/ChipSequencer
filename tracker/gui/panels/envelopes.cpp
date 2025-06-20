@@ -171,7 +171,7 @@ void GUIEnvelopesPanel::draw_timers() {
 
 void GUIEnvelopesPanel::draw_envelope_graph() {
     ImGui::Separator();
-    ImGui::Text("Envelope Graph");
+    ImGui::Text("Envelope graph");
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
     const ImVec2 p = ImGui::GetCursorScreenPos();
     const float width = std::max(40.0f, ImGui::GetContentRegionAvail().x);
