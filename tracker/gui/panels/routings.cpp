@@ -78,7 +78,9 @@ void GUIRoutingsPanel::to_links() const {
         const ItemType type = source_key.first;
         const size_t id = source_key.second;
         Link &link = links[static_cast<size_t>(type)][id];
-        if (is_linking_possible(source_key, target_key)) {
+        bool locked = is_node_locked(source_key);
+
+        if (!locked && is_linking_possible(source_key, target_key)) {
             link.target = target_key.target;
             link.index = target_key.index;
             link.offset = target_key.offset;
@@ -497,7 +499,12 @@ void GUIRoutingsPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_re
     const float node_padding_y = style.WindowPadding.y / 2.0f;
     const float line_height = ImGui::GetTextLineHeight();
 
-    const uint8_t node_alpha = get_bypass_state(routing_node) ? 128 : 255;
+    const bool locked = is_node_locked(routing_node);
+    uint8_t node_alpha = get_bypass_state(routing_node) ? 128 : 255;
+    if (locked) {
+        node_alpha = static_cast<uint8_t>(static_cast<float>(node_alpha) * 0.6f);
+    }
+
     const float node_content_height = routing_node.lines * line_height + (routing_node.lines > 1 ? (routing_node.lines - 1) * style.ItemSpacing.y : 0);
     const float node_actual_height = node_content_height + node_padding_y * 2.0f;
 
@@ -515,6 +522,9 @@ void GUIRoutingsPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_re
     routing_node.size = {node_actual_width, node_actual_height};
 
     const bool is_hovered = ImGui::IsMouseHoveringRect(node_rect_min, node_rect_max);
+    if (is_hovered && locked) {
+        ImGui::SetTooltip("This node is locked.");
+    }
 
     if (
         ImGui::IsMouseClicked(ImGuiMouseButton_Right) &&
@@ -541,7 +551,11 @@ void GUIRoutingsPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_re
         save = true;
     }
 
-    if (!dragging_node_id.has_value() && is_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+    if (
+        ImGui::IsMouseClicked(ImGuiMouseButton_Left) &&
+        !dragging_node_id.has_value() &&
+        is_hovered
+    ) {
         dragging_node_id = routing_node.identifier;
         drag_node_offset = ImGui::GetMousePos() - node_rect_min;
         const Target target = routing_node.identifier.type;
@@ -573,7 +587,9 @@ void GUIRoutingsPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_re
         output_pins[key] = pin_position;
 
         const bool is_pin_hovered = ImGui::IsMouseHoveringRect(pin_position - ImVec2(GUI_ROUTING_PIN_RADIUS, GUI_ROUTING_PIN_RADIUS), pin_position + ImVec2(GUI_ROUTING_PIN_RADIUS, GUI_ROUTING_PIN_RADIUS));
-        set_source_key(pin_position, key);
+        if (!locked) {
+            set_source_key(pin_position, key);
+        }
     }
 
     if (routing_node.identifier.type != Target::CHANNEL) {
@@ -587,8 +603,10 @@ void GUIRoutingsPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_re
         const ImVec2 pin_position = ImVec2(node_rect_min.x - GUI_ROUTING_PIN_RADIUS, pin_y);
         draw_list->AddCircleFilled(pin_position, GUI_ROUTING_PIN_RADIUS, color);
 
-        input_pins[key] = pin_position;
-        set_target_key(pin_position, key);
+        if (!locked) {
+            input_pins[key] = pin_position;
+            set_target_key(pin_position, key);
+        }
     }
 
     ImVec4 text_color_vector = routing_node.bypass ? ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled) : ImGui::GetStyleColorVec4(ImGuiCol_Text);
@@ -782,4 +800,25 @@ ImVec2 GUIRoutingsPanel::calculate_content_size() const {
 
     const ImVec2 content_size(std::max(max_pos.x - min_pos.x, ImGui::GetContentRegionAvail().x), std::max(max_pos.y - min_pos.y, ImGui::GetContentRegionAvail().y));
     return content_size;
+}
+
+bool GUIRoutingsPanel::is_node_locked(const RoutingNode &node) const {
+    if (!node.key.has_value()) {
+        return false;
+    }
+
+    return is_node_locked(node.key.value());
+}
+
+bool GUIRoutingsPanel::is_node_locked(const InputKey input_key) const {
+    const ItemType type = input_key.first;
+    const size_t id = input_key.second;
+
+    if (type == ItemType::CHANNEL) {
+        return lock_registry.is_locked(Target::CHANNEL, id);
+    } else if (type == ItemType::DSP) {
+        return lock_registry.is_locked(Target::DSP, id);
+    }
+
+    return false;
 }

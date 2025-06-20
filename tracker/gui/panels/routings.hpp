@@ -57,6 +57,8 @@ class GUIRoutingsPanel : public GUIPanel {
     bool get_bypass_state(const ItemType type, const bool bypass, const bool solo) const;
     bool get_splitter_bounds(const size_t j, size_t index, const Link &link) const;
     Splitter get_splitter_from_input_key(const InputKey &source) const;
+    bool is_node_locked(const RoutingNode &node) const;
+    bool is_node_locked(const InputKey input_key) const;
 
     bool is_disabled() const override;
     void draw() override;
