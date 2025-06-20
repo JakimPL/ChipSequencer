@@ -134,6 +134,12 @@ void GUIPatternsPanel::draw_commands_channel(size_t channel_index) {
 }
 
 void GUIPatternsPanel::from() {
+    clear();
+    from_sequences();
+    from_commands_sequences();
+}
+
+void GUIPatternsPanel::clear() {
     current_patterns.total_rows = 0;
     current_patterns.playing_rows.clear();
     pattern_rows.clear();
@@ -144,8 +150,6 @@ void GUIPatternsPanel::from() {
     current_patterns.patterns.clear();
     current_patterns.patterns_max_rows.clear();
     current_patterns.commands_patterns_max_rows.clear();
-    from_sequences();
-    from_commands_sequences();
 }
 
 void GUIPatternsPanel::from_sequences() {

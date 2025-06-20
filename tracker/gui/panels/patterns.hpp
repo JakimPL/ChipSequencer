@@ -90,6 +90,7 @@ class GUIPatternsPanel : public GUIPanel {
     int get_pages() const;
     bool is_playing() const;
 
+    void clear();
     void from_sequences();
     void from_commands_sequences();
     void to_sequences() const;
