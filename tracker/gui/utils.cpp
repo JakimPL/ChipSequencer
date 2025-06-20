@@ -309,7 +309,8 @@ std::pair<size_t, bool> draw_pattern(
     const int playing_row,
     const uint16_t start,
     const uint16_t end,
-    const RowDisplayStyle row_display
+    const RowDisplayStyle row_display,
+    const bool locked
 ) {
     bool current = false;
     const int min_row_to_draw = std::max(static_cast<int>(start) - static_cast<int>(index), 0);
@@ -319,6 +320,7 @@ std::pair<size_t, bool> draw_pattern(
         return {index + pattern.notes.size(), false};
     }
 
+    ImGui::BeginDisabled(locked);
     if (ImGui::BeginTable("PatternTable", 3, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg)) {
         if (ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_AllowWhenBlockedByPopup) &&
             ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
@@ -396,6 +398,7 @@ std::pair<size_t, bool> draw_pattern(
 
         ImGui::EndTable();
     }
+    ImGui::EndDisabled();
 
     // realignment
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 4.0f);
@@ -414,7 +417,8 @@ std::pair<size_t, bool> draw_commands_pattern(
     const int playing_row,
     const uint16_t start,
     const uint16_t end,
-    const RowDisplayStyle row_display
+    const RowDisplayStyle row_display,
+    const bool locked
 ) {
     bool current = false;
     const int min = std::max(static_cast<int>(start) - static_cast<int>(index), 0);
@@ -423,6 +427,7 @@ std::pair<size_t, bool> draw_commands_pattern(
         return {index + pattern.commands.size(), false};
     }
 
+    ImGui::BeginDisabled(locked);
     if (ImGui::BeginTable("CommandsPatternTable", 3, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg)) {
         if (ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_AllowWhenBlockedByPopup) &&
             ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
@@ -533,6 +538,7 @@ std::pair<size_t, bool> draw_commands_pattern(
         ImGui::EndDisabled();
         ImGui::EndTable();
     }
+    ImGui::EndDisabled();
 
     // realignment
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 4.0f);

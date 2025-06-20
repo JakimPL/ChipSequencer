@@ -25,7 +25,7 @@ bool GUIEnvelopesPanel::select_item() {
     push_tertiary_style();
 
     draw_add_or_remove(dependencies, link_dependencies);
-    prepare_combo(this, envelope_names, "##EnvelopeCombo", envelope_index, {}, true, GUI_COMBO_MARGIN_RIGHT);
+    prepare_combo(this, envelope_names, "##EnvelopeCombo", envelope_index, {}, false, GUI_COMBO_MARGIN_RIGHT);
     show_dependency_tooltip(dependencies);
     lock_item(Target::ENVELOPE, envelope_index);
     pop_tertiary_style();
