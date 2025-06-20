@@ -57,11 +57,6 @@ step:
 .progress_sequence:
     movzx ecx, byte [current_channel]
     inc byte [sequence_current_note + ecx]
-    %ifdef TRACKER
-    cmp byte [current_channel], 0
-    jnz .set_timers
-    inc word [global_row]
-    %endif
 .set_timers:
     mov al, [NOTE_DURATION + esi]
     mov ebx, [ticks_per_beat]
@@ -74,6 +69,12 @@ step:
 .decrease_timer:
     dec dword [sequence_timer + 4 * ecx]
     jnz .done
+
+    %ifdef TRACKER
+    cmp byte [current_channel], 0
+    jnz .decrease_row
+    inc word [global_row]
+    %endif
 
 .decrease_row:
     dec byte [sequence_timer_row + ecx]

@@ -171,7 +171,6 @@ void GUIPatternsPanel::from_sequences() {
         }
 
         current_patterns.patterns_max_rows[channel_index] = row;
-        current_patterns.real_patterns_max_rows[channel_index] = row;
         current_patterns.total_rows = std::max(current_patterns.total_rows, row);
     }
 }
@@ -196,7 +195,7 @@ void GUIPatternsPanel::process_sequence(
     pattern.current_row = !current_channel.command && channel_index == current_channel.index ? current_row - row : -1;
     if (playing) {
         if (repeat_patterns) {
-            current_patterns.playing_rows[{false, channel_index}] = global_row - 1;
+            current_patterns.playing_rows[{false, channel_index}] = global_row;
         } else {
             if (playing_sequence == j) {
                 const int playing_row = pattern.calculate_playing_row(channel_index);
@@ -235,7 +234,6 @@ void GUIPatternsPanel::from_commands_sequences() {
         }
 
         current_patterns.commands_patterns_max_rows[channel_index] = row;
-        current_patterns.real_commands_patterns_max_rows[channel_index] = row;
         current_patterns.total_rows = std::max(current_patterns.total_rows, row);
         if (current_patterns.commands_patterns[channel_index].size() > order->order_length) {
             current_patterns.commands_patterns[channel_index].resize(order->order_length);
@@ -294,7 +292,6 @@ void GUIPatternsPanel::add_repeated_patterns() {
         }
 
         Channel *channel = channels[channel_index];
-        current_patterns.playing_rows[{false, channel_index}] = global_row - 1;
         const uint8_t order_index = channel->order_index;
         const Order *order = orders[order_index];
         std::vector<uint8_t> order_sequences = std::vector<uint8_t>(order->sequences.begin(), order->sequences.begin() + order->order_length);
@@ -303,9 +300,7 @@ void GUIPatternsPanel::add_repeated_patterns() {
         while (row < current_patterns.total_rows) {
             bool limit_exceeded = false;
             for (size_t j = 0; j < order->order_length; ++j) {
-                process_sequence(
-                    channel_index, k, order_sequences[j], row
-                );
+                process_sequence(channel_index, k, order_sequences[j], row);
                 if (row >= current_patterns.total_rows) {
                     limit_exceeded = true;
                     break;
@@ -318,8 +313,6 @@ void GUIPatternsPanel::add_repeated_patterns() {
                 break;
             }
         }
-
-        current_patterns.real_patterns_max_rows[channel_index] = row;
     }
 }
 
@@ -510,9 +503,12 @@ void GUIPatternsPanel::check_keyboard_input() {
 
     if (ImGui::IsKeyPressed(ImGuiKey_PageDown)) {
         page = std::min(page + 1, get_pages() - 1);
+        gui.follow_playback = false;
     }
+
     if (ImGui::IsKeyPressed(ImGuiKey_PageUp)) {
         page = std::max(page - 1, 0);
+        gui.follow_playback = false;
     }
 
     auto [pattern, pattern_id, index] = find_pattern_by_current_row();

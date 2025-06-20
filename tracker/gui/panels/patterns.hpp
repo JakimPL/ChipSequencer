@@ -48,8 +48,6 @@ class GUIPatternsPanel : public GUIPanel {
         std::map<size_t, std::vector<CommandsPattern>> commands_patterns;
         std::map<size_t, uint16_t> patterns_max_rows;
         std::map<size_t, uint16_t> commands_patterns_max_rows;
-        std::map<size_t, uint16_t> real_patterns_max_rows;
-        std::map<size_t, uint16_t> real_commands_patterns_max_rows;
         std::map<VariantChannelIndex, int> playing_rows;
     } current_patterns;
 
