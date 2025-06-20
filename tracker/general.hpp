@@ -11,12 +11,14 @@ class GUI;
 #include "song/buffers.hpp"
 #include "song/song.hpp"
 #include "song/links/manager.hpp"
+#include "song/lock/registry.hpp"
 #include "structures/resources/manager.hpp"
 #include "tuning/frequencies.hpp"
 #include "tuning/scale.hpp"
 
 extern ScaleComposer scale_composer;
 extern FrequencyTable frequency_table;
+extern LockRegistry lock_registry;
 extern LinkManager link_manager;
 extern FileDriver file_driver;
 extern HistoryManager history_manager;

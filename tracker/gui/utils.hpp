@@ -72,7 +72,8 @@ std::pair<size_t, bool> draw_pattern(
     const int playing_row = -1,
     const uint16_t start = 0,
     const uint16_t end = UINT16_MAX,
-    const RowDisplayStyle row_display = RowDisplayStyle::Page
+    const RowDisplayStyle row_display = RowDisplayStyle::Page,
+    const bool locked = false
 );
 std::pair<size_t, bool> draw_commands_pattern(
     CommandsPattern &pattern,
@@ -85,10 +86,20 @@ std::pair<size_t, bool> draw_commands_pattern(
     const int playing_row = -1,
     const uint16_t start = 0,
     const uint16_t end = UINT16_MAX,
-    const RowDisplayStyle row_display = RowDisplayStyle::Page
+    const RowDisplayStyle row_display = RowDisplayStyle::Page,
+    const bool locked = false
 );
 
-GUIState prepare_combo(GUIPanel *owner, const std::vector<std::string> &names, std::string label, int &index, const LinkKey = {}, const bool error_if_empty = false);
+GUIState prepare_combo(
+    GUIPanel *owner,
+    const std::vector<std::string> &names,
+    std::string label,
+    int &index,
+    const LinkKey = {},
+    const bool error_if_empty = false,
+    const float margin_right = 0.0f
+);
+
 void update_items(std::vector<std::string> &names, size_t size, std::string label, int &index);
 void push_secondary_style();
 void pop_secondary_style();

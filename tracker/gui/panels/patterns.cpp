@@ -20,7 +20,7 @@ void GUIPatternsPanel::draw() {
 
 void GUIPatternsPanel::draw_pages() {
     const int previous_page = page;
-    const int pages = get_pages();
+    const int pages = std::max(1, get_pages());
     ImGui::Checkbox("Follow playback", &gui.follow_playback);
     if (ImGui::IsItemHovered()) {
         ImGui::SetTooltip("%s", shortcut_manager.get_shortcut_display(ShortcutAction::PlayerFollowPlayback).c_str());
@@ -44,6 +44,8 @@ void GUIPatternsPanel::draw_pages() {
     if (page != previous_page) {
         deselect_all_rows();
     }
+
+    page = std::clamp(page, 0, pages - 1);
 }
 
 void GUIPatternsPanel::draw_channels() {
@@ -88,8 +90,9 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
     int row = 0;
     for (auto &pattern : current_patterns.patterns[channel_index]) {
         const int playing_row = current_patterns.playing_rows[{false, channel_index}];
+        const bool locked = lock_registry.is_locked(Target::SEQUENCE, pattern.sequence_index);
         auto [new_row, select] = draw_pattern(
-            pattern, pattern_selection, secondary_sequence_rows, true, channel_index, false, row, playing_row, start, end, row_display
+            pattern, pattern_selection, secondary_sequence_rows, true, channel_index, false, row, playing_row, start, end, row_display, locked
         );
         if (select) {
             current_channel = {false, channel_index};
@@ -114,8 +117,9 @@ void GUIPatternsPanel::draw_commands_channel(size_t channel_index) {
     int row = 0;
     for (auto &pattern : current_patterns.commands_patterns[channel_index]) {
         const int playing_row = current_patterns.playing_rows[{true, channel_index}];
+        const bool locked = lock_registry.is_locked(Target::COMMANDS_SEQUENCE, pattern.sequence_index);
         auto [new_row, select] = draw_commands_pattern(
-            pattern, commands_selection, secondary_sequence_rows, true, channel_index, false, row, playing_row, start, end, row_display
+            pattern, commands_selection, secondary_sequence_rows, true, channel_index, false, row, playing_row, start, end, row_display, locked
         );
         if (select) {
             current_channel = {true, channel_index};
@@ -381,7 +385,9 @@ void GUIPatternsPanel::to_sequences() const {
     if (!selection.command && selection_action != PatternSelectionAction::None && !selection.selecting) {
         for (const auto &[channel_index, pattern_id, row] : secondary_pattern_rows) {
             const Pattern &selected_pattern = current_patterns.patterns.at(channel_index).at(pattern_id);
-            unique_patterns.insert(&selected_pattern);
+            if (!lock_registry.is_locked(Target::SEQUENCE, selected_pattern.sequence_index)) {
+                unique_patterns.insert(&selected_pattern);
+            }
         }
     } else {
         const Pattern *pattern = find_pattern_by_current_row().pattern;
@@ -403,7 +409,9 @@ void GUIPatternsPanel::to_commands_sequences() const {
     if (selection.command && selection_action != PatternSelectionAction::None && !selection.selecting) {
         for (const auto &[channel_index, pattern_id, row] : secondary_pattern_rows) {
             const CommandsPattern &selected_pattern = current_patterns.commands_patterns.at(channel_index).at(pattern_id);
-            unique_patterns.insert(&selected_pattern);
+            if (!lock_registry.is_locked(Target::COMMANDS_SEQUENCE, selected_pattern.sequence_index)) {
+                unique_patterns.insert(&selected_pattern);
+            }
         }
     } else {
         const CommandsPattern *pattern = find_commands_pattern_by_current_row().pattern;

@@ -14,7 +14,9 @@ GUIElement GUIDSPsPanel::get_element() const {
 }
 
 void GUIDSPsPanel::draw() {
+    ImGui::BeginDisabled(lock_registry.is_locked(Target::DSP, dsp_index));
     draw_dsp();
+    ImGui::EndDisabled();
 }
 
 bool GUIDSPsPanel::is_disabled() const {
@@ -26,8 +28,9 @@ bool GUIDSPsPanel::select_item() {
     std::vector<std::pair<ItemType, uint8_t>> link_dependencies = link_manager.find_dependencies(Target::DSP, dsp_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies, link_dependencies);
-    prepare_combo(this, dsp_names, "##DSPCombo", dsp_index);
+    prepare_combo(this, dsp_names, "##DSPCombo", dsp_index, {}, false, GUI_COMBO_MARGIN_RIGHT);
     show_dependency_tooltip(dependencies);
+    lock_item(Target::DSP, dsp_index);
     pop_tertiary_style();
     ImGui::Separator();
 

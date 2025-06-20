@@ -16,15 +16,18 @@ GUIElement GUIOscillatorsPanel::get_element() const {
 }
 
 void GUIOscillatorsPanel::draw() {
+    ImGui::BeginDisabled(lock_registry.is_locked(Target::OSCILLATOR, oscillator_index));
     draw_oscillator();
+    ImGui::EndDisabled();
 }
 
 bool GUIOscillatorsPanel::select_item() {
     std::vector<std::string> dependencies = song.find_oscillator_dependencies(oscillator_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
-    prepare_combo(this, oscillator_names, "##OscillatorCombo", oscillator_index);
+    prepare_combo(this, oscillator_names, "##OscillatorCombo", oscillator_index, {}, false, GUI_COMBO_MARGIN_RIGHT);
     show_dependency_tooltip(dependencies);
+    lock_item(Target::OSCILLATOR, oscillator_index);
     pop_tertiary_style();
     ImGui::Separator();
 

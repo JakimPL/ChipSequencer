@@ -16,7 +16,9 @@ GUIElement GUICommandsChannelsPanel::get_element() const {
 }
 
 void GUICommandsChannelsPanel::draw() {
+    ImGui::BeginDisabled(lock_registry.is_locked(Target::COMMANDS_CHANNEL, channel_index));
     draw_channel();
+    ImGui::EndDisabled();
 }
 
 bool GUICommandsChannelsPanel::is_disabled() const {
@@ -26,7 +28,8 @@ bool GUICommandsChannelsPanel::is_disabled() const {
 bool GUICommandsChannelsPanel::select_item() {
     push_tertiary_style();
     draw_add_or_remove();
-    prepare_combo(this, commands_channel_names, "##CommandsChannelCombo", channel_index);
+    prepare_combo(this, commands_channel_names, "##CommandsChannelCombo", channel_index, {}, false, GUI_COMBO_MARGIN_RIGHT);
+    lock_item(Target::COMMANDS_CHANNEL, channel_index);
     pop_tertiary_style();
     ImGui::Separator();
 
