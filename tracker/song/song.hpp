@@ -70,6 +70,7 @@ class Song {
     void export_data_asm_file(const std::string &directory, const CompilationTarget compilation_target) const;
     void export_header(const std::string &directory) const;
     void export_gui_state(const std::string &directory) const;
+    void export_lock_registry(const std::string &directory) const;
 
     template <typename T>
     void export_series(const std::string &directory, const std::string &prefix, const std::vector<T> &series, const std::vector<size_t> &sizes) const;
@@ -94,6 +95,7 @@ class Song {
     void import_commands_sequences(const std::string &directory, const nlohmann::json &json);
     void import_commands_channels(const std::string &directory, const nlohmann::json &json);
     void import_gui_state(const std::string &directory);
+    void import_lock_registry(const std::string &directory);
 
     int run_command(const std::string &command) const;
     void compile_sources(const std::string &directory, const std::string &filename, const CompilationScheme scheme, const std::string platform = "linux") const;

@@ -61,3 +61,20 @@ std::set<size_t> LockRegistry::get_locked_items(const Target target) const {
     }
     return {};
 }
+
+nlohmann::json LockRegistry::to_json() const {
+    nlohmann::json json;
+    for (const auto &[target, indices] : locks) {
+        json[std::to_string(static_cast<int>(target))] = indices;
+    }
+    return json;
+}
+
+void LockRegistry::from_json(const nlohmann::json &json) {
+    locks.clear();
+    for (const auto &[key, value] : json.items()) {
+        Target target = static_cast<Target>(std::stoi(key));
+        std::set<size_t> indices = value.get<std::set<size_t>>();
+        locks[target] = indices;
+    }
+}

@@ -48,6 +48,7 @@ void Song::new_song() {
     max_rows = 0;
 
     change_tuning(tuning.edo, tuning.a4_frequency);
+    lock_registry.clear();
     link_manager.set_links();
     calculate_song_length();
 
@@ -203,6 +204,7 @@ void Song::export_all(const std::string &directory, const CompilationTarget comp
     export_series(directory, "c_chan", commands_channels, {sizeof(CommandsChannel)});
     export_links(directory + "/links.bin");
     export_gui_state(directory);
+    export_lock_registry(directory);
 }
 
 void Song::import_all(const std::string &directory, const nlohmann::json &json) {
@@ -217,6 +219,7 @@ void Song::import_all(const std::string &directory, const nlohmann::json &json) 
     import_commands_channels(directory, json);
     import_links(directory, json);
     import_gui_state(directory);
+    import_lock_registry(directory);
 }
 
 Envelope *Song::add_envelope() {
@@ -1313,6 +1316,14 @@ void Song::export_gui_state(const std::string &directory) const {
     gui_file.close();
 }
 
+void Song::export_lock_registry(const std::string &directory) const {
+    const std::filesystem::path lock_registry_path = directory + "/lock.json";
+    nlohmann::json lock_registry_json = lock_registry.to_json();
+    std::ofstream lock_file(lock_registry_path);
+    lock_file << lock_registry_json.dump(JSON_INDENTATION);
+    lock_file.close();
+}
+
 template <typename T>
 void Song::export_series(const std::string &directory, const std::string &prefix, const std::vector<T> &series, const std::vector<size_t> &sizes) const {
     const std::filesystem::path series_dir = directory + "/" + prefix + "s";
@@ -1551,6 +1562,16 @@ void Song::import_gui_state(const std::string &directory) {
     gui.update();
     gui.from();
     gui.set_routing_nodes_positions(nodes_positions);
+}
+
+void Song::import_lock_registry(const std::string &directory) {
+    const std::filesystem::path lock_registry_path = directory + "/lock.json";
+    if (!std::filesystem::exists(lock_registry_path)) {
+        return;
+    }
+
+    nlohmann::json lock_registry_json = read_json(lock_registry_path.string());
+    lock_registry.from_json(lock_registry_json);
 }
 
 void Song::update_sizes() {
