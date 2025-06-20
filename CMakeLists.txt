@@ -118,7 +118,6 @@ add_executable(ChipSequencer
     tracker/gui/inputs/input.cpp
     tracker/gui/inputs/numeric.cpp
     tracker/gui/inputs/string.cpp
-    tracker/gui/lock/registry.cpp
     tracker/gui/names.cpp
     tracker/gui/node.cpp
     tracker/gui/panels/channels.cpp
@@ -149,6 +148,7 @@ add_executable(ChipSequencer
     tracker/song/links/link.cpp
     tracker/song/links/manager.cpp
     tracker/song/links/target.cpp
+    tracker/song/lock/registry.cpp
     tracker/song/output.cpp
     tracker/song/song.cpp
     tracker/structures/channel.cpp
