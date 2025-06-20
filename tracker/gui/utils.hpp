@@ -88,7 +88,16 @@ std::pair<size_t, bool> draw_commands_pattern(
     const RowDisplayStyle row_display = RowDisplayStyle::Page
 );
 
-GUIState prepare_combo(GUIPanel *owner, const std::vector<std::string> &names, std::string label, int &index, const LinkKey = {}, const bool error_if_empty = false);
+GUIState prepare_combo(
+    GUIPanel *owner,
+    const std::vector<std::string> &names,
+    std::string label,
+    int &index,
+    const LinkKey = {},
+    const bool error_if_empty = false,
+    const float margin_right = 0.0f
+);
+
 void update_items(std::vector<std::string> &names, size_t size, std::string label, int &index);
 void push_secondary_style();
 void pop_secondary_style();

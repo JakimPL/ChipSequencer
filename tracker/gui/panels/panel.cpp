@@ -1,4 +1,5 @@
 
+#include "../../general.hpp"
 #include "../names.hpp"
 #include "../history/actions/action.hpp"
 #include "panel.hpp"
@@ -11,6 +12,27 @@ GUIPanel::GUIPanel(
     : label(label),
       visible(visible),
       windowed(windowed) {
+}
+
+void GUIPanel::lock_item(const Target target, const size_t index) {
+    ImGui::SameLine();
+    const bool is_locked = lock_registry.is_locked(target, index);
+    if (is_locked) {
+        ImGui::PushStyleColor(ImGuiCol_Button, GUI_LOCK_BUTTON_COLOR);
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, GUI_LOCK_BUTTON_HOVER_COLOR);
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, GUI_LOCK_BUTTON_ACTIVE_COLOR);
+    } else {
+        ImGui::PushStyleColor(ImGuiCol_Button, GUI_UNLOCK_BUTTON_COLOR);
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, GUI_UNLOCK_BUTTON_HOVER_COLOR);
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, GUI_UNLOCK_BUTTON_ACTIVE_COLOR);
+    }
+    if (ImGui::Button("L")) {
+        lock_registry.toggle_lock(target, index);
+    }
+    ImGui::PopStyleColor(3);
+    if (ImGui::IsItemHovered()) {
+        ImGui::SetTooltip(is_locked ? "Unlock" : "Lock");
+    }
 }
 
 void GUIPanel::draw_add_or_remove(

@@ -881,13 +881,13 @@ bool get_menu_item(const std::string &name, const std::optional<ShortcutAction> 
     return ImGui::MenuItem(name.c_str(), nullptr, checked);
 }
 
-GUIState prepare_combo(GUIPanel *owner, const std::vector<std::string> &names, std::string label, int &index, const LinkKey key, const bool error_if_empty) {
+GUIState prepare_combo(GUIPanel *owner, const std::vector<std::string> &names, std::string label, int &index, const LinkKey key, const bool error_if_empty, const float margin_right) {
     std::vector<const char *> names_cstr;
     for (const auto &name : names) {
         names_cstr.push_back(name.c_str());
     }
 
-    float combo_width = ImGui::GetContentRegionAvail().x;
+    const float combo_width = ImGui::GetContentRegionAvail().x - margin_right;
     ImGui::SetNextItemWidth(combo_width);
 
     if (error_if_empty && names.empty()) {

@@ -3,6 +3,7 @@
 
 ScaleComposer scale_composer = ScaleComposer();
 FrequencyTable frequency_table = FrequencyTable(scale_composer, DEFAULT_A4_FREQUENCY);
+LockRegistry lock_registry;
 LinkManager link_manager;
 FileDriver file_driver;
 HistoryManager history_manager;

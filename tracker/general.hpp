@@ -8,6 +8,7 @@ class GUI;
 #include "gui/gui.hpp"
 #include "gui/history/manager.hpp"
 #include "gui/history/shortcuts.hpp"
+#include "gui/lock/registry.hpp"
 #include "song/buffers.hpp"
 #include "song/song.hpp"
 #include "song/links/manager.hpp"
@@ -17,6 +18,7 @@ class GUI;
 
 extern ScaleComposer scale_composer;
 extern FrequencyTable frequency_table;
+extern LockRegistry lock_registry;
 extern LinkManager link_manager;
 extern FileDriver file_driver;
 extern HistoryManager history_manager;

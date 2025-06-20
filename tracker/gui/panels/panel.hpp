@@ -5,6 +5,7 @@
 #include <utility>
 #include <vector>
 
+#include "../../song/links/target.hpp"
 #include "../../song/links/type.hpp"
 #include "../init.hpp"
 #include "../enums.hpp"
@@ -53,6 +54,7 @@ class GUIPanel {
 
     void initialize();
     void history_actions();
+    void lock_item(const Target target, const size_t index);
     void draw_add_or_remove(
         const std::vector<std::string> &dependencies = {},
         const std::vector<std::pair<ItemType, uint8_t>> &link_dependencies = {}
