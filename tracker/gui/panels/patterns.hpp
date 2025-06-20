@@ -96,8 +96,7 @@ class GUIPatternsPanel : public GUIPanel {
         const size_t channel_index,
         const size_t j,
         const uint8_t sequence_index,
-        uint16_t &row,
-        const uint8_t playing_sequence
+        uint16_t &row
     );
 
     void handle_pattern_input(Pattern *pattern, uint16_t index);
@@ -107,6 +106,7 @@ class GUIPatternsPanel : public GUIPanel {
 
     void clear();
     void add_repeated_patterns();
+    void add_repeated_commands_patterns();
     void from_sequences();
     void from_commands_sequences();
     void to_sequences() const;
