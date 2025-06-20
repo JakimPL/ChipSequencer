@@ -159,3 +159,9 @@ void perform_action_note(
     const uint8_t old_note,
     const uint8_t new_note
 );
+
+void perform_action_add(
+    GUIPanel *owner,
+    const LinkKey key,
+    const Target target
+);

@@ -10,6 +10,7 @@
 #include "constants.hpp"
 #include "names.hpp"
 #include "utils.hpp"
+#include "history/actions/add.hpp"
 #include "history/actions/note.hpp"
 #include "history/actions/routing.hpp"
 #include "history/actions/sequence.hpp"
@@ -1078,14 +1079,6 @@ void perform_action_string(
     }
 }
 
-template void draw_text<GUI_MAX_STRING_LENGTH>(GUIPanel *owner, const char *label, char (&text)[GUI_MAX_STRING_LENGTH], const LinkKey key);
-template void perform_action_string<GUI_MAX_STRING_LENGTH>(
-    GUIPanel *owner,
-    const LinkKey key,
-    char (&buffer)[GUI_MAX_STRING_LENGTH],
-    const std::string &old_value
-);
-
 void perform_action_note(
     GUIPanel *owner,
     const LinkKey key,
@@ -1101,3 +1094,31 @@ void perform_action_note(
         );
     }
 }
+
+void perform_action_add(
+    GUIPanel *owner,
+    const LinkKey key,
+    const Target target
+) {
+    const std::string label = target_names.at(target) + " " + std::to_string(key.index);
+    AddFunction add = [owner]() -> void * {
+        void *result = song.add_envelope();
+        owner->update();
+        return result;
+    };
+    RemoveFunction remove = [owner](size_t index) -> void {
+        song.remove_envelope(index);
+        owner->update();
+    };
+    history_manager.add_action(
+        std::make_unique<AddItemAction>(label, owner, key, add, remove)
+    );
+}
+
+template void draw_text<GUI_MAX_STRING_LENGTH>(GUIPanel *owner, const char *label, char (&text)[GUI_MAX_STRING_LENGTH], const LinkKey key);
+template void perform_action_string<GUI_MAX_STRING_LENGTH>(
+    GUIPanel *owner,
+    const LinkKey key,
+    char (&buffer)[GUI_MAX_STRING_LENGTH],
+    const std::string &old_value
+);

@@ -8,10 +8,6 @@ typedef std::function<void(size_t)> RemoveFunction;
 
 class AddItemAction : public Action {
   private:
-    Target type;
-    size_t index;
-    bool first_redo;
-
     AddFunction add_function;
     RemoveFunction remove_function;
 
@@ -20,12 +16,13 @@ class AddItemAction : public Action {
         const std::string &nm,
         GUIPanel *own,
         const LinkKey k,
-        Target t,
         AddFunction add,
         RemoveFunction remove
     );
 
     void redo() override;
     void undo() override;
+    bool can_merge(const Action *other) const override;
+    void merge(const Action *other) override;
     std::string get_name() const override;
 };
