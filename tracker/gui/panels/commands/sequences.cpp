@@ -81,6 +81,7 @@ void GUICommandsSequencesPanel::add() {
     sequence_index = commands_sequences.size() - 1;
     current_sequence.pattern.values_handler.clear();
     current_sequence.pattern.commands_handler.clear();
+    perform_action_add(this, {Target::COMMANDS_SEQUENCE, sequence_index, 0});
     update();
 }
 

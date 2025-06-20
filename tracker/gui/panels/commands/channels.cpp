@@ -76,6 +76,7 @@ void GUICommandsChannelsPanel::add() {
     }
 
     channel_index = commands_channels.size() - 1;
+    perform_action_add(this, {Target::COMMANDS_CHANNEL, channel_index, 0});
     update();
 }
 

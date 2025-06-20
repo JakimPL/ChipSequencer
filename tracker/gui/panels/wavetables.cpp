@@ -105,6 +105,7 @@ void GUIWavetablesPanel::add() {
     }
 
     wavetable_index = wavetables.size() - 1;
+    perform_action_add(this, {Target::WAVETABLE, wavetable_index, 0});
     update();
 }
 

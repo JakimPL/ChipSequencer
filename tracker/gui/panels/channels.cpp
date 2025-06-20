@@ -131,6 +131,7 @@ void GUIChannelsPanel::add() {
     }
 
     channel_index = channels.size() - 1;
+    perform_action_add(this, {Target::CHANNEL, channel_index, 0});
     update();
 }
 

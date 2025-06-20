@@ -85,6 +85,7 @@ void GUIOrdersPanel::add() {
 
     order_index = orders.size() - 1;
     input_handler.clear();
+    perform_action_add(this, {Target::ORDER, order_index, 0});
     update();
 }
 

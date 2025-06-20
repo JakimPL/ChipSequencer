@@ -142,6 +142,7 @@ void GUIOscillatorsPanel::add() {
     }
 
     oscillator_index = oscillators.size() - 1;
+    perform_action_add(this, {Target::OSCILLATOR, oscillator_index, 0});
     update();
 }
 

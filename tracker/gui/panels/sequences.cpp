@@ -72,6 +72,7 @@ void GUISequencesPanel::add() {
     }
 
     sequence_index = sequences.size() - 1;
+    perform_action_add(this, {Target::SEQUENCE, sequence_index, 0});
     update();
 }
 

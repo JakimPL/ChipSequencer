@@ -157,6 +157,7 @@ void GUIDSPsPanel::add() {
     }
 
     dsp_index = dsps.size() - 1;
+    perform_action_add(this, {Target::DSP, dsp_index, 0});
     update();
 }
 
