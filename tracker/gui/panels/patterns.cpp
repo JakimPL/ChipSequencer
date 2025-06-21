@@ -33,9 +33,13 @@ void GUIPatternsPanel::draw_pages() {
 
     if (gui.follow_playback && gui.is_playing()) {
         const int total_rows = current_patterns.total_rows;
-        const int playing_page = mod(global_row, total_rows) / gui.get_page_size();
-        if (playing_page != page) {
-            page = playing_page;
+        if (total_rows > 0) {
+            const int playing_page = mod(global_row, total_rows) / gui.get_page_size();
+            if (playing_page != page) {
+                page = playing_page;
+            }
+        } else {
+            page = 0;
         }
     }
 
