@@ -210,6 +210,7 @@ void GUIOscillatorsPanel::draw_oscillator_type() {
             song.add_wavetable();
             gui.update(GUIElement::Wavetables);
             current_oscillator.wavetable_index = wavetable_names.size() - 1;
+            perform_action_add(this, {Target::WAVETABLE, current_oscillator.wavetable_index, 0});
         }
     }
 
