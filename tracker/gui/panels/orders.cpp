@@ -57,9 +57,11 @@ void GUIOrdersPanel::from() {
 }
 
 void GUIOrdersPanel::to() const {
-    if (!save &&
-        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
-         !is_index_valid())) {
+    if (!is_index_valid()) {
+        return;
+    }
+
+    if (!save && !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
 
@@ -114,6 +116,7 @@ void GUIOrdersPanel::remove() {
 }
 
 void GUIOrdersPanel::update() {
+    order_index = clamp_index(order_index, orders.size());
     update_items(order_names, orders.size(), "Order ", order_index);
     gui.update(GUIElement::Channels);
 }

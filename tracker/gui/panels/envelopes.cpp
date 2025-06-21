@@ -97,9 +97,11 @@ void GUIEnvelopesPanel::gather_envelope_positions() {
 }
 
 void GUIEnvelopesPanel::to() const {
-    if (!save &&
-        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
-         !is_index_valid())) {
+    if (!is_index_valid()) {
+        return;
+    }
+
+    if (!save && !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
 
@@ -142,6 +144,7 @@ void GUIEnvelopesPanel::remove() {
 }
 
 void GUIEnvelopesPanel::update() {
+    envelope_index = clamp_index(envelope_index, envelopes.size());
     update_items(envelope_names, envelopes.size(), "Envelope ", envelope_index);
     gui.update(GUIElement::Channels);
 }

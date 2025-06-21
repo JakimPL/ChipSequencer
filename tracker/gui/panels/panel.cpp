@@ -143,6 +143,7 @@ void GUIPanel::frame() {
         post_actions();
     } else {
         empty();
+        history_actions();
     }
 
     ImGui::EndDisabled();
@@ -153,9 +154,7 @@ void GUIPanel::frame() {
 }
 
 void GUIPanel::add_action(Action *action, const bool undo) {
-    if (action != nullptr) {
-        pending_actions.emplace_back(action, undo);
-    }
+    pending_actions.emplace_back(action, undo);
 }
 
 void GUIPanel::initialize() {

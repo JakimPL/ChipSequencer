@@ -53,9 +53,11 @@ void GUISequencesPanel::from() {
 }
 
 void GUISequencesPanel::to() const {
-    if (!save &&
-        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
-         !is_index_valid())) {
+    if (!is_index_valid()) {
+        return;
+    }
+
+    if (!save && !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
 
@@ -95,6 +97,7 @@ void GUISequencesPanel::remove() {
 }
 
 void GUISequencesPanel::update() {
+    sequence_index = clamp_index(sequence_index, sequences.size());
     update_items(sequence_names, sequences.size(), "Sequence ", sequence_index);
     gui.update(GUIElement::Orders);
 }

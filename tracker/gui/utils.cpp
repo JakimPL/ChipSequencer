@@ -1153,6 +1153,7 @@ void perform_action_add(
         owner->update();
         return result;
     };
+
     RemoveFunction remove = [owner, key](size_t index) -> void {
         switch (key.target) {
         case Target::ENVELOPE: {

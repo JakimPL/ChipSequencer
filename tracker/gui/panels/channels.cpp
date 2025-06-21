@@ -80,10 +80,15 @@ void GUIChannelsPanel::from() {
 }
 
 void GUIChannelsPanel::to() const {
-    if (!save &&
-        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
-         !is_index_valid() ||
-         gui.is_playing())) {
+    if (!is_index_valid()) {
+        return;
+    }
+
+    if (save && gui.is_playing()) {
+        gui.stop();
+    }
+
+    if (!save && !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
 
@@ -154,6 +159,7 @@ void GUIChannelsPanel::remove() {
 }
 
 void GUIChannelsPanel::update() {
+    channel_index = clamp_index(channel_index, channels.size());
     update_channel_names();
     gui.update(GUIElement::Patterns);
 }

@@ -56,10 +56,15 @@ void GUICommandsChannelsPanel::from() {
 }
 
 void GUICommandsChannelsPanel::to() const {
-    if (!save &&
-        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
-         !is_index_valid() ||
-         gui.is_playing())) {
+    if (!is_index_valid()) {
+        return;
+    }
+
+    if (save && gui.is_playing()) {
+        gui.stop();
+    }
+
+    if (!save && !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
 
@@ -99,6 +104,7 @@ void GUICommandsChannelsPanel::remove() {
 }
 
 void GUICommandsChannelsPanel::update() {
+    channel_index = clamp_index(channel_index, commands_channels.size());
     update_items(commands_channel_names, commands_channels.size(), "Command channel ", channel_index);
     gui.update(GUIElement::Patterns);
 }

@@ -76,9 +76,11 @@ void GUIWavetablesPanel::from() {
 }
 
 void GUIWavetablesPanel::to() const {
-    if (!save &&
-        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
-         !is_index_valid())) {
+    if (!is_index_valid()) {
+        return;
+    }
+
+    if (!save && !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
 
@@ -256,6 +258,7 @@ void GUIWavetablesPanel::draw_status() {
 }
 
 void GUIWavetablesPanel::update() {
+    wavetable_index = clamp_index(wavetable_index, wavetables.size());
     update_items(wavetable_names, wavetables.size(), "Wavetable ", wavetable_index);
     gui.update(GUIElement::Oscillators);
 }

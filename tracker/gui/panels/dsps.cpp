@@ -94,10 +94,15 @@ void GUIDSPsPanel::from() {
 }
 
 void GUIDSPsPanel::to() const {
-    if (!save &&
-        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
-         !is_index_valid() ||
-         gui.is_playing())) {
+    if (!is_index_valid()) {
+        return;
+    }
+
+    if (save && gui.is_playing()) {
+        gui.stop();
+    }
+
+    if (!save && !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
 
@@ -180,6 +185,7 @@ void GUIDSPsPanel::remove() {
 }
 
 void GUIDSPsPanel::update() {
+    dsp_index = clamp_index(dsp_index, dsps.size());
     update_dsp_names();
 }
 

@@ -58,10 +58,15 @@ void GUICommandsSequencesPanel::from() {
 
 void GUICommandsSequencesPanel::to() const {
     const bool focus = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
-    if (!save &&
-        ((!focus && !dialog_box_open) ||
-         !is_index_valid() ||
-         gui.is_playing())) {
+    if (!is_index_valid()) {
+        return;
+    }
+
+    if (save && gui.is_playing()) {
+        gui.stop();
+    }
+
+    if (!save && !focus && !dialog_box_open) {
         return;
     }
 
@@ -112,6 +117,7 @@ void GUICommandsSequencesPanel::remove() {
 }
 
 void GUICommandsSequencesPanel::update() {
+    sequence_index = clamp_index(sequence_index, commands_sequences.size());
     update_items(commands_sequence_names, commands_sequences.size(), "Commands sequence ", sequence_index);
     gui.update(GUIElement::Orders);
 }

@@ -86,9 +86,11 @@ void GUIOscillatorsPanel::from() {
 }
 
 void GUIOscillatorsPanel::to() const {
-    if (!save &&
-        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
-         !is_index_valid())) {
+    if (!is_index_valid()) {
+        return;
+    }
+
+    if (!save && !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
 
@@ -165,6 +167,7 @@ void GUIOscillatorsPanel::remove() {
 }
 
 void GUIOscillatorsPanel::update() {
+    oscillator_index = clamp_index(oscillator_index, oscillators.size());
     update_oscillator_names();
     update_wavetables();
     gui.update(GUIElement::Channels);
