@@ -68,7 +68,7 @@ void GUIPanel::draw_add_or_remove(
     ImGui::SameLine();
 
     if (ImGui::BeginPopupModal("Confirm item removal", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::Text("Are you sure you want to remove this item?\nThis action cannot be undone.\n");
+        ImGui::Text("Are you sure you want to remove this item?\nThis action may be only partially restored.\n");
 
         if (!dependencies.empty()) {
             ImGui::Text("\nThis item is used by the following items:");
