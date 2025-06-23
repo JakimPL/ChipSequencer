@@ -19,7 +19,7 @@ class LockRegistry {
     bool is_locked(const Target target, const size_t index) const;
     void clear();
 
-    void realign_locks(const Target target, const size_t index);
+    void realign_locks(const Target target, const size_t index, const bool removal);
     std::set<size_t> get_locked_items(const Target target) const;
 
     void from_json(const nlohmann::json &json);
