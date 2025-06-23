@@ -3,8 +3,8 @@
 #include <functional>
 #include "action.hpp"
 
-typedef std::function<void *()> AddFunction;
-typedef std::function<void(size_t)> RemoveFunction;
+using AddFunction = std::function<void *()>;
+using RemoveFunction = std::function<void(size_t)>;
 
 class AddItemAction : public Action {
   private:

@@ -164,3 +164,8 @@ void perform_action_add(
     GUIPanel *owner,
     const LinkKey key
 );
+
+void perform_action_remove(
+    GUIPanel *owner,
+    const LinkKey key
+);

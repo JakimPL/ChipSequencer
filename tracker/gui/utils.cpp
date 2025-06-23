@@ -12,6 +12,7 @@
 #include "utils.hpp"
 #include "history/actions/add.hpp"
 #include "history/actions/note.hpp"
+#include "history/actions/remove.hpp"
 #include "history/actions/routing.hpp"
 #include "history/actions/sequence.hpp"
 #include "history/actions/text.hpp"
@@ -1210,8 +1211,75 @@ void perform_action_add(
     );
 }
 
-template void
-draw_text<GUI_MAX_STRING_LENGTH>(GUIPanel *owner, const char *label, char (&text)[GUI_MAX_STRING_LENGTH], const LinkKey key);
+void perform_action_remove(
+    GUIPanel *owner,
+    const LinkKey key
+) {
+    const std::string label = target_names.at(key.target) + " " + std::to_string(key.index);
+    RemoveFunction remove = [owner, key](size_t index) -> void {
+        switch (key.target) {
+        case Target::ENVELOPE: {
+            song.remove_envelope(index);
+            break;
+        }
+        case Target::SEQUENCE: {
+            song.remove_sequence(index);
+            break;
+        }
+        case Target::COMMANDS_SEQUENCE: {
+            song.remove_commands_sequence(index);
+            break;
+        }
+        case Target::ORDER: {
+            song.remove_order(index);
+            break;
+        }
+        case Target::OSCILLATOR: {
+            song.remove_oscillator(index);
+            break;
+        }
+        case Target::WAVETABLE: {
+            song.remove_wavetable(index);
+            break;
+        }
+        case Target::DSP: {
+            song.remove_dsp(index);
+            break;
+        }
+        case Target::CHANNEL: {
+            song.remove_channel(index);
+            break;
+        }
+        case Target::COMMANDS_CHANNEL: {
+            song.remove_commands_channel(index);
+            break;
+        }
+        case Target::DIRECT_OUTPUT:
+        case Target::DIRECT_DSP:
+        case Target::SPLITTER_OUTPUT:
+        case Target::SPLITTER_DSP:
+        case Target::SPECIAL:
+        case Target::COUNT:
+        default: {
+            throw std::runtime_error("Invalid target type for remove operation: " + std::to_string(static_cast<int>(key.target)));
+        }
+        }
+
+        owner->update();
+    };
+
+    // history_manager.add_action(
+    //     std::make_unique<RemoveItemAction>(label, owner, item, key, remove, restore)
+    // );
+}
+
+template void draw_text<GUI_MAX_STRING_LENGTH>(
+    GUIPanel *owner,
+    const char *label,
+    char (&text)[GUI_MAX_STRING_LENGTH],
+    const LinkKey key
+);
+
 template void perform_action_string<GUI_MAX_STRING_LENGTH>(
     GUIPanel *owner,
     const LinkKey key,

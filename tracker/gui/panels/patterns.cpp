@@ -33,14 +33,7 @@ void GUIPatternsPanel::draw_pages() {
 
     if (gui.follow_playback && gui.is_playing()) {
         const int total_rows = current_patterns.total_rows;
-        if (total_rows > 0) {
-            const int playing_page = mod(global_row, total_rows) / gui.get_page_size();
-            if (playing_page != page) {
-                page = playing_page;
-            }
-        } else {
-            page = 0;
-        }
+        page = total_rows > 0 ? mod(global_row, total_rows) / gui.get_page_size() : 0;
     }
 
     if (draw_int_slider(this, "Page", page, {}, 0, pages - 1)) {
