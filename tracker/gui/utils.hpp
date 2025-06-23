@@ -171,3 +171,11 @@ void perform_action_remove(
     const LinkKey key,
     const T *pointer
 );
+
+void perform_action_wavetable(
+    GUIPanel *owner,
+    const LinkKey key,
+    int &wavetable_size,
+    std::vector<float> &wavetable,
+    const std::vector<float> &old_wavetable
+);

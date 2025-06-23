@@ -195,7 +195,12 @@ void GUIWavetablesPanel::draw_waveform() {
             float normalized = 1.0f - (relative_y / size.y);
             normalized = std::clamp(normalized, 0.0f, 1.0f);
             const float value = (normalized * 2.0f) - 1.0f;
-            current_wavetable.wave[current_point] = value;
+            if (value != current_wavetable.wave[current_point]) {
+                const std::vector<float> old_wave = current_wavetable.wave;
+                current_wavetable.wave[current_point] = value;
+                const LinkKey key = {Target::WAVETABLE, wavetable_index, WAVETABLE_DATA};
+                perform_action_wavetable(this, key, current_wavetable.size, current_wavetable.wave, old_wave);
+            }
         }
     }
 
@@ -327,6 +332,7 @@ void GUIWavetablesPanel::prepare_wave_from_load(Samples samples) {
         return;
     }
 
+    const std::vector<float> old_wave = current_wavetable.wave;
     const size_t size = std::min(samples.data.size(), static_cast<size_t>(MAX_WAVETABLE_SIZE));
     current_wavetable.size = static_cast<int>(size);
     current_wavetable.wave.clear();
@@ -334,4 +340,7 @@ void GUIWavetablesPanel::prepare_wave_from_load(Samples samples) {
     for (size_t i = 0; i < size; ++i) {
         current_wavetable.wave.push_back(samples.data[i][0]);
     }
+
+    const LinkKey key = {Target::WAVETABLE, wavetable_index, WAVETABLE_DATA};
+    perform_action_wavetable(this, key, current_wavetable.size, current_wavetable.wave, old_wave);
 }
