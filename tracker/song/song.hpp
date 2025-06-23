@@ -149,6 +149,16 @@ class Song {
     CommandsSequence *add_commands_sequence(const size_t index = -1);
     CommandsChannel *add_commands_channel(const size_t index = -1);
 
+    Envelope *insert_envelope(Envelope *envelope, const size_t index = -1);
+    Sequence *insert_sequence(Sequence *sequence, const size_t index = -1);
+    Order *insert_order(Order *order, const size_t index = -1);
+    Wavetable *insert_wavetable(Wavetable *wavetable, const size_t index = -1);
+    void *insert_oscillator(void *oscillator, const size_t index = -1);
+    Channel *insert_channel(Channel *channel, const size_t index = -1);
+    void *insert_dsp(void *dsp, const size_t index = -1);
+    CommandsSequence *insert_commands_sequence(CommandsSequence *sequence, const size_t index = -1);
+    CommandsChannel *insert_commands_channel(CommandsChannel *channel, const size_t index = -1);
+
     Envelope *duplicate_envelope(const size_t index);
     Sequence *duplicate_sequence(const size_t index);
     Order *duplicate_order(const size_t index);
