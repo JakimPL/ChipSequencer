@@ -222,7 +222,7 @@ void Song::import_all(const std::string &directory, const nlohmann::json &json) 
     import_lock_registry(directory);
 }
 
-Envelope *Song::add_envelope() {
+Envelope *Song::add_envelope(const size_t index) {
     if (envelopes.size() >= UINT8_MAX) {
         return nullptr;
     }
@@ -252,7 +252,7 @@ Envelope *Song::duplicate_envelope(const size_t index) {
     return envelope;
 }
 
-Sequence *Song::add_sequence() {
+Sequence *Song::add_sequence(const size_t index) {
     if (sequences.size() >= MAX_SEQUENCES) {
         return nullptr;
     }
@@ -279,7 +279,7 @@ Sequence *Song::duplicate_sequence(const size_t index) {
     return sequence;
 }
 
-Order *Song::add_order() {
+Order *Song::add_order(const size_t index) {
     if (orders.size() >= MAX_ORDERS) {
         return nullptr;
     }
@@ -304,7 +304,7 @@ Order *Song::duplicate_order(const size_t index) {
     return order;
 }
 
-Wavetable *Song::add_wavetable() {
+Wavetable *Song::add_wavetable(const size_t index) {
     if (wavetables.size() >= MAX_WAVETABLES) {
         return nullptr;
     }
@@ -330,7 +330,7 @@ Wavetable *Song::duplicate_wavetable(const size_t index) {
     return wavetable;
 }
 
-void *Song::add_oscillator() {
+void *Song::add_oscillator(const size_t index) {
     if (oscillators.size() >= MAX_OSCILLATORS) {
         return nullptr;
     }
@@ -356,7 +356,7 @@ void *Song::duplicate_oscillator(const size_t index) {
     return oscillator;
 }
 
-Channel *Song::add_channel() {
+Channel *Song::add_channel(const size_t index) {
     if (envelopes.size() >= MAX_CHANNELS) {
         return nullptr;
     }
@@ -397,7 +397,7 @@ Channel *Song::duplicate_channel(const size_t index) {
     return channel;
 }
 
-void *Song::add_dsp() {
+void *Song::add_dsp(const size_t index) {
     if (dsps.size() >= MAX_DSPS) {
         return nullptr;
     }
@@ -445,7 +445,7 @@ void *Song::duplicate_dsp(const size_t index) {
     return dsp;
 }
 
-CommandsSequence *Song::add_commands_sequence() {
+CommandsSequence *Song::add_commands_sequence(const size_t index) {
     if (commands_sequences.size() >= MAX_COMMANDS_SEQUENCES) {
         return nullptr;
     }
@@ -471,7 +471,7 @@ CommandsSequence *Song::duplicate_commands_sequence(const size_t index) {
     return sequence;
 }
 
-CommandsChannel *Song::add_commands_channel() {
+CommandsChannel *Song::add_commands_channel(const size_t index) {
     if (commands_channels.size() >= MAX_COMMANDS_CHANNELS) {
         return nullptr;
     }
@@ -500,8 +500,8 @@ void Song::remove_envelope(const size_t index) {
     if (index < envelopes.size()) {
         resource_manager.deallocate(envelopes[index]);
         envelopes.erase(envelopes.begin() + index);
-        link_manager.realign_links(Target::ENVELOPE, index);
-        lock_registry.realign_locks(Target::ENVELOPE, index);
+        link_manager.realign_links(Target::ENVELOPE, index, true);
+        lock_registry.realign_locks(Target::ENVELOPE, index, true);
         for (auto &channel : channels) {
             if (channel->envelope_index >= index) {
                 channel->envelope_index = std::max(0, channel->envelope_index - 1);
@@ -514,8 +514,8 @@ void Song::remove_sequence(const size_t index) {
     if (index < sequences.size()) {
         resource_manager.deallocate(sequences[index]);
         sequences.erase(sequences.begin() + index);
-        link_manager.realign_links(Target::SEQUENCE, index);
-        lock_registry.realign_locks(Target::SEQUENCE, index);
+        link_manager.realign_links(Target::SEQUENCE, index, true);
+        lock_registry.realign_locks(Target::SEQUENCE, index, true);
         for (auto &order : orders) {
             for (size_t i = 0; i < order->order_length; i++) {
                 if (order->sequences[i] >= index) {
@@ -530,8 +530,8 @@ void Song::remove_order(const size_t index) {
     if (index < orders.size()) {
         resource_manager.deallocate(orders[index]);
         orders.erase(orders.begin() + index);
-        link_manager.realign_links(Target::ORDER, index);
-        lock_registry.realign_locks(Target::ORDER, index);
+        link_manager.realign_links(Target::ORDER, index, true);
+        lock_registry.realign_locks(Target::ORDER, index, true);
         for (auto &channel : channels) {
             if (channel->order_index >= index) {
                 channel->order_index = std::max(0, channel->order_index - 1);
@@ -544,8 +544,8 @@ void Song::remove_wavetable(const size_t index) {
     if (index < wavetables.size()) {
         resource_manager.deallocate(wavetables[index]);
         wavetables.erase(wavetables.begin() + index);
-        link_manager.realign_links(Target::WAVETABLE, index);
-        lock_registry.realign_locks(Target::WAVETABLE, index);
+        link_manager.realign_links(Target::WAVETABLE, index, true);
+        lock_registry.realign_locks(Target::WAVETABLE, index, true);
         for (auto &oscillator : oscillators) {
             Oscillator *generic = static_cast<Oscillator *>(oscillator);
             if (generic->generator_index == GENERATOR_WAVETABLE) {
@@ -562,8 +562,8 @@ void Song::remove_oscillator(const size_t index) {
     if (index < oscillators.size()) {
         resource_manager.deallocate(oscillators[index]);
         oscillators.erase(oscillators.begin() + index);
-        link_manager.realign_links(Target::OSCILLATOR, index);
-        lock_registry.realign_locks(Target::OSCILLATOR, index);
+        link_manager.realign_links(Target::OSCILLATOR, index, true);
+        lock_registry.realign_locks(Target::OSCILLATOR, index, true);
         for (auto &channel : channels) {
             if (channel->oscillator_index >= index) {
                 channel->oscillator_index = std::max(0, channel->oscillator_index - 1);
@@ -580,8 +580,8 @@ void Song::remove_channel(const size_t index) {
         links[link_type].erase(links[link_type].begin() + index);
         num_channels = channels.size();
 
-        lock_registry.realign_locks(Target::CHANNEL, index);
-        link_manager.realign_links(Target::CHANNEL, index);
+        lock_registry.realign_locks(Target::CHANNEL, index, true);
+        link_manager.realign_links(Target::CHANNEL, index, true);
         link_manager.set_links();
     }
 }
@@ -594,9 +594,9 @@ void Song::remove_dsp(const size_t index) {
         links[link_type].erase(links[link_type].begin() + index);
         num_dsps = dsps.size();
 
-        lock_registry.realign_locks(Target::DSP, index);
-        link_manager.realign_links(Target::DIRECT_DSP, index);
-        link_manager.realign_links(Target::DSP, index);
+        lock_registry.realign_locks(Target::DSP, index, true);
+        link_manager.realign_links(Target::DIRECT_DSP, index, true);
+        link_manager.realign_links(Target::DSP, index, true);
         link_manager.set_links();
     }
 }
@@ -605,8 +605,8 @@ void Song::remove_commands_sequence(const size_t index) {
     if (index < commands_sequences.size()) {
         resource_manager.deallocate(commands_sequences[index]);
         commands_sequences.erase(commands_sequences.begin() + index);
-        link_manager.realign_links(Target::COMMANDS_SEQUENCE, index);
-        lock_registry.realign_locks(Target::COMMANDS_SEQUENCE, index);
+        link_manager.realign_links(Target::COMMANDS_SEQUENCE, index, true);
+        lock_registry.realign_locks(Target::COMMANDS_SEQUENCE, index, true);
         for (auto &order : orders) {
             for (size_t i = 0; i < order->order_length; i++) {
                 if (order->sequences[i] >= index) {
@@ -623,8 +623,8 @@ void Song::remove_commands_channel(const size_t index) {
         commands_channels.erase(commands_channels.begin() + index);
         num_commands_channels = commands_channels.size();
 
-        lock_registry.realign_locks(Target::COMMANDS_CHANNEL, index);
-        link_manager.realign_links(Target::COMMANDS_CHANNEL, index);
+        lock_registry.realign_locks(Target::COMMANDS_CHANNEL, index, true);
+        link_manager.realign_links(Target::COMMANDS_CHANNEL, index, true);
         link_manager.set_links();
     }
 }
