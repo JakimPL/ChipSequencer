@@ -115,6 +115,7 @@ add_executable(ChipSequencer
     tracker/gui/history/actions/sequence.cpp
     tracker/gui/history/actions/text.cpp
     tracker/gui/history/actions/value.cpp
+    tracker/gui/history/actions/wavetable.cpp
     tracker/gui/history/manager.cpp
     tracker/gui/history/shortcuts.cpp
     tracker/gui/inputs/input.cpp
