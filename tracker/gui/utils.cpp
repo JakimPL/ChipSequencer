@@ -1211,9 +1211,11 @@ void perform_action_add(
     );
 }
 
+template <typename T>
 void perform_action_remove(
     GUIPanel *owner,
-    const LinkKey key
+    const LinkKey key,
+    const T &item
 ) {
     const std::string label = target_names.at(key.target) + " " + std::to_string(key.index);
     RemoveFunction remove = [owner, key](size_t index) -> void {
@@ -1265,12 +1267,55 @@ void perform_action_remove(
         }
         }
 
+        owner->from();
         owner->update();
     };
 
-    // history_manager.add_action(
-    //     std::make_unique<RemoveItemAction>(label, owner, item, key, remove, restore)
-    // );
+    RestoreFunction<T> restore = [owner, key](T *restored_item, size_t index) -> T * {
+        T *result = nullptr;
+        if constexpr (std::is_same_v<T, Envelope>) {
+            assert(key.target == Target::ENVELOPE && "Type mismatch: Envelope expected");
+            result = static_cast<T *>(song.insert_envelope(restored_item, index));
+        } else if constexpr (std::is_same_v<T, Sequence>) {
+            assert(key.target == Target::SEQUENCE && "Type mismatch: Sequence expected");
+            result = static_cast<T *>(song.insert_sequence(restored_item, index));
+        } else if constexpr (std::is_same_v<T, CommandsSequence>) {
+            assert(key.target == Target::COMMANDS_SEQUENCE && "Type mismatch: CommandsSequence expected");
+            result = static_cast<T *>(song.insert_commands_sequence(restored_item, index));
+        } else if constexpr (std::is_same_v<T, Order>) {
+            assert(key.target == Target::ORDER && "Type mismatch: Order expected");
+            result = static_cast<T *>(song.insert_order(restored_item, index));
+        } else if constexpr (std::is_same_v<T, Oscillator>) {
+            assert(key.target == Target::OSCILLATOR && "Type mismatch: Oscillator expected");
+            result = static_cast<T *>(song.insert_oscillator(restored_item, index));
+        } else if constexpr (std::is_same_v<T, Wavetable>) {
+            assert(key.target == Target::WAVETABLE && "Type mismatch: Wavetable expected");
+            result = static_cast<T *>(song.insert_wavetable(restored_item, index));
+        } else if constexpr (std::is_same_v<T, DSP>) {
+            assert(key.target == Target::DSP && "Type mismatch: DSP expected");
+            result = static_cast<T *>(song.insert_dsp(restored_item, index));
+        } else if constexpr (std::is_same_v<T, Channel>) {
+            assert(key.target == Target::CHANNEL && "Type mismatch: Channel expected");
+            result = static_cast<T *>(song.insert_channel(restored_item, index));
+        } else if constexpr (std::is_same_v<T, CommandsChannel>) {
+            assert(key.target == Target::COMMANDS_CHANNEL && "Type mismatch: CommandsChannel expected");
+            result = static_cast<T *>(song.insert_commands_channel(restored_item, index));
+        }
+
+        if (!result) {
+            throw std::runtime_error("Incompatible type for target: " + std::to_string(static_cast<int>(key.target)));
+        }
+
+        owner->from();
+        owner->update();
+        return result;
+    };
+
+    history_manager.add_action(
+        std::make_unique<RemoveItemAction<T>>(
+            label, owner, key, item, remove, restore
+        )
+    );
 }
 
 template void draw_text<GUI_MAX_STRING_LENGTH>(
@@ -1286,3 +1331,13 @@ template void perform_action_string<GUI_MAX_STRING_LENGTH>(
     char (&buffer)[GUI_MAX_STRING_LENGTH],
     const std::string &old_value
 );
+
+template void perform_action_remove<Envelope>(GUIPanel *owner, const LinkKey key, const Envelope &item);
+template void perform_action_remove<Sequence>(GUIPanel *owner, const LinkKey key, const Sequence &item);
+template void perform_action_remove<CommandsSequence>(GUIPanel *owner, const LinkKey key, const CommandsSequence &item);
+template void perform_action_remove<Order>(GUIPanel *owner, const LinkKey key, const Order &item);
+template void perform_action_remove<Oscillator>(GUIPanel *owner, const LinkKey key, const Oscillator &item);
+template void perform_action_remove<Wavetable>(GUIPanel *owner, const LinkKey key, const Wavetable &item);
+template void perform_action_remove<DSP>(GUIPanel *owner, const LinkKey key, DSP const &item);
+template void perform_action_remove<Channel>(GUIPanel *owner, const LinkKey key, const Channel &item);
+template void perform_action_remove<CommandsChannel>(GUIPanel *owner, const LinkKey key, const CommandsChannel &item);

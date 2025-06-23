@@ -137,6 +137,7 @@ void GUIEnvelopesPanel::duplicate() {
 
 void GUIEnvelopesPanel::remove() {
     if (is_index_valid()) {
+        perform_action_remove(this, {Target::ENVELOPE, envelope_index, 0}, *envelopes[envelope_index]);
         song.remove_envelope(envelope_index);
         envelope_index = std::max(0, envelope_index - 1);
         update();

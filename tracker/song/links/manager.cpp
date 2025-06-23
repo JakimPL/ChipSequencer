@@ -485,6 +485,10 @@ void LinkManager::capture_parameters() {
 }
 
 void LinkManager::restore_parameter(const LinkKey key, const Link *link) const {
+    if (is_target_output(key.target)) {
+        return;
+    }
+
     validate_key_and_link(key, link);
     const TargetVariableType type = get_type(key);
     switch (type) {

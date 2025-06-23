@@ -8,38 +8,29 @@ RemoveItemAction<T>::RemoveItemAction(
     const std::string &nm,
     GUIPanel *own,
     const LinkKey k,
-    T *original_item,
+    const T &original_item,
     RemoveFunction remove,
     RestoreFunction<T> restore
 )
     : Action(nm, own, k),
       remove_function(remove),
       restore_function(restore) {
-    item_copy = resource_manager.allocate<T>();
-    *item_copy = *original_item;
-}
-
-template <typename T>
-RemoveItemAction<T>::~RemoveItemAction() {
-    if (item_copy) {
-        resource_manager.deallocate(item_copy);
-        item_copy = nullptr;
-    }
+    item_copy = original_item;
 }
 
 template <typename T>
 void RemoveItemAction<T>::redo() {
     if (remove_function) {
-        remove_function(item_index);
+        remove_function(key.index);
     }
 }
 
 template <typename T>
 void RemoveItemAction<T>::undo() {
-    if (restore_function && item_copy) {
+    if (restore_function) {
         T *new_item = resource_manager.allocate<T>();
-        *new_item = *item_copy;
-        restore_function(new_item, item_index);
+        *new_item = item_copy;
+        restore_function(new_item, key.index);
     }
 }
 

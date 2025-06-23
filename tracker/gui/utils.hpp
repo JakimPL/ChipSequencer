@@ -165,7 +165,9 @@ void perform_action_add(
     const LinkKey key
 );
 
+template <typename T>
 void perform_action_remove(
     GUIPanel *owner,
-    const LinkKey key
+    const LinkKey key,
+    const T &item
 );

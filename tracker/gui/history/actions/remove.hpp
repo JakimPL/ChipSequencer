@@ -16,20 +16,17 @@ class RemoveItemAction : public Action {
   private:
     RemoveFunction remove_function;
     RestoreFunction<T> restore_function;
-    T *item_copy;
-    size_t item_index;
+    T item_copy;
 
   public:
     RemoveItemAction(
         const std::string &nm,
         GUIPanel *own,
         const LinkKey k,
-        T *original_item,
+        const T &original_item,
         RemoveFunction remove,
         RestoreFunction<T> restore
     );
-
-    ~RemoveItemAction();
 
     void redo() override;
     void undo() override;
