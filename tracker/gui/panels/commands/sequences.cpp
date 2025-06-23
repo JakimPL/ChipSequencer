@@ -105,6 +105,7 @@ void GUICommandsSequencesPanel::duplicate() {
 void GUICommandsSequencesPanel::remove() {
     const size_t previous_index = sequence_index;
     if (is_index_valid()) {
+        perform_action_remove(this, {Target::COMMANDS_SEQUENCE, sequence_index, 0}, commands_sequences[sequence_index]);
         song.remove_commands_sequence(sequence_index);
         sequence_index = std::max(0, sequence_index - 1);
         update();

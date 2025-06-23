@@ -178,6 +178,7 @@ void GUIDSPsPanel::duplicate() {
 
 void GUIDSPsPanel::remove() {
     if (is_index_valid()) {
+        perform_action_remove(this, {Target::DSP, dsp_index, 0}, static_cast<DSP *>(dsps[dsp_index]));
         song.remove_dsp(dsp_index);
         dsp_index = std::max(0, dsp_index - 1);
         update();

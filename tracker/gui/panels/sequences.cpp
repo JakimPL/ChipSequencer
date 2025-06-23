@@ -90,6 +90,7 @@ void GUISequencesPanel::duplicate() {
 
 void GUISequencesPanel::remove() {
     if (is_index_valid()) {
+        perform_action_remove(this, {Target::SEQUENCE, sequence_index, 0}, sequences[sequence_index]);
         song.remove_sequence(sequence_index);
         sequence_index = std::max(0, sequence_index - 1);
         update();

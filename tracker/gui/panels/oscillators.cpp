@@ -160,6 +160,7 @@ void GUIOscillatorsPanel::duplicate() {
 
 void GUIOscillatorsPanel::remove() {
     if (is_index_valid()) {
+        perform_action_remove(this, {Target::OSCILLATOR, oscillator_index, 0}, static_cast<Oscillator *>(oscillators[oscillator_index]));
         song.remove_oscillator(oscillator_index);
         oscillator_index = std::max(0, oscillator_index - 1);
         update();

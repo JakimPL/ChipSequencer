@@ -105,6 +105,7 @@ void GUIOrdersPanel::duplicate() {
 void GUIOrdersPanel::remove() {
     const size_t previous_index = order_index;
     if (is_index_valid()) {
+        perform_action_remove(this, {Target::ORDER, order_index, 0}, orders[order_index]);
         song.remove_order(order_index);
         order_index = std::max(0, order_index - 1);
         update();

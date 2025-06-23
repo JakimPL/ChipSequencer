@@ -97,6 +97,7 @@ void GUICommandsChannelsPanel::duplicate() {
 
 void GUICommandsChannelsPanel::remove() {
     if (is_index_valid()) {
+        perform_action_remove(this, {Target::COMMANDS_CHANNEL, channel_index, 0}, commands_channels[channel_index]);
         song.remove_commands_channel(channel_index);
         channel_index = std::max(0, channel_index - 1);
         update();

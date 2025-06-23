@@ -1215,8 +1215,9 @@ template <typename T>
 void perform_action_remove(
     GUIPanel *owner,
     const LinkKey key,
-    const T &item
+    const T *pointer
 ) {
+    const T item = *pointer;
     const std::string label = target_names.at(key.target) + " " + std::to_string(key.index);
     RemoveFunction remove = [owner, key](size_t index) -> void {
         switch (key.target) {
@@ -1332,12 +1333,12 @@ template void perform_action_string<GUI_MAX_STRING_LENGTH>(
     const std::string &old_value
 );
 
-template void perform_action_remove<Envelope>(GUIPanel *owner, const LinkKey key, const Envelope &item);
-template void perform_action_remove<Sequence>(GUIPanel *owner, const LinkKey key, const Sequence &item);
-template void perform_action_remove<CommandsSequence>(GUIPanel *owner, const LinkKey key, const CommandsSequence &item);
-template void perform_action_remove<Order>(GUIPanel *owner, const LinkKey key, const Order &item);
-template void perform_action_remove<Oscillator>(GUIPanel *owner, const LinkKey key, const Oscillator &item);
-template void perform_action_remove<Wavetable>(GUIPanel *owner, const LinkKey key, const Wavetable &item);
-template void perform_action_remove<DSP>(GUIPanel *owner, const LinkKey key, DSP const &item);
-template void perform_action_remove<Channel>(GUIPanel *owner, const LinkKey key, const Channel &item);
-template void perform_action_remove<CommandsChannel>(GUIPanel *owner, const LinkKey key, const CommandsChannel &item);
+template void perform_action_remove<Envelope>(GUIPanel *owner, const LinkKey key, const Envelope *pointer);
+template void perform_action_remove<Sequence>(GUIPanel *owner, const LinkKey key, const Sequence *pointer);
+template void perform_action_remove<CommandsSequence>(GUIPanel *owner, const LinkKey key, const CommandsSequence *pointer);
+template void perform_action_remove<Order>(GUIPanel *owner, const LinkKey key, const Order *pointer);
+template void perform_action_remove<Oscillator>(GUIPanel *owner, const LinkKey key, const Oscillator *pointer);
+template void perform_action_remove<Wavetable>(GUIPanel *owner, const LinkKey key, const Wavetable *pointer);
+template void perform_action_remove<DSP>(GUIPanel *owner, const LinkKey key, DSP const *pointer);
+template void perform_action_remove<Channel>(GUIPanel *owner, const LinkKey key, const Channel *pointer);
+template void perform_action_remove<CommandsChannel>(GUIPanel *owner, const LinkKey key, const CommandsChannel *pointer);

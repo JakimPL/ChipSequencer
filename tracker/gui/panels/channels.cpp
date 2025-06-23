@@ -152,6 +152,7 @@ void GUIChannelsPanel::duplicate() {
 
 void GUIChannelsPanel::remove() {
     if (is_index_valid()) {
+        perform_action_remove(this, {Target::CHANNEL, channel_index, 0}, channels[channel_index]);
         song.remove_channel(channel_index);
         channel_index = std::max(0, channel_index - 1);
         update();

@@ -123,6 +123,7 @@ void GUIWavetablesPanel::duplicate() {
 
 void GUIWavetablesPanel::remove() {
     if (is_index_valid()) {
+        perform_action_remove(this, {Target::WAVETABLE, wavetable_index, 0}, wavetables[wavetable_index]);
         song.remove_wavetable(wavetable_index);
         wavetable_index = std::max(0, wavetable_index - 1);
         update();

@@ -169,5 +169,5 @@ template <typename T>
 void perform_action_remove(
     GUIPanel *owner,
     const LinkKey key,
-    const T &item
+    const T *pointer
 );
