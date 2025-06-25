@@ -897,6 +897,16 @@ void GUIPatternsPanel::deselect_all_rows() {
     }
 }
 
+void GUIPatternsPanel::set_notes(const std::map<PatternRow, uint8_t> &notes) {
+    for (const auto &[pattern_row, note] : notes) {
+        set_note(pattern_row, note);
+    }
+}
+
+void GUIPatternsPanel::set_note(const PatternRow &pattern_row, const uint8_t note) {
+    set_note(pattern_row.channel_index, pattern_row.pattern_id, pattern_row.row, note);
+}
+
 void GUIPatternsPanel::set_note(const size_t channel_index, const size_t pattern_id, const int row, const uint8_t note) {
     if (current_patterns.patterns.find(channel_index) != current_patterns.patterns.end()) {
         Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
