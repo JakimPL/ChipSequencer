@@ -168,9 +168,18 @@ void GUICommandsSequencesPanel::deselect_all() {
 
 void GUICommandsSequencesPanel::delete_selection() {
     if (selection.is_active()) {
-        for (size_t row = selection.start; row <= selection.end; row++) {
+        PatternSelectionChange<CommandValue> changes;
+        for (int row = selection.start; row <= selection.end; row++) {
+            const CommandValue old_command_value = current_sequence.pattern.get_command(row);
             current_sequence.pattern.clear_row(row);
+            const CommandValue new_command_value = current_sequence.pattern.get_command(row);
+            changes[{0, 0, row}] = {old_command_value, new_command_value};
         }
+
+        SetItemsFunction<CommandValue> function = [this](const std::map<PatternRow, CommandValue> &commands_values) {
+            this->set_commands(commands_values);
+        };
+        perform_action_pattern_selection<CommandValue>(this, {Target::COMMANDS_SEQUENCE}, "Delete", changes, function);
     } else {
         const int row = current_sequence.pattern.current_row;
         current_sequence.pattern.clear_row(row);
@@ -484,6 +493,25 @@ void GUICommandsSequencesPanel::check_keyboard_input() {
     }
 
     current_sequence.pattern.handle_input();
+}
+
+void GUICommandsSequencesPanel::set_commands(const std::map<PatternRow, CommandValue> &commands_values) {
+    for (const auto &[row, command_value] : commands_values) {
+        set_command(row, command_value);
+    }
+}
+
+void GUICommandsSequencesPanel::set_command(const PatternRow &pattern_row, const std::string &command, const std::string &value) {
+    set_command(pattern_row.row, command, value);
+}
+
+void GUICommandsSequencesPanel::set_command(const PatternRow &pattern_row, const CommandValue &command_value) {
+    set_command(pattern_row, command_value.first, command_value.second);
+}
+
+void GUICommandsSequencesPanel::set_command(const int row, const std::string &command, const std::string &value) {
+    current_sequence.pattern.set_command(row, command, value);
+    current_sequence.pattern.current_row = row;
 }
 
 void GUICommandsSequencesPanel::set_index(const int index) {
