@@ -112,6 +112,7 @@ add_executable(ChipSequencer
     tracker/gui/history/actions/note.cpp
     tracker/gui/history/actions/remove.cpp
     tracker/gui/history/actions/routing.cpp
+    tracker/gui/history/actions/selection.cpp
     tracker/gui/history/actions/sequence.cpp
     tracker/gui/history/actions/text.cpp
     tracker/gui/history/actions/value.cpp

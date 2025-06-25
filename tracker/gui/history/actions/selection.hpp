@@ -8,7 +8,7 @@
 
 class ChangePatternSelectionAction : public Action {
   private:
-    PatternSelectionChange<uint8_t> selection_change;
+    PatternSelectionChange<uint8_t> selection_changes;
     std::function<void(std::map<PatternRow, uint8_t>)> set_items;
 
   public:
@@ -16,7 +16,8 @@ class ChangePatternSelectionAction : public Action {
         const std::string &nm,
         GUIPanel *own,
         const LinkKey k,
-        const PatternSelectionChange<uint8_t> &selection_ch
+        const PatternSelectionChange<uint8_t> &s_ch,
+        std::function<void(std::map<PatternRow, uint8_t>)> set_items_function
     );
 
     void redo() override;

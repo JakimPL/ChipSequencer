@@ -2,6 +2,7 @@
 #include "../../utils/math.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
+#include "../history/actions/selection.hpp"
 #include "patterns.hpp"
 
 GUIPatternsPanel::GUIPatternsPanel(const bool visible, const bool windowed)
@@ -457,6 +458,7 @@ void GUIPatternsPanel::set_selection_note(const uint8_t note) {
 }
 
 void GUIPatternsPanel::delete_selection() {
+    PatternSelectionChange<uint8_t> changes;
     for (const PatternRow &pattern_row : secondary_pattern_rows) {
         const size_t channel_index = pattern_row.channel_index;
         const size_t pattern_id = pattern_row.pattern_id;
@@ -465,10 +467,15 @@ void GUIPatternsPanel::delete_selection() {
             CommandsPattern &pattern = current_patterns.commands_patterns[channel_index][pattern_id];
             pattern.clear_row(row);
         } else {
+            const uint8_t old_note = current_patterns.patterns[pattern_row.channel_index][pattern_row.pattern_id].get_note(pattern_row.row);
             Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
             pattern.clear_row(row);
+            const uint8_t new_note = current_patterns.patterns[pattern_row.channel_index][pattern_row.pattern_id].get_note(pattern_row.row);
+            changes[pattern_row] = {old_note, new_note};
         }
     }
+
+    perform_action_pattern_selection(this, {Target::SEQUENCE}, "Delete", changes);
 }
 
 void GUIPatternsPanel::transpose_selected_rows(const int value) {

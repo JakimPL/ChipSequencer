@@ -6,6 +6,4 @@
 #include "../../patterns/selection.hpp"
 
 template <typename T>
-struct PatternSelectionChange {
-    std::map<PatternRow, std::pair<T, T>> changes;
-};
+using PatternSelectionChange = std::map<PatternRow, std::pair<T, T>>;

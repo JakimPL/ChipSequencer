@@ -2,9 +2,19 @@
 
 #include "selection.hpp"
 
+ChangePatternSelectionAction::ChangePatternSelectionAction(
+    const std::string &nm,
+    GUIPanel *own,
+    const LinkKey k,
+    const PatternSelectionChange<uint8_t> &s_ch,
+    std::function<void(std::map<PatternRow, uint8_t>)> set_items_function
+)
+    : Action(nm, own, k), selection_changes(s_ch), set_items(set_items_function) {
+}
+
 void ChangePatternSelectionAction::redo() {
     std::map<PatternRow, uint8_t> changes;
-    for (const auto &[pattern_row, change] : selection_change.changes) {
+    for (const auto &[pattern_row, change] : selection_changes) {
         changes[pattern_row] = change.second;
     }
 
@@ -13,7 +23,7 @@ void ChangePatternSelectionAction::redo() {
 
 void ChangePatternSelectionAction::undo() {
     std::map<PatternRow, uint8_t> changes;
-    for (const auto &[pattern_row, change] : selection_change.changes) {
+    for (const auto &[pattern_row, change] : selection_changes) {
         changes[pattern_row] = change.first;
     }
 

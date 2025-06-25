@@ -1334,6 +1334,21 @@ void perform_action_wavetable(
     );
 }
 
+void perform_action_pattern_selection(
+    GUIPanel *owner,
+    const LinkKey key,
+    const std::string &label,
+    const PatternSelectionChange<uint8_t> &changes
+) {
+    if (changes.empty()) {
+        return;
+    }
+
+    history_manager.add_action(
+        std::make_unique<ChangePatternSelectionAction>(label, owner, key, changes)
+    );
+}
+
 template void draw_text<GUI_MAX_STRING_LENGTH>(
     GUIPanel *owner,
     const char *label,
