@@ -337,6 +337,27 @@ void CommandsPattern::add_command(const std::string &command, const std::string 
     values.push_back(value);
 }
 
+CommandValue CommandsPattern::get_command(const int row) const {
+    if (is_row_valid(row)) {
+        return {commands[row], values[row]};
+    }
+
+    return {"", ""};
+}
+
+void CommandsPattern::set_command(const int row, const std::string &command, const std::string &value) {
+    if (!is_row_valid(row)) {
+        return;
+    }
+
+    commands[row] = command;
+    values[row] = value;
+}
+
+void CommandsPattern::set_command(const int row, const CommandValue &command_value) {
+    set_command(row, command_value.first, command_value.second);
+}
+
 void CommandsPattern::split_portamento_value(const std::string &command_value, uint8_t &channel, uint16_t &value) {
     std::vector<std::string> value_parts = split(command_value, ',');
     channel = 0;

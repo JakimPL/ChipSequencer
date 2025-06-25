@@ -1334,18 +1334,20 @@ void perform_action_wavetable(
     );
 }
 
+template <typename T>
 void perform_action_pattern_selection(
     GUIPanel *owner,
     const LinkKey key,
     const std::string &label,
-    const PatternSelectionChange<uint8_t> &changes
+    const PatternSelectionChange<T> &changes,
+    const SetItemsFunction<T> function
 ) {
     if (changes.empty()) {
         return;
     }
 
     history_manager.add_action(
-        std::make_unique<ChangePatternSelectionAction>(label, owner, key, changes)
+        std::make_unique<ChangePatternSelectionAction<T>>(label, owner, key, changes, function)
     );
 }
 
@@ -1372,3 +1374,19 @@ template void perform_action_remove<Wavetable>(GUIPanel *owner, const LinkKey ke
 template void perform_action_remove<DSP>(GUIPanel *owner, const LinkKey key, DSP const *pointer);
 template void perform_action_remove<Channel>(GUIPanel *owner, const LinkKey key, const Channel *pointer);
 template void perform_action_remove<CommandsChannel>(GUIPanel *owner, const LinkKey key, const CommandsChannel *pointer);
+
+template void perform_action_pattern_selection<uint8_t>(
+    GUIPanel *owner,
+    const LinkKey key,
+    const std::string &label,
+    const PatternSelectionChange<uint8_t> &changes,
+    const SetItemsFunction<uint8_t> function
+);
+
+template void perform_action_pattern_selection<CommandValue>(
+    GUIPanel *owner,
+    const LinkKey key,
+    const std::string &label,
+    const PatternSelectionChange<CommandValue> &changes,
+    const SetItemsFunction<CommandValue> function
+);

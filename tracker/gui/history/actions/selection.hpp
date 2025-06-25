@@ -6,18 +6,22 @@
 #include "../changes/selection.hpp"
 #include "action.hpp"
 
+template <typename T>
+using SetItemsFunction = std::function<void(std::map<PatternRow, T>)>;
+
+template <typename T>
 class ChangePatternSelectionAction : public Action {
   private:
-    PatternSelectionChange<uint8_t> selection_changes;
-    std::function<void(std::map<PatternRow, uint8_t>)> set_items;
+    PatternSelectionChange<T> selection_changes;
+    SetItemsFunction<T> set_items;
 
   public:
     ChangePatternSelectionAction(
         const std::string &nm,
         GUIPanel *own,
         const LinkKey k,
-        const PatternSelectionChange<uint8_t> &s_ch,
-        std::function<void(std::map<PatternRow, uint8_t>)> set_items_function
+        const PatternSelectionChange<T> &s_ch,
+        SetItemsFunction<T> set_items_function
     );
 
     void redo() override;
@@ -25,5 +29,4 @@ class ChangePatternSelectionAction : public Action {
     bool can_merge(const Action *other) const override;
     void merge(const Action *other) override;
     std::string get_name() const override;
-    PatternRows get_pattern_rows() const;
 };

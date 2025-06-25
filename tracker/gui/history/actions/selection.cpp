@@ -1,19 +1,22 @@
 #include <sstream>
 
+#include "../../patterns/commands.hpp"
 #include "selection.hpp"
 
-ChangePatternSelectionAction::ChangePatternSelectionAction(
+template <typename T>
+ChangePatternSelectionAction<T>::ChangePatternSelectionAction(
     const std::string &nm,
     GUIPanel *own,
     const LinkKey k,
-    const PatternSelectionChange<uint8_t> &s_ch,
-    std::function<void(std::map<PatternRow, uint8_t>)> set_items_function
+    const PatternSelectionChange<T> &s_ch,
+    SetItemsFunction<T> set_items_function
 )
     : Action(nm, own, k), selection_changes(s_ch), set_items(set_items_function) {
 }
 
-void ChangePatternSelectionAction::redo() {
-    std::map<PatternRow, uint8_t> changes;
+template <typename T>
+void ChangePatternSelectionAction<T>::redo() {
+    std::map<PatternRow, T> changes;
     for (const auto &[pattern_row, change] : selection_changes) {
         changes[pattern_row] = change.second;
     }
@@ -21,8 +24,9 @@ void ChangePatternSelectionAction::redo() {
     set_items(changes);
 }
 
-void ChangePatternSelectionAction::undo() {
-    std::map<PatternRow, uint8_t> changes;
+template <typename T>
+void ChangePatternSelectionAction<T>::undo() {
+    std::map<PatternRow, T> changes;
     for (const auto &[pattern_row, change] : selection_changes) {
         changes[pattern_row] = change.first;
     }
@@ -30,16 +34,22 @@ void ChangePatternSelectionAction::undo() {
     set_items(changes);
 }
 
-bool ChangePatternSelectionAction::can_merge(const Action *other) const {
+template <typename T>
+bool ChangePatternSelectionAction<T>::can_merge(const Action *other) const {
     return false;
 }
 
-void ChangePatternSelectionAction::merge(const Action *other) {
+template <typename T>
+void ChangePatternSelectionAction<T>::merge(const Action *other) {
     return;
 }
 
-std::string ChangePatternSelectionAction::get_name() const {
+template <typename T>
+std::string ChangePatternSelectionAction<T>::get_name() const {
     std::ostringstream stream;
-    stream << name;
+    stream << name << " selection";
     return stream.str();
 }
+
+template class ChangePatternSelectionAction<uint8_t>;
+template class ChangePatternSelectionAction<CommandValue>;

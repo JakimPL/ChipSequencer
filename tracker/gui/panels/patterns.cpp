@@ -459,13 +459,17 @@ void GUIPatternsPanel::set_selection_note(const uint8_t note) {
 
 void GUIPatternsPanel::delete_selection() {
     PatternSelectionChange<uint8_t> changes;
+    PatternSelectionChange<CommandValue> commands_changes;
     for (const PatternRow &pattern_row : secondary_pattern_rows) {
         const size_t channel_index = pattern_row.channel_index;
         const size_t pattern_id = pattern_row.pattern_id;
         const int row = pattern_row.row;
         if (selection.command) {
+            const CommandValue old_command = current_patterns.commands_patterns[pattern_row.channel_index][pattern_row.pattern_id].get_command(row);
             CommandsPattern &pattern = current_patterns.commands_patterns[channel_index][pattern_id];
             pattern.clear_row(row);
+            const CommandValue new_command = current_patterns.commands_patterns[pattern_row.channel_index][pattern_row.pattern_id].get_command(row);
+            commands_changes[pattern_row] = {old_command, new_command};
         } else {
             const uint8_t old_note = current_patterns.patterns[pattern_row.channel_index][pattern_row.pattern_id].get_note(pattern_row.row);
             Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
@@ -475,7 +479,19 @@ void GUIPatternsPanel::delete_selection() {
         }
     }
 
-    perform_action_pattern_selection(this, {Target::SEQUENCE}, "Delete", changes);
+    if (selection.command) {
+        const SetItemsFunction<CommandValue> function = [this](const std::map<PatternRow, CommandValue> &commands_changes) {
+            return this->set_commands(commands_changes);
+        };
+
+        perform_action_pattern_selection<CommandValue>(this, {Target::COMMANDS_SEQUENCE}, "Delete", commands_changes, function);
+    } else {
+        const SetItemsFunction<uint8_t> function = [this](const std::map<PatternRow, uint8_t> &notes) {
+            return this->set_notes(notes);
+        };
+
+        perform_action_pattern_selection<uint8_t>(this, {Target::SEQUENCE}, "Delete", changes, function);
+    }
 }
 
 void GUIPatternsPanel::transpose_selected_rows(const int value) {
@@ -914,6 +930,12 @@ void GUIPatternsPanel::set_note(const PatternRow &pattern_row, const uint8_t not
     set_note(pattern_row.channel_index, pattern_row.pattern_id, pattern_row.row, note);
 }
 
+void GUIPatternsPanel::set_commands(const std::map<PatternRow, CommandValue> &commands_values) {
+    for (const auto &[pattern_row, command_value] : commands_values) {
+        set_command(pattern_row, command_value);
+    }
+}
+
 void GUIPatternsPanel::set_note(const size_t channel_index, const size_t pattern_id, const int row, const uint8_t note) {
     if (current_patterns.patterns.find(channel_index) != current_patterns.patterns.end()) {
         Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
@@ -921,6 +943,27 @@ void GUIPatternsPanel::set_note(const size_t channel_index, const size_t pattern
         current_channel = {false, channel_index};
         current_row = pattern.starting_row + row;
     }
+}
+
+void GUIPatternsPanel::set_command(const PatternRow &pattern_row, const CommandValue &command_value) {
+    set_command(pattern_row, command_value.first, command_value.second);
+}
+
+void GUIPatternsPanel::set_command(const PatternRow &pattern_row, const std::string &command, const std::string &value) {
+    set_command(pattern_row.channel_index, pattern_row.pattern_id, pattern_row.row, command, value);
+}
+
+void GUIPatternsPanel::set_command(const size_t channel_index, const size_t pattern_id, const int row, const std::string &command, const std::string &value) {
+    if (current_patterns.commands_patterns.find(channel_index) != current_patterns.commands_patterns.end()) {
+        CommandsPattern &pattern = current_patterns.commands_patterns[channel_index][pattern_id];
+        pattern.set_command(row, command, value);
+        current_channel = {true, channel_index};
+        current_row = pattern.starting_row + row;
+    }
+}
+
+void GUIPatternsPanel::set_command(const size_t channel_index, const size_t pattern_id, const int row, const CommandValue &command_value) {
+    set_command(channel_index, pattern_id, row, command_value.first, command_value.second);
 }
 
 int GUIPatternsPanel::get_current_page() const {

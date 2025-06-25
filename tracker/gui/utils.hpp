@@ -182,9 +182,11 @@ void perform_action_wavetable(
     const std::vector<float> &old_wavetable
 );
 
+template <typename T>
 void perform_action_pattern_selection(
     GUIPanel *owner,
     const LinkKey key,
     const std::string &label,
-    const PatternSelectionChange<uint8_t> &changes
+    const PatternSelectionChange<T> &changes,
+    const SetItemsFunction<T> function
 );
