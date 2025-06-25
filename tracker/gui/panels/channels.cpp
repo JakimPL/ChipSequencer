@@ -80,10 +80,15 @@ void GUIChannelsPanel::from() {
 }
 
 void GUIChannelsPanel::to() const {
-    if (!save &&
-        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
-         !is_index_valid() ||
-         gui.is_playing())) {
+    if (!is_index_valid()) {
+        return;
+    }
+
+    if (save && gui.is_playing()) {
+        gui.stop();
+    }
+
+    if (!save && !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
 
@@ -131,6 +136,7 @@ void GUIChannelsPanel::add() {
     }
 
     channel_index = channels.size() - 1;
+    perform_action_add(this, {Target::CHANNEL, channel_index, 0});
     update();
 }
 
@@ -146,6 +152,7 @@ void GUIChannelsPanel::duplicate() {
 
 void GUIChannelsPanel::remove() {
     if (is_index_valid()) {
+        perform_action_remove(this, {Target::CHANNEL, channel_index, 0}, channels[channel_index]);
         song.remove_channel(channel_index);
         channel_index = std::max(0, channel_index - 1);
         update();
@@ -153,6 +160,7 @@ void GUIChannelsPanel::remove() {
 }
 
 void GUIChannelsPanel::update() {
+    channel_index = clamp_index(channel_index, channels.size());
     update_channel_names();
     gui.update(GUIElement::Patterns);
 }

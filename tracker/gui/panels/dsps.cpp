@@ -94,10 +94,15 @@ void GUIDSPsPanel::from() {
 }
 
 void GUIDSPsPanel::to() const {
-    if (!save &&
-        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
-         !is_index_valid() ||
-         gui.is_playing())) {
+    if (!is_index_valid()) {
+        return;
+    }
+
+    if (save && gui.is_playing()) {
+        gui.stop();
+    }
+
+    if (!save && !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
 
@@ -157,6 +162,7 @@ void GUIDSPsPanel::add() {
     }
 
     dsp_index = dsps.size() - 1;
+    perform_action_add(this, {Target::DSP, dsp_index, 0});
     update();
 }
 
@@ -172,6 +178,7 @@ void GUIDSPsPanel::duplicate() {
 
 void GUIDSPsPanel::remove() {
     if (is_index_valid()) {
+        perform_action_remove(this, {Target::DSP, dsp_index, 0}, static_cast<DSP *>(dsps[dsp_index]));
         song.remove_dsp(dsp_index);
         dsp_index = std::max(0, dsp_index - 1);
         update();
@@ -179,6 +186,7 @@ void GUIDSPsPanel::remove() {
 }
 
 void GUIDSPsPanel::update() {
+    dsp_index = clamp_index(dsp_index, dsps.size());
     update_dsp_names();
 }
 

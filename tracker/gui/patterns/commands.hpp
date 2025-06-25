@@ -15,6 +15,8 @@ enum class CommandSelection {
     Value,
 };
 
+typedef std::pair<std::string, std::string> CommandValue;
+
 struct CommandsPattern {
     CommandsPattern();
     CommandsPattern(const uint8_t sequence_index);
@@ -60,6 +62,9 @@ struct CommandsPattern {
 
     void clear_row(const int row);
     bool is_row_valid(const int row) const;
+    CommandValue get_command(const int row) const;
+    void set_command(const int row, const std::string &command, const std::string &value);
+    void set_command(const int row, const CommandValue &command_value);
     void handle_input(const int min_row = 0, const int max_row = -1);
     void set_selection(const int row, const CommandSelection item);
     void add_command(const std::string &command = "", const std::string &value = "");

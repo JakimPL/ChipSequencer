@@ -86,9 +86,11 @@ void GUIOscillatorsPanel::from() {
 }
 
 void GUIOscillatorsPanel::to() const {
-    if (!save &&
-        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
-         !is_index_valid())) {
+    if (!is_index_valid()) {
+        return;
+    }
+
+    if (!save && !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
 
@@ -142,6 +144,7 @@ void GUIOscillatorsPanel::add() {
     }
 
     oscillator_index = oscillators.size() - 1;
+    perform_action_add(this, {Target::OSCILLATOR, oscillator_index, 0});
     update();
 }
 
@@ -157,6 +160,7 @@ void GUIOscillatorsPanel::duplicate() {
 
 void GUIOscillatorsPanel::remove() {
     if (is_index_valid()) {
+        perform_action_remove(this, {Target::OSCILLATOR, oscillator_index, 0}, static_cast<Oscillator *>(oscillators[oscillator_index]));
         song.remove_oscillator(oscillator_index);
         oscillator_index = std::max(0, oscillator_index - 1);
         update();
@@ -164,6 +168,7 @@ void GUIOscillatorsPanel::remove() {
 }
 
 void GUIOscillatorsPanel::update() {
+    oscillator_index = clamp_index(oscillator_index, oscillators.size());
     update_oscillator_names();
     update_wavetables();
     gui.update(GUIElement::Channels);
@@ -206,6 +211,7 @@ void GUIOscillatorsPanel::draw_oscillator_type() {
             song.add_wavetable();
             gui.update(GUIElement::Wavetables);
             current_oscillator.wavetable_index = wavetable_names.size() - 1;
+            perform_action_add(this, {Target::WAVETABLE, current_oscillator.wavetable_index, 0});
         }
     }
 

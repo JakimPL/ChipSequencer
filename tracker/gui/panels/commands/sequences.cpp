@@ -58,10 +58,15 @@ void GUICommandsSequencesPanel::from() {
 
 void GUICommandsSequencesPanel::to() const {
     const bool focus = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
-    if (!save &&
-        ((!focus && !dialog_box_open) ||
-         !is_index_valid() ||
-         gui.is_playing())) {
+    if (!is_index_valid()) {
+        return;
+    }
+
+    if (save && gui.is_playing()) {
+        gui.stop();
+    }
+
+    if (!save && !focus && !dialog_box_open) {
         return;
     }
 
@@ -81,6 +86,7 @@ void GUICommandsSequencesPanel::add() {
     sequence_index = commands_sequences.size() - 1;
     current_sequence.pattern.values_handler.clear();
     current_sequence.pattern.commands_handler.clear();
+    perform_action_add(this, {Target::COMMANDS_SEQUENCE, sequence_index, 0});
     update();
 }
 
@@ -99,6 +105,7 @@ void GUICommandsSequencesPanel::duplicate() {
 void GUICommandsSequencesPanel::remove() {
     const size_t previous_index = sequence_index;
     if (is_index_valid()) {
+        perform_action_remove(this, {Target::COMMANDS_SEQUENCE, sequence_index, 0}, commands_sequences[sequence_index]);
         song.remove_commands_sequence(sequence_index);
         sequence_index = std::max(0, sequence_index - 1);
         update();
@@ -111,6 +118,7 @@ void GUICommandsSequencesPanel::remove() {
 }
 
 void GUICommandsSequencesPanel::update() {
+    sequence_index = clamp_index(sequence_index, commands_sequences.size());
     update_items(commands_sequence_names, commands_sequences.size(), "Commands sequence ", sequence_index);
     gui.update(GUIElement::Orders);
 }
@@ -160,9 +168,18 @@ void GUICommandsSequencesPanel::deselect_all() {
 
 void GUICommandsSequencesPanel::delete_selection() {
     if (selection.is_active()) {
-        for (size_t row = selection.start; row <= selection.end; row++) {
+        PatternSelectionChange<CommandValue> changes;
+        for (int row = selection.start; row <= selection.end; row++) {
+            const CommandValue old_command_value = current_sequence.pattern.get_command(row);
             current_sequence.pattern.clear_row(row);
+            const CommandValue new_command_value = current_sequence.pattern.get_command(row);
+            changes[{0, 0, row}] = {old_command_value, new_command_value};
         }
+
+        SetItemsFunction<CommandValue> function = [this](const std::map<PatternRow, CommandValue> &commands_values) {
+            this->set_commands(commands_values);
+        };
+        perform_action_pattern_selection<CommandValue>(this, {Target::COMMANDS_SEQUENCE}, "Delete", changes, function);
     } else {
         const int row = current_sequence.pattern.current_row;
         current_sequence.pattern.clear_row(row);
@@ -476,6 +493,25 @@ void GUICommandsSequencesPanel::check_keyboard_input() {
     }
 
     current_sequence.pattern.handle_input();
+}
+
+void GUICommandsSequencesPanel::set_commands(const std::map<PatternRow, CommandValue> &commands_values) {
+    for (const auto &[row, command_value] : commands_values) {
+        set_command(row, command_value);
+    }
+}
+
+void GUICommandsSequencesPanel::set_command(const PatternRow &pattern_row, const std::string &command, const std::string &value) {
+    set_command(pattern_row.row, command, value);
+}
+
+void GUICommandsSequencesPanel::set_command(const PatternRow &pattern_row, const CommandValue &command_value) {
+    set_command(pattern_row, command_value.first, command_value.second);
+}
+
+void GUICommandsSequencesPanel::set_command(const int row, const std::string &command, const std::string &value) {
+    current_sequence.pattern.set_command(row, command, value);
+    current_sequence.pattern.current_row = row;
 }
 
 void GUICommandsSequencesPanel::set_index(const int index) {

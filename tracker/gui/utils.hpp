@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <map>
 #include <optional>
 #include <string>
 #include <unordered_map>
@@ -12,6 +13,7 @@
 #include "enums.hpp"
 #include "node.hpp"
 #include "panels/panel.hpp"
+#include "history/actions/selection.hpp"
 #include "history/shortcuts.hpp"
 #include "patterns/commands.hpp"
 #include "patterns/display.hpp"
@@ -158,4 +160,33 @@ void perform_action_note(
     const PatternRow pattern_row,
     const uint8_t old_note,
     const uint8_t new_note
+);
+
+void perform_action_add(
+    GUIPanel *owner,
+    const LinkKey key
+);
+
+template <typename T>
+void perform_action_remove(
+    GUIPanel *owner,
+    const LinkKey key,
+    const T *pointer
+);
+
+void perform_action_wavetable(
+    GUIPanel *owner,
+    const LinkKey key,
+    int &wavetable_size,
+    std::vector<float> &wavetable,
+    const std::vector<float> &old_wavetable
+);
+
+template <typename T>
+void perform_action_pattern_selection(
+    GUIPanel *owner,
+    const LinkKey key,
+    const std::string &label,
+    const PatternSelectionChange<T> &changes,
+    const SetItemsFunction<T> function
 );

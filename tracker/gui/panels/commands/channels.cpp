@@ -56,10 +56,15 @@ void GUICommandsChannelsPanel::from() {
 }
 
 void GUICommandsChannelsPanel::to() const {
-    if (!save &&
-        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
-         !is_index_valid() ||
-         gui.is_playing())) {
+    if (!is_index_valid()) {
+        return;
+    }
+
+    if (save && gui.is_playing()) {
+        gui.stop();
+    }
+
+    if (!save && !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
 
@@ -76,6 +81,7 @@ void GUICommandsChannelsPanel::add() {
     }
 
     channel_index = commands_channels.size() - 1;
+    perform_action_add(this, {Target::COMMANDS_CHANNEL, channel_index, 0});
     update();
 }
 
@@ -91,6 +97,7 @@ void GUICommandsChannelsPanel::duplicate() {
 
 void GUICommandsChannelsPanel::remove() {
     if (is_index_valid()) {
+        perform_action_remove(this, {Target::COMMANDS_CHANNEL, channel_index, 0}, commands_channels[channel_index]);
         song.remove_commands_channel(channel_index);
         channel_index = std::max(0, channel_index - 1);
         update();
@@ -98,6 +105,7 @@ void GUICommandsChannelsPanel::remove() {
 }
 
 void GUICommandsChannelsPanel::update() {
+    channel_index = clamp_index(channel_index, commands_channels.size());
     update_items(commands_channel_names, commands_channels.size(), "Command channel ", channel_index);
     gui.update(GUIElement::Patterns);
 }

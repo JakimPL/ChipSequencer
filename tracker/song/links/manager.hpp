@@ -45,8 +45,8 @@ class LinkManager {
 
     std::vector<std::pair<ItemType, uint8_t>> find_dependencies(const Target target, const size_t index) const;
     void remove_dependencies(const Target target, const size_t index);
-    void realign_links(const Target target, const size_t index, const ItemType type);
-    void realign_links(const Target target, const size_t index);
+    void realign_links(const Target target, const size_t index, const bool removal, const ItemType type);
+    void realign_links(const Target target, const size_t index, const bool removal);
 
     void capture_parameters();
     void restore_parameters() const;

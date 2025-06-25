@@ -1,6 +1,5 @@
 #include <numeric>
 #include <string>
-#include <iostream>
 
 #include "../../general.hpp"
 #include "../../structures.hpp"

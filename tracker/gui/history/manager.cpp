@@ -66,6 +66,7 @@ bool HistoryManager::empty() const {
 size_t HistoryManager::get_current_index() const {
     return current_index;
 }
+
 size_t HistoryManager::get_history_size() const {
     return actions.size();
 }

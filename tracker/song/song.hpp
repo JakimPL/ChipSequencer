@@ -139,15 +139,25 @@ class Song {
     uint8_t get_output_channels() const;
     void set_output_channels(const uint8_t channels);
 
-    Envelope *add_envelope();
-    Sequence *add_sequence();
-    Order *add_order();
-    Wavetable *add_wavetable();
-    void *add_oscillator();
-    Channel *add_channel();
-    void *add_dsp();
-    CommandsSequence *add_commands_sequence();
-    CommandsChannel *add_commands_channel();
+    Envelope *add_envelope(const size_t index = -1);
+    Sequence *add_sequence(const size_t index = -1);
+    Order *add_order(const size_t index = -1);
+    Wavetable *add_wavetable(const size_t index = -1);
+    void *add_oscillator(const size_t index = -1);
+    Channel *add_channel(const size_t index = -1);
+    void *add_dsp(const size_t index = -1);
+    CommandsSequence *add_commands_sequence(const size_t index = -1);
+    CommandsChannel *add_commands_channel(const size_t index = -1);
+
+    Envelope *insert_envelope(Envelope *envelope, const size_t index = -1);
+    Sequence *insert_sequence(Sequence *sequence, const size_t index = -1);
+    Order *insert_order(Order *order, const size_t index = -1);
+    Wavetable *insert_wavetable(Wavetable *wavetable, const size_t index = -1);
+    void *insert_oscillator(void *oscillator, const size_t index = -1);
+    Channel *insert_channel(Channel *channel, const size_t index = -1);
+    void *insert_dsp(void *dsp, const size_t index = -1);
+    CommandsSequence *insert_commands_sequence(CommandsSequence *sequence, const size_t index = -1);
+    CommandsChannel *insert_commands_channel(CommandsChannel *channel, const size_t index = -1);
 
     Envelope *duplicate_envelope(const size_t index);
     Sequence *duplicate_sequence(const size_t index);

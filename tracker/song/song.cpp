@@ -222,7 +222,7 @@ void Song::import_all(const std::string &directory, const nlohmann::json &json) 
     import_lock_registry(directory);
 }
 
-Envelope *Song::add_envelope() {
+Envelope *Song::add_envelope(const size_t index) {
     if (envelopes.size() >= UINT8_MAX) {
         return nullptr;
     }
@@ -234,7 +234,28 @@ Envelope *Song::add_envelope() {
     envelope->decay = DEFAULT_ENVELOPE_DECAY;
     envelope->hold = DEFAULT_ENVELOPE_HOLD;
     envelope->release = DEFAULT_ENVELOPE_RELEASE;
-    envelopes.push_back(envelope);
+
+    return insert_envelope(envelope, index);
+}
+
+Envelope *Song::insert_envelope(Envelope *envelope, const size_t index) {
+    if (envelope == nullptr) {
+        return nullptr;
+    }
+
+    if (index >= 0 && index < static_cast<int>(envelopes.size())) {
+        envelopes.insert(envelopes.begin() + index, envelope);
+        link_manager.realign_links(Target::ENVELOPE, index, false);
+        lock_registry.realign_locks(Target::ENVELOPE, index, false);
+        for (auto &channel : channels) {
+            if (channel->envelope_index >= index) {
+                channel->envelope_index++;
+            }
+        }
+    } else {
+        envelopes.push_back(envelope);
+    }
+
     return envelope;
 }
 
@@ -252,7 +273,7 @@ Envelope *Song::duplicate_envelope(const size_t index) {
     return envelope;
 }
 
-Sequence *Song::add_sequence() {
+Sequence *Song::add_sequence(const size_t index) {
     if (sequences.size() >= MAX_SEQUENCES) {
         return nullptr;
     }
@@ -261,7 +282,31 @@ Sequence *Song::add_sequence() {
     sequence->size = DEFAULT_SEQUENCE_LENGTH;
     sequence->notes[0] = {NOTE_REST, DEFAULT_SEQUENCE_LENGTH};
 
-    sequences.push_back(sequence);
+    return insert_sequence(sequence, index);
+}
+
+Sequence *Song::insert_sequence(Sequence *sequence, const size_t index) {
+    if (sequence == nullptr) {
+        return nullptr;
+    }
+
+    if (index >= 0 && index < static_cast<int>(sequences.size())) {
+        sequences.insert(sequences.begin() + index, sequence);
+        link_manager.realign_links(Target::SEQUENCE, index, false);
+        lock_registry.realign_locks(Target::SEQUENCE, index, false);
+        /* potential conflict with commands sequences
+        for (auto &order : orders) {
+            for (size_t i = 0; i < order->order_length; i++) {
+                if (order->sequences[i] >= index) {
+                    order->sequences[i]++;
+                }
+            }
+        }
+        */
+    } else {
+        sequences.push_back(sequence);
+    }
+
     return sequence;
 }
 
@@ -279,14 +324,40 @@ Sequence *Song::duplicate_sequence(const size_t index) {
     return sequence;
 }
 
-Order *Song::add_order() {
+Order *Song::add_order(const size_t index) {
     if (orders.size() >= MAX_ORDERS) {
         return nullptr;
     }
 
     Order *order = resource_manager.allocate<Order>();
     order->order_length = DEFAULT_ORDER_LENGTH;
-    orders.push_back(order);
+
+    return insert_order(order, index);
+}
+
+Order *Song::insert_order(Order *order, const size_t index) {
+    if (order == nullptr) {
+        return nullptr;
+    }
+
+    if (index >= 0 && index < static_cast<int>(orders.size())) {
+        orders.insert(orders.begin() + index, order);
+        link_manager.realign_links(Target::ORDER, index, false);
+        lock_registry.realign_locks(Target::ORDER, index, false);
+        for (auto &channel : channels) {
+            if (channel->order_index >= index) {
+                channel->order_index++;
+            }
+        }
+        for (auto &commands_channel : commands_channels) {
+            if (commands_channel->order_index >= index) {
+                commands_channel->order_index++;
+            }
+        }
+    } else {
+        orders.push_back(order);
+    }
+
     return order;
 }
 
@@ -304,7 +375,7 @@ Order *Song::duplicate_order(const size_t index) {
     return order;
 }
 
-Wavetable *Song::add_wavetable() {
+Wavetable *Song::add_wavetable(const size_t index) {
     if (wavetables.size() >= MAX_WAVETABLES) {
         return nullptr;
     }
@@ -312,7 +383,32 @@ Wavetable *Song::add_wavetable() {
     Wavetable *wavetable = resource_manager.allocate<Wavetable>();
     wavetable->wavetable_size = DEFAULT_WAVETABLE_SIZE;
     wavetable->data.fill(0x80);
-    wavetables.push_back(wavetable);
+
+    return insert_wavetable(wavetable, index);
+}
+
+Wavetable *Song::insert_wavetable(Wavetable *wavetable, const size_t index) {
+    if (wavetable == nullptr) {
+        return nullptr;
+    }
+
+    if (index >= 0 && index < static_cast<int>(wavetables.size())) {
+        wavetables.insert(wavetables.begin() + index, wavetable);
+        link_manager.realign_links(Target::WAVETABLE, index, false);
+        lock_registry.realign_locks(Target::WAVETABLE, index, false);
+        for (auto &oscillator : oscillators) {
+            Oscillator *generic = static_cast<Oscillator *>(oscillator);
+            if (generic->generator_index == GENERATOR_WAVETABLE) {
+                OscillatorWavetable *wavetable = static_cast<OscillatorWavetable *>(oscillator);
+                if (wavetable->wavetable_index >= index) {
+                    wavetable->wavetable_index++;
+                }
+            }
+        }
+    } else {
+        wavetables.push_back(wavetable);
+    }
+
     return wavetable;
 }
 
@@ -330,14 +426,35 @@ Wavetable *Song::duplicate_wavetable(const size_t index) {
     return wavetable;
 }
 
-void *Song::add_oscillator() {
+void *Song::add_oscillator(const size_t index) {
     if (oscillators.size() >= MAX_OSCILLATORS) {
         return nullptr;
     }
 
     OscillatorSquare *oscillator = resource_manager.allocate<OscillatorSquare>();
     oscillator->duty_cycle = DEFAULT_OSCILLATOR_DUTY_CYCLE;
-    oscillators.push_back(oscillator);
+
+    return insert_oscillator(oscillator, index);
+}
+
+void *Song::insert_oscillator(void *oscillator, const size_t index) {
+    if (oscillator == nullptr) {
+        return nullptr;
+    }
+
+    if (index >= 0 && index < static_cast<int>(oscillators.size())) {
+        oscillators.insert(oscillators.begin() + index, oscillator);
+        link_manager.realign_links(Target::OSCILLATOR, index, false);
+        lock_registry.realign_locks(Target::OSCILLATOR, index, false);
+        for (auto &channel : channels) {
+            if (channel->oscillator_index >= index) {
+                channel->oscillator_index++;
+            }
+        }
+    } else {
+        oscillators.push_back(oscillator);
+    }
+
     return oscillator;
 }
 
@@ -356,17 +473,12 @@ void *Song::duplicate_oscillator(const size_t index) {
     return oscillator;
 }
 
-Channel *Song::add_channel() {
+Channel *Song::add_channel(const size_t index) {
     if (envelopes.size() >= MAX_CHANNELS) {
         return nullptr;
     }
 
     Channel *channel = resource_manager.allocate<Channel>();
-    channels.push_back(channel);
-    num_channels = channels.size();
-    links[static_cast<size_t>(ItemType::CHANNEL)].push_back(Link());
-    link_manager.set_links();
-
     channel->envelope_index = 0;
     channel->order_index = 0;
     channel->oscillator_index = 0;
@@ -377,6 +489,30 @@ Channel *Song::add_channel() {
     channel->splitter[1] = DEFAULT_SPLITTER_1;
     channel->splitter[2] = DEFAULT_SPLITTER_2;
     channel->splitter[3] = DEFAULT_SPLITTER_3;
+
+    return insert_channel(channel, index);
+}
+
+Channel *Song::insert_channel(Channel *channel, const size_t index) {
+    if (channel == nullptr) {
+        return nullptr;
+    }
+
+    if (index >= 0 && index < static_cast<int>(channels.size())) {
+        channels.insert(channels.begin() + index, channel);
+        links[static_cast<size_t>(ItemType::CHANNEL)].insert(
+            links[static_cast<size_t>(ItemType::CHANNEL)].begin() + index, Link()
+        );
+        link_manager.realign_links(Target::CHANNEL, index, false);
+        lock_registry.realign_locks(Target::CHANNEL, index, false);
+    } else {
+        channels.push_back(channel);
+        links[static_cast<size_t>(ItemType::CHANNEL)].push_back(Link());
+    }
+
+    num_channels = channels.size();
+    link_manager.set_links();
+
     return channel;
 }
 
@@ -397,17 +533,12 @@ Channel *Song::duplicate_channel(const size_t index) {
     return channel;
 }
 
-void *Song::add_dsp() {
+void *Song::add_dsp(const size_t index) {
     if (dsps.size() >= MAX_DSPS) {
         return nullptr;
     }
 
     DSPGainer *dsp = resource_manager.allocate<DSPGainer>();
-    dsps.push_back(dsp);
-    num_dsps = dsps.size();
-    links[static_cast<size_t>(ItemType::DSP)].push_back(Link());
-    link_manager.set_links();
-
     dsp->dsp_size = SIZE_DSP_GAINER;
     dsp->output_flag = DEFAULT_OUTPUT_FLAG;
     dsp->splitter[0] = DEFAULT_SPLITTER_0;
@@ -416,6 +547,30 @@ void *Song::add_dsp() {
     dsp->splitter[3] = DEFAULT_SPLITTER_3;
     dsp->effect_index = EFFECT_GAINER;
     dsp->volume = DEFAULT_GAINER_VOLUME;
+
+    return insert_dsp(dsp, index);
+}
+
+void *Song::insert_dsp(void *dsp, const size_t index) {
+    if (dsp == nullptr) {
+        return nullptr;
+    }
+
+    if (index >= 0 && index < static_cast<int>(dsps.size())) {
+        dsps.insert(dsps.begin() + index, dsp);
+        links[static_cast<size_t>(ItemType::DSP)].insert(
+            links[static_cast<size_t>(ItemType::DSP)].begin() + index, Link()
+        );
+        link_manager.realign_links(Target::DSP, index, false);
+        link_manager.realign_links(Target::DIRECT_DSP, index, false);
+        lock_registry.realign_locks(Target::DSP, index, false);
+    } else {
+        dsps.push_back(dsp);
+        links[static_cast<size_t>(ItemType::DSP)].push_back(Link());
+    }
+
+    num_dsps = dsps.size();
+    link_manager.set_links();
 
     return dsp;
 }
@@ -445,7 +600,7 @@ void *Song::duplicate_dsp(const size_t index) {
     return dsp;
 }
 
-CommandsSequence *Song::add_commands_sequence() {
+CommandsSequence *Song::add_commands_sequence(const size_t index) {
     if (commands_sequences.size() >= MAX_COMMANDS_SEQUENCES) {
         return nullptr;
     }
@@ -453,7 +608,32 @@ CommandsSequence *Song::add_commands_sequence() {
     CommandsSequence *sequence = resource_manager.allocate<CommandsSequence>();
     sequence->size = 0;
     sequence->length = 1;
-    commands_sequences.push_back(sequence);
+
+    return insert_commands_sequence(sequence, index);
+}
+
+CommandsSequence *Song::insert_commands_sequence(CommandsSequence *sequence, const size_t index) {
+    if (sequence == nullptr) {
+        return nullptr;
+    }
+
+    if (index >= 0 && index < static_cast<int>(commands_sequences.size())) {
+        commands_sequences.insert(commands_sequences.begin() + index, sequence);
+        link_manager.realign_links(Target::COMMANDS_SEQUENCE, index, false);
+        lock_registry.realign_locks(Target::COMMANDS_SEQUENCE, index, false);
+        /*
+        for (auto &order : orders) {
+            for (size_t i = 0; i < order->order_length; i++) {
+                if (order->sequences[i] >= index) {
+                    order->sequences[i]++;
+                }
+            }
+        }
+        */
+    } else {
+        commands_sequences.push_back(sequence);
+    }
+
     return sequence;
 }
 
@@ -471,14 +651,31 @@ CommandsSequence *Song::duplicate_commands_sequence(const size_t index) {
     return sequence;
 }
 
-CommandsChannel *Song::add_commands_channel() {
+CommandsChannel *Song::add_commands_channel(const size_t index) {
     if (commands_channels.size() >= MAX_COMMANDS_CHANNELS) {
         return nullptr;
     }
 
     CommandsChannel *channel = resource_manager.allocate<CommandsChannel>();
-    commands_channels.push_back(channel);
+
+    return insert_commands_channel(channel, index);
+}
+
+CommandsChannel *Song::insert_commands_channel(CommandsChannel *channel, const size_t index) {
+    if (channel == nullptr) {
+        return nullptr;
+    }
+
+    if (index >= 0 && index < static_cast<int>(commands_channels.size())) {
+        commands_channels.insert(commands_channels.begin() + index, channel);
+        link_manager.realign_links(Target::COMMANDS_CHANNEL, index, false);
+        lock_registry.realign_locks(Target::COMMANDS_CHANNEL, index, false);
+    } else {
+        commands_channels.push_back(channel);
+    }
+
     num_commands_channels = commands_channels.size();
+
     return channel;
 }
 
@@ -500,8 +697,8 @@ void Song::remove_envelope(const size_t index) {
     if (index < envelopes.size()) {
         resource_manager.deallocate(envelopes[index]);
         envelopes.erase(envelopes.begin() + index);
-        link_manager.realign_links(Target::ENVELOPE, index);
-        lock_registry.realign_locks(Target::ENVELOPE, index);
+        link_manager.realign_links(Target::ENVELOPE, index, true);
+        lock_registry.realign_locks(Target::ENVELOPE, index, true);
         for (auto &channel : channels) {
             if (channel->envelope_index >= index) {
                 channel->envelope_index = std::max(0, channel->envelope_index - 1);
@@ -514,8 +711,9 @@ void Song::remove_sequence(const size_t index) {
     if (index < sequences.size()) {
         resource_manager.deallocate(sequences[index]);
         sequences.erase(sequences.begin() + index);
-        link_manager.realign_links(Target::SEQUENCE, index);
-        lock_registry.realign_locks(Target::SEQUENCE, index);
+        link_manager.realign_links(Target::SEQUENCE, index, true);
+        lock_registry.realign_locks(Target::SEQUENCE, index, true);
+        /* potential conflict with commands sequences
         for (auto &order : orders) {
             for (size_t i = 0; i < order->order_length; i++) {
                 if (order->sequences[i] >= index) {
@@ -523,6 +721,7 @@ void Song::remove_sequence(const size_t index) {
                 }
             }
         }
+        */
     }
 }
 
@@ -530,8 +729,8 @@ void Song::remove_order(const size_t index) {
     if (index < orders.size()) {
         resource_manager.deallocate(orders[index]);
         orders.erase(orders.begin() + index);
-        link_manager.realign_links(Target::ORDER, index);
-        lock_registry.realign_locks(Target::ORDER, index);
+        link_manager.realign_links(Target::ORDER, index, true);
+        lock_registry.realign_locks(Target::ORDER, index, true);
         for (auto &channel : channels) {
             if (channel->order_index >= index) {
                 channel->order_index = std::max(0, channel->order_index - 1);
@@ -544,8 +743,8 @@ void Song::remove_wavetable(const size_t index) {
     if (index < wavetables.size()) {
         resource_manager.deallocate(wavetables[index]);
         wavetables.erase(wavetables.begin() + index);
-        link_manager.realign_links(Target::WAVETABLE, index);
-        lock_registry.realign_locks(Target::WAVETABLE, index);
+        link_manager.realign_links(Target::WAVETABLE, index, true);
+        lock_registry.realign_locks(Target::WAVETABLE, index, true);
         for (auto &oscillator : oscillators) {
             Oscillator *generic = static_cast<Oscillator *>(oscillator);
             if (generic->generator_index == GENERATOR_WAVETABLE) {
@@ -562,8 +761,8 @@ void Song::remove_oscillator(const size_t index) {
     if (index < oscillators.size()) {
         resource_manager.deallocate(oscillators[index]);
         oscillators.erase(oscillators.begin() + index);
-        link_manager.realign_links(Target::OSCILLATOR, index);
-        lock_registry.realign_locks(Target::OSCILLATOR, index);
+        link_manager.realign_links(Target::OSCILLATOR, index, true);
+        lock_registry.realign_locks(Target::OSCILLATOR, index, true);
         for (auto &channel : channels) {
             if (channel->oscillator_index >= index) {
                 channel->oscillator_index = std::max(0, channel->oscillator_index - 1);
@@ -580,8 +779,8 @@ void Song::remove_channel(const size_t index) {
         links[link_type].erase(links[link_type].begin() + index);
         num_channels = channels.size();
 
-        lock_registry.realign_locks(Target::CHANNEL, index);
-        link_manager.realign_links(Target::CHANNEL, index);
+        lock_registry.realign_locks(Target::CHANNEL, index, true);
+        link_manager.realign_links(Target::CHANNEL, index, true);
         link_manager.set_links();
     }
 }
@@ -594,9 +793,9 @@ void Song::remove_dsp(const size_t index) {
         links[link_type].erase(links[link_type].begin() + index);
         num_dsps = dsps.size();
 
-        lock_registry.realign_locks(Target::DSP, index);
-        link_manager.realign_links(Target::DIRECT_DSP, index);
-        link_manager.realign_links(Target::DSP, index);
+        lock_registry.realign_locks(Target::DSP, index, true);
+        link_manager.realign_links(Target::DIRECT_DSP, index, true);
+        link_manager.realign_links(Target::DSP, index, true);
         link_manager.set_links();
     }
 }
@@ -605,8 +804,9 @@ void Song::remove_commands_sequence(const size_t index) {
     if (index < commands_sequences.size()) {
         resource_manager.deallocate(commands_sequences[index]);
         commands_sequences.erase(commands_sequences.begin() + index);
-        link_manager.realign_links(Target::COMMANDS_SEQUENCE, index);
-        lock_registry.realign_locks(Target::COMMANDS_SEQUENCE, index);
+        link_manager.realign_links(Target::COMMANDS_SEQUENCE, index, true);
+        lock_registry.realign_locks(Target::COMMANDS_SEQUENCE, index, true);
+        /*
         for (auto &order : orders) {
             for (size_t i = 0; i < order->order_length; i++) {
                 if (order->sequences[i] >= index) {
@@ -614,6 +814,7 @@ void Song::remove_commands_sequence(const size_t index) {
                 }
             }
         }
+        */
     }
 }
 
@@ -623,8 +824,8 @@ void Song::remove_commands_channel(const size_t index) {
         commands_channels.erase(commands_channels.begin() + index);
         num_commands_channels = commands_channels.size();
 
-        lock_registry.realign_locks(Target::COMMANDS_CHANNEL, index);
-        link_manager.realign_links(Target::COMMANDS_CHANNEL, index);
+        lock_registry.realign_locks(Target::COMMANDS_CHANNEL, index, true);
+        link_manager.realign_links(Target::COMMANDS_CHANNEL, index, true);
         link_manager.set_links();
     }
 }

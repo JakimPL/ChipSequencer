@@ -34,16 +34,26 @@ void LockRegistry::clear() {
     locks.clear();
 }
 
-void LockRegistry::realign_locks(const Target target, const size_t deleted_index) {
+void LockRegistry::realign_locks(const Target target, const size_t index, const bool removal) {
     auto it = locks.find(target);
-    if (it == locks.end()) return;
+    if (it == locks.end()) {
+        return;
+    }
 
     std::set<size_t> new_indices;
-    for (size_t index : it->second) {
-        if (index > deleted_index) {
-            new_indices.insert(index - 1);
-        } else if (index != deleted_index) {
-            new_indices.insert(index);
+    for (size_t locked_index : it->second) {
+        if (removal) {
+            if (locked_index > index) {
+                new_indices.insert(locked_index - 1);
+            } else if (locked_index != index) {
+                new_indices.insert(locked_index);
+            }
+        } else {
+            if (locked_index >= index) {
+                new_indices.insert(locked_index + 1);
+            } else {
+                new_indices.insert(locked_index);
+            }
         }
     }
 

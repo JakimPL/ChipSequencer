@@ -200,22 +200,35 @@ void LinkManager::save_targets() {
     }
 }
 
-void LinkManager::realign_links(const Target target, const size_t index, const ItemType type) {
+void LinkManager::realign_links(const Target target, const size_t index, const bool removal, const ItemType type) {
     size_t link_type = static_cast<size_t>(type);
     for (Link &link : links[link_type]) {
-        if (link.target == target && link.index >= index) {
-            remove_key(link);
-            link.index = std::max(0, static_cast<int>(link.index) - 1);
-            assign_key(link);
+        if (link.target == target) {
+            if (removal) {
+                if (link.index > index) {
+                    remove_key(link);
+                    link.index = std::max(0, static_cast<int>(link.index) - 1);
+                    assign_key(link);
+                }
+            } else {
+                if (link.index >= index) {
+                    remove_key(link);
+                    link.index++;
+                    assign_key(link);
+                }
+            }
         }
     }
 }
 
-void LinkManager::realign_links(const Target target, const size_t index) {
-    remove_dependencies(target, index);
-    realign_links(target, index, ItemType::CHANNEL);
-    realign_links(target, index, ItemType::DSP);
-    realign_links(target, index, ItemType::COMMANDS);
+void LinkManager::realign_links(const Target target, const size_t index, const bool removal) {
+    if (removal) {
+        remove_dependencies(target, index);
+    }
+
+    realign_links(target, index, removal, ItemType::CHANNEL);
+    realign_links(target, index, removal, ItemType::DSP);
+    realign_links(target, index, removal, ItemType::COMMANDS);
 }
 
 bool LinkManager::is_linked(const LinkKey key) const {
@@ -472,6 +485,10 @@ void LinkManager::capture_parameters() {
 }
 
 void LinkManager::restore_parameter(const LinkKey key, const Link *link) const {
+    if (is_target_output(key.target)) {
+        return;
+    }
+
     validate_key_and_link(key, link);
     const TargetVariableType type = get_type(key);
     switch (type) {

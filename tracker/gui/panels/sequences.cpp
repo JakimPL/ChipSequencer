@@ -53,9 +53,11 @@ void GUISequencesPanel::from() {
 }
 
 void GUISequencesPanel::to() const {
-    if (!save &&
-        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
-         !is_index_valid())) {
+    if (!is_index_valid()) {
+        return;
+    }
+
+    if (!save && !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
 
@@ -72,6 +74,7 @@ void GUISequencesPanel::add() {
     }
 
     sequence_index = sequences.size() - 1;
+    perform_action_add(this, {Target::SEQUENCE, sequence_index, 0});
     update();
 }
 
@@ -87,6 +90,7 @@ void GUISequencesPanel::duplicate() {
 
 void GUISequencesPanel::remove() {
     if (is_index_valid()) {
+        perform_action_remove(this, {Target::SEQUENCE, sequence_index, 0}, sequences[sequence_index]);
         song.remove_sequence(sequence_index);
         sequence_index = std::max(0, sequence_index - 1);
         update();
@@ -94,6 +98,7 @@ void GUISequencesPanel::remove() {
 }
 
 void GUISequencesPanel::update() {
+    sequence_index = clamp_index(sequence_index, sequences.size());
     update_items(sequence_names, sequences.size(), "Sequence ", sequence_index);
     gui.update(GUIElement::Orders);
 }
@@ -177,9 +182,18 @@ void GUISequencesPanel::set_selection_note(const uint8_t note) {
 
 void GUISequencesPanel::delete_selection() {
     if (selection.is_active()) {
-        for (size_t row = selection.start; row <= selection.end; row++) {
+        PatternSelectionChange<uint8_t> changes;
+        for (int row = selection.start; row <= selection.end; row++) {
+            const uint8_t old_note = current_sequence.pattern.get_note(row);
             current_sequence.pattern.clear_row(row);
+            const uint8_t new_note = current_sequence.pattern.get_note(row);
+            changes[{0, 0, row}] = {old_note, new_note};
         }
+
+        SetItemsFunction<uint8_t> function = [this](const std::map<PatternRow, uint8_t> &notes) {
+            this->set_notes(notes);
+        };
+        perform_action_pattern_selection<uint8_t>(this, {Target::SEQUENCE}, "Delete", changes, function);
     } else {
         const int row = current_sequence.pattern.current_row;
         current_sequence.pattern.clear_row(row);
@@ -250,6 +264,16 @@ void GUISequencesPanel::check_keyboard_input() {
         const LinkKey key = {Target::SEQUENCE, sequence_index, offset};
         perform_action_note(this, key, pattern_row, old_note, new_note);
     }
+}
+
+void GUISequencesPanel::set_notes(const std::map<PatternRow, uint8_t> &notes) {
+    for (const auto &[pattern_row, note] : notes) {
+        set_note(pattern_row, note);
+    }
+}
+
+void GUISequencesPanel::set_note(const PatternRow &pattern_row, const uint8_t note) {
+    set_note(pattern_row.channel_index, pattern_row.row, note);
 }
 
 void GUISequencesPanel::set_note(const size_t channel_index, const int row, const uint8_t note) {

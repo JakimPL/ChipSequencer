@@ -57,9 +57,11 @@ void GUIOrdersPanel::from() {
 }
 
 void GUIOrdersPanel::to() const {
-    if (!save &&
-        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
-         !is_index_valid())) {
+    if (!is_index_valid()) {
+        return;
+    }
+
+    if (!save && !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
 
@@ -85,6 +87,7 @@ void GUIOrdersPanel::add() {
 
     order_index = orders.size() - 1;
     input_handler.clear();
+    perform_action_add(this, {Target::ORDER, order_index, 0});
     update();
 }
 
@@ -102,6 +105,7 @@ void GUIOrdersPanel::duplicate() {
 void GUIOrdersPanel::remove() {
     const size_t previous_index = order_index;
     if (is_index_valid()) {
+        perform_action_remove(this, {Target::ORDER, order_index, 0}, orders[order_index]);
         song.remove_order(order_index);
         order_index = std::max(0, order_index - 1);
         update();
@@ -113,6 +117,7 @@ void GUIOrdersPanel::remove() {
 }
 
 void GUIOrdersPanel::update() {
+    order_index = clamp_index(order_index, orders.size());
     update_items(order_names, orders.size(), "Order ", order_index);
     gui.update(GUIElement::Channels);
 }

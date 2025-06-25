@@ -2,6 +2,7 @@
 
 #include <cstdint>
 
+#include "../constants.hpp"
 #include "../maps/routing.hpp"
 #include "links/link.hpp"
 

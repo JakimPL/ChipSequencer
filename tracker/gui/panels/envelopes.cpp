@@ -97,9 +97,11 @@ void GUIEnvelopesPanel::gather_envelope_positions() {
 }
 
 void GUIEnvelopesPanel::to() const {
-    if (!save &&
-        (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ||
-         !is_index_valid())) {
+    if (!is_index_valid()) {
+        return;
+    }
+
+    if (!save && !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
 
@@ -119,6 +121,7 @@ void GUIEnvelopesPanel::add() {
     }
 
     envelope_index = envelopes.size() - 1;
+    perform_action_add(this, {Target::ENVELOPE, envelope_index, 0});
     update();
 }
 
@@ -134,6 +137,7 @@ void GUIEnvelopesPanel::duplicate() {
 
 void GUIEnvelopesPanel::remove() {
     if (is_index_valid()) {
+        perform_action_remove(this, {Target::ENVELOPE, envelope_index, 0}, envelopes[envelope_index]);
         song.remove_envelope(envelope_index);
         envelope_index = std::max(0, envelope_index - 1);
         update();
@@ -141,6 +145,7 @@ void GUIEnvelopesPanel::remove() {
 }
 
 void GUIEnvelopesPanel::update() {
+    envelope_index = clamp_index(envelope_index, envelopes.size());
     update_items(envelope_names, envelopes.size(), "Envelope ", envelope_index);
     gui.update(GUIElement::Channels);
 }

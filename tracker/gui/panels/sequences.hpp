@@ -43,6 +43,9 @@ class GUISequencesPanel : public GUIPanel {
     GUIElement get_element() const override;
 
     void update() override;
+
+    void set_notes(const std::map<PatternRow, uint8_t> &notes);
+    void set_note(const PatternRow &pattern_row, const uint8_t note);
     void set_note(const size_t channel_index, const int row, const uint8_t note);
     void set_index(const int index) override;
 

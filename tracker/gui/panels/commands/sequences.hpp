@@ -61,6 +61,12 @@ class GUICommandsSequencesPanel : public GUIPanel {
     GUIElement get_element() const override;
 
     void update() override;
+
+    void set_commands(const std::map<PatternRow, CommandValue> &commands_values);
+    void set_command(const PatternRow &pattern_row, const CommandValue &command_value);
+    void set_command(const PatternRow &pattern_row, const std::string &command, const std::string &value);
+    void set_command(const int row, const CommandValue &command_value);
+    void set_command(const int row, const std::string &command, const std::string &value);
     void set_index(const int index) override;
 
     void from() override;

@@ -123,7 +123,15 @@ class GUIPatternsPanel : public GUIPanel {
     GUIPatternsPanel(const bool visible = true, const bool windowed = true);
     GUIElement get_element() const override;
 
+    void set_notes(const std::map<PatternRow, uint8_t> &notes);
+    void set_note(const PatternRow &pattern_row, const uint8_t note);
     void set_note(const size_t channel_index, const size_t pattern_id, const int row, const uint8_t note);
+
+    void set_commands(const std::map<PatternRow, CommandValue> &commands_values);
+    void set_command(const PatternRow &pattern_row, const std::string &command, const std::string &value);
+    void set_command(const PatternRow &pattern_row, const CommandValue &command_value);
+    void set_command(const size_t channel_index, const size_t pattern_id, const int row, const std::string &command, const std::string &value);
+    void set_command(const size_t channel_index, const size_t pattern_id, const int row, const CommandValue &command_value);
 
     void from() override;
     void to() const override;
