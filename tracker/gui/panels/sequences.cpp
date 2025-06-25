@@ -182,9 +182,18 @@ void GUISequencesPanel::set_selection_note(const uint8_t note) {
 
 void GUISequencesPanel::delete_selection() {
     if (selection.is_active()) {
-        for (size_t row = selection.start; row <= selection.end; row++) {
+        PatternSelectionChange<uint8_t> changes;
+        for (int row = selection.start; row <= selection.end; row++) {
+            const uint8_t old_note = current_sequence.pattern.get_note(row);
             current_sequence.pattern.clear_row(row);
+            const uint8_t new_note = current_sequence.pattern.get_note(row);
+            changes[{0, 0, row}] = {old_note, new_note};
         }
+
+        SetItemsFunction<uint8_t> function = [this](const std::map<PatternRow, uint8_t> &notes) {
+            this->set_notes(notes);
+        };
+        perform_action_pattern_selection<uint8_t>(this, {Target::SEQUENCE}, "Delete", changes, function);
     } else {
         const int row = current_sequence.pattern.current_row;
         current_sequence.pattern.clear_row(row);
@@ -255,6 +264,16 @@ void GUISequencesPanel::check_keyboard_input() {
         const LinkKey key = {Target::SEQUENCE, sequence_index, offset};
         perform_action_note(this, key, pattern_row, old_note, new_note);
     }
+}
+
+void GUISequencesPanel::set_notes(const std::map<PatternRow, uint8_t> &notes) {
+    for (const auto &[pattern_row, note] : notes) {
+        set_note(pattern_row, note);
+    }
+}
+
+void GUISequencesPanel::set_note(const PatternRow &pattern_row, const uint8_t note) {
+    set_note(pattern_row.channel_index, pattern_row.row, note);
 }
 
 void GUISequencesPanel::set_note(const size_t channel_index, const int row, const uint8_t note) {

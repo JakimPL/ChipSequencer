@@ -465,16 +465,16 @@ void GUIPatternsPanel::delete_selection() {
         const size_t pattern_id = pattern_row.pattern_id;
         const int row = pattern_row.row;
         if (selection.command) {
-            const CommandValue old_command = current_patterns.commands_patterns[pattern_row.channel_index][pattern_row.pattern_id].get_command(row);
             CommandsPattern &pattern = current_patterns.commands_patterns[channel_index][pattern_id];
+            const CommandValue old_command = pattern.get_command(row);
             pattern.clear_row(row);
-            const CommandValue new_command = current_patterns.commands_patterns[pattern_row.channel_index][pattern_row.pattern_id].get_command(row);
+            const CommandValue new_command = pattern.get_command(row);
             commands_changes[pattern_row] = {old_command, new_command};
         } else {
-            const uint8_t old_note = current_patterns.patterns[pattern_row.channel_index][pattern_row.pattern_id].get_note(pattern_row.row);
             Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
+            const uint8_t old_note = pattern.get_note(pattern_row.row);
             pattern.clear_row(row);
-            const uint8_t new_note = current_patterns.patterns[pattern_row.channel_index][pattern_row.pattern_id].get_note(pattern_row.row);
+            const uint8_t new_note = pattern.get_note(pattern_row.row);
             changes[pattern_row] = {old_note, new_note};
         }
     }
