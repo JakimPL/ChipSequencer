@@ -1,20 +1,31 @@
 cmake_minimum_required(VERSION 3.10)
-project(ChipSequencer)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+if(WIN32)
+    set(CMAKE_C_COMPILER "C:/msys64/mingw32/bin/gcc.exe")
+    set(CMAKE_CXX_COMPILER "C:/msys64/mingw32/bin/g++.exe")
+endif()
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
 endif()
 
-set(COMMON_C_FLAGS "-m32 -Wno-pointer-arith -Wno-address-of-packed-member")
-set(COMMON_CXX_FLAGS "-m32 -Wno-pointer-arith -Wno-address-of-packed-member")
+set(COMMON_C_FLAGS "-Wno-pointer-arith -Wno-address-of-packed-member")
+set(COMMON_CXX_FLAGS "-Wno-pointer-arith -Wno-address-of-packed-member")
+if(NOT WIN32)
+    set(CMAKE_LIBRARY_PATH /usr/lib/i386-linux-gnu ${CMAKE_LIBRARY_PATH})
+    set(ENV{PKG_CONFIG_PATH} "/usr/lib/i386-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig")
+endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(CMAKE_C_FLAGS "${COMMON_C_FLAGS} -g")
-    set(CMAKE_CXX_FLAGS "${COMMON_CXX_FLAGS} -fsanitize=address -g")
-    set(SANITIZER_FLAGS "-fsanitize=address")
+    if(WIN32)
+        set(CMAKE_C_FLAGS "${COMMON_C_FLAGS} -g")
+        set(CMAKE_CXX_FLAGS "${COMMON_CXX_FLAGS} -g")
+        set(SANITIZER_FLAGS "")
+    else()
+        set(CMAKE_C_FLAGS "${COMMON_C_FLAGS} -g")
+        set(CMAKE_CXX_FLAGS "${COMMON_CXX_FLAGS} -fsanitize=address -g")
+        set(SANITIZER_FLAGS "-fsanitize=address")
+    endif()
 else()
     set(CMAKE_C_FLAGS "${COMMON_C_FLAGS} -O2 -DNDEBUG")
     set(CMAKE_CXX_FLAGS "${COMMON_CXX_FLAGS} -O2 -DNDEBUG")
@@ -23,33 +34,70 @@ endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-set(CMAKE_LIBRARY_PATH /usr/lib/i386-linux-gnu ${CMAKE_LIBRARY_PATH})
-set(OPENGL_INCLUDE_DIRS "/usr/include")
-set(OPENGL_LIBRARIES "/usr/lib/i386-linux-gnu/libGL.so.1")
-set(ENV{PKG_CONFIG_PATH} "/usr/lib/i386-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig")
+project(ChipSequencer)
 
-set(SDL2_INCLUDE_DIRS "/usr/include/SDL2")
-set(SDL2_LIBRARIES "-lSDL2")
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_program(NASM_EXECUTABLE NAMES nasm)
 if(NOT NASM_EXECUTABLE)
     message(FATAL_ERROR "NASM assembler not found")
 endif()
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(FFTW REQUIRED fftw3f)
-if (NOT FFTW_FOUND)
-    message(FATAL_ERROR "FFTW3 not found. Please install libfftw3-dev:i386.")
-endif()
+if(WIN32)
+    set(MINGW_PREFIX "C:/msys64/mingw32")
+    set(OPENGL_LIBRARIES "opengl32")    
+    set(OPENGL_INCLUDE_DIRS "")
 
-pkg_check_modules(GTK REQUIRED gtk+-3.0)
-if (NOT GTK_FOUND)
-    message(FATAL_ERROR "GTK not found")
-endif()
+    add_definitions(-DSDL_VIDEO_OPENGL_ES2=0)
+    set(SDL2_INCLUDE_DIRS "${MINGW_PREFIX}/include/SDL2")
+    set(SDL2_LIBRARIES "-lSDL2main -lSDL2")
+    
+    set(FFTW_ROOT "${CMAKE_SOURCE_DIR}/fftw")
+    set(FFTW_INCLUDE_DIRS "${FFTW_ROOT}")
+    set(FFTW_LIBRARIES "${FFTW_ROOT}/libfftw3f-3.dll")
+    if(NOT EXISTS "${FFTW_INCLUDE_DIRS}/fftw3.h")
+        message(FATAL_ERROR "FFTW3 header not found at ${FFTW_INCLUDE_DIRS}/fftw3.h. Please extract the FFTW archive to ${FFTW_ROOT}/")
+    endif()
+    
+    if(NOT EXISTS "${FFTW_LIBRARIES}")
+        message(FATAL_ERROR "FFTW3 library not found at ${FFTW_LIBRARIES}. Please extract the FFTW archive to ${FFTW_ROOT}/")
+    endif()
 
-pkg_check_modules(SNDFILE REQUIRED sndfile)
-if (NOT SNDFILE_FOUND)
-    message(FATAL_ERROR "libsndfile not found. Please install libsndfile-dev:i386.")
+    find_library(SNDFILE_LIBRARIES 
+        NAMES sndfile libsndfile-1
+        PATHS ${MINGW_PREFIX}/lib
+        NO_DEFAULT_PATH
+    )
+    find_path(SNDFILE_INCLUDE_DIRS 
+        NAMES sndfile.h
+        PATHS ${MINGW_PREFIX}/include
+        NO_DEFAULT_PATH
+    )
+    if(NOT SNDFILE_LIBRARIES)
+        message(FATAL_ERROR "libsndfile not found. Please install the correct mingw64/mingw-w64-x86_64-libsndfile package")
+    endif()
+else()
+    set(OPENGL_INCLUDE_DIRS "/usr/include")
+    set(OPENGL_LIBRARIES "/usr/lib/i386-linux-gnu/libGL.so.1")
+    set(SDL2_INCLUDE_DIRS "/usr/include/SDL2")
+    set(SDL2_LIBRARIES "-lSDL2")
+
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(FFTW REQUIRED fftw3f)
+    if (NOT FFTW_FOUND)
+        message(FATAL_ERROR "FFTW3 not found. Please install libfftw3-dev:i386.")
+    endif()
+
+    pkg_check_modules(GTK REQUIRED gtk+-3.0)
+    if (NOT GTK_FOUND)
+        message(FATAL_ERROR "GTK not found")
+    endif()
+
+    pkg_check_modules(SNDFILE REQUIRED sndfile)
+    if (NOT SNDFILE_FOUND)
+        message(FATAL_ERROR "libsndfile not found. Please install libsndfile-dev:i386.")
+    endif()
 endif()
 
 set(ASM_SOURCE_DIR "${CMAKE_SOURCE_DIR}")
@@ -85,14 +133,24 @@ target_include_directories(song PUBLIC
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/imgui
     ${CMAKE_SOURCE_DIR}/imgui-knobs
+    ${CMAKE_SOURCE_DIR}/nlohmann
     ${SNDFILE_INCLUDE_DIRS}
+    ${FFTW_INCLUDE_DIRS}
 )
 target_link_libraries(song PUBLIC imgui imgui_knobs)
 
-add_library(nfd STATIC
-    nfd/src/nfd_common.c
-    nfd/src/nfd_gtk.c
-)
+if(WIN32)
+    add_library(nfd STATIC
+        nfd/src/nfd_common.c
+        nfd/src/nfd_win.cpp
+    )
+else()
+    add_library(nfd STATIC
+        nfd/src/nfd_common.c
+        nfd/src/nfd_gtk.c
+    )
+endif()
+
 target_include_directories(nfd PUBLIC
     ${CMAKE_SOURCE_DIR}/nfd/src/include
     ${GTK_INCLUDE_DIRS}

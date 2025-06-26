@@ -6,28 +6,19 @@
 .PHONY: onekpaq
 .PHONY: pre-commit
 
-IS_WINDOWS := $(filter Windows_NT,$(OS))
 GO_CHECK := $(shell which go 2> /dev/null)
 INSTALL_NASM_FMT := GO111MODULE=on go install github.com/yamnikov-oleg/nasmfmt@latest
 NASMFMT_INSTALLED := $(shell which nasmfmt 2> /dev/null)
 
 TOOLS_DIR = tools
 
-ifeq ($(IS_WINDOWS),)
-define copy-executables
-	@echo "Copying executable files from $(1) to $(2)..."
-	@find $(1) -type f -iname "*.exe" -exec cp {} $(2) \;
-endef
-else
-define copy-executables
-	@echo Copying executable files from $(1) to $(2)...
-	@for %%f in ($(1)\*.exe) do copy "%%f" "$(2)" > nul
-endef
-endif
-
 build:
 	@echo "Building the project..."
+ifeq ($(OS),Windows_NT)
+	@cmake -S . -B build -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE=Debug
+else
 	@cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+endif
 	@cmake --build build --config Debug
 
 clean:
@@ -40,6 +31,7 @@ install:
 	@$(MAKE) nasmfmt
 	@$(MAKE) onekpaq
 	@$(MAKE) pre-commit
+	@git submodule update --init --recursive
 
 consts:
 	@echo "Generating constants..."
