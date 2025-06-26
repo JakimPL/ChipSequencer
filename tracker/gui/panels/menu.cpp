@@ -119,7 +119,7 @@ void GUIMenu::file_save() {
     if (current_path.empty()) {
         file_save_as();
     } else {
-        song.save_to_file(current_path);
+        song.save_to_file(current_path.string());
     }
 }
 
@@ -131,7 +131,7 @@ void GUIMenu::file_save_as() {
         free(target_path);
         new_path = check_and_correct_path_by_extension(new_path, ".seq");
         gui.stop();
-        gui.save(new_path);
+        gui.save(new_path.string());
     } else if (result != NFD_CANCEL) {
         std::cerr << "Error: " << NFD_GetError() << std::endl;
     }
@@ -146,7 +146,7 @@ void GUIMenu::file_open() {
 
         gui.stop();
         try {
-            gui.open(file_path);
+            gui.open(file_path.string());
         } catch (nlohmann::json::exception &exception) {
             load_error = true;
             std::cerr << "Failed to parse JSON file: " << exception.what() << std::endl;
@@ -171,7 +171,7 @@ void GUIMenu::file_render() {
 
         gui.stop();
         try {
-            song.render(wav_path);
+            song.render(wav_path.string());
             render_status = std::filesystem::exists(wav_path);
         } catch (const std::exception &exception) {
             render_status = false;
@@ -197,7 +197,7 @@ void GUIMenu::file_compile(const CompilationScheme scheme, const CompilationTarg
 
         gui.stop();
         try {
-            song.compile(new_path, scheme, compilation_target);
+            song.compile(new_path.string(), scheme, compilation_target);
             compilation_status = std::filesystem::exists(new_path);
         } catch (std::runtime_error &exception) {
             compilation_status = false;

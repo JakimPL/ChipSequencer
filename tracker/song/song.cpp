@@ -1138,9 +1138,9 @@ nlohmann::json Song::create_header_json() const {
     nlohmann::json json;
     json["general"] = {
         {"bpm", bpm},
-        {"unit", unit},
+        {"unit", static_cast<double>(unit)},
         {"sample_rate", sample_rate},
-        {"normalizer", normalizer},
+        {"normalizer", static_cast<double>(normalizer)},
         {"output_channels", output_channels},
         {"rows", max_rows},
         {"song_length", song_length}
@@ -1540,7 +1540,7 @@ void Song::export_channels(const std::string &directory) const {
     std::filesystem::create_directories(series_dir);
     for (size_t i = 0; i < channels.size(); i++) {
         const Channel *channel = channels[i];
-        const std::string filename = get_element_path(series_dir, "chan", i);
+        const std::string filename = get_element_path(series_dir.string(), "chan", i);
         std::ofstream file(filename, std::ios::binary);
         channel->serialize(file);
         file.close();
@@ -1552,7 +1552,7 @@ void Song::export_dsps(const std::string &directory) const {
     std::filesystem::create_directories(dsps_dir);
 
     for (size_t i = 0; i < dsps.size(); i++) {
-        const std::string filename = get_element_path(dsps_dir, "dsp", i);
+        const std::string filename = get_element_path(dsps_dir.string(), "dsp", i);
         std::ofstream file(filename, std::ios::binary);
         void *dsp = dsps[i];
         serialize_dsp(file, dsp);
@@ -1565,7 +1565,7 @@ void Song::export_commands_sequences(const std::string &directory) const {
     std::filesystem::create_directories(series_dir);
     for (size_t i = 0; i < commands_sequences.size(); i++) {
         const CommandsSequence *sequence = commands_sequences[i];
-        const std::string filename = get_element_path(series_dir, "c_seq", i);
+        const std::string filename = get_element_path(series_dir.string(), "c_seq", i);
         std::ofstream file(filename, std::ios::binary);
         sequence->serialize(file);
         file.close();
@@ -1577,7 +1577,7 @@ void Song::export_arrays(const std::string &directory, const std::string &prefix
     const std::filesystem::path series_dir = directory + "/" + prefix + "s";
     std::filesystem::create_directories(series_dir);
     for (size_t i = 0; i < arrays.size(); i++) {
-        const std::string filename = get_element_path(series_dir, prefix, i);
+        const std::string filename = get_element_path(series_dir.string(), prefix, i);
         std::ofstream file(filename, std::ios::binary);
         const T element = arrays[i];
         element->serialize(file);

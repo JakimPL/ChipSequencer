@@ -128,16 +128,16 @@ target_include_directories(imgui_knobs PUBLIC
 )
 target_link_libraries(imgui_knobs PUBLIC imgui)
 
+add_subdirectory(json)
 add_library(song STATIC tracker/song/song.cpp)
 target_include_directories(song PUBLIC
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/imgui
     ${CMAKE_SOURCE_DIR}/imgui-knobs
-    ${CMAKE_SOURCE_DIR}/nlohmann
     ${SNDFILE_INCLUDE_DIRS}
     ${FFTW_INCLUDE_DIRS}
 )
-target_link_libraries(song PUBLIC imgui imgui_knobs)
+target_link_libraries(song PUBLIC imgui imgui_knobs nlohmann_json::nlohmann_json)
 
 if(WIN32)
     add_library(nfd STATIC
@@ -242,6 +242,7 @@ target_link_libraries(ChipSequencer
     song
     imgui
     imgui_knobs
+    nlohmann_json::nlohmann_json
     ${ASM_OBJECT_FILE}
     ${SDL2_LIBRARIES}
     ${OPENGL_LIBRARIES}

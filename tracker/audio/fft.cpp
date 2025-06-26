@@ -27,7 +27,7 @@ FFT::~FFT() {
     }
 }
 
-void FFT::compute(const std::deque<float> &samples) {
+void FFT::compute(const std::deque<_Float32> &samples) {
     const size_t samples_to_copy = std::min(samples.size(), fft_size);
     size_t start_idx = samples.size() >= fft_size ? samples.size() - fft_size : 0;
 
@@ -40,8 +40,8 @@ void FFT::compute(const std::deque<float> &samples) {
     fftwf_execute(fft_plan);
 
     for (size_t i = 0; i < magnitude_buffer.size(); i++) {
-        float re = output_buffer[i].real();
-        float im = output_buffer[i].imag();
+        _Float32 re = output_buffer[i].real();
+        _Float32 im = output_buffer[i].imag();
         magnitude_buffer[i] = std::sqrt(re * re + im * im) / fft_size;
     }
 }
@@ -59,11 +59,11 @@ void FFT::apply_window() {
     }
 }
 
-const std::vector<float> &FFT::get_magnitudes() const {
+const std::vector<_Float32> &FFT::get_magnitudes() const {
     return magnitude_buffer;
 }
 
-const std::vector<std::complex<float>> &FFT::get_complex_output() const {
+const std::vector<std::complex<_Float32>> &FFT::get_complex_output() const {
     return output_buffer;
 }
 

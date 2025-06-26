@@ -24,7 +24,7 @@ void GUI::new_song() {
 
 void GUI::save(const std::string &filename) {
     current_path = filename;
-    song.save_to_file(current_path);
+    song.save_to_file(current_path.string());
     change_window_title(current_path.filename().string());
 }
 

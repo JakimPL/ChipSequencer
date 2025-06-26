@@ -40,7 +40,7 @@ class PortAudioDriver : public Driver {
   private:
     uint16_t rate;
     PaStream *stream;
-    uint current_index;
+    uint8_t current_index;
     unsigned long frames_per_buffer;
     int output_channels = DEFAULT_OUTPUT_CHANNELS;
 

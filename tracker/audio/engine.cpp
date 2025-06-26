@@ -7,12 +7,14 @@
 #include "../song/functions.hpp"
 #include "engine.hpp"
 
+#ifdef CATCH_SEGFAULT
 static thread_local sigjmp_buf jump_buffer;
 static thread_local bool segfault_occurred = false;
 static void segfault_handler(int signal) {
     segfault_occurred = true;
     siglongjmp(jump_buffer, 1);
 }
+#endif
 
 AudioEngine::AudioEngine(PortAudioDriver &driver)
     : driver(driver), playing(false), paused(false) {
@@ -105,11 +107,13 @@ void AudioEngine::playback_function() {
     unsigned long frames_per_half_buffer = driver.get_frames_per_buffer();
     unsigned long samples_per_half_buffer = frames_per_half_buffer * output_channels;
 
+#ifdef CATCH_SEGFAULT
     struct sigaction sa;
     memset(&sa, 0, sizeof(struct sigaction));
     sa.sa_handler = segfault_handler;
     sigemptyset(&sa.sa_mask);
     sigaction(SIGSEGV, &sa, NULL);
+#endif
 
     while (playing) {
         std::unique_lock<std::mutex> lock(driver.buffer_mutex);
@@ -129,6 +133,7 @@ void AudioEngine::playback_function() {
                     std::fill_n(driver.pingpong_buffer.begin() + sample_offset, samples_per_half_buffer, 0.0f);
                 } else {
                     for (unsigned long x = 0; x < frames_per_half_buffer; ++x) {
+#ifdef CATCH_SEGFAULT                        
                         segfault_occurred = false;
                         if (sigsetjmp(jump_buffer, 1) == 0) {
                             frame();
@@ -140,6 +145,9 @@ void AudioEngine::playback_function() {
                             driver.close_stream();
                             break;
                         }
+#else
+                        frame();
+#endif
 
                         size_t offset = sample_offset + x * output_channels;
                         for (size_t i = 0; i < output_channels; ++i) {
