@@ -15,18 +15,18 @@ class FFT {
 
     void compute(const std::deque<_Float32> &samples);
 
-    const std::vector<_Float32> &get_magnitudes() const;
-    const std::vector<std::complex<_Float32>> &get_complex_output() const;
+    const std::vector<float> &get_magnitudes() const;
+    const std::vector<std::complex<float>> &get_complex_output() const;
     size_t get_size() const;
 
   private:
     size_t fft_size;
-    std::vector<_Float32> input_buffer;
-    std::vector<std::complex<_Float32>> output_buffer;
-    std::vector<_Float32> magnitude_buffer;
+    std::vector<float> input_buffer;
+    std::vector<std::complex<float>> output_buffer;
+    std::vector<float> magnitude_buffer;
     fftwf_plan fft_plan;
 
-    std::vector<_Float32> window;
+    std::vector<float> window;
     void apply_window();
     void create_window();
 };

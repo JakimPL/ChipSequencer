@@ -1,6 +1,7 @@
 #include <iostream>
 #include <map>
 #include <sstream>
+#include <stdexcept>
 
 #include "../../general.hpp"
 #include "manager.hpp"

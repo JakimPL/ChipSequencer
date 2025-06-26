@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cmath>
+#include <stdexcept>
 
 #include "../general.hpp"
 #include "../maps/commands.hpp"

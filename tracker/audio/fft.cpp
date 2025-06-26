@@ -40,8 +40,8 @@ void FFT::compute(const std::deque<_Float32> &samples) {
     fftwf_execute(fft_plan);
 
     for (size_t i = 0; i < magnitude_buffer.size(); i++) {
-        _Float32 re = output_buffer[i].real();
-        _Float32 im = output_buffer[i].imag();
+        float re = output_buffer[i].real();
+        float im = output_buffer[i].imag();
         magnitude_buffer[i] = std::sqrt(re * re + im * im) / fft_size;
     }
 }
@@ -59,11 +59,11 @@ void FFT::apply_window() {
     }
 }
 
-const std::vector<_Float32> &FFT::get_magnitudes() const {
+const std::vector<float> &FFT::get_magnitudes() const {
     return magnitude_buffer;
 }
 
-const std::vector<std::complex<_Float32>> &FFT::get_complex_output() const {
+const std::vector<std::complex<float>> &FFT::get_complex_output() const {
     return output_buffer;
 }
 

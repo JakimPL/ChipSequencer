@@ -1,4 +1,5 @@
 #include <sstream>
+#include <stdexcept>
 #include <vector>
 
 #include "../structures/channel.hpp"

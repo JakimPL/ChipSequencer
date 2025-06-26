@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cmath>
+#include <stdexcept>
 
 #include "../utils/math.hpp"
 #include "scale.hpp"

@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include "wave.hpp"
 
 #define IEEE_FLOAT 3

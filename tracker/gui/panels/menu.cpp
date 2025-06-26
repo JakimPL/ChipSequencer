@@ -1,5 +1,7 @@
 #include <cstdio>
 #include <iostream>
+#include <stdexcept>
+
 #include "nfd/src/include/nfd.h"
 
 #include "../../general.hpp"
