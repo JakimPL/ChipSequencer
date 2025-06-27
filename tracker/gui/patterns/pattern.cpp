@@ -4,6 +4,7 @@
 #include "../../general.hpp"
 #include "../../maps/keys.hpp"
 #include "../../song/core.hpp"
+#include "../../utils/math.hpp"
 #include "pattern.hpp"
 
 Pattern::Pattern() {
@@ -152,7 +153,7 @@ void Pattern::transpose(const int value, std::optional<int> row) {
         return;
     }
 
-    notes[row.value()] = std::clamp(notes[row.value()] + value, 0, NOTES - 1);
+    notes[row.value()] = clamp(notes[row.value()] + value, 0, NOTES - 1);
 }
 
 void Pattern::handle_input(const int min_row, const int max_row) {

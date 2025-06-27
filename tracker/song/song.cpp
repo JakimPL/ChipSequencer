@@ -10,6 +10,7 @@
 #include "../gui/names.hpp"
 #include "../structures/sizes.hpp"
 #include "../utils/file.hpp"
+#include "../utils/math.hpp"
 #include "../utils/temp.hpp"
 #include "core.hpp"
 #include "functions.hpp"
@@ -186,7 +187,7 @@ uint8_t Song::get_output_channels() const {
 }
 
 void Song::set_output_channels(const uint8_t channels) {
-    output_channels = std::clamp(static_cast<int>(channels), 1, MAX_OUTPUT_CHANNELS);
+    output_channels = clamp(static_cast<int>(channels), 1, MAX_OUTPUT_CHANNELS);
 }
 
 void Song::export_all(const std::string &directory, const CompilationTarget compilation_target) const {

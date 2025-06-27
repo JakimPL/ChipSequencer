@@ -3,6 +3,7 @@
 #include "../../general.hpp"
 #include "../../song/links/manager.hpp"
 #include "../../song/links/target.hpp"
+#include "../../utils/math.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
 #include "channels.hpp"
@@ -239,8 +240,8 @@ void GUIChannelsPanel::draw_channel() {
             ImGui::SameLine();
             ImGui::SetNextItemWidth(50);
             ImGui::InputInt("##Denominator", &current_channel.sync_denominator, 0, 0);
-            current_channel.sync_numerator = std::clamp(current_channel.sync_numerator, 1, 16);
-            current_channel.sync_denominator = std::clamp(current_channel.sync_denominator, 1, 16);
+            current_channel.sync_numerator = clamp(current_channel.sync_numerator, 1, 16);
+            current_channel.sync_denominator = clamp(current_channel.sync_denominator, 1, 16);
             perform_action(this, {Target::SPECIAL, channel_index, SPECIAL_CHANNEL_SYNC_NUMERATOR}, current_channel.sync_numerator, previous_numerator);
             perform_action(this, {Target::SPECIAL, channel_index, SPECIAL_CHANNEL_SYNC_DENOMINATOR}, current_channel.sync_denominator, previous_denominator);
         } else {

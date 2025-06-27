@@ -3,6 +3,7 @@
 
 #include "../../general.hpp"
 #include "../../song/core.hpp"
+#include "../../utils/math.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
 #include "waveform.hpp"
@@ -60,7 +61,7 @@ void GUIWaveformPanel::draw_waveform() {
     int hist_size = static_cast<int>(history_size);
     ImGui::PushItemWidth(200);
     if (ImGui::SliderInt("History size", &hist_size, GUI_MIN_WAVEFORM_HISTORY_SIZE, GUI_MAX_WAVEFORM_HISTORY_SIZE)) {
-        history_size = static_cast<size_t>(std::clamp(hist_size, GUI_MIN_WAVEFORM_HISTORY_SIZE, GUI_MAX_WAVEFORM_HISTORY_SIZE));
+        history_size = static_cast<size_t>(clamp(hist_size, GUI_MIN_WAVEFORM_HISTORY_SIZE, GUI_MAX_WAVEFORM_HISTORY_SIZE));
     }
     ImGui::PopItemWidth();
 
@@ -286,7 +287,7 @@ void GUIWaveformPanel::draw_channel_spectrogram(const int output_channel_index, 
 
         const float magnitude = magnitudes[i];
         float db = 20.0f * std::log10(magnitude / max_magnitude);
-        db = std::clamp(db, fft_parameters.min_db, 0.0f);
+        db = clamp(db, fft_parameters.min_db, 0.0f);
 
         const float normalized_db = (db - fft_parameters.min_db) / -fft_parameters.min_db;
         const float height = normalized_db * size.y;

@@ -16,7 +16,7 @@ ptrdiff_t ScaleComposer::get_ordered_index(const std::string &note_name) {
 }
 
 void ScaleComposer::compose(const int new_edo) {
-    edo = std::clamp(new_edo, MIN_EDO, MAX_EDO);
+    edo = clamp(new_edo, MIN_EDO, MAX_EDO);
     a_index = -1;
 
     const int scale_names_count = static_cast<int>(std::size(scale_names));

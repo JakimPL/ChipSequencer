@@ -3,6 +3,7 @@
 
 #include "../../general.hpp"
 #include "../../utils/file.hpp"
+#include "../../utils/math.hpp"
 #include "../enums.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
@@ -193,7 +194,7 @@ void GUIWavetablesPanel::draw_waveform() {
             const int current_point = index;
             const float relative_y = mouse_pos.y - canvas_p0.y;
             float normalized = 1.0f - (relative_y / size.y);
-            normalized = std::clamp(normalized, 0.0f, 1.0f);
+            normalized = clamp(normalized, 0.0f, 1.0f);
             const float value = (normalized * 2.0f) - 1.0f;
             if (value != current_wavetable.wave[current_point]) {
                 const std::vector<float> old_wave = current_wavetable.wave;
