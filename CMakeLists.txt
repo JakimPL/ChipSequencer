@@ -264,6 +264,33 @@ if (WIN32)
         ${SNDFILE_LIBRARIES}
         ${FFTW_LIBRARIES}
     )
+    
+    set(REQUIRED_DLLS
+        "${FFTW_ROOT}/libfftw3f-3.dll"
+        "${MINGW_PREFIX}/bin/SDL2.dll"
+        "${MINGW_PREFIX}/bin/libFLAC.dll"
+        "${MINGW_PREFIX}/bin/libgcc_s_dw2-1.dll"
+        "${MINGW_PREFIX}/bin/libmp3lame-0.dll"
+        "${MINGW_PREFIX}/bin/libmpg123-0.dll"
+        "${MINGW_PREFIX}/bin/libogg-0.dll"
+        "${MINGW_PREFIX}/bin/libopus-0.dll"
+        "${MINGW_PREFIX}/bin/libportaudio.dll"
+        "${MINGW_PREFIX}/bin/libsndfile-1.dll"
+        "${MINGW_PREFIX}/bin/libstdc++-6.dll"
+        "${MINGW_PREFIX}/bin/libvorbis-0.dll"
+        "${MINGW_PREFIX}/bin/libvorbisenc-2.dll"
+        "${MINGW_PREFIX}/bin/libwinpthread-1.dll"
+    )
+    
+    foreach(DLL_FILE ${REQUIRED_DLLS})
+        if(EXISTS ${DLL_FILE})
+            add_custom_command(TARGET ChipSequencer POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${DLL_FILE}
+                $<TARGET_FILE_DIR:ChipSequencer>
+            )
+        endif()
+    endforeach()
 else()
     target_link_libraries(ChipSequencer
         song
