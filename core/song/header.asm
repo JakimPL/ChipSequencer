@@ -13,8 +13,8 @@
     %define TUNING_NOTE_DIVISOR 1.0594630943592953
 
     %ifndef BIN
-    extern num_channels
-    extern num_dsps
-    extern num_commands_channels
-    extern unit
+    extern CDECL(num_channels)
+    extern CDECL(num_dsps)
+    extern CDECL(num_commands_channels)
+    extern CDECL(unit)
     %endif

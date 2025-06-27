@@ -5,12 +5,12 @@ step:
     jz .done
 
     movzx ecx, byte [current_channel]
-    cmp byte [sequence_timer_row + ecx], 0
+    cmp byte [CDECL(sequence_timer_row) + ecx], 0
     jnz .decrease_timer
 
 .load_next_note:
     movzx ebx, byte [current_channel]
-    movzx eax, byte [sequence_current_note + ebx]
+    movzx eax, byte [CDECL(sequence_current_note) + ebx]
     LOAD_OFFSET ecx, sequence_offset
 ; divided by 2 because each note is 2 bytes
     mov cl, byte [ecx]
@@ -18,7 +18,7 @@ step:
     cmp al, cl
     jl .next_note
     mov al, 0
-    mov byte [sequence_current_note + ebx], 0
+    mov byte [CDECL(sequence_current_note) + ebx], 0
     push ax
     call next_sequence
     pop ax
@@ -46,67 +46,67 @@ step:
     jmp .progress_sequence
 .note_on:
     movzx edx, byte [current_channel]
-    mov [pitch + edx], al
+    mov [CDECL(pitch) + edx], al
 .load_frequency:
     shl ax, 2
     mov ebx, frequencies
     add ebx, eax
     mov ebx, [ebx]
-    mov [frequency + 4 * edx], ebx
+    mov [CDECL(frequency) + 4 * edx], ebx
     call reset_envelope
 .progress_sequence:
     movzx ecx, byte [current_channel]
-    inc byte [sequence_current_note + ecx]
+    inc byte [CDECL(sequence_current_note) + ecx]
 .set_timers:
     mov al, [NOTE_DURATION + esi]
-    mov ebx, [ticks_per_beat]
-    mov [sequence_timer + 4 * ecx], ebx
-    mov [sequence_timer_row + ecx], al
+    mov ebx, [CDECL(ticks_per_beat)]
+    mov [CDECL(sequence_timer) + 4 * ecx], ebx
+    mov [CDECL(sequence_timer_row) + ecx], al
     xor ebx, ebx
-    mov [oscillator_timer + 4 * ecx], ebx
+    mov [CDECL(oscillator_timer) + 4 * ecx], ebx
     ret
 
 .decrease_timer:
-    dec dword [sequence_timer + 4 * ecx]
+    dec dword [CDECL(sequence_timer) + 4 * ecx]
     jnz .done
 
     %ifdef TRACKER
     cmp byte [current_channel], 0
     jnz .decrease_row
-    inc word [global_row]
+    inc word [CDECL(global_row)]
     %endif
 
 .decrease_row:
-    dec byte [sequence_timer_row + ecx]
-    mov ebx, [ticks_per_beat]
-    mov [sequence_timer + 4 * ecx], ebx
+    dec byte [CDECL(sequence_timer_row) + ecx]
+    mov ebx, [CDECL(ticks_per_beat)]
+    mov [CDECL(sequence_timer) + 4 * ecx], ebx
 
 .done:
     ret
 
 initialize_sample_rate:
-    mov eax, [sample_rate]
+    mov eax, [CDECL(sample_rate)]
     shl eax, 14
     mov [dividend], eax      ; dividend is shifted by 2 to allow higher ranges of sampling rates
     ret
 
-calculate_ticks_per_beat:
-    fild dword [sample_rate]
-    fmul dword [unit]
-    fidiv word [bpm]
-    fistp dword [ticks_per_beat]
+CDECL(calculate_ticks_per_beat):
+    fild dword [CDECL(sample_rate)]
+    fmul dword [CDECL(unit)]
+    fidiv word [CDECL(bpm)]
+    fistp dword [CDECL(ticks_per_beat)]
     ret
 
     %ifdef TRACKER
 reset_global_row:
     xor ax, ax
-    mov [global_row], ax
+    mov [CDECL(global_row)], ax
     ret
     %endif
 
     SEGMENT_BSS
-    ticks_per_beat resd 1
+    CDECL(ticks_per_beat) resd 1
 
     %ifdef TRACKER
-    global_row resw 1
+    CDECL(global_row) resw 1
     %endif

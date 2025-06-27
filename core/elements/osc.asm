@@ -1,6 +1,6 @@
     %ifdef TRACKER
-    extern reference_frequency
-    extern note_divisor
+    extern CDECL(reference_frequency)
+    extern CDECL(note_divisor)
     %endif
 
     SEGMENT_CODE
@@ -18,7 +18,7 @@ increment_timer:
     mov eax, [CHANNEL_PITCH + eax]
     jmp .increment_timer
 .load_pitch:
-    mov ebx, [frequency + 4 * ecx]
+    mov ebx, [CDECL(frequency) + 4 * ecx]
 .detune:
     LOAD_OFFSET eax, channel_offset
     mov eax, [CHANNEL_PITCH + eax]
@@ -26,17 +26,17 @@ increment_timer:
     shrd eax, edx, 57
 .increment_timer:
     shr eax, 2
-    add eax, dword [oscillator_timer + 4 * ecx]
+    add eax, dword [CDECL(oscillator_timer) + 4 * ecx]
     mov esi, dividend
     call reduce
-    mov [oscillator_timer + 4 * ecx], eax
+    mov [CDECL(oscillator_timer) + 4 * ecx], eax
     ret
 
 initialize_frequencies:
     xor ecx, ecx
     mov cl, NOTES
     lea edi, [frequencies + 4 * ecx]
-    fild qword [reference_frequency]
+    fild qword [CDECL(reference_frequency)]
     fdiv dword [f_65536]
 
 .loop:
@@ -45,13 +45,13 @@ initialize_frequencies:
     fld dword [f_65536]
     fmulp st1, st0
     fistp dword [edi]
-    fdiv qword [note_divisor]
+    fdiv qword [CDECL(note_divisor)]
     loop .loop
     ret
 
 load_timer:
     movzx eax, byte [current_channel]
-    mov eax, [oscillator_timer + 4 * eax]
+    mov eax, [CDECL(oscillator_timer) + 4 * eax]
     mov ecx, [dividend]
     ret
 
@@ -72,9 +72,9 @@ apply_volume:
 
     SEGMENT_DATA
     %ifndef TRACKER
-reference_frequency:
+CDECL(reference_frequency):
     dq TUNING_FREQUENCY
-note_divisor:
+CDECL(note_divisor):
     dq __float64__(TUNING_NOTE_DIVISOR)
     %endif
 

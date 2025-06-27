@@ -4,7 +4,7 @@ mix:
     %ifdef USED_DSP
     call clear_dsps
     %endif
-    mov edi, output
+    mov edi, CDECL(output)
     xor ecx, ecx
     mov cl, MAX_OUTPUT_CHANNELS
     mov eax, dword __float32__(0.0)
@@ -12,7 +12,7 @@ mix:
 .mix:
     xor cl, cl
 .channel_loop:
-    cmp cl, [num_channels]
+    cmp cl, [CDECL(num_channels)]
     %ifdef USED_DSP
     je .dsp
     %else
@@ -43,7 +43,7 @@ mix:
     xor eax, eax
     xor cl, cl
 .dsp_loop:
-    cmp cl, [num_dsps]
+    cmp cl, [CDECL(num_dsps)]
     je .normalize
 
     mov [current_dsp], cl
@@ -72,12 +72,12 @@ mix:
 .normalize_loop:
     dec cl
 
-    fld dword [output + 4 * ecx]
-    fld dword [normalizer]
+    fld dword [CDECL(output) + 4 * ecx]
+    fld dword [CDECL(normalizer)]
     fmul
 
     call save_eax_from_fpu
-    mov [output + 4 * ecx], eax
+    mov [CDECL(output) + 4 * ecx], eax
 
     cmp cl, 0
     jne .normalize_loop

@@ -1,12 +1,12 @@
     SEGMENT_CODE
 adsr:
     movzx eax, byte [current_channel]
-    movzx eax, byte [envelope_mode + eax]
+    movzx eax, byte [CDECL(envelope_mode) + eax]
 
     xor edx, edx
 .prepare_interpolation_points:
     movzx ecx, byte [current_channel]
-    lea esi, [envelope_timer + 4 * ecx]
+    lea esi, [CDECL(envelope_timer) + 4 * ecx]
     mov edi, dividend
 .phase:
     LOAD_FUNCTION phases, eax
@@ -21,7 +21,7 @@ adsr:
 
 ; Load the divisor
     movzx eax, byte [current_channel]
-    movzx ebx, byte [envelope_mode + eax]
+    movzx ebx, byte [CDECL(envelope_mode) + eax]
     LOAD_OFFSET eax, envelope_offset
     movzx ecx, word [eax + ENVELOPE_ATTACK + 2 * ebx]
     mov eax, MAGIC_CONSTANT
@@ -31,18 +31,18 @@ adsr:
 
 .increment_timer:
     movzx ebx, byte [current_channel]
-    add dword [envelope_timer + 4 * ebx], eax
-    mov eax, [envelope_timer + 4 * ebx]
+    add dword [CDECL(envelope_timer) + 4 * ebx], eax
+    mov eax, [CDECL(envelope_timer) + 4 * ebx]
 
     mov esi, dividend
     call reduce
-    mov [envelope_timer + 4 * ebx], eax
+    mov [CDECL(envelope_timer) + 4 * ebx], eax
 
     jc .increment_mode
     ret
 
 .increment_mode:
-    inc byte [envelope_mode + ebx]
+    inc byte [CDECL(envelope_mode) + ebx]
 
 .done:
     ret
@@ -85,13 +85,13 @@ note_cut:
 reset_envelope:
     movzx ecx, byte [current_channel]
     xor eax, eax
-    mov [envelope_mode + ecx], al
-    mov [envelope_timer + 4 * ecx], eax
+    mov [CDECL(envelope_mode) + ecx], al
+    mov [CDECL(envelope_timer) + 4 * ecx], eax
     ret
 
 set_phase:
     movzx ecx, byte [current_channel]
-    mov byte [envelope_mode + ecx], al
+    mov byte [CDECL(envelope_mode) + ecx], al
     ret
 
     SEGMENT_DATA

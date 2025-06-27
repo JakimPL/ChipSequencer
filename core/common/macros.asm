@@ -1,3 +1,9 @@
+    %ifdef WIN32
+    %define CDECL(x) _ %+ x
+    %else
+    %define CDECL(x) x
+    %endif
+
     %macro SEGMENT_CODE 0
     section .text
     %endmacro

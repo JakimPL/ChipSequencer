@@ -2,8 +2,8 @@
 set_bpm:
     %ifdef USED_COMMAND_SET_BPM
     mov ax, word [COMMAND_SET_BPM_BPM + edi]
-    mov [bpm], ax
-    call calculate_ticks_per_beat
+    mov [CDECL(bpm)], ax
+    call CDECL(calculate_ticks_per_beat)
 
     SET_COMMAND_SIZE SIZE_COMMAND_SET_BPM
     %endif
@@ -17,8 +17,8 @@ set_division:
     fidiv dword [esp]
     pop eax
 
-    fstp dword [unit]
-    call calculate_ticks_per_beat
+    fstp dword [CDECL(unit)]
+    call CDECL(calculate_ticks_per_beat)
     SET_COMMAND_SIZE SIZE_COMMAND_SET_DIVISION
     %endif
     ret

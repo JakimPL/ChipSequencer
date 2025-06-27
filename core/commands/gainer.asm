@@ -6,7 +6,7 @@ set_master_gainer:
     fild dword [esp]
     pop eax
     fdiv dword [half_range]
-    fstp dword [normalizer]
+    fstp dword [CDECL(normalizer)]
 
     SET_COMMAND_SIZE SIZE_COMMAND_SET_MASTER_GAINER
     %endif

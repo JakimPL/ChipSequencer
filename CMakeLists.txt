@@ -102,12 +102,24 @@ endif()
 
 set(ASM_SOURCE_DIR "${CMAKE_SOURCE_DIR}")
 set(ASM_SOURCE_FILE "${CMAKE_SOURCE_DIR}/core/player.asm")
-set(ASM_OBJECT_FILE "${CMAKE_BINARY_DIR}/player.o")
 
-add_custom_target(asm_objects ALL
+if (WIN32)
+    set(ASM_FORMAT "win32")
+    set(ASM_DEBUG_FORMAT "cv8")
+    set(ASM_OBJECT_FILE "${CMAKE_BINARY_DIR}/player.obj")
+    set(ASM_FLAGS "WIN32")
+else()
+    set(ASM_FORMAT "elf32")
+    set(ASM_DEBUG_FORMAT "dwarf")
+    set(ASM_OBJECT_FILE "${CMAKE_BINARY_DIR}/player.o")
+    set(ASM_FLAGS "ELF32")
+endif()
+
+add_custom_target(asm_player ALL
     COMMAND ${CMAKE_COMMAND} -E remove -f ${ASM_OBJECT_FILE}
-    COMMAND ${NASM_EXECUTABLE} -d TRACKER -f elf32 -Fdwarf -g ${ASM_SOURCE_FILE} -o ${ASM_OBJECT_FILE}
+    COMMAND ${NASM_EXECUTABLE} -d TRACKER -d ${ASM_FLAGS} -f ${ASM_FORMAT} -F${ASM_DEBUG_FORMAT} -g ${ASM_SOURCE_FILE} -o ${ASM_OBJECT_FILE}
     WORKING_DIRECTORY ${ASM_SOURCE_DIR}
+    VERBATIM
 )
 
 file(GLOB IMGUI_SOURCES
@@ -231,29 +243,45 @@ target_compile_options(ChipSequencer PRIVATE
     $<$<COMPILE_LANGUAGE:CXX>:-Werror=switch-enum ${SANITIZER_FLAGS}>
 )
 
-add_dependencies(ChipSequencer asm_objects)
+add_dependencies(ChipSequencer asm_player)
 target_include_directories(ChipSequencer PRIVATE
     ${CMAKE_SOURCE_DIR}/imgui
     ${CMAKE_SOURCE_DIR}/imgui-knobs
     ${SDL2_INCLUDE_DIRS}
     ${FFTW_INCLUDE_DIRS}
 )
-target_link_libraries(ChipSequencer
-    song
-    imgui
-    imgui_knobs
-    nlohmann_json::nlohmann_json
-    ${ASM_OBJECT_FILE}
-    ${SDL2_LIBRARIES}
-    ${OPENGL_LIBRARIES}
-    portaudio
-    dl
-    pthread
-    z
-    nfd
-    ${SNDFILE_LIBRARIES}
-    ${FFTW_LIBRARIES}
-)
+if (WIN32)
+    target_link_libraries(ChipSequencer
+        song
+        imgui
+        imgui_knobs
+        nlohmann_json::nlohmann_json
+        ${ASM_OBJECT_FILE}
+        ${SDL2_LIBRARIES}
+        ${OPENGL_LIBRARIES}
+        portaudio
+        nfd
+        ${SNDFILE_LIBRARIES}
+        ${FFTW_LIBRARIES}
+    )
+else()
+    target_link_libraries(ChipSequencer
+        song
+        imgui
+        imgui_knobs
+        nlohmann_json::nlohmann_json
+        ${ASM_OBJECT_FILE}
+        ${SDL2_LIBRARIES}
+        ${OPENGL_LIBRARIES}
+        portaudio
+        dl
+        pthread
+        z
+        nfd
+        ${SNDFILE_LIBRARIES}
+        ${FFTW_LIBRARIES}
+    )
+endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_link_options(ChipSequencer PRIVATE ${SANITIZER_FLAGS})

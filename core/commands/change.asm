@@ -92,6 +92,6 @@ add_32bit_value:
     %ifdef USED_COMMAND_LOAD_TARGET
 load_target:
     movzx eax, word [COMMAND_CHANGE_VALUE_POINTER + edi]
-    mov eax, [targets + 4 * eax]
+    mov eax, [CDECL(targets) + 4 * eax]
     ret
     %endif

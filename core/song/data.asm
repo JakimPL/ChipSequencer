@@ -1,25 +1,25 @@
     SEGMENT_DATA
-bpm:
+CDECL(bpm):
     dw 300
-unit:
+CDECL(unit):
     dd 60.0
-normalizer:
+CDECL(normalizer):
     dd 0.5
 
-num_channels:
+CDECL(num_channels):
     db CHANNELS
-num_dsps:
+CDECL(num_dsps):
     db DSPS
-num_commands_channels:
+CDECL(num_commands_channels):
     db COMMANDS_CHANNELS
 
-envelopes:
-sequences:
-commands_sequences:
-orders:
-oscillators:
-wavetables:
-dsps:
-channels:
-commands_channels:
-targets:
+CDECL(envelopes):
+CDECL(sequences):
+CDECL(commands_sequences):
+CDECL(orders):
+CDECL(oscillators):
+CDECL(wavetables):
+CDECL(dsps):
+CDECL(channels):
+CDECL(commands_channels):
+CDECL(targets):
