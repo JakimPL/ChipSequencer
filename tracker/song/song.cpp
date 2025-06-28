@@ -5,7 +5,7 @@
 #include <sstream>
 #include <stdexcept>
 
-#include "miniz-cpp/zip_file.hpp"
+#include "zip_file.hpp"
 
 #include "../general.hpp"
 #include "../gui/names.hpp"

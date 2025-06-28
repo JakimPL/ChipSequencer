@@ -1,13 +1,3 @@
-add_library(song STATIC tracker/song/song.cpp)
-target_include_directories(song PUBLIC
-    ${CMAKE_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/imgui
-    ${CMAKE_SOURCE_DIR}/imgui-knobs
-    ${SNDFILE_INCLUDE_DIRS}
-    ${FFTW_INCLUDE_DIRS}
-)
-target_link_libraries(song PUBLIC imgui imgui_knobs nlohmann_json::nlohmann_json)
-
 set(TRACKER_SOURCES
     tracker/audio/engine.cpp
     tracker/audio/fft.cpp
@@ -89,13 +79,13 @@ add_dependencies(ChipSequencer asm_player)
 target_include_directories(ChipSequencer PRIVATE
     ${CMAKE_SOURCE_DIR}/imgui
     ${CMAKE_SOURCE_DIR}/imgui-knobs
+    ${CMAKE_SOURCE_DIR}/miniz-cpp
     ${SDL2_INCLUDE_DIRS}
     ${FFTW_INCLUDE_DIRS}
 )
 
 if (WIN32)
     target_link_libraries(ChipSequencer
-        song
         imgui
         imgui_knobs
         nlohmann_json::nlohmann_json
@@ -163,10 +153,11 @@ set_target_properties(ChipSequencer PROPERTIES
 
 if(WIN32)
     add_custom_command(TARGET ChipSequencer POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E create_hardlink
-        "${CMAKE_BINARY_DIR}/../bin/ChipSequencer.exe"
-        "${CMAKE_SOURCE_DIR}/ChipSequencer.exe"
-        COMMENT "Creating link to executable in main directory"
+        COMMAND powershell -ExecutionPolicy Bypass -File "${CMAKE_SOURCE_DIR}/shell/shortcut.ps1" 
+                -ShortcutPath "${CMAKE_SOURCE_DIR}/ChipSequencer.lnk"
+                -TargetPath "${CMAKE_SOURCE_DIR}/bin/ChipSequencer.exe"
+                -WorkingDirectory "${CMAKE_SOURCE_DIR}"
+        COMMENT "Creating shortcut to executable"
     )
 else()
     add_custom_command(TARGET ChipSequencer POST_BUILD

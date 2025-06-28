@@ -2,7 +2,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "nfd/src/include/nfd.h"
+#include "nfd.h"
 
 #include "../../general.hpp"
 #include "../../utils/file.hpp"
