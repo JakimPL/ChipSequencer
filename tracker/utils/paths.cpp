@@ -72,3 +72,26 @@ std::filesystem::path get_core_path() {
 std::filesystem::path get_scripts_path() {
     return get_resource_path("scripts");
 }
+
+std::string get_python_path() {
+    const std::filesystem::path base_path = get_base_path();
+
+#ifdef _WIN32
+    const std::filesystem::path venv_python = base_path / "venv" / "Scripts" / "python.exe";
+#else
+    const std::filesystem::path venv_python = base_path / "venv" / "bin" / "python";
+#endif
+
+    std::string executable;
+    if (std::filesystem::exists(venv_python)) {
+        executable = venv_python.string();
+    } else {
+#ifdef _WIN32
+        executable = "python";
+#else
+        executable = "python3";
+#endif
+    }
+
+    return executable;
+}

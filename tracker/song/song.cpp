@@ -1341,11 +1341,7 @@ void Song::compile_sources(const std::string &directory, const std::string &file
     std::stringstream compile_command;
     const std::filesystem::path scripts_path = get_scripts_path();
     const std::filesystem::path compile_script = scripts_path / "compile.py";
-#ifdef _WIN32
-    const std::string executable = "python";
-#else
-    const std::string executable = "python3";
-#endif
+    const std::filesystem::path executable = get_python_path();
 
     compile_command << executable << " "
                     << "\"" << compile_script.string() << "\" "
