@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <iostream>
 #include <memory>
+#include <sstream>
 #include <stdexcept>
 
 #include "miniz-cpp/zip_file.hpp"
@@ -11,7 +12,7 @@
 #include "../structures/sizes.hpp"
 #include "../utils/file.hpp"
 #include "../utils/math.hpp"
-#include "../utils/temp.hpp"
+#include "../utils/paths.hpp"
 #include "core.hpp"
 #include "functions.hpp"
 #include "headers.hpp"
@@ -66,6 +67,7 @@ void Song::save_to_file(const std::string &filename) {
     try {
         calculate_song_length();
         link_manager.set_links();
+
         export_all(directory, CompilationTarget::Linux);
         compress_directory(directory, filename);
         remove_temp_directory(temp_base, clear_temp);
@@ -1339,14 +1341,22 @@ void Song::decompress_archive(const std::string &output_file, const std::string 
 }
 
 void Song::compile_sources(const std::string &directory, const std::string &filename, const CompilationScheme scheme, const std::string platform) const {
-    std::string compile_command = "python scripts/compile.py " + platform + " \"" + directory + "\" \"" + filename + "\"";
+    std::stringstream compile_command;
+    const std::filesystem::path scripts_path = get_scripts_path();
+    const std::filesystem::path compile_script = scripts_path / "compile.py";
+
+    compile_command << "python \"" << compile_script.string() << "\" "
+                    << "\"" << platform << "\" "
+                    << "\"" << directory << "\" "
+                    << "\"" << filename << "\"";
+
     switch (scheme) {
     case CompilationScheme::Uncompressed: {
-        compile_command += " --uncompressed";
+        compile_command << " --uncompressed";
         break;
     }
     case CompilationScheme::Debug: {
-        compile_command += " --debug";
+        compile_command << " --debug";
         break;
     }
     case CompilationScheme::Compressed:
@@ -1354,9 +1364,9 @@ void Song::compile_sources(const std::string &directory, const std::string &file
         break;
     }
 
-    const int exit_code = run_command(compile_command);
+    const int exit_code = run_command(compile_command.str());
     if (exit_code != 0) {
-        throw std::runtime_error("Failed to compile sources: " + compile_command);
+        throw std::runtime_error("Failed to compile sources: " + compile_command.str());
     }
 }
 

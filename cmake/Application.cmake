@@ -73,8 +73,8 @@ set(TRACKER_SOURCES
     tracker/tuning/frequencies.cpp
     tracker/tuning/scale.cpp
     tracker/utils/math.cpp
+    tracker/utils/paths.cpp
     tracker/utils/string.cpp
-    tracker/utils/temp.cpp
 )
 
 add_executable(ChipSequencer ${TRACKER_SOURCES})
