@@ -160,3 +160,20 @@ endif()
 set_target_properties(ChipSequencer PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../bin"
 )
+
+if(WIN32)
+    add_custom_command(TARGET ChipSequencer POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E create_hardlink
+        "${CMAKE_BINARY_DIR}/../bin/ChipSequencer.exe"
+        "${CMAKE_SOURCE_DIR}/ChipSequencer.exe"
+        COMMENT "Creating link to executable in main directory"
+    )
+else()
+    add_custom_command(TARGET ChipSequencer POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove -f "${CMAKE_SOURCE_DIR}/ChipSequencer"
+        COMMAND ${CMAKE_COMMAND} -E create_symlink
+        "bin/ChipSequencer"
+        "${CMAKE_SOURCE_DIR}/ChipSequencer"
+        COMMENT "Creating symlink to executable in main directory"
+    )
+endif()
