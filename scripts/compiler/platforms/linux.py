@@ -2,6 +2,7 @@ import math
 import re
 import shutil
 import subprocess
+import sys
 from distutils.dir_util import copy_tree
 from pathlib import Path
 from typing import List, Optional
@@ -37,9 +38,9 @@ class LinuxCompiler(Compiler):
         self.copy_executable()
 
     def copy_source(self):
-        compilation_script = Path("shell") / "linux" / "compile.sh"
-        copy_tree("core", str(self.temp_dir / "core"))
-        copy_tree("tools", str(self.temp_dir / "tools"))
+        compilation_script = self.app_dir / Path("shell") / "linux" / "compile.sh"
+        copy_tree(self.app_dir / "core", str(self.temp_dir / "core"))
+        copy_tree(self.app_dir / "tools", str(self.temp_dir / "tools"))
         shutil.copy(compilation_script, self.temp_dir / "compile.sh")
         shutil.copy(self.song_dir / "header.asm", self.temp_dir / "core" / "song" / "header.asm")
         shutil.copy(self.song_dir / "data.asm", self.temp_dir / "core" / "song" / "data.asm")
@@ -67,7 +68,7 @@ class LinuxCompiler(Compiler):
 
     def compress(self):
         args = [
-            "python",
+            sys.executable,
             "onekpaq.py",
             "1",
             str(COMPRESSION_LEVEL),

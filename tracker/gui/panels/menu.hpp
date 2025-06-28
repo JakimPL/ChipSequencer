@@ -10,6 +10,7 @@
 
 class GUIMenu : public GUIPanel {
   private:
+    std::string compilation_error;
     std::optional<bool> compilation_status;
     std::optional<bool> render_status;
     std::optional<bool> load_error;

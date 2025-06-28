@@ -2,6 +2,7 @@ import argparse
 
 if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument("base", type=str, help="Base directory of the application")
     arg_parser.add_argument("platform", type=str, default="linux", help="Platform: only 'linux' is supported")
     arg_parser.add_argument("directory", type=str, help="Temporary directory")
     arg_parser.add_argument("target", type=str, help="Target executable path")
@@ -12,7 +13,7 @@ if __name__ == "__main__":
     if args.platform == "linux":
         from compiler.platforms.linux import LinuxCompiler
 
-        compiler = LinuxCompiler(args.directory, args.target, not args.uncompressed, args.debug)
+        compiler = LinuxCompiler(args.base, args.directory, args.target, not args.uncompressed, args.debug)
     else:
         raise ValueError(f"Unknown platform: {args.platform}, only 'linux' is supported.")
 

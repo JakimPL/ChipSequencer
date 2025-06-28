@@ -1,4 +1,4 @@
-#ifdef WIN32
+#ifdef _WIN32
 #define SDL_MAIN_HANDLED
 #endif
 
@@ -13,15 +13,15 @@
 #include "gui/gui.hpp"
 #include "song/functions.hpp"
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
     int argc;
-    LPWSTR* argv_w = CommandLineToArgvW(GetCommandLineW(), &argc);
-    
+    LPWSTR *argv_w = CommandLineToArgvW(GetCommandLineW(), &argc);
+
     // Convert wide strings to regular strings
-    char** argv = new char*[argc];
+    char **argv = new char *[argc];
     for (int i = 0; i < argc; i++) {
         int len = WideCharToMultiByte(CP_UTF8, 0, argv_w[i], -1, NULL, 0, NULL, NULL);
         argv[i] = new char[len];
@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
 
     terminate();
 
-#ifdef WIN32
+#ifdef _WIN32
     // Clean up argv
     for (int i = 0; i < argc; i++) {
         delete[] argv[i];

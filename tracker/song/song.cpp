@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <iostream>
 #include <memory>
+#include <sstream>
 #include <stdexcept>
 
 #include "miniz-cpp/zip_file.hpp"
@@ -11,7 +12,8 @@
 #include "../structures/sizes.hpp"
 #include "../utils/file.hpp"
 #include "../utils/math.hpp"
-#include "../utils/temp.hpp"
+#include "../utils/paths.hpp"
+#include "../utils/system.hpp"
 #include "core.hpp"
 #include "functions.hpp"
 #include "headers.hpp"
@@ -66,6 +68,7 @@ void Song::save_to_file(const std::string &filename) {
     try {
         calculate_song_length();
         link_manager.set_links();
+
         export_all(directory, CompilationTarget::Linux);
         compress_directory(directory, filename);
         remove_temp_directory(temp_base, clear_temp);
@@ -1075,10 +1078,10 @@ std::string Song::generate_header_asm_file() const {
     asm_content << "    \%define TUNING_NOTE_DIVISOR " << std::fixed << std::setprecision(std::numeric_limits<double>::max_digits10) << static_cast<_Float64>(frequency_table.get_note_divisor()) << "\n";
     asm_content << "\n";
     asm_content << "\n";
-    asm_content << "    extern num_channels" << "\n";
-    asm_content << "    extern num_dsps" << "\n";
-    asm_content << "    extern num_commands_channels" << "\n";
-    asm_content << "    extern unit" << "\n";
+    asm_content << "    extern CDECL(num_channels)" << "\n";
+    asm_content << "    extern CDECL(num_dsps)" << "\n";
+    asm_content << "    extern CDECL(num_commands_channels)" << "\n";
+    asm_content << "    extern CDECL(unit)" << "\n";
     asm_content << "\n";
     return asm_content.str();
 }
@@ -1102,23 +1105,23 @@ void Song::generate_targets_asm(
 std::string Song::generate_data_asm_file(const CompilationTarget compilation_target, const char separator) const {
     std::stringstream asm_content;
     asm_content << "SEGMENT_DATA\n";
-    asm_content << "bpm:\n";
+    asm_content << "CDECL(bpm):\n";
     asm_content << "dw " << bpm << "\n";
-    asm_content << "unit:\n";
+    asm_content << "CDECL(unit):\n";
     asm_content << "dd "
                 << std::fixed
                 << std::setprecision(std::numeric_limits<float>::max_digits10)
                 << static_cast<float>(unit) << "\n";
-    asm_content << "normalizer:\n";
+    asm_content << "CDECL(normalizer):\n";
     asm_content << "dd "
                 << std::fixed
                 << std::setprecision(std::numeric_limits<float>::max_digits10)
                 << static_cast<float>(normalizer) << "\n\n";
-    asm_content << "num_channels:\n";
+    asm_content << "CDECL(num_channels):\n";
     asm_content << "db " << static_cast<int>(num_channels) << "\n";
-    asm_content << "num_dsps:\n";
+    asm_content << "CDECL(num_dsps):\n";
     asm_content << "db " << static_cast<int>(num_dsps) << "\n";
-    asm_content << "num_commands_channels:\n";
+    asm_content << "CDECL(num_commands_channels):\n";
     asm_content << "db " << static_cast<int>(num_commands_channels) << "\n\n";
 
     generate_header_vector(asm_content, "envelope", "envel", envelopes.size(), separator);
@@ -1306,10 +1309,6 @@ size_t Song::calculate_commands(const Instruction instruction) const {
     return count;
 }
 
-int Song::run_command(const std::string &command) const {
-    return system(command.c_str());
-}
-
 void Song::compress_directory(const std::string &directory, const std::string &output_file) const {
     miniz_cpp::zip_file zip;
 
@@ -1339,14 +1338,25 @@ void Song::decompress_archive(const std::string &output_file, const std::string 
 }
 
 void Song::compile_sources(const std::string &directory, const std::string &filename, const CompilationScheme scheme, const std::string platform) const {
-    std::string compile_command = "python scripts/compile.py " + platform + " \"" + directory + "\" \"" + filename + "\"";
+    std::stringstream compile_command;
+    const std::filesystem::path scripts_path = get_scripts_path();
+    const std::filesystem::path compile_script = scripts_path / "compile.py";
+    const std::filesystem::path executable = get_python_path();
+
+    compile_command << executable << " "
+                    << "\"" << compile_script.string() << "\" "
+                    << "\"" << get_base_path() << "\" "
+                    << "\"" << platform << "\" "
+                    << "\"" << directory << "\" "
+                    << "\"" << filename << "\"";
+
     switch (scheme) {
     case CompilationScheme::Uncompressed: {
-        compile_command += " --uncompressed";
+        compile_command << " --uncompressed";
         break;
     }
     case CompilationScheme::Debug: {
-        compile_command += " --debug";
+        compile_command << " --debug";
         break;
     }
     case CompilationScheme::Compressed:
@@ -1354,9 +1364,9 @@ void Song::compile_sources(const std::string &directory, const std::string &file
         break;
     }
 
-    const int exit_code = run_command(compile_command);
+    const auto &[exit_code, output] = run_command(compile_command.str());
     if (exit_code != 0) {
-        throw std::runtime_error("Failed to compile sources: " + compile_command);
+        throw std::runtime_error("Failed to compile sources: " + output);
     }
 }
 
