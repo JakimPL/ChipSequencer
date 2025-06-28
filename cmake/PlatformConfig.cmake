@@ -1,7 +1,4 @@
 if(WIN32)
-    set(CMAKE_C_COMPILER "C:/msys64/mingw32/bin/gcc.exe")
-    set(CMAKE_CXX_COMPILER "C:/msys64/mingw32/bin/g++.exe")
-
     set(COMMON_C_FLAGS "-Wno-pointer-arith -Wno-address-of-packed-member")
     set(COMMON_CXX_FLAGS "-Wno-pointer-arith -Wno-address-of-packed-member")
 else()

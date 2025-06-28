@@ -186,12 +186,8 @@ void GUIMenu::file_render() {
 
 void GUIMenu::file_compile(const CompilationScheme scheme, const CompilationTarget compilation_target) {
     nfdchar_t *target_path = nullptr;
-    if (compilation_target != CompilationTarget::Linux) {
-        std::cerr << "Unsupported compilation target!" << std::endl;
-        return;
-    }
 
-    const std::string platform = "linux";
+    const std::string platform = compilation_target == CompilationTarget::Linux ? "linux" : "windows";
     nfdresult_t result = NFD_SaveDialog(platform == "linux" ? "" : "exe", nullptr, &target_path);
     if (result == NFD_OKAY) {
         std::filesystem::path new_path(target_path);
@@ -307,17 +303,17 @@ void GUIMenu::register_shortcuts() {
 
     shortcut_manager.register_shortcut(
         ShortcutAction::FileCompileCompressed,
-        [this]() { file_compile(CompilationScheme::Compressed, CompilationTarget::Linux); }
+        [this]() { file_compile(CompilationScheme::Compressed, DefaultCompilationTarget); }
     );
 
     shortcut_manager.register_shortcut(
         ShortcutAction::FileCompileUncompressed,
-        [this]() { file_compile(CompilationScheme::Uncompressed, CompilationTarget::Linux); }
+        [this]() { file_compile(CompilationScheme::Uncompressed, DefaultCompilationTarget); }
     );
 
     shortcut_manager.register_shortcut(
         ShortcutAction::FileCompileDebug,
-        [this]() { file_compile(CompilationScheme::Debug, CompilationTarget::Linux); }
+        [this]() { file_compile(CompilationScheme::Debug, DefaultCompilationTarget); }
     );
 
     shortcut_manager.register_shortcut(

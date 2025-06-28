@@ -69,7 +69,7 @@ void Song::save_to_file(const std::string &filename) {
         calculate_song_length();
         link_manager.set_links();
 
-        export_all(directory, CompilationTarget::Linux);
+        export_all(directory, DefaultCompilationTarget);
         compress_directory(directory, filename);
         remove_temp_directory(temp_base, clear_temp);
     } catch (const std::exception &exception) {
@@ -103,12 +103,7 @@ void Song::load_from_file(const std::string &filename) {
 }
 
 void Song::compile(const std::string &filename, const CompilationScheme scheme, const CompilationTarget compilation_target) const {
-    if (compilation_target != CompilationTarget::Linux) {
-        std::cerr << "Unsupported compilation target";
-        return;
-    }
-
-    const std::string platform = "linux";
+    const std::string platform = compilation_target == CompilationTarget::Linux ? "linux" : "windows";
     const auto [temp_base, song_path] = prepare_temp_directory(clear_temp);
     const std::string directory = song_path.string();
 
