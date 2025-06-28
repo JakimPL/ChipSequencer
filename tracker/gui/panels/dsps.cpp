@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include "../../general.hpp"
 #include "../../song/links/manager.hpp"
 #include "../names.hpp"

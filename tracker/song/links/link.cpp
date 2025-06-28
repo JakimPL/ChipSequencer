@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include "../../constants.hpp"
 #include "../../structures.hpp"
 #include "../../utils/file.hpp"

@@ -27,7 +27,7 @@ FFT::~FFT() {
     }
 }
 
-void FFT::compute(const std::deque<float> &samples) {
+void FFT::compute(const std::deque<_Float32> &samples) {
     const size_t samples_to_copy = std::min(samples.size(), fft_size);
     size_t start_idx = samples.size() >= fft_size ? samples.size() - fft_size : 0;
 

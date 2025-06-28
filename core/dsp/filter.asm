@@ -16,7 +16,7 @@ filter:
 ; x = cutoff_frequency ^ 2 / (65536 * sample_rate)
     fild word [cutoff_frequency]
     fmul st0, st0
-    fild dword [sample_rate]
+    fild dword [CDECL(sample_rate)]
     fdiv
     fld dword [f_65536]
     fdiv

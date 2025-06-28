@@ -6,64 +6,60 @@
 .PHONY: onekpaq
 .PHONY: pre-commit
 
-define copy-executables
-    @echo "Copying executable files from $(1) to $(2)..."
-    @find $(1) -type f -iname "*.exe" -exec cp {} $(2) \;
-endef
+GO_CHECK := $(shell which go 2> /dev/null)
+INSTALL_NASM_FMT := GO111MODULE=on go install github.com/yamnikov-oleg/nasmfmt@latest
+NASMFMT_INSTALLED := $(shell which nasmfmt 2> /dev/null)
 
 TOOLS_DIR = tools
 
-GO_CHECK := $(shell command -v go 2> /dev/null)
-INSTALL_NASM_FMT := GO111MODULE=on go install github.com/yamnikov-oleg/nasmfmt@latest
-NASMFMT_INSTALLED := $(shell command -v nasmfmt 2> /dev/null)
-
 build:
 	@echo "Building the project..."
-	@mkdir -p build
-	@cd build && cmake -DCMAKE_BUILD_TYPE=Debug .. && make --no-print-directory
+ifeq ($(OS),Windows_NT)
+	@cmake -S . -B build -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE=Debug
+else
+	@cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+endif
+	@cmake --build build --config Debug
 
 clean:
 	@echo "Cleaning the project..."
-	@mkdir -p build
-	@cd build && cmake .. && make clean --no-print-directory
+	@if exist build (cmake --build build --target clean) || (echo No build directory.)
 
 install:
-	mkdir -p $(TOOLS_DIR)
-	make nasm
-	make nasmfmt
-	make onekpaq
-	make pre-commit
+	@echo "Installing tools..."
+	@$(MAKE) nasm
+	@$(MAKE) nasmfmt
+	@$(MAKE) onekpaq
+	@$(MAKE) pre-commit
+	@git submodule update --init --recursive
 
 consts:
-	python scripts/constants.py
+	@echo "Generating constants..."
+	@python scripts/constants.py
 
 nasmfmt:
-	@if [ -z "$(GO_CHECK)" ]; then \
-		echo "Go is not installed. Please install Go to continue."; \
-		exit 1; \
-	fi
+ifeq ($(GO_CHECK),)
+	@echo "Go is not installed. Please install Go to continue."
+	@exit 1
+endif
 
-	@if [ -z "$(NASMFMT_INSTALLED)" ]; then \
-		echo "Installing nasmfmt..."; \
-		$(INSTALL_NASM_FMT); \
-		if [ -z "$$(command -v nasmfmt 2> /dev/null)" ]; then \
-			echo "nasmfmt not found. Check your PATH variable."; \
-		else \
-			echo "nasmfmt installed successfully."; \
-		fi \
-	else \
-		echo "nasmfmt is already installed."; \
-	fi
+ifeq ($(NASMFMT_INSTALLED),)
+	@echo "Installing nasmfmt..."
+	@$(INSTALL_NASM_FMT)
+	@which nasmfmt > /dev/null || echo "nasmfmt not found in PATH. Add \$GOPATH/bin to your PATH."
+else
+	@echo "nasmfmt is already installed."
+endif
 
 onekpaq:
-	@mkdir -p tools
-	@echo "Downloading oneKpaq..."
-	@cd tools && git clone git@github.com:temisu/oneKpaq.git
-	@echo "Compiling from sources..."
-	@cd tools/oneKpaq && make
-	@echo "oneKpaq is installed."
+	@echo "Installing oneKpaq..."
+	@if [ ! -d $(TOOLS_DIR)/oneKpaq ]; then \
+		mkdir -p $(TOOLS_DIR); \
+		cd $(TOOLS_DIR) && git clone https://github.com/temisu/oneKpaq.git; \
+	fi
+	@cd $(TOOLS_DIR)/oneKpaq && $(MAKE)
 
 pre-commit:
-	make config
-	pip install pre-commit
-	pre-commit autoupdate
+	@echo "Installing pre-commit..."
+	@pip install pre-commit
+	@python -m pre_commit autoupdate

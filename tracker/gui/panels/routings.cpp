@@ -2,6 +2,7 @@
 #include <cmath>
 #include <cstring>
 #include <map>
+#include <stdexcept>
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -421,7 +422,7 @@ void GUIRoutingsPanel::draw_all_links() {
             }
         } else if (target.target == Target::SPLITTER_DSP) {
             int start = target.offset / sizeof(_Float32);
-            int end = std::clamp(static_cast<int>(dsps.size()) - start, 0, MAX_OUTPUT_CHANNELS);
+            int end = clamp(static_cast<int>(dsps.size()) - start, 0, MAX_OUTPUT_CHANNELS);
             for (int i = 0; i < end; ++i) {
                 const size_t j = start + i;
                 const uint16_t offset = sizeof(_Float32) * j;

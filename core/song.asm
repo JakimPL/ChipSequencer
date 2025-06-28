@@ -1,23 +1,23 @@
     %ifndef BIN
-    global bpm
-    global normalizer
+    global CDECL(bpm)
+    global CDECL(normalizer)
 
-    extern num_channels
-    extern num_dsps
-    extern num_commands_channels
+    extern CDECL(num_channels)
+    extern CDECL(num_dsps)
+    extern CDECL(num_commands_channels)
 
-    global envelopes
-    global sequences
-    global orders
-    global oscillators
-    global wavetables
-    global dsps
-    global channels
-    global commands_sequences
-    global commands_channels
+    global CDECL(envelopes)
+    global CDECL(sequences)
+    global CDECL(orders)
+    global CDECL(oscillators)
+    global CDECL(wavetables)
+    global CDECL(dsps)
+    global CDECL(channels)
+    global CDECL(commands_sequences)
+    global CDECL(commands_channels)
 
-    extern dsp_input
-    extern output
+    extern CDECL(dsp_input)
+    extern CDECL(output)
     %endif
 
     %include "core/common.asm"

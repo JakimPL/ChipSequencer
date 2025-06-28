@@ -13,7 +13,7 @@ class FFT {
     FFT(size_t fft_size = 1024);
     ~FFT();
 
-    void compute(const std::deque<float> &samples);
+    void compute(const std::deque<_Float32> &samples);
 
     const std::vector<float> &get_magnitudes() const;
     const std::vector<std::complex<float>> &get_complex_output() const;

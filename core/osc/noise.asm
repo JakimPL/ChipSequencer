@@ -2,7 +2,7 @@
 noise:
     %ifdef USED_OSCILLATOR_NOISE
     movzx ebx, byte [current_channel]
-    lea esi, [oscillator_timer + 4 * ebx]
+    lea esi, [CDECL(oscillator_timer) + 4 * ebx]
     mov ax, [noise_seed + 2 * ebx]
     add ax, [esi]
     mov cx, ax
@@ -17,7 +17,7 @@ noise:
     ret
 
 initialize_seeds:
-    movzx ecx, byte [num_channels]
+    movzx ecx, byte [CDECL(num_channels)]
     mov edi, noise_seed
     mov ax, NOISE_SEED
     rep stosw

@@ -1,9 +1,11 @@
 #include <sstream>
+#include <stdexcept>
 
 #include "../../general.hpp"
 #include "../../maps/commands.hpp"
 #include "../../maps/keys.hpp"
 #include "../../utils/string.hpp"
+#include "../../utils/math.hpp"
 #include "commands.hpp"
 
 CommandsPattern::CommandsPattern()
@@ -401,45 +403,45 @@ void CommandsPattern::split_change_value_parts(
         switch (target) {
         case Target::DIRECT_OUTPUT:
         case Target::SPLITTER_OUTPUT: {
-            index_id = std::clamp(index_id, 0, static_cast<int>(MAX_OUTPUT_CHANNELS - 1));
+            index_id = clamp(index_id, 0, static_cast<int>(MAX_OUTPUT_CHANNELS - 1));
             break;
         }
         case Target::DSP:
         case Target::DIRECT_DSP:
         case Target::SPLITTER_DSP: {
-            index_id = std::clamp(index_id, 0, static_cast<int>(dsps.size()) - 1);
+            index_id = clamp(index_id, 0, static_cast<int>(dsps.size()) - 1);
             break;
         }
         case Target::CHANNEL: {
-            index_id = std::clamp(index_id, 0, static_cast<int>(channels.size()) - 1);
+            index_id = clamp(index_id, 0, static_cast<int>(channels.size()) - 1);
             break;
         }
         case Target::COMMANDS_CHANNEL: {
-            index_id = std::clamp(index_id, 0, static_cast<int>(commands_channels.size()) - 1);
+            index_id = clamp(index_id, 0, static_cast<int>(commands_channels.size()) - 1);
             break;
         }
         case Target::ENVELOPE: {
-            index_id = std::clamp(index_id, 0, static_cast<int>(envelopes.size()) - 1);
+            index_id = clamp(index_id, 0, static_cast<int>(envelopes.size()) - 1);
             break;
         }
         case Target::SEQUENCE: {
-            index_id = std::clamp(index_id, 0, static_cast<int>(sequences.size()) - 1);
+            index_id = clamp(index_id, 0, static_cast<int>(sequences.size()) - 1);
             break;
         }
         case Target::COMMANDS_SEQUENCE: {
-            index_id = std::clamp(index_id, 0, static_cast<int>(commands_sequences.size()) - 1);
+            index_id = clamp(index_id, 0, static_cast<int>(commands_sequences.size()) - 1);
             break;
         }
         case Target::ORDER: {
-            index_id = std::clamp(index_id, 0, static_cast<int>(orders.size()) - 1);
+            index_id = clamp(index_id, 0, static_cast<int>(orders.size()) - 1);
             break;
         }
         case Target::OSCILLATOR: {
-            index_id = std::clamp(index_id, 0, static_cast<int>(oscillators.size()) - 1);
+            index_id = clamp(index_id, 0, static_cast<int>(oscillators.size()) - 1);
             break;
         }
         case Target::WAVETABLE: {
-            index_id = std::clamp(index_id, 0, static_cast<int>(wavetables.size()) - 1);
+            index_id = clamp(index_id, 0, static_cast<int>(wavetables.size()) - 1);
             break;
         }
         case Target::SPECIAL:

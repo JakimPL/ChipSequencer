@@ -1,41 +1,37 @@
     %include "core/common.asm"
 
     %ifndef BIN
-    global initialize
-    global calculate
-    global frame
-    global output
-    global reset
-    global calculate_ticks_per_beat
-    global ticks_per_beat
+    global CDECL(initialize)
+    global CDECL(calculate)
+    global CDECL(frame)
+    global CDECL(output)
+    global CDECL(reset)
+    global CDECL(calculate_ticks_per_beat)
+    global CDECL(ticks_per_beat)
 
-    extern sound_driver_step
-    extern sound_driver_initialize
-    extern sound_driver_terminate
+    extern CDECL(bpm)
+    extern CDECL(unit)
+    extern CDECL(sample_rate)
+    extern CDECL(normalizer)
 
-    extern bpm
-    extern unit
-    extern sample_rate
-    extern normalizer
-
-    extern envelopes
-    extern sequences
-    extern commands_sequences
-    extern orders
-    extern oscillators
-    extern wavetables
-    extern dsps
-    extern channels
-    extern commands_channels
-    extern targets
+    extern CDECL(envelopes)
+    extern CDECL(sequences)
+    extern CDECL(commands_sequences)
+    extern CDECL(orders)
+    extern CDECL(oscillators)
+    extern CDECL(wavetables)
+    extern CDECL(dsps)
+    extern CDECL(channels)
+    extern CDECL(commands_channels)
+    extern CDECL(targets)
     %endif
 
     SEGMENT_CODE
-initialize:
+CDECL(initialize):
     pusha
     call initialize_frequencies
     call initialize_sample_rate
-    call calculate_ticks_per_beat
+    call CDECL(calculate_ticks_per_beat)
     call reset_channels
 
     %ifdef TRACKER
@@ -59,11 +55,10 @@ initialize:
     call initialize_seeds
     %endif
 
-    call sound_driver_initialize
     popa
     ret
 
-frame:
+CDECL(frame):
     %ifdef USED_COMMAND
     call commands
     %endif
@@ -75,14 +70,14 @@ frame:
     %include "core/vars.asm"
 
     SEGMENT_DATA
-calculate:
+CDECL(calculate):
     db 1
 
     SEGMENT_BSS
-    output resd MAX_OUTPUT_CHANNELS
+    CDECL(output) resd MAX_OUTPUT_CHANNELS
     %ifdef TRACKER
-    dsp_buffer resd MAX_DSPS * MAX_DSP_BUFFER_SIZE
+    CDECL(dsp_buffer) resd MAX_DSPS * MAX_DSP_BUFFER_SIZE
     %else
-    dsp_buffer resd DSPS * MAX_DSP_BUFFER_SIZE
+    CDECL(dsp_buffer) resd DSPS * MAX_DSP_BUFFER_SIZE
     %endif
     dividend resd 1

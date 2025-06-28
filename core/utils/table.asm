@@ -28,7 +28,7 @@ load_item_16bit:
 .done:
     ret
 
-reset:
+CDECL(reset):
 ; BX - loop size
 ; SI - function call
 .reset_loop:

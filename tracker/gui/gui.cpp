@@ -4,6 +4,7 @@
 #include "../imgui/imgui_internal.h"
 
 #include "../general.hpp"
+#include "../utils/math.hpp"
 #include "default.hpp"
 #include "gui.hpp"
 
@@ -24,7 +25,7 @@ void GUI::new_song() {
 
 void GUI::save(const std::string &filename) {
     current_path = filename;
-    song.save_to_file(current_path);
+    song.save_to_file(current_path.string());
     change_window_title(current_path.filename().string());
 }
 
@@ -50,17 +51,17 @@ void GUI::change_window_title(const std::string &title) {
 }
 
 int GUI::get_jump_step() const {
-    return std::clamp(jump_step, 0, GUI_MAX_JUMP_STEP);
+    return clamp(jump_step, 0, GUI_MAX_JUMP_STEP);
 }
 
 int GUI::get_current_octave() const {
     const int min_octave = frequency_table.get_min_octave();
     const int max_octave = frequency_table.get_max_octave();
-    return std::clamp(current_octave, min_octave, max_octave);
+    return clamp(current_octave, min_octave, max_octave);
 }
 
 int GUI::get_page_size() const {
-    return std::clamp(page_size, GUI_MIN_PAGE_SIZE, GUI_MAX_PAGE_SIZE);
+    return clamp(page_size, GUI_MIN_PAGE_SIZE, GUI_MAX_PAGE_SIZE);
 }
 
 int GUI::get_current_page() const {

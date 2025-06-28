@@ -5,7 +5,7 @@
     %ifdef DEBUG
     global _start
     %else
-    global output
+    global CDECL(output)
     %define PHDR_FILE_SIZE {file_size}
     %define PHDR_MEMORY_SIZE 0xD00000
     %define PHDR_PERMISSION 0x7
@@ -73,12 +73,6 @@ cmd_format:
 cmd_dash_f:
     db "-f", 0
 
-sound_driver_initialize:
-    ret
-
-sound_driver_terminate:
-    ret
-
 print_message:
     mov eax, SYS_WRITE
     mov ebx, 1
@@ -141,12 +135,12 @@ main_loop:
     call exit
 
 .mix:
-    call frame
+    call CDECL(frame)
 
 .write_stream:
     mov eax, SYS_WRITE
     mov ebx, [pipe_fds + 4]
-    mov ecx, output
+    mov ecx, CDECL(output)
     mov edx, 4 * {output_channels}
     int 0x80
 

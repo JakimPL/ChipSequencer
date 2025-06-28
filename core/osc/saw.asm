@@ -4,7 +4,7 @@ saw:
     LOAD_OFFSET ebx, oscillator_offset
     mov dl, [OSCILLATOR_SAW_REVERSE + ebx]
     movzx eax, byte [current_channel]
-    lea esi, [oscillator_timer + 4 * eax]
+    lea esi, [CDECL(oscillator_timer) + 4 * eax]
     mov edi, dividend
     mov bx, BASE_VOLUME
     add bx, [volume]

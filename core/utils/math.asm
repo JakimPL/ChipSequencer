@@ -158,7 +158,7 @@ i_2:
     dw 2
 
     %ifndef TRACKER
-sample_rate:
+CDECL(sample_rate):
     dd SAMPLE_RATE
     %endif
 

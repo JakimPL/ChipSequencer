@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cmath>
+#include <stdexcept>
 
 #include "../general.hpp"
 #include "../maps/commands.hpp"
@@ -21,7 +22,7 @@
 #include "patterns/selection.hpp"
 
 int clamp_index(int index, const int size) {
-    return std::clamp(index, 0, size - 1);
+    return clamp(index, 0, size - 1);
 }
 
 void draw_number_of_items(GUIPanel *owner, const std::string &label, const char *label_id, int &value, int min, int max, const LinkKey key, float label_length) {
@@ -32,7 +33,7 @@ void draw_number_of_items(GUIPanel *owner, const std::string &label, const char 
     const bool action = ImGui::InputInt("Items", &value, min, max);
     ImGui::PopID();
 
-    value = std::clamp(value, min, max);
+    value = clamp(value, min, max);
     if (action) {
         perform_action(owner, key, value, old_value);
     }
@@ -91,7 +92,7 @@ bool draw_int_slider(GUIPanel *owner, const char *label, int &reference, const L
     ImGui::PopID();
     ImGui::EndDisabled();
 
-    reference = std::clamp(reference, min, max);
+    reference = clamp(reference, min, max);
     if (action) {
         perform_action(owner, key, reference, old_value);
     }
@@ -157,7 +158,7 @@ bool draw_float_slider(GUIPanel *owner, const char *label, float &reference, con
     ImGui::PopID();
     ImGui::EndDisabled();
 
-    reference = std::clamp(reference, min, max);
+    reference = clamp(reference, min, max);
     if (action) {
         perform_action_float(owner, key, reference, old_value, format);
     }
@@ -178,7 +179,7 @@ bool draw_knob(GUIPanel *owner, const char *label, float &reference, const LinkK
     ImGui::PopID();
     ImGui::EndDisabled();
 
-    reference = std::clamp(reference, min, max);
+    reference = clamp(reference, min, max);
     if (action) {
         perform_action_float(owner, key, reference, old_value);
     }
@@ -570,7 +571,7 @@ void draw_output_dsp_splitter(GUIPanel *owner, OutputType &output_type, const in
     draw_int_slider(owner, "DSP", output_type.dsp_channel, {Target::SPECIAL, dsp_index, SPECIAL_DSP_INDEX}, dsp_index + 1, dsps.size() - 1);
     ImGui::Text("Splitter:");
     int start = output_type.dsp_channel;
-    int end = start + std::clamp(static_cast<int>(dsps.size()) - start, 0, MAX_OUTPUT_CHANNELS);
+    int end = start + clamp(static_cast<int>(dsps.size()) - start, 0, MAX_OUTPUT_CHANNELS);
     for (int i = output_type.dsp_channel; i < end; ++i) {
         const size_t j = i - output_type.dsp_channel;
         const std::string label = dsp_names[i];

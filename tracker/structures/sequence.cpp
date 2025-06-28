@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include "../general.hpp"
 #include "../utils/file.hpp"
 #include "sequence.hpp"

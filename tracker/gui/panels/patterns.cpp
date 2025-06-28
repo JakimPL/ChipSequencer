@@ -45,7 +45,7 @@ void GUIPatternsPanel::draw_pages() {
         deselect_all_rows();
     }
 
-    page = std::clamp(page, 0, pages - 1);
+    page = clamp(page, 0, pages - 1);
 }
 
 void GUIPatternsPanel::draw_channels() {

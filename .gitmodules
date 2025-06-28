@@ -10,3 +10,6 @@
 [submodule "miniz-cpp"]
 	path = miniz-cpp
 	url = https://github.com/tfussell/miniz-cpp
+[submodule "json"]
+	path = json
+	url = https://github.com/nlohmann/json.git

@@ -1,4 +1,5 @@
 #include <sstream>
+#include <stdexcept>
 
 #include "../../names.hpp"
 #include "../../panels/patterns.hpp"
