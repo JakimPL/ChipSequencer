@@ -28,6 +28,7 @@ bin/
 temp/
 tools/
 venv/
+fftw/
 
 **/*.idea
 **/*.vscode/**

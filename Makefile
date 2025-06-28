@@ -11,25 +11,22 @@ GO_CHECK := $(shell which go 2> /dev/null)
 INSTALL_NASM_FMT := GO111MODULE=on go install github.com/yamnikov-oleg/nasmfmt@latest
 NASMFMT_INSTALLED := $(shell which nasmfmt 2> /dev/null)
 
+REQUIREMENTS_FILE = scripts/requirements.txt
 TOOLS_DIR = tools
 VENV_DIR = venv
 
 ifeq ($(OS),Windows_NT)
-    PYTHON = python
-    VENV_BIN = $(VENV_DIR)/Scripts
-    VENV_PYTHON = $(VENV_BIN)/python.exe
-    VENV_PIP = $(VENV_BIN)/pip.exe
-    ACTIVATE_SCRIPT = $(VENV_BIN)/activate.bat
-    REQUIREMENTS_FILE = scripts\requirements.txt
-    FILE_EXISTS_CMD = if exist
+	PYTHON = python
+	VENV_BIN = $(VENV_DIR)/Scripts
+	VENV_PYTHON = $(VENV_BIN)/python.exe
+	VENV_PIP = $(VENV_BIN)/pip.exe
+	ACTIVATE_SCRIPT = $(VENV_BIN)/activate.bat
 else
-    PYTHON = python3
-    VENV_BIN = $(VENV_DIR)/bin
-    VENV_PYTHON = $(VENV_BIN)/python
-    VENV_PIP = $(VENV_BIN)/pip
-    ACTIVATE_SCRIPT = $(VENV_BIN)/activate
-    REQUIREMENTS_FILE = scripts/requirements.txt
-    FILE_EXISTS_CMD = test -f
+	PYTHON = python3
+	VENV_BIN = $(VENV_DIR)/bin
+	VENV_PYTHON = $(VENV_BIN)/python
+	VENV_PIP = $(VENV_BIN)/pip
+	ACTIVATE_SCRIPT = $(VENV_BIN)/activate
 endif
 
 
@@ -90,13 +87,18 @@ pre-commit:
 
 venv:
 	@echo "Creating virtual environment..."
-	@if [ ! -d $(VENV_DIR) ]; then \
-		$(PYTHON) -m venv $(VENV_DIR); \
+	@if [ ! -d "$(VENV_DIR)" ]; then \
+		$(PYTHON) -m venv $(VENV_DIR) && \
 		echo "Virtual environment created at $(VENV_DIR)"; \
 	else \
 		echo "Virtual environment already exists at $(VENV_DIR)"; \
 	fi
-	@$(FILE_EXISTS_CMD) $(REQUIREMENTS_FILE) && echo "Installing Python dependencies..." && $(VENV_PIP) install -r $(REQUIREMENTS_FILE) || echo "No requirements.txt found, skipping Python dependencies"
+	@if [ -f "$(REQUIREMENTS_FILE)" ]; then \
+		echo "Installing Python dependencies..." && \
+		$(VENV_PIP) install -r $(REQUIREMENTS_FILE); \
+	else \
+		echo "No requirements.txt found, skipping Python dependencies"; \
+	fi
 
 activate:
 	@echo "To activate the virtual environment, run:"
