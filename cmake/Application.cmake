@@ -75,6 +75,7 @@ set(TRACKER_SOURCES
     tracker/utils/math.cpp
     tracker/utils/paths.cpp
     tracker/utils/string.cpp
+    tracker/utils/system.cpp
 )
 
 add_executable(ChipSequencer ${TRACKER_SOURCES})

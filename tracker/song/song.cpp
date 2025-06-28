@@ -13,6 +13,7 @@
 #include "../utils/file.hpp"
 #include "../utils/math.hpp"
 #include "../utils/paths.hpp"
+#include "../utils/system.hpp"
 #include "core.hpp"
 #include "functions.hpp"
 #include "headers.hpp"
@@ -1308,10 +1309,6 @@ size_t Song::calculate_commands(const Instruction instruction) const {
     return count;
 }
 
-int Song::run_command(const std::string &command) const {
-    return system(command.c_str());
-}
-
 void Song::compress_directory(const std::string &directory, const std::string &output_file) const {
     miniz_cpp::zip_file zip;
 
@@ -1364,9 +1361,9 @@ void Song::compile_sources(const std::string &directory, const std::string &file
         break;
     }
 
-    const int exit_code = run_command(compile_command.str());
+    const auto &[exit_code, output] = run_command(compile_command.str());
     if (exit_code != 0) {
-        throw std::runtime_error("Failed to compile sources: " + compile_command.str());
+        throw std::runtime_error("Failed to compile sources: " + output);
     }
 }
 

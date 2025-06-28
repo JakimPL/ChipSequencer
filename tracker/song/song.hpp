@@ -97,7 +97,6 @@ class Song {
     void import_gui_state(const std::string &directory);
     void import_lock_registry(const std::string &directory);
 
-    int run_command(const std::string &command) const;
     void compile_sources(const std::string &directory, const std::string &filename, const CompilationScheme scheme, const std::string platform = "linux") const;
     void compress_directory(const std::string &directory, const std::string &output_file) const;
     void decompress_archive(const std::string &output_file, const std::string &directory);

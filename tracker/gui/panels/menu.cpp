@@ -203,7 +203,8 @@ void GUIMenu::file_compile(const CompilationScheme scheme, const CompilationTarg
             compilation_status = std::filesystem::exists(new_path);
         } catch (std::runtime_error &exception) {
             compilation_status = false;
-            std::cerr << "Compilation error: " << exception.what() << std::endl;
+            compilation_error = exception.what();
+            std::cerr << "Compilation error: " << compilation_error << std::endl;
         }
         gui.update();
     } else if (result != NFD_CANCEL) {
@@ -259,7 +260,7 @@ void GUIMenu::draw_dialog_box() {
     if (ImGui::BeginPopupModal("Compilation success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         draw_popup("File compiled successfully!");
     } else if (ImGui::BeginPopupModal("Compilation failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        draw_popup("Compilation failed!");
+        draw_popup("Compilation failed!\n\n" + compilation_error);
     } else if (ImGui::BeginPopupModal("Render success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         draw_popup("Song rendered successfully!");
     } else if (ImGui::BeginPopupModal("Render failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
