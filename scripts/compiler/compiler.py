@@ -7,11 +7,13 @@ from typing import Union
 class Compiler:
     def __init__(
         self,
+        app_dir: Union[str, os.PathLike],
         temp_dir: Union[str, os.PathLike],
         target_path: Union[str, os.PathLike],
         compression: bool = True,
         debug: bool = False,
     ):
+        self.app_dir = Path(app_dir)
         self.temp_dir = Path(temp_dir)
         self.target_path = Path(target_path)
         self.compression = False if debug else compression

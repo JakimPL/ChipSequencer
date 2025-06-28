@@ -44,10 +44,14 @@ std::filesystem::path get_executable_directory() {
 #endif
 }
 
-std::filesystem::path get_resource_path(const std::string &resource) {
+std::filesystem::path get_base_path() {
     const std::filesystem::path exe_dir = get_executable_directory();
-    const std::filesystem::path app_root = exe_dir.parent_path();
-    const std::filesystem::path resource_path = app_root / resource;
+    return exe_dir.parent_path();
+}
+
+std::filesystem::path get_resource_path(const std::string &resource) {
+    const std::filesystem::path base_path = get_base_path();
+    const std::filesystem::path resource_path = base_path / resource;
 
     if (std::filesystem::exists(resource_path)) {
         return resource_path;

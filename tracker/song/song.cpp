@@ -1078,10 +1078,10 @@ std::string Song::generate_header_asm_file() const {
     asm_content << "    \%define TUNING_NOTE_DIVISOR " << std::fixed << std::setprecision(std::numeric_limits<double>::max_digits10) << static_cast<_Float64>(frequency_table.get_note_divisor()) << "\n";
     asm_content << "\n";
     asm_content << "\n";
-    asm_content << "    extern num_channels" << "\n";
-    asm_content << "    extern num_dsps" << "\n";
-    asm_content << "    extern num_commands_channels" << "\n";
-    asm_content << "    extern unit" << "\n";
+    asm_content << "    extern CDECL(num_channels)" << "\n";
+    asm_content << "    extern CDECL(num_dsps)" << "\n";
+    asm_content << "    extern CDECL(num_commands_channels)" << "\n";
+    asm_content << "    extern CDECL(unit)" << "\n";
     asm_content << "\n";
     return asm_content.str();
 }
@@ -1105,23 +1105,23 @@ void Song::generate_targets_asm(
 std::string Song::generate_data_asm_file(const CompilationTarget compilation_target, const char separator) const {
     std::stringstream asm_content;
     asm_content << "SEGMENT_DATA\n";
-    asm_content << "bpm:\n";
+    asm_content << "CDECL(bpm):\n";
     asm_content << "dw " << bpm << "\n";
-    asm_content << "unit:\n";
+    asm_content << "CDECL(unit):\n";
     asm_content << "dd "
                 << std::fixed
                 << std::setprecision(std::numeric_limits<float>::max_digits10)
                 << static_cast<float>(unit) << "\n";
-    asm_content << "normalizer:\n";
+    asm_content << "CDECL(normalizer):\n";
     asm_content << "dd "
                 << std::fixed
                 << std::setprecision(std::numeric_limits<float>::max_digits10)
                 << static_cast<float>(normalizer) << "\n\n";
-    asm_content << "num_channels:\n";
+    asm_content << "CDECL(num_channels):\n";
     asm_content << "db " << static_cast<int>(num_channels) << "\n";
-    asm_content << "num_dsps:\n";
+    asm_content << "CDECL(num_dsps):\n";
     asm_content << "db " << static_cast<int>(num_dsps) << "\n";
-    asm_content << "num_commands_channels:\n";
+    asm_content << "CDECL(num_commands_channels):\n";
     asm_content << "db " << static_cast<int>(num_commands_channels) << "\n\n";
 
     generate_header_vector(asm_content, "envelope", "envel", envelopes.size(), separator);
@@ -1341,8 +1341,15 @@ void Song::compile_sources(const std::string &directory, const std::string &file
     std::stringstream compile_command;
     const std::filesystem::path scripts_path = get_scripts_path();
     const std::filesystem::path compile_script = scripts_path / "compile.py";
+#ifdef _WIN32
+    const std::string executable = "python";
+#else
+    const std::string executable = "python3";
+#endif
 
-    compile_command << "python \"" << compile_script.string() << "\" "
+    compile_command << executable << " "
+                    << "\"" << compile_script.string() << "\" "
+                    << "\"" << get_base_path() << "\" "
                     << "\"" << platform << "\" "
                     << "\"" << directory << "\" "
                     << "\"" << filename << "\"";
