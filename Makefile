@@ -1,5 +1,6 @@
 .PHONY: apack
 .PHONY: build
+.PHONY: fftw
 .PHONY: jwlink
 .PHONY: nasm
 .PHONY: nasmfmt
@@ -14,6 +15,8 @@ NASMFMT_INSTALLED := $(shell which nasmfmt 2> /dev/null)
 REQUIREMENTS_FILE = scripts/requirements.txt
 TOOLS_DIR = tools
 VENV_DIR = venv
+
+MAKEFLAGS += --no-print-directory
 
 ifeq ($(OS),Windows_NT)
 	PYTHON = python
@@ -50,6 +53,7 @@ install:
 	@$(MAKE) nasm
 	@$(MAKE) nasmfmt
 	@$(MAKE) onekpaq
+	@$(MAKE) fftw
 	@$(MAKE) venv
 	@$(MAKE) activate
 
@@ -106,4 +110,32 @@ ifeq ($(OS),Windows_NT)
 	@echo "  $(ACTIVATE_SCRIPT)"
 else
 	@echo "  source $(ACTIVATE_SCRIPT)"
+endif
+
+fftw:
+	@echo "Installing FFTW..."
+ifeq ($(OS),Windows_NT)
+	@if [ ! -d "fftw" ]; then \
+		mkdir -p fftw && \
+		echo "Downloading FFTW 3.3.5 for Windows..." && \
+		curl -L -o fftw-3.3.5-dll32.zip https://fftw.org/pub/fftw/fftw-3.3.5-dll32.zip && \
+		echo "Extracting FFTW..." && \
+		unzip -q fftw-3.3.5-dll32.zip -d fftw && \
+		rm fftw-3.3.5-dll32.zip && \
+		echo "FFTW installed to fftw directory"; \
+	else \
+		echo "FFTW directory already exists"; \
+	fi
+else
+	@if [ ! -d "fftw" ]; then \
+		mkdir -p fftw && \
+		echo "Downloading FFTW 3.3.10 for Linux..." && \
+		curl -L -o fftw-3.3.10.tar.gz https://www.fftw.org/fftw-3.3.10.tar.gz && \
+		echo "Extracting FFTW..." && \
+		tar -xzf fftw-3.3.10.tar.gz -C fftw --strip-components=1 && \
+		rm fftw-3.3.10.tar.gz && \
+		echo "FFTW source installed to fftw directory"; \
+	else \
+		echo "FFTW directory already exists"; \
+	fi
 endif
