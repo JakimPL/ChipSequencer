@@ -5,12 +5,33 @@
 .PHONY: nasmfmt
 .PHONY: onekpaq
 .PHONY: pre-commit
+.PHONY: venv
 
 GO_CHECK := $(shell which go 2> /dev/null)
 INSTALL_NASM_FMT := GO111MODULE=on go install github.com/yamnikov-oleg/nasmfmt@latest
 NASMFMT_INSTALLED := $(shell which nasmfmt 2> /dev/null)
 
 TOOLS_DIR = tools
+VENV_DIR = venv
+
+ifeq ($(OS),Windows_NT)
+    PYTHON = python
+    VENV_BIN = $(VENV_DIR)/Scripts
+    VENV_PYTHON = $(VENV_BIN)/python.exe
+    VENV_PIP = $(VENV_BIN)/pip.exe
+    ACTIVATE_SCRIPT = $(VENV_BIN)/activate.bat
+    REQUIREMENTS_FILE = scripts\requirements.txt
+    FILE_EXISTS_CMD = if exist
+else
+    PYTHON = python3
+    VENV_BIN = $(VENV_DIR)/bin
+    VENV_PYTHON = $(VENV_BIN)/python
+    VENV_PIP = $(VENV_BIN)/pip
+    ACTIVATE_SCRIPT = $(VENV_BIN)/activate
+    REQUIREMENTS_FILE = scripts/requirements.txt
+    FILE_EXISTS_CMD = test -f
+endif
+
 
 build:
 	@echo "Building the project..."
@@ -26,16 +47,18 @@ clean:
 	@if exist build (cmake --build build --target clean) || (echo No build directory.)
 
 install:
+	@echo "Downloading dependencies..."
+	@git submodule update --init --recursive
 	@echo "Installing tools..."
 	@$(MAKE) nasm
 	@$(MAKE) nasmfmt
 	@$(MAKE) onekpaq
-	@$(MAKE) pre-commit
-	@git submodule update --init --recursive
+	@$(MAKE) venv
+	@$(MAKE) activate
 
 consts:
 	@echo "Generating constants..."
-	@python scripts/constants.py
+	@$(VENV_PYTHON) scripts/constants.py
 
 nasmfmt:
 ifeq ($(GO_CHECK),)
@@ -61,5 +84,24 @@ onekpaq:
 
 pre-commit:
 	@echo "Installing pre-commit..."
-	@pip install pre-commit
-	@python -m pre_commit autoupdate
+	@$(VENV_PIP) install pre-commit
+	@$(VENV_PYTHON) -m pre_commit install
+	@$(VENV_PYTHON) -m pre_commit autoupdate
+
+venv:
+	@echo "Creating virtual environment..."
+	@if [ ! -d $(VENV_DIR) ]; then \
+		$(PYTHON) -m venv $(VENV_DIR); \
+		echo "Virtual environment created at $(VENV_DIR)"; \
+	else \
+		echo "Virtual environment already exists at $(VENV_DIR)"; \
+	fi
+	@$(FILE_EXISTS_CMD) $(REQUIREMENTS_FILE) && echo "Installing Python dependencies..." && $(VENV_PIP) install -r $(REQUIREMENTS_FILE) || echo "No requirements.txt found, skipping Python dependencies"
+
+activate:
+	@echo "To activate the virtual environment, run:"
+ifeq ($(OS),Windows_NT)
+	@echo "  $(ACTIVATE_SCRIPT)"
+else
+	@echo "  source $(ACTIVATE_SCRIPT)"
+endif

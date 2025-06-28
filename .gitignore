@@ -25,6 +25,7 @@ build/
 bin/
 temp/
 tools/
+venv/
 
 **/*.idea
 **/*.vscode/**

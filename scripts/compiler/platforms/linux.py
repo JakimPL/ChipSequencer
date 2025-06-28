@@ -2,6 +2,7 @@ import math
 import re
 import shutil
 import subprocess
+import sys
 from distutils.dir_util import copy_tree
 from pathlib import Path
 from typing import List, Optional
@@ -67,7 +68,7 @@ class LinuxCompiler(Compiler):
 
     def compress(self):
         args = [
-            "python",
+            sys.executable,
             "onekpaq.py",
             "1",
             str(COMPRESSION_LEVEL),
