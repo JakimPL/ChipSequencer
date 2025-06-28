@@ -88,7 +88,7 @@ void Song::load_from_file(const std::string &filename) {
 
     try {
         decompress_archive(filename, directory);
-        nlohmann::json json = import_header(directory + "/header.json");
+        nlohmann::json json = import_header((song_path / "header.json").string());
         clear_data();
         import_all(directory, json);
         update_sizes();
@@ -193,7 +193,7 @@ void Song::set_output_channels(const uint8_t channels) {
     output_channels = clamp(static_cast<int>(channels), 1, MAX_OUTPUT_CHANNELS);
 }
 
-void Song::export_all(const std::string &directory, const CompilationTarget compilation_target) const {
+void Song::export_all(const std::filesystem::path &directory, const CompilationTarget compilation_target) const {
     export_header_asm_file(directory);
     export_data_asm_file(directory, compilation_target);
     export_header(directory);
@@ -206,12 +206,12 @@ void Song::export_all(const std::string &directory, const CompilationTarget comp
     export_arrays(directory, "wave", wavetables);
     export_commands_sequences(directory);
     export_series(directory, "c_chan", commands_channels, {sizeof(CommandsChannel)});
-    export_links(directory + "/links.bin");
+    export_links((directory / "links.bin").string());
     export_gui_state(directory);
     export_lock_registry(directory);
 }
 
-void Song::import_all(const std::string &directory, const nlohmann::json &json) {
+void Song::import_all(const std::filesystem::path &directory, const nlohmann::json &json) {
     import_envelopes(directory, json);
     import_sequences(directory, json);
     import_orders(directory, json);
@@ -1315,6 +1315,7 @@ void Song::compress_directory(const std::string &directory, const std::string &o
     for (auto &entry : std::filesystem::recursive_directory_iterator(directory)) {
         if (entry.is_regular_file()) {
             std::string rel_path = std::filesystem::relative(entry.path(), directory).string();
+            std::replace(rel_path.begin(), rel_path.end(), '\\', '/');
             zip.write(entry.path().string(), rel_path);
         }
     }
@@ -1370,8 +1371,12 @@ void Song::compile_sources(const std::string &directory, const std::string &file
     }
 }
 
-std::string Song::get_element_path(const std::string &directory, const std::string prefix, const size_t i, const char separator) const {
+std::string Song::get_element_path(const std::string &directory, const std::string &prefix, const size_t i, const char separator) const {
     return directory + separator + prefix + "_" + std::to_string(i) + ".bin";
+}
+
+std::string Song::get_element_path(const std::filesystem::path &directory, const std::string &prefix, const size_t i) const {
+    return (directory / (prefix + "_" + std::to_string(i) + ".bin")).string();
 }
 
 void Song::serialize_dsp(std::ofstream &file, void *dsp) const {
@@ -1500,36 +1505,36 @@ void *Song::deserialize_oscillator(std::ifstream &file) const {
     }
 }
 
-void Song::export_header_asm_file(const std::string &directory) const {
+void Song::export_header_asm_file(const std::filesystem::path &directory) const {
     std::string asm_content = generate_header_asm_file();
-    std::ofstream asm_file(directory + "/header.asm");
+    std::ofstream asm_file(directory / "header.asm");
     asm_file << asm_content;
     asm_file.close();
 }
 
-void Song::export_data_asm_file(const std::string &directory, const CompilationTarget compilation_target) const {
+void Song::export_data_asm_file(const std::filesystem::path &directory, const CompilationTarget compilation_target) const {
     std::string asm_content = generate_data_asm_file(compilation_target);
-    std::ofstream asm_file(directory + "/data.asm");
+    std::ofstream asm_file(directory / "data.asm");
     asm_file << asm_content;
     asm_file.close();
 }
 
-void Song::export_header(const std::string &directory) const {
+void Song::export_header(const std::filesystem::path &directory) const {
     const nlohmann::json header = create_header_json();
-    std::ofstream header_file(directory + "/header.json");
+    std::ofstream header_file(directory / "header.json");
     header_file << header.dump(JSON_INDENTATION);
     header_file.close();
 }
 
-void Song::export_gui_state(const std::string &directory) const {
+void Song::export_gui_state(const std::filesystem::path &directory) const {
     nlohmann::json gui_state = save_gui_state();
-    std::ofstream gui_file(directory + "/gui.json");
+    std::ofstream gui_file(directory / "gui.json");
     gui_file << gui_state.dump(JSON_INDENTATION);
     gui_file.close();
 }
 
-void Song::export_lock_registry(const std::string &directory) const {
-    const std::filesystem::path lock_registry_path = directory + "/lock.json";
+void Song::export_lock_registry(const std::filesystem::path &directory) const {
+    const std::filesystem::path lock_registry_path = directory / "lock.json";
     nlohmann::json lock_registry_json = lock_registry.to_json();
     std::ofstream lock_file(lock_registry_path);
     lock_file << lock_registry_json.dump(JSON_INDENTATION);
@@ -1537,33 +1542,33 @@ void Song::export_lock_registry(const std::string &directory) const {
 }
 
 template <typename T>
-void Song::export_series(const std::string &directory, const std::string &prefix, const std::vector<T> &series, const std::vector<size_t> &sizes) const {
-    const std::filesystem::path series_dir = directory + "/" + prefix + "s";
+void Song::export_series(const std::filesystem::path &directory, const std::string &prefix, const std::vector<T> &series, const std::vector<size_t> &sizes) const {
+    const std::filesystem::path series_dir = directory / (prefix + "s");
     std::filesystem::create_directories(series_dir);
     for (size_t i = 0; i < series.size(); i++) {
-        const std::string filename = get_element_path(series_dir.string(), prefix, i);
+        const std::string filename = get_element_path(series_dir, prefix, i);
         export_data(filename, series[i], sizes[i % sizes.size()]);
     }
 }
 
-void Song::export_channels(const std::string &directory) const {
-    const std::filesystem::path series_dir = directory + "/chans";
+void Song::export_channels(const std::filesystem::path &directory) const {
+    const std::filesystem::path series_dir = directory / "chans";
     std::filesystem::create_directories(series_dir);
     for (size_t i = 0; i < channels.size(); i++) {
         const Channel *channel = channels[i];
-        const std::string filename = get_element_path(series_dir.string(), "chan", i);
+        const std::string filename = get_element_path(series_dir, "chan", i);
         std::ofstream file(filename, std::ios::binary);
         channel->serialize(file);
         file.close();
     }
 }
 
-void Song::export_dsps(const std::string &directory) const {
-    const std::filesystem::path dsps_dir = directory + "/dsps";
+void Song::export_dsps(const std::filesystem::path &directory) const {
+    const std::filesystem::path dsps_dir = directory / "dsps";
     std::filesystem::create_directories(dsps_dir);
 
     for (size_t i = 0; i < dsps.size(); i++) {
-        const std::string filename = get_element_path(dsps_dir.string(), "dsp", i);
+        const std::string filename = get_element_path(dsps_dir, "dsp", i);
         std::ofstream file(filename, std::ios::binary);
         void *dsp = dsps[i];
         serialize_dsp(file, dsp);
@@ -1571,12 +1576,12 @@ void Song::export_dsps(const std::string &directory) const {
     }
 }
 
-void Song::export_commands_sequences(const std::string &directory) const {
-    const std::filesystem::path series_dir = directory + "/c_seqs";
+void Song::export_commands_sequences(const std::filesystem::path &directory) const {
+    const std::filesystem::path series_dir = directory / "c_seqs";
     std::filesystem::create_directories(series_dir);
     for (size_t i = 0; i < commands_sequences.size(); i++) {
         const CommandsSequence *sequence = commands_sequences[i];
-        const std::string filename = get_element_path(series_dir.string(), "c_seq", i);
+        const std::string filename = get_element_path(series_dir, "c_seq", i);
         std::ofstream file(filename, std::ios::binary);
         sequence->serialize(file);
         file.close();
@@ -1584,11 +1589,11 @@ void Song::export_commands_sequences(const std::string &directory) const {
 }
 
 template <typename T>
-void Song::export_arrays(const std::string &directory, const std::string &prefix, const std::vector<T> &arrays) const {
-    const std::filesystem::path series_dir = directory + "/" + prefix + "s";
+void Song::export_arrays(const std::filesystem::path &directory, const std::string &prefix, const std::vector<T> &arrays) const {
+    const std::filesystem::path series_dir = directory / (prefix + "s");
     std::filesystem::create_directories(series_dir);
     for (size_t i = 0; i < arrays.size(); i++) {
-        const std::string filename = get_element_path(series_dir.string(), prefix, i);
+        const std::string filename = get_element_path(series_dir, prefix, i);
         std::ofstream file(filename, std::ios::binary);
         const T element = arrays[i];
         element->serialize(file);
@@ -1596,7 +1601,7 @@ void Song::export_arrays(const std::string &directory, const std::string &prefix
     }
 }
 
-void Song::export_links(const std::string &filename) const {
+void Song::export_links(const std::filesystem::path &filename) const {
     std::ofstream file(filename, std::ios::binary);
     for (const ItemType &type : {ItemType::CHANNEL, ItemType::DSP, ItemType::COMMANDS}) {
         const size_t link_type = static_cast<size_t>(type);
@@ -1607,10 +1612,10 @@ void Song::export_links(const std::string &filename) const {
     file.close();
 }
 
-void Song::import_envelopes(const std::string &directory, const nlohmann::json &json) {
+void Song::import_envelopes(const std::filesystem::path &directory, const nlohmann::json &json) {
     const size_t envelope_count = json["data"]["envelopes"];
     for (size_t i = 0; i < envelope_count; i++) {
-        const std::string filename = get_element_path(directory + "/envels", "envel", i);
+        const std::string filename = get_element_path(directory / "envels", "envel", i);
         Envelope *envelope = resource_manager.allocate<Envelope>();
         std::ifstream file(filename, std::ios::binary);
         read_data(file, envelope, sizeof(Envelope));
@@ -1619,10 +1624,10 @@ void Song::import_envelopes(const std::string &directory, const nlohmann::json &
     }
 }
 
-void Song::import_sequences(const std::string &directory, const nlohmann::json &json) {
+void Song::import_sequences(const std::filesystem::path &directory, const nlohmann::json &json) {
     const size_t sequence_count = json["data"]["sequences"];
     for (size_t i = 0; i < sequence_count; i++) {
-        const std::string filename = get_element_path(directory + "/seqs", "seq", i);
+        const std::string filename = get_element_path(directory / "seqs", "seq", i);
         std::ifstream file(filename, std::ios::binary);
         Sequence *sequence = Sequence::deserialize(file);
         sequences.push_back(sequence);
@@ -1630,10 +1635,10 @@ void Song::import_sequences(const std::string &directory, const nlohmann::json &
     }
 }
 
-void Song::import_orders(const std::string &directory, const nlohmann::json &json) {
+void Song::import_orders(const std::filesystem::path &directory, const nlohmann::json &json) {
     const size_t order_count = json["data"]["orders"];
     for (size_t i = 0; i < order_count; i++) {
-        const std::string filename = get_element_path(directory + "/orders", "order", i);
+        const std::string filename = get_element_path(directory / "orders", "order", i);
         std::ifstream file(filename, std::ios::binary);
         Order *order = Order::deserialize(file);
         orders.push_back(order);
@@ -1641,10 +1646,10 @@ void Song::import_orders(const std::string &directory, const nlohmann::json &jso
     }
 }
 
-void Song::import_wavetables(const std::string &directory, const nlohmann::json &json) {
+void Song::import_wavetables(const std::filesystem::path &directory, const nlohmann::json &json) {
     const size_t wavetable_count = json["data"]["wavetables"];
     for (size_t i = 0; i < wavetable_count; i++) {
-        const std::string filename = get_element_path(directory + "/waves", "wave", i);
+        const std::string filename = get_element_path(directory / "waves", "wave", i);
         std::ifstream file(filename, std::ios::binary);
         Wavetable *wavetable = Wavetable::deserialize(file);
         wavetables.push_back(wavetable);
@@ -1652,10 +1657,10 @@ void Song::import_wavetables(const std::string &directory, const nlohmann::json 
     }
 }
 
-void Song::import_oscillators(const std::string &directory, const nlohmann::json &json) {
+void Song::import_oscillators(const std::filesystem::path &directory, const nlohmann::json &json) {
     const size_t oscillator_count = json["data"]["oscillators"];
     for (size_t i = 0; i < oscillator_count; i++) {
-        const std::string filename = get_element_path(directory + "/oscs", "osc", i);
+        const std::string filename = get_element_path(directory / "oscs", "osc", i);
         std::ifstream file(filename, std::ios::binary);
         void *oscillator = deserialize_oscillator(file);
         oscillators.push_back(oscillator);
@@ -1663,10 +1668,10 @@ void Song::import_oscillators(const std::string &directory, const nlohmann::json
     }
 }
 
-void Song::import_dsps(const std::string &directory, const nlohmann::json &json) {
+void Song::import_dsps(const std::filesystem::path &directory, const nlohmann::json &json) {
     const size_t dsp_count = json["data"]["dsps"];
     for (size_t i = 0; i < dsp_count; i++) {
-        const std::string filename = get_element_path(directory + "/dsps", "dsp", i);
+        const std::string filename = get_element_path(directory / "dsps", "dsp", i);
         std::ifstream file(filename, std::ios::binary);
         void *dsp = deserialize_dsp(file);
         dsps.push_back(dsp);
@@ -1674,10 +1679,10 @@ void Song::import_dsps(const std::string &directory, const nlohmann::json &json)
     }
 }
 
-void Song::import_channels(const std::string &directory, const nlohmann::json &json) {
+void Song::import_channels(const std::filesystem::path &directory, const nlohmann::json &json) {
     const size_t channel_count = json["data"]["channels"];
     for (size_t i = 0; i < channel_count; i++) {
-        const std::string filename = get_element_path(directory + "/chans", "chan", i);
+        const std::string filename = get_element_path(directory / "chans", "chan", i);
         std::ifstream file(filename, std::ios::binary);
         Channel *channel = Channel::deserialize(file);
         channels.push_back(channel);
@@ -1685,10 +1690,10 @@ void Song::import_channels(const std::string &directory, const nlohmann::json &j
     }
 }
 
-void Song::import_commands_sequences(const std::string &directory, const nlohmann::json &json) {
+void Song::import_commands_sequences(const std::filesystem::path &directory, const nlohmann::json &json) {
     const size_t sequence_count = json["data"]["commands_sequences"];
     for (size_t i = 0; i < sequence_count; i++) {
-        const std::string filename = get_element_path(directory + "/c_seqs", "c_seq", i);
+        const std::string filename = get_element_path(directory / "c_seqs", "c_seq", i);
         std::ifstream file(filename, std::ios::binary);
         CommandsSequence *sequence = CommandsSequence::deserialize(file);
         commands_sequences.push_back(sequence);
@@ -1696,10 +1701,10 @@ void Song::import_commands_sequences(const std::string &directory, const nlohman
     }
 }
 
-void Song::import_commands_channels(const std::string &directory, const nlohmann::json &json) {
+void Song::import_commands_channels(const std::filesystem::path &directory, const nlohmann::json &json) {
     const size_t channel_count = json["data"]["commands_channels"];
     for (size_t i = 0; i < channel_count; i++) {
-        const std::string filename = get_element_path(directory + "/c_chans", "c_chan", i);
+        const std::string filename = get_element_path(directory / "c_chans", "c_chan", i);
         std::ifstream file(filename, std::ios::binary);
         CommandsChannel *channel = resource_manager.allocate<CommandsChannel>();
         read_data(file, channel, sizeof(CommandsChannel));
@@ -1708,11 +1713,11 @@ void Song::import_commands_channels(const std::string &directory, const nlohmann
     }
 }
 
-void Song::import_links(const std::string &directory, const nlohmann::json &json) {
+void Song::import_links(const std::filesystem::path &directory, const nlohmann::json &json) {
     const size_t channel_count = json["data"]["channels"];
     const size_t dsp_count = json["data"]["dsps"];
     const size_t commands_count = json["data"]["commands"];
-    const std::string links_filename = directory + "/links.bin";
+    const std::string links_filename = (directory / "links.bin").string();
     std::ifstream file(links_filename, std::ios::binary);
 
     size_t link_type = static_cast<size_t>(ItemType::CHANNEL);
@@ -1742,8 +1747,8 @@ void Song::import_links(const std::string &directory, const nlohmann::json &json
     file.close();
 }
 
-void Song::import_gui_state(const std::string &directory) {
-    const std::string gui_filename = directory + "/gui.json";
+void Song::import_gui_state(const std::filesystem::path &directory) {
+    const std::string gui_filename = (directory / "gui.json").string();
     nlohmann::json json = read_json(gui_filename);
     const auto &json_editor = json["editor"];
     gui.set_current_octave(json_editor.value("current_octave", GUI_DEFAULT_CURRENT_OCTAVE));
@@ -1776,8 +1781,8 @@ void Song::import_gui_state(const std::string &directory) {
     gui.set_routing_nodes_positions(nodes_positions);
 }
 
-void Song::import_lock_registry(const std::string &directory) {
-    const std::filesystem::path lock_registry_path = directory + "/lock.json";
+void Song::import_lock_registry(const std::filesystem::path &directory) {
+    const std::filesystem::path lock_registry_path = directory / "lock.json";
     if (!std::filesystem::exists(lock_registry_path)) {
         return;
     }
