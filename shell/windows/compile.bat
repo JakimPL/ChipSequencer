@@ -1,22 +1,24 @@
 @echo off
 setlocal enabledelayedexpansion
 
-set "FORMAT=bin"
-set "DEBUG_MODE=0"
+set "COMPILATION_MODE=0"
 set "NASM_FLAGS="
 set "OUTPUT_FILE=bin\main.exe"
 
 :parse_args
 if "%~1"=="" goto :end_parse
-if /i "%~1"=="DEBUG" (
-    set "DEBUG_MODE=1"
-    set "FORMAT=win32"
+if /i "%~1"=="STANDARD" (
+    set "COMPILATION_MODE=0"
     shift
     goto :parse_args
 )
-if /i "%~1"=="--debug" (
-    set "DEBUG_MODE=1"
-    set "FORMAT=win32"
+if /i "%~1"=="UNCOMPRESSED" (
+    set "COMPILATION_MODE=1"
+    shift
+    goto :parse_args
+)
+if /i "%~1"=="DEBUG" (
+    set "COMPILATION_MODE=2"
     shift
     goto :parse_args
 )
@@ -59,7 +61,7 @@ if /i "%~1"=="--define" (
     goto :parse_args
 )
 echo Unknown option: %~1
-echo Usage: %~nx0 [DEBUG] [--define=KEY=VALUE] [--define KEY=VALUE]
+echo Usage: %~nx0 [STANDARD^|UNCOMPRESSED^|DEBUG] [--define=KEY=VALUE] [-d KEY=VALUE]
 exit /b 1
 
 :end_parse
@@ -67,25 +69,20 @@ exit /b 1
 if not exist "build" mkdir build
 if not exist "bin" mkdir bin
 
-if "%DEBUG_MODE%"=="1" (
+if "%COMPILATION_MODE%"=="2" (
     echo Compiling in DEBUG mode ^(WIN32^)...
-    nasm -f win32 -D DEBUG -d WIN32 -g -F cv8 core\main.asm -o build\main.obj %NASM_FLAGS%
+    nasm -f win32 -d DEBUG -d WIN32 -g -F cv8 core\main.asm -o build\main.obj %NASM_FLAGS%
     if errorlevel 1 (
         echo NASM compilation failed
         exit /b 1
     )
     ld -m i386pe --subsystem console -e _start -o %OUTPUT_FILE% build\main.obj -lwinmm -lkernel32
-    if errorlevel 1 (
-        echo Linking failed
-        exit /b 1
-    )
+) else if "%COMPILATION_MODE%"=="1" (
+    echo Compiling in UNCOMPRESSED mode...
+    nasm -f bin core\main.asm -d WIN32 -d UNCOMPRESSED -o %OUTPUT_FILE% %NASM_FLAGS%
 ) else (
-    echo Compiling in BIN mode...
-    nasm -f bin core\main.asm -d WIN32 -o %OUTPUT_FILE% %NASM_FLAGS%
-    if errorlevel 1 (
-        echo NASM compilation failed
-        exit /b 1
-    )
+    echo Compiling in STANDARD mode...
+    nasm -f win32 core\main.asm -d WIN32 -o %OUTPUT_FILE% %NASM_FLAGS%
 )
 
 echo Compilation complete.

@@ -4,8 +4,11 @@
 
     %define BIN
 
+    %ifndef UNCOMPRESSED
+    section .text
+    global _start
+    %else
     org 0x10000000
-
 ehdr:
     db 'MZ'
     times 58 db 0
@@ -48,10 +51,15 @@ opthdr:
     dd 0x60000020
 
     times 0x200 - ($ - ehdr) db 0
+    %endif
 
 _start:
     ret
 
-code_end:
-    actual_code_size equ code_end - _start
-    actual_size equ code_end - ehdr
+    %include "core/player.asm"
+    %include "core/song/data.asm"
+
+    %ifdef UNCOMPRESSED
+    actual_code_size equ {file_size} - _start
+    actual_size equ {file_size} - ehdr
+    %endif

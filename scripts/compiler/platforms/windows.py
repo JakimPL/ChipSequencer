@@ -34,7 +34,9 @@ class WindowsCompiler(Compiler):
     def copy_source(self):
         compilation_script = self.app_dir / Path("shell") / "windows" / "compile.bat"
         copy_tree(self.app_dir / "core", str(self.temp_dir / "core"))
-        copy_tree(self.app_dir / "tools", str(self.temp_dir / "tools"))
+        copy_tree(
+            self.app_dir / "tools" / "crinkler" / "crinkler23" / "Win32", str(self.temp_dir / "tools" / "crinkler")
+        )
         shutil.copy(compilation_script, self.temp_dir / "compile.bat")
         shutil.copy(self.song_dir / "header.asm", self.temp_dir / "core" / "song" / "header.asm")
         shutil.copy(self.song_dir / "data.asm", self.temp_dir / "core" / "song" / "data.asm")
