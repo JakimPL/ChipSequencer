@@ -120,6 +120,12 @@ void perform_action(
     const T old_value
 );
 
+void perform_action_lock(
+    GUIPanel *owner,
+    const LinkKey key,
+    const bool &reference
+);
+
 void perform_action_float(
     GUIPanel *owner,
     const LinkKey key,

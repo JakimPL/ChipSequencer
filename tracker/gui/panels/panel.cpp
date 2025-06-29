@@ -28,7 +28,9 @@ void GUIPanel::lock_item(const Target target, const size_t index) {
     }
     if (ImGui::Button("L")) {
         if (index != -1) {
-            lock_registry.toggle_lock(target, index);
+            const bool locked = lock_registry.toggle_lock(target, index);
+            const LinkKey key = {target, static_cast<int>(index), 0};
+            perform_action_lock(this, key, locked);
         }
     }
     ImGui::PopStyleColor(3);

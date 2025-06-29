@@ -22,11 +22,13 @@ bool LockRegistry::is_locked(const Target target, const size_t index) const {
     return false;
 }
 
-void LockRegistry::toggle_lock(const Target target, const size_t index) {
+bool LockRegistry::toggle_lock(const Target target, const size_t index) {
     if (is_locked(target, index)) {
         unlock_item(target, index);
+        return false;
     } else {
         lock_item(target, index);
+        return true;
     }
 }
 

@@ -8,6 +8,7 @@ set(TRACKER_SOURCES
     tracker/gui/gui.cpp
     tracker/gui/history/actions/action.cpp
     tracker/gui/history/actions/add.cpp
+    tracker/gui/history/actions/lock.cpp
     tracker/gui/history/actions/note.cpp
     tracker/gui/history/actions/remove.cpp
     tracker/gui/history/actions/routing.cpp
@@ -153,7 +154,7 @@ set_target_properties(ChipSequencer PROPERTIES
 
 if(WIN32)
     add_custom_command(TARGET ChipSequencer POST_BUILD
-        COMMAND powershell -ExecutionPolicy Bypass -File "${CMAKE_SOURCE_DIR}/shell/shortcut.ps1" 
+        COMMAND powershell -ExecutionPolicy Bypass -File "${CMAKE_SOURCE_DIR}/shell/shortcut.ps1"
                 -ShortcutPath "${CMAKE_SOURCE_DIR}/ChipSequencer.lnk"
                 -TargetPath "${CMAKE_SOURCE_DIR}/bin/ChipSequencer.exe"
                 -WorkingDirectory "${CMAKE_SOURCE_DIR}"

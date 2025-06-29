@@ -12,6 +12,7 @@
 #include "names.hpp"
 #include "utils.hpp"
 #include "history/actions/add.hpp"
+#include "history/actions/lock.hpp"
 #include "history/actions/note.hpp"
 #include "history/actions/remove.hpp"
 #include "history/actions/routing.hpp"
@@ -1009,6 +1010,17 @@ void perform_action(
             std::make_unique<ChangeValueAction<T>>(label, owner, key, value_change)
         );
     }
+}
+
+void perform_action_lock(
+    GUIPanel *owner,
+    const LinkKey key,
+    const bool &reference
+) {
+    const std::string label = target_names.at(key.target) + " " + std::to_string(key.index);
+    history_manager.add_action(
+        std::make_unique<ChangeLockAction>(label, owner, key, reference)
+    );
 }
 
 void perform_action_float(
