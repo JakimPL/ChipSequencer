@@ -34,6 +34,7 @@ class GUI {
     void set_font();
     void terminate();
     bool is_done();
+    void toggle_fullscreen();
     void from();
     void to() const;
 
@@ -44,6 +45,7 @@ class GUI {
     void stop(const bool restore_parameters = true) const;
     bool is_playing() const;
     bool is_paused() const;
+    bool is_fullscreen() const;
 
     const AudioHistory &get_audio_history() const;
     void lock_audio_history() const;
@@ -140,6 +142,7 @@ class GUI {
     ImGuiIO *io;
     ImFont *font;
     bool done = false;
+    bool fullscreen = false;
 
     bool try_opengl_es();
     bool try_opengl_core();

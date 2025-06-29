@@ -9,7 +9,7 @@
 #include "gui.hpp"
 
 GUI::GUI()
-    : window(nullptr), gl_context(nullptr), renderer(nullptr), rendering_backend(RenderingBackend::OpenGL) {
+    : window(nullptr), gl_context(nullptr), renderer(nullptr), rendering_backend(RenderingBackend::OpenGL), fullscreen(false) {
 }
 
 GUI::~GUI() {
@@ -610,6 +610,10 @@ bool GUI::is_paused() const {
     return false;
 }
 
+bool GUI::is_fullscreen() const {
+    return fullscreen;
+}
+
 const AudioHistory &GUI::get_audio_history() const {
     if (audio_engine) {
         return audio_engine->get_history();
@@ -841,4 +845,24 @@ bool GUI::is_pattern_view_active() const {
 bool GUI::is_commands_pattern_view_active() const {
     return commands_sequences_panel.is_active() ||
            (patterns_panel.is_active() && patterns_panel.is_commands_view_active());
+}
+
+void GUI::toggle_fullscreen() {
+    if (!window) {
+        return;
+    }
+
+    fullscreen = !fullscreen;
+
+    if (fullscreen) {
+        if (SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP) != 0) {
+            std::cerr << "Failed to enter fullscreen: " << SDL_GetError() << std::endl;
+            fullscreen = false;
+        }
+    } else {
+        if (SDL_SetWindowFullscreen(window, 0) != 0) {
+            std::cerr << "Failed to exit fullscreen: " << SDL_GetError() << std::endl;
+            fullscreen = true;
+        }
+    }
 }

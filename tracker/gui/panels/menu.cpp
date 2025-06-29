@@ -80,6 +80,8 @@ void GUIMenu::draw_menu() {
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("View")) {
+            draw_menu_item("Fullscreen", ShortcutAction::ApplicationFullscreen, gui.is_fullscreen());
+            ImGui::Separator();
             for (const auto &[element, name] : menu_items) {
                 const bool visible = gui.get_visibility(element);
                 draw_menu_item(name, std::nullopt, visible);
@@ -319,6 +321,11 @@ void GUIMenu::register_shortcuts() {
     shortcut_manager.register_shortcut(
         ShortcutAction::FileExit,
         [this]() { file_exit_confirm(); }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::ApplicationFullscreen,
+        [this]() { gui.toggle_fullscreen(); }
     );
 
     shortcut_manager.register_shortcut(
