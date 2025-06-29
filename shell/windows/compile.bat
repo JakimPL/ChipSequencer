@@ -70,12 +70,8 @@ if not exist "build" mkdir build
 if not exist "bin" mkdir bin
 
 if "%COMPILATION_MODE%"=="2" (
-    echo Compiling in DEBUG mode ^(WIN32^)...
+    echo Compiling in DEBUG mode...
     nasm -f win32 -d DEBUG -d WIN32 -g -F cv8 core\main.asm -o build\main.obj %NASM_FLAGS%
-    if errorlevel 1 (
-        echo NASM compilation failed
-        exit /b 1
-    )
     ld -m i386pe --subsystem console -e _start -o %OUTPUT_FILE% build\main.obj -lwinmm -lkernel32
 ) else if "%COMPILATION_MODE%"=="1" (
     echo Compiling in UNCOMPRESSED mode...
@@ -83,6 +79,11 @@ if "%COMPILATION_MODE%"=="2" (
 ) else (
     echo Compiling in STANDARD mode...
     nasm -f win32 core\main.asm -d WIN32 -o %OUTPUT_FILE% %NASM_FLAGS%
+)
+
+if errorlevel 1 (
+    echo Compilation failed.
+    exit /b 1
 )
 
 echo Compilation complete.

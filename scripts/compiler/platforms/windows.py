@@ -1,3 +1,4 @@
+import os
 import shutil
 import subprocess
 from distutils.dir_util import copy_tree
@@ -5,10 +6,16 @@ from pathlib import Path
 from typing import List, Optional
 
 from compiler.compiler import Compiler
+from pyconf import TOOLCHAIN_PATH
 
 
 class WindowsCompiler(Compiler):
-    def __call__(self, flags=None, hide_output=False):
+    def __call__(self, flags: Optional[List[str]] = None, hide_output: bool = False):
+        current_path = os.environ.get("PATH", "")
+        mingw_path = TOOLCHAIN_PATH
+        if mingw_path not in current_path.split(";"):
+            os.environ["PATH"] = f"{mingw_path};{current_path}"
+
         self.temp_dir.mkdir(exist_ok=True)
         self.bin_dir.mkdir(exist_ok=True)
         self.build_dir.mkdir(exist_ok=True)
@@ -21,7 +28,8 @@ class WindowsCompiler(Compiler):
         self.substitute_values(path, message, sample_rate, output_channels)
         self.compile(hide_output=hide_output)
 
-        file_size = self.measure_file_size()
+        main_path = self.bin_dir / "main.exe"
+        file_size = self.measure_file_size(path)
         shutil.copy(self.temp_dir / "core" / "platform" / "windows.asm.temp", path)
         self.substitute_values(path, message, sample_rate, output_channels, file_size)
         self.compile(flags, hide_output=hide_output)
@@ -29,7 +37,7 @@ class WindowsCompiler(Compiler):
         if self.compression:
             self.compress()
 
-        self.copy_executable()
+        self.copy_executable(extension=".exe")
 
     def copy_source(self):
         compilation_script = self.app_dir / Path("shell") / "windows" / "compile.bat"
@@ -60,4 +68,14 @@ class WindowsCompiler(Compiler):
         )
 
     def compress(self):
-        return
+        args = [
+            "tools/crinkler/crinkler23/Win32/Crinkler.exe",
+            "build/main.obj",
+            "kernel32.lib",
+            "user32.lib",
+            "/OUT:bin/player.exe",
+            "/SUBSYSTEM:windows",
+            "/ENTRY:start",
+        ]
+
+        subprocess.run(args, cwd=self.temp_dir)

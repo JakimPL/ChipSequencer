@@ -24,7 +24,8 @@ class LinuxCompiler(Compiler):
         self.substitute_values(path, message, sample_rate, output_channels)
         self.compile(hide_output=hide_output)
 
-        file_size = self.measure_file_size()
+        main_path = self.bin_dir / "main"
+        file_size = self.measure_file_size(main_path)
         shutil.copy(self.temp_dir / "core" / "platform" / "linux.asm.temp", path)
         self.substitute_values(path, message, sample_rate, output_channels, file_size)
         self.compile(flags, hide_output=hide_output)

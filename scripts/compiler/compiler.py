@@ -32,8 +32,8 @@ class Compiler:
     def __call__(self) -> None:
         raise NotImplementedError("This is an abstract class.")
 
-    def copy_executable(self):
-        source = "player" if self.compression else "main"
+    def copy_executable(self, extension: str = "") -> None:
+        source = "player" + extension if self.compression else "main" + extension
         shutil.copy(self.bin_dir / source, self.target_path)
 
     def get_song_info(self):
@@ -62,8 +62,7 @@ class Compiler:
 
         return message, sample_rate, output_channels
 
-    def measure_file_size(self) -> int:
-        main_path = self.bin_dir / "main"
+    def measure_file_size(self, main_path: Path) -> int:
         file_size = main_path.stat().st_size
         return math.ceil(file_size / PAGE_SIZE) * PAGE_SIZE
 

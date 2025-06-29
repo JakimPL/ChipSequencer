@@ -40,4 +40,9 @@ else
     chmod +x $OUTPUT_FILE
 fi
 
+if [ $? -ne 0 ]; then
+    echo "Compilation failed."
+    exit 1
+fi
+
 echo "Compilation complete."
