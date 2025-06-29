@@ -1,7 +1,5 @@
-.PHONY: apack
 .PHONY: build
 .PHONY: fftw
-.PHONY: jwlink
 .PHONY: nasm
 .PHONY: nasmfmt
 .PHONY: onekpaq
@@ -63,16 +61,15 @@ consts:
 
 nasmfmt:
 ifeq ($(GO_CHECK),)
-	@echo "Go is not installed. Please install Go to continue."
-	@exit 1
-endif
-
+	@echo "Go is not installed. Installation of nasmfmt is skipped."
+else
 ifeq ($(NASMFMT_INSTALLED),)
 	@echo "Installing nasmfmt..."
 	@$(INSTALL_NASM_FMT)
 	@which nasmfmt > /dev/null || echo "nasmfmt not found in PATH. Add \$GOPATH/bin to your PATH."
 else
 	@echo "nasmfmt is already installed."
+endif
 endif
 
 onekpaq:
@@ -82,6 +79,7 @@ onekpaq:
 		cd $(TOOLS_DIR) && git clone https://github.com/temisu/oneKpaq.git; \
 	fi
 	@cd $(TOOLS_DIR)/oneKpaq && $(MAKE)
+	@rm -rf $(TOOLS_DIR)/oneKpaq/.git 2>/dev/null || true
 
 pre-commit:
 	@echo "Installing pre-commit..."

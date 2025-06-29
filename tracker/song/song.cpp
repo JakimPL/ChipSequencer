@@ -1339,12 +1339,14 @@ void Song::compile_sources(const std::string &directory, const std::string &file
     const std::filesystem::path compile_script = scripts_path / "compile.py";
     const std::filesystem::path executable = get_python_path();
 
-    compile_command << executable << " "
+    compile_command << executable.string() << " "
                     << "\"" << compile_script.string() << "\" "
-                    << "\"" << get_base_path() << "\" "
+                    << "\"" << get_base_path().string() << "\" "
                     << "\"" << platform << "\" "
                     << "\"" << directory << "\" "
                     << "\"" << filename << "\"";
+
+    std::cout << "Compiling sources with command: " << compile_command.str() << std::endl;
 
     switch (scheme) {
     case CompilationScheme::Uncompressed: {

@@ -69,7 +69,7 @@ if not exist "bin" mkdir bin
 
 if "%DEBUG_MODE%"=="1" (
     echo Compiling in DEBUG mode ^(WIN32^)...
-    nasm -f win32 -D DEBUG -g -F cv8 core\main.asm -o build\main.obj %NASM_FLAGS%
+    nasm -f win32 -D DEBUG -d WIN32 -g -F cv8 core\main.asm -o build\main.obj %NASM_FLAGS%
     if errorlevel 1 (
         echo NASM compilation failed
         exit /b 1
@@ -81,7 +81,7 @@ if "%DEBUG_MODE%"=="1" (
     )
 ) else (
     echo Compiling in BIN mode...
-    nasm -f bin core\main.asm -o %OUTPUT_FILE% %NASM_FLAGS%
+    nasm -f bin core\main.asm -d WIN32 -o %OUTPUT_FILE% %NASM_FLAGS%
     if errorlevel 1 (
         echo NASM compilation failed
         exit /b 1
