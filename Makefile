@@ -51,6 +51,7 @@ install:
 	@$(MAKE) nasm
 	@$(MAKE) nasmfmt
 	@$(MAKE) onekpaq
+	@$(MAKE) crinkler
 	@$(MAKE) fftw
 	@$(MAKE) venv
 	@$(MAKE) activate
@@ -80,6 +81,20 @@ onekpaq:
 	fi
 	@cd $(TOOLS_DIR)/oneKpaq && $(MAKE)
 	@rm -rf $(TOOLS_DIR)/oneKpaq/.git 2>/dev/null || true
+
+crinkler:
+	@echo "Installing Crinkler..."
+	@if [ ! -d "$(TOOLS_DIR)/crinkler" ]; then \
+		mkdir -p $(TOOLS_DIR) && \
+		echo "Downloading Crinkler 2.3..." && \
+		curl -L -o crinkler23.zip https://github.com/runestubbe/Crinkler/releases/download/v2.3/crinkler23.zip && \
+		echo "Extracting Crinkler..." && \
+		powershell -Command "Expand-Archive -Path crinkler23.zip -DestinationPath $(TOOLS_DIR)\crinkler -Force" && \
+		rm crinkler23.zip && \
+		echo "Crinkler installed to $(TOOLS_DIR)/crinkler"; \
+	else \
+		echo "Crinkler directory already exists"; \
+	fi
 
 pre-commit:
 	@echo "Installing pre-commit..."
@@ -118,7 +133,7 @@ ifeq ($(OS),Windows_NT)
 		echo "Downloading FFTW 3.3.5 for Windows..." && \
 		curl -L -o fftw-3.3.5-dll32.zip https://fftw.org/pub/fftw/fftw-3.3.5-dll32.zip && \
 		echo "Extracting FFTW..." && \
-		unzip -q fftw-3.3.5-dll32.zip -d fftw && \
+		powershell -Command "Expand-Archive -Path fftw-3.3.5-dll32.zip -DestinationPath fftw -Force" && \
 		rm fftw-3.3.5-dll32.zip && \
 		echo "FFTW installed to fftw directory"; \
 	else \
