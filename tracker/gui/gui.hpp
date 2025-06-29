@@ -108,6 +108,10 @@ class GUI {
     int jump_step = GUI_DEFAULT_JUMP_STEP;
     int page_size = GUI_DEFAULT_PAGE_SIZE;
 
+    bool repeat_patterns = false;
+    int row_display_index = 0;
+    RowDisplayStyle row_display = RowDisplayStyle::Page;
+
   private:
     AudioEngine *audio_engine;
     AudioHistory empty_history;

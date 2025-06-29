@@ -121,10 +121,6 @@ void GUIPanel::draw_add_or_remove(
 }
 
 void GUIPanel::frame() {
-    if (!visible) {
-        return;
-    }
-
     if (windowed) {
         ImGui::Begin(label.c_str());
     }
@@ -134,7 +130,9 @@ void GUIPanel::frame() {
     if (select_item()) {
         from();
         pre_actions();
-        draw();
+        if (visible) {
+            draw();
+        }
         shortcut_actions();
         check_keyboard_input();
         draw_dialog_box();

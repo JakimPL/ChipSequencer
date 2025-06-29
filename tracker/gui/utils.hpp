@@ -74,7 +74,6 @@ std::pair<size_t, bool> draw_pattern(
     const int playing_row = -1,
     const uint16_t start = 0,
     const uint16_t end = UINT16_MAX,
-    const RowDisplayStyle row_display = RowDisplayStyle::Absolute,
     const bool locked = false
 );
 std::pair<size_t, bool> draw_commands_pattern(
@@ -88,7 +87,6 @@ std::pair<size_t, bool> draw_commands_pattern(
     const int playing_row = -1,
     const uint16_t start = 0,
     const uint16_t end = UINT16_MAX,
-    const RowDisplayStyle row_display = RowDisplayStyle::Absolute,
     const bool locked = false
 );
 

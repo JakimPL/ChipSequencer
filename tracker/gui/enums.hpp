@@ -26,3 +26,8 @@ enum class GUIScale {
     Logarithmic,
     Quadratic,
 };
+
+enum class RenderingBackend {
+    OpenGL,
+    Software
+};

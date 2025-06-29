@@ -1,6 +1,7 @@
 #include "../../general.hpp"
 #include "../../utils/string.hpp"
 #include "../constants.hpp"
+#include "../names.hpp"
 #include "editor.hpp"
 
 GUIEditorPanel::GUIEditorPanel(const bool visible, const bool windowed)
@@ -31,22 +32,32 @@ void GUIEditorPanel::draw_tabs() {
 }
 
 void GUIEditorPanel::draw_options() {
-    const int min_octave = frequency_table.get_min_octave();
-    const int max_octave = frequency_table.get_max_octave();
-    ImGui::Text("Current octave:");
-    ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-    ImGui::SliderInt("##CurrentOctave", &gui.current_octave, min_octave, max_octave);
+    if (ImGui::BeginTabBar("Options")) {
+        if (ImGui::BeginTabItem("General")) {
+            const int min_octave = frequency_table.get_min_octave();
+            const int max_octave = frequency_table.get_max_octave();
+            draw_int_slider(this, "Current octave", gui.current_octave, {}, min_octave, max_octave);
+            draw_int_slider(this, "Jump step", gui.jump_step, {}, 0, GUI_MAX_JUMP_STEP);
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Patterns")) {
+            ImGui::Checkbox("Follow playback", &gui.follow_playback);
+            if (ImGui::IsItemHovered()) {
+                ImGui::SetTooltip("%s", shortcut_manager.get_shortcut_display(ShortcutAction::PlayerFollowPlayback).c_str());
+            }
 
-    ImGui::Text("Jump step:");
-    ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-    ImGui::SliderInt("##JumpStep", &gui.jump_step, 0, GUI_MAX_JUMP_STEP);
+            ImGui::Checkbox("Repeat patterns", &gui.repeat_patterns);
+            ImGui::Combo("Row display style", &gui.row_display_index, row_display_style_names.data(), row_display_style_names.size());
+            gui.row_display = static_cast<RowDisplayStyle>(gui.row_display_index);
 
-    const int previous_page_size = gui.page_size;
-    ImGui::Text("Page size:");
-    ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-    ImGui::SliderInt("##PageSize", &gui.page_size, GUI_MIN_PAGE_SIZE, GUI_MAX_PAGE_SIZE);
-    if (gui.page_size != previous_page_size) {
-        gui.deselect_all_rows();
+            const int previous_page_size = gui.page_size;
+            draw_int_slider(this, "Page size", gui.page_size, {}, GUI_MIN_PAGE_SIZE, GUI_MAX_PAGE_SIZE);
+            if (gui.page_size != previous_page_size) {
+                gui.deselect_all_rows();
+            }
+            ImGui::EndTabItem();
+        }
+        ImGui::EndTabBar();
     }
 }
 

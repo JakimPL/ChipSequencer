@@ -146,7 +146,7 @@ void GUIWaveformPanel::draw_channel_waveform(const int output_channel_index, con
     );
 
     const float scale_y = (size.y - 4) / 2.0f;
-    const size_t max_points = std::min(display_count, static_cast<size_t>(size.x * 2)); // At most 2 points per pixel
+    const size_t max_points = std::min(display_count, static_cast<size_t>(size.x * 2));
     const size_t step = display_count > max_points ? display_count / max_points : 1;
     const size_t actual_points = display_count / step;
 

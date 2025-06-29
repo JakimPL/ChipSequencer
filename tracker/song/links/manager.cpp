@@ -168,12 +168,11 @@ void LinkManager::set_links() {
 }
 
 void LinkManager::save_targets() {
+    void *output_pointer = &(output[0]);
     pointers_map.clear();
-    targets = {nullptr};
-    targets[0] = &(output[0]);
+    targets[0] = output_pointer;
 
     std::map<void *, size_t> index_map;
-    void *output_pointer = &(output[0]);
     const LinkKey output_key = {Target::DIRECT_OUTPUT, 0, 0};
     pointers_map.push_back({output_pointer, output_key});
     index_map[output_pointer] = 0;
