@@ -133,11 +133,22 @@ class GUI {
     GUISummaryPanel summary_panel;
     GUIWaveformPanel waveform_panel;
 
+    RenderingBackend rendering_backend;
     SDL_Window *window;
     SDL_GLContext gl_context;
+    SDL_Renderer *renderer;
     ImGuiIO *io;
     ImFont *font;
     bool done = false;
+
+    bool try_opengl_es();
+    bool try_opengl_core();
+    bool try_software_renderer();
+    bool initialize_imgui_opengl(const char *glsl_version);
+    bool initialize_imgui_software();
+    bool initialize_imgui_common();
+    bool render_opengl();
+    bool render_software();
 
     void update_all();
     void frame_all();
