@@ -17,6 +17,7 @@
 *.a
 *.seq
 *.lnk
+*.temp
 
 ChipSequencer
 ChipSequencer.exe

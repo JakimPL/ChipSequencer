@@ -1014,7 +1014,7 @@ void Song::generate_header_vector(
     const char separator
 ) const {
     asm_content << "\n\n"
-                << name << "s:\n";
+                << "CDECL(" << name << "s):\n";
     for (size_t i = 0; i < size; i++) {
         asm_content << "\nglobal " << name << "s." << name << "_" << i << ":\n";
         asm_content << "." << name << "_" << i << ":\n";
@@ -1088,7 +1088,7 @@ void Song::generate_targets_asm(
 ) const {
     asm_content << "\n\n"
                 << "align 4\n"
-                << "targets:\n";
+                << "CDECL(targets):\n";
     const auto pointers = link_manager.get_pointers_map();
     for (const auto &pair : pointers) {
         const LinkKey key = pair.second;
