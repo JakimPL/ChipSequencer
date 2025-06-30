@@ -1,6 +1,5 @@
 #include <cstring>
 #include <iostream>
-#include <signal.h>
 #include <setjmp.h>
 
 #ifdef _WIN32
@@ -8,7 +7,6 @@
 #include <excpt.h>
 #else
 #include <signal.h>
-#include <setjmp.h>
 #endif
 
 #include "../song/core.hpp"
@@ -18,7 +16,15 @@
 #ifdef CATCH_SEGFAULT
 #ifdef _WIN32
 static thread_local bool exception_occurred = false;
-static LONG WINAPI vectored_exception_handler(EXCEPTION_POINTERS *ep) {
+static thread_local jmp_buf jump_buffer_win;
+
+#define SETUP_EXCEPTION_FILTER() \
+    LPTOP_LEVEL_EXCEPTION_FILTER old_filter = SetUnhandledExceptionFilter(unhandled_exception_filter);
+
+#define RESTORE_EXCEPTION_FILTER() \
+    SetUnhandledExceptionFilter(old_filter);
+
+static LONG WINAPI unhandled_exception_filter(EXCEPTION_POINTERS *ep) {
     DWORD code = ep->ExceptionRecord->ExceptionCode;
     if (code == EXCEPTION_ACCESS_VIOLATION ||
         code == EXCEPTION_ARRAY_BOUNDS_EXCEEDED ||
@@ -33,20 +39,31 @@ static LONG WINAPI vectored_exception_handler(EXCEPTION_POINTERS *ep) {
         code == EXCEPTION_PRIV_INSTRUCTION ||
         code == EXCEPTION_STACK_OVERFLOW) {
         exception_occurred = true;
-        return EXCEPTION_EXECUTE_HANDLER;
+        longjmp(jump_buffer_win, 1);
     }
     return EXCEPTION_CONTINUE_SEARCH;
 }
-
-static thread_local PVOID exception_handler = nullptr;
 #else
 static thread_local sigjmp_buf jump_buffer;
 static thread_local bool segfault_occurred = false;
+
+#define SETUP_EXCEPTION_FILTER()              \
+    struct sigaction sa;                      \
+    memset(&sa, 0, sizeof(struct sigaction)); \
+    sa.sa_handler = segfault_handler;         \
+    sigemptyset(&sa.sa_mask);                 \
+    sigaction(SIGSEGV, &sa, NULL);
+
+#define RESTORE_EXCEPTION_FILTER()
+
 static void segfault_handler(int signal) {
     segfault_occurred = true;
     siglongjmp(jump_buffer, 1);
 }
 #endif
+#else
+#define SETUP_EXCEPTION_FILTER()
+#define RESTORE_EXCEPTION_FILTER()
 #endif
 
 AudioEngine::AudioEngine(PortAudioDriver &driver)
@@ -60,6 +77,39 @@ AudioEngine::AudioEngine(PortAudioDriver &driver)
 AudioEngine::~AudioEngine() {
     stop();
     join_thread();
+    driver.close_stream();
+}
+
+bool AudioEngine::safe_frame() {
+#ifdef CATCH_SEGFAULT
+#ifdef _WIN32
+    exception_occurred = false;
+    if (setjmp(jump_buffer_win) == 0) {
+        frame();
+        return true;
+    } else {
+        return false;
+    }
+#else
+    segfault_occurred = false;
+    if (sigsetjmp(jump_buffer, 1) == 0) {
+        frame();
+        return true;
+    } else {
+        return false;
+    }
+#endif
+#else
+    frame();
+    return true;
+#endif
+}
+
+void AudioEngine::handle_frame_exception() {
+    std::cerr << "Recovered from exception in audio processing" << std::endl;
+    playing = false;
+    error = true;
+    driver.stop_stream();
     driver.close_stream();
 }
 
@@ -84,7 +134,6 @@ void AudioEngine::play(const uint16_t from_row) {
 
     playing = true;
     paused = false;
-    error = false;
     initialize();
     skip_rows(from_row);
     join_thread();
@@ -96,9 +145,16 @@ void AudioEngine::skip_rows(const uint16_t from_row) {
         return;
     }
 
+    SETUP_EXCEPTION_FILTER()
+
     while (global_row <= from_row) {
-        frame();
+        if (!safe_frame()) {
+            handle_frame_exception();
+            break;
+        }
     }
+
+    RESTORE_EXCEPTION_FILTER()
 }
 
 void AudioEngine::pause() {
@@ -140,18 +196,7 @@ void AudioEngine::playback_function() {
     unsigned long frames_per_half_buffer = driver.get_frames_per_buffer();
     unsigned long samples_per_half_buffer = frames_per_half_buffer * output_channels;
 
-#ifdef CATCH_SEGFAULT
-#ifdef _WIN32
-    // Add vectored exception handler for this thread
-    exception_handler = AddVectoredExceptionHandler(1, vectored_exception_handler);
-#else
-    struct sigaction sa;
-    memset(&sa, 0, sizeof(struct sigaction));
-    sa.sa_handler = segfault_handler;
-    sigemptyset(&sa.sa_mask);
-    sigaction(SIGSEGV, &sa, NULL);
-#endif
-#endif
+    SETUP_EXCEPTION_FILTER()
 
     while (playing) {
         std::unique_lock<std::mutex> lock(driver.buffer_mutex);
@@ -171,34 +216,10 @@ void AudioEngine::playback_function() {
                     std::fill_n(driver.pingpong_buffer.begin() + sample_offset, samples_per_half_buffer, 0.0f);
                 } else {
                     for (unsigned long x = 0; x < frames_per_half_buffer; ++x) {
-#ifdef CATCH_SEGFAULT
-#ifdef _WIN32
-                        exception_occurred = false;
-                        frame();
-                        if (exception_occurred) {
-                            std::cerr << "Recovered from exception in audio processing" << std::endl;
-                            playing = false;
-                            error = true;
-                            driver.stop_stream();
-                            driver.close_stream();
+                        if (!safe_frame()) {
+                            handle_frame_exception();
                             break;
                         }
-#else
-                        segfault_occurred = false;
-                        if (sigsetjmp(jump_buffer, 1) == 0) {
-                            frame();
-                        } else {
-                            std::cerr << "Recovered from segfault in audio processing" << std::endl;
-                            playing = false;
-                            error = true;
-                            driver.stop_stream();
-                            driver.close_stream();
-                            break;
-                        }
-#endif
-#else
-                        frame();
-#endif
 
                         size_t offset = sample_offset + x * output_channels;
                         for (size_t i = 0; i < output_channels; ++i) {
@@ -216,15 +237,7 @@ void AudioEngine::playback_function() {
         }
     }
 
-#ifdef CATCH_SEGFAULT
-#ifdef _WIN32
-    // Remove vectored exception handler
-    if (exception_handler) {
-        RemoveVectoredExceptionHandler(exception_handler);
-        exception_handler = nullptr;
-    }
-#endif
-#endif
+    RESTORE_EXCEPTION_FILTER()
 }
 
 void AudioEngine::join_thread() {

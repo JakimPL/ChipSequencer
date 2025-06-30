@@ -91,7 +91,7 @@ void GUIGeneralPanel::draw_tabs() {
     if (gui.is_playing()) {
         if (gui.check_audio_error()) {
             error = true;
-            error_message = "Audio error: segfault occurred during playback.";
+            error_message = "Audio error: segmentation fault occurred during playback.";
             ImGui::OpenPopup("Error");
         }
     }
@@ -114,6 +114,10 @@ void GUIGeneralPanel::draw_tabs() {
             ImGui::EndTabItem();
         }
         ImGui::EndTabBar();
+    }
+
+    if (ImGui::BeginPopupModal("Error", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup(error_message);
     }
 }
 
@@ -320,10 +324,6 @@ void GUIGeneralPanel::draw_dialog_box() {
     if (error) {
         ImGui::OpenPopup("Error");
         error = false;
-    }
-
-    if (ImGui::BeginPopupModal("Error", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        draw_popup(error_message);
     }
 }
 
