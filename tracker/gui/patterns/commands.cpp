@@ -227,11 +227,10 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
             uint32_t generic_value;
             split_change_value_parts(value, target_variable_type, target, index, offset, generic_value);
             const LinkKey key = {target, index, offset};
-            const uint8_t id = -1;
 
             CommandChangeValue change_value;
             change_value.duration = duration;
-            change_value.pointer = id;
+            change_value.pointer = link_manager.find_pointer_id_by_key(key);
             change_value.target = static_cast<uint8_t>(target);
             change_value.index = index;
             change_value.offset = offset;
