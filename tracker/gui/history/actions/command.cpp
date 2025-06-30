@@ -1,6 +1,7 @@
 #include <sstream>
 #include <stdexcept>
 
+#include "../../names.hpp"
 #include "../../panels/patterns.hpp"
 #include "../../panels/commands/sequences.hpp"
 #include "command.hpp"
@@ -60,8 +61,8 @@ std::string ChangeCommandAction::get_name() const {
     std::ostringstream oss;
     oss << "Change " << name
         << " row " << command_change.pattern_row.row
-        << " command " << command_change.old_command.first << " " << command_change.old_command.second
-        << " to " << command_change.new_command.first << " " << command_change.new_command.second;
+        << " command " << get_command_name(command_change.old_command)
+        << " to " << get_command_name(command_change.new_command);
 
     return oss.str();
 }

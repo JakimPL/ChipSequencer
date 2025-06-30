@@ -9,6 +9,7 @@
 #include "../song/links/type.hpp"
 #include "../structures/commands/sequence.hpp"
 #include "enums.hpp"
+#include "patterns/commands.hpp"
 #include "patterns/display.hpp"
 
 extern std::vector<std::string> channel_names;
@@ -99,3 +100,4 @@ std::string get_note_name(const uint8_t note_value);
 std::string get_note_octave(const uint8_t note_value);
 uint8_t get_note_value(const std::string &note_name, const int octave);
 std::string get_full_note_name(const uint8_t note_value);
+std::string get_command_name(const CommandValue &command_value);
