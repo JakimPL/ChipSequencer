@@ -3,8 +3,18 @@ file(GLOB IMGUI_SOURCES
     "imgui/*.cpp"
     "imgui/backends/imgui_impl_opengl3.cpp"
     "imgui/backends/imgui_impl_sdl2.cpp"
-    "imgui/backends/imgui_impl_sdlrenderer2.cpp"
 )
+
+if(HAVE_SDL_RENDERER)
+    add_definitions(-DHAVE_SDL_RENDERER=1)
+    list(APPEND IMGUI_SOURCES "imgui/backends/imgui_impl_sdlrenderer2.cpp")
+    message(STATUS "Including SDL renderer backend")
+else()
+    add_definitions(-DHAVE_SDL_RENDERER=0)
+    message(STATUS "Excluding SDL renderer backend")
+endif()
+
+
 add_library(imgui STATIC ${IMGUI_SOURCES})
 target_include_directories(imgui PUBLIC
     ${CMAKE_SOURCE_DIR}/imgui
