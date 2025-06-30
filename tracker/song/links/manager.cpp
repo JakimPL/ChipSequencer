@@ -437,6 +437,9 @@ TargetVariableType LinkManager::get_type(const LinkKey key) const {
     case Target::SPECIAL: {
         try {
             const size_t index = routing_variables.at(key.target).get_index_from_offset(key);
+            if (index >= routing_variables.at(key.target).types.size()) {
+                return TargetVariableType::Byte;
+            }
             return routing_variables.at(key.target).types[index];
         } catch (const std::out_of_range &exception) {
             return TargetVariableType::Byte;

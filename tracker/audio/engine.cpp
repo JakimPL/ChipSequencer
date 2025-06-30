@@ -3,17 +3,50 @@
 #include <signal.h>
 #include <setjmp.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#include <excpt.h>
+#else
+#include <signal.h>
+#include <setjmp.h>
+#endif
+
 #include "../song/core.hpp"
 #include "../song/functions.hpp"
 #include "engine.hpp"
 
 #ifdef CATCH_SEGFAULT
+#ifdef _WIN32
+static thread_local bool exception_occurred = false;
+static LONG WINAPI vectored_exception_handler(EXCEPTION_POINTERS *ep) {
+    DWORD code = ep->ExceptionRecord->ExceptionCode;
+    if (code == EXCEPTION_ACCESS_VIOLATION ||
+        code == EXCEPTION_ARRAY_BOUNDS_EXCEEDED ||
+        code == EXCEPTION_DATATYPE_MISALIGNMENT ||
+        code == EXCEPTION_FLT_DIVIDE_BY_ZERO ||
+        code == EXCEPTION_FLT_OVERFLOW ||
+        code == EXCEPTION_FLT_UNDERFLOW ||
+        code == EXCEPTION_ILLEGAL_INSTRUCTION ||
+        code == EXCEPTION_IN_PAGE_ERROR ||
+        code == EXCEPTION_INT_DIVIDE_BY_ZERO ||
+        code == EXCEPTION_INT_OVERFLOW ||
+        code == EXCEPTION_PRIV_INSTRUCTION ||
+        code == EXCEPTION_STACK_OVERFLOW) {
+        exception_occurred = true;
+        return EXCEPTION_EXECUTE_HANDLER;
+    }
+    return EXCEPTION_CONTINUE_SEARCH;
+}
+
+static thread_local PVOID exception_handler = nullptr;
+#else
 static thread_local sigjmp_buf jump_buffer;
 static thread_local bool segfault_occurred = false;
 static void segfault_handler(int signal) {
     segfault_occurred = true;
     siglongjmp(jump_buffer, 1);
 }
+#endif
 #endif
 
 AudioEngine::AudioEngine(PortAudioDriver &driver)
@@ -108,11 +141,16 @@ void AudioEngine::playback_function() {
     unsigned long samples_per_half_buffer = frames_per_half_buffer * output_channels;
 
 #ifdef CATCH_SEGFAULT
+#ifdef _WIN32
+    // Add vectored exception handler for this thread
+    exception_handler = AddVectoredExceptionHandler(1, vectored_exception_handler);
+#else
     struct sigaction sa;
     memset(&sa, 0, sizeof(struct sigaction));
     sa.sa_handler = segfault_handler;
     sigemptyset(&sa.sa_mask);
     sigaction(SIGSEGV, &sa, NULL);
+#endif
 #endif
 
     while (playing) {
@@ -133,7 +171,19 @@ void AudioEngine::playback_function() {
                     std::fill_n(driver.pingpong_buffer.begin() + sample_offset, samples_per_half_buffer, 0.0f);
                 } else {
                     for (unsigned long x = 0; x < frames_per_half_buffer; ++x) {
-#ifdef CATCH_SEGFAULT                        
+#ifdef CATCH_SEGFAULT
+#ifdef _WIN32
+                        exception_occurred = false;
+                        frame();
+                        if (exception_occurred) {
+                            std::cerr << "Recovered from exception in audio processing" << std::endl;
+                            playing = false;
+                            error = true;
+                            driver.stop_stream();
+                            driver.close_stream();
+                            break;
+                        }
+#else
                         segfault_occurred = false;
                         if (sigsetjmp(jump_buffer, 1) == 0) {
                             frame();
@@ -145,6 +195,7 @@ void AudioEngine::playback_function() {
                             driver.close_stream();
                             break;
                         }
+#endif
 #else
                         frame();
 #endif
@@ -164,6 +215,16 @@ void AudioEngine::playback_function() {
             }
         }
     }
+
+#ifdef CATCH_SEGFAULT
+#ifdef _WIN32
+    // Remove vectored exception handler
+    if (exception_handler) {
+        RemoveVectoredExceptionHandler(exception_handler);
+        exception_handler = nullptr;
+    }
+#endif
+#endif
 }
 
 void AudioEngine::join_thread() {

@@ -86,7 +86,8 @@ void Song::load_from_file(const std::string &filename) {
     const auto [temp_base, song_path] = prepare_temp_directory(clear_temp);
     const std::string directory = song_path.string();
 
-    try {
+    // try
+    {
         decompress_archive(filename, directory);
         nlohmann::json json = import_header((song_path / "header.json").string());
         clear_data();
@@ -96,10 +97,11 @@ void Song::load_from_file(const std::string &filename) {
         link_manager.set_links();
         calculate_song_length();
         remove_temp_directory(temp_base, clear_temp);
-    } catch (const std::exception &exception) {
-        remove_temp_directory(temp_base, clear_temp);
-        throw;
     }
+    // catch (const std::exception &exception) {
+    //     remove_temp_directory(temp_base, clear_temp);
+    //     throw;
+    // }
 }
 
 void Song::compile(const std::string &filename, const CompilationScheme scheme, const CompilationTarget compilation_target) const {
