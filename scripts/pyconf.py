@@ -10,6 +10,7 @@ CONFIG_ASM_FILE = "core/common/config.asm"
 ASM_SONG_DATA_FILE = "core/song/data.asm"
 ASM_SONG_HEADER_FILE = "core/song/header.asm"
 LINK_PY_FILE = "scripts/compiler/link.py"
+TOOLCHAIN_PATH = r"C:\msys64\mingw32\bin"
 
 PADDING = 30
 

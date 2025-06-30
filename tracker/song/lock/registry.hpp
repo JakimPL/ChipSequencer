@@ -15,7 +15,7 @@ class LockRegistry {
   public:
     void lock_item(const Target target, const size_t index);
     void unlock_item(const Target target, const size_t index);
-    void toggle_lock(const Target target, const size_t index);
+    bool toggle_lock(const Target target, const size_t index);
     bool is_locked(const Target target, const size_t index) const;
     void clear();
 

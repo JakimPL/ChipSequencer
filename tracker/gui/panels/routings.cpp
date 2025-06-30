@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstring>
+#include <iostream>
 #include <map>
 #include <stdexcept>
 #include <string>
@@ -78,7 +79,16 @@ void GUIRoutingsPanel::to_links() const {
     for (const auto &[source_key, target_key] : nodes_links) {
         const ItemType type = source_key.first;
         const size_t id = source_key.second;
-        Link &link = links[static_cast<size_t>(type)][id];
+
+        const size_t type_index = static_cast<size_t>(type);
+        if (id >= links[type_index].size()) {
+            const std::string name = item_types_names.at(type);
+            std::cerr << "Error: " << name << " " << id
+                      << " is not available" << std::endl;
+            continue;
+        }
+
+        Link &link = links[type_index][id];
         bool locked = is_node_locked(source_key);
 
         if (!locked && is_linking_possible(source_key, target_key)) {

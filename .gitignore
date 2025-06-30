@@ -16,6 +16,8 @@
 *.o
 *.a
 *.seq
+*.lnk
+*.temp
 
 ChipSequencer
 ChipSequencer.exe
@@ -28,6 +30,7 @@ bin/
 temp/
 tools/
 venv/
+fftw/
 
 **/*.idea
 **/*.vscode/**

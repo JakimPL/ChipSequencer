@@ -3,6 +3,7 @@ file(GLOB IMGUI_SOURCES
     "imgui/*.cpp"
     "imgui/backends/imgui_impl_opengl3.cpp"
     "imgui/backends/imgui_impl_sdl2.cpp"
+    "imgui/backends/imgui_impl_sdlrenderer2.cpp"
 )
 add_library(imgui STATIC ${IMGUI_SOURCES})
 target_include_directories(imgui PUBLIC

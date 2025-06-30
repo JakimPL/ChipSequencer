@@ -28,7 +28,9 @@ void GUIPanel::lock_item(const Target target, const size_t index) {
     }
     if (ImGui::Button("L")) {
         if (index != -1) {
-            lock_registry.toggle_lock(target, index);
+            const bool locked = lock_registry.toggle_lock(target, index);
+            const LinkKey key = {target, static_cast<int>(index), 0};
+            perform_action_lock(this, key, locked);
         }
     }
     ImGui::PopStyleColor(3);
@@ -121,10 +123,6 @@ void GUIPanel::draw_add_or_remove(
 }
 
 void GUIPanel::frame() {
-    if (!visible) {
-        return;
-    }
-
     if (windowed) {
         ImGui::Begin(label.c_str());
     }
@@ -134,7 +132,9 @@ void GUIPanel::frame() {
     if (select_item()) {
         from();
         pre_actions();
-        draw();
+        if (visible) {
+            draw();
+        }
         shortcut_actions();
         check_keyboard_input();
         draw_dialog_box();

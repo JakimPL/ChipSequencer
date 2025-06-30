@@ -1,10 +1,6 @@
     bits 32
 
-    %ifdef WIN32
-    %define CDECL(x) _ %+ x
-    %else
     %define CDECL(x) x
-    %endif
 
     %define BIN
 

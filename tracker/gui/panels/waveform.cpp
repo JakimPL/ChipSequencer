@@ -146,19 +146,39 @@ void GUIWaveformPanel::draw_channel_waveform(const int output_channel_index, con
     );
 
     const float scale_y = (size.y - 4) / 2.0f;
-    const float scale_x = size.x / static_cast<float>(display_count);
-    for (size_t i = 0; i < display_count - 1; i++) {
-        const float x1 = position.x + i * scale_x;
-        const float y1 = zero_y - (history[start_index + i] * scale_y);
-        const float x2 = position.x + (i + 1) * scale_x;
-        const float y2 = zero_y - (history[start_index + i + 1] * scale_y);
+    const size_t max_points = std::min(display_count, static_cast<size_t>(size.x * 2));
+    const size_t step = display_count > max_points ? display_count / max_points : 1;
+    const size_t actual_points = display_count / step;
 
-        draw_list->AddLine(
-            ImVec2(x1, y1),
-            ImVec2(x2, y2),
-            waveform_color,
-            1.5f
-        );
+    if (actual_points <= 1) {
+        if (display_count > 0) {
+            const float x = position.x + size.x / 2;
+            const float y = zero_y - (history[start_index] * scale_y);
+            draw_list->AddCircleFilled(ImVec2(x, y), 1.0f, waveform_color);
+        }
+    } else {
+        const float scale_x = size.x / static_cast<float>(actual_points - 1);
+
+        for (size_t i = 0; i < actual_points - 1; i++) {
+            const size_t idx1 = start_index + i * step;
+            const size_t idx2 = start_index + (i + 1) * step;
+
+            if (idx2 >= history.size()) {
+                break;
+            }
+
+            const float x1 = position.x + i * scale_x;
+            const float y1 = zero_y - (history[idx1] * scale_y);
+            const float x2 = position.x + (i + 1) * scale_x;
+            const float y2 = zero_y - (history[idx2] * scale_y);
+
+            draw_list->AddLine(
+                ImVec2(x1, y1),
+                ImVec2(x2, y2),
+                waveform_color,
+                1.5f
+            );
+        }
     }
 
     draw_list->AddText(

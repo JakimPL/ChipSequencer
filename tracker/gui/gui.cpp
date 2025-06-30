@@ -9,7 +9,7 @@
 #include "gui.hpp"
 
 GUI::GUI()
-    : window(nullptr), gl_context(nullptr) {
+    : window(nullptr), gl_context(nullptr), renderer(nullptr), rendering_backend(RenderingBackend::OpenGL), fullscreen(false) {
 }
 
 GUI::~GUI() {
@@ -80,8 +80,59 @@ std::pair<int, int> GUI::get_page_start_end(const int page) const {
 
 bool GUI::initialize() {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0) {
-        printf("Error: %s\n", SDL_GetError());
+        std::cerr << "Error: " << SDL_GetError() << std::endl;
         return false;
+    }
+
+    if (try_opengl_core()) {
+        std::cout << "Using OpenGL Core 3.3" << std::endl;
+        return true;
+    }
+
+    if (try_opengl_es()) {
+        std::cout << "Using OpenGL ES 2.0" << std::endl;
+        return true;
+    }
+
+    if (try_software_renderer()) {
+        std::cout << "Using Software Renderer (fallback)" << std::endl;
+        return true;
+    }
+
+    std::cerr << "Failed to initialize any rendering backend" << std::endl;
+    return false;
+}
+
+bool GUI::try_opengl_core() {
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+
+    window = SDL_CreateWindow(
+        APPLICATION_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, GUI_WINDOW_WIDTH, GUI_WINDOW_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED
+    );
+    if (!window) {
+        return false;
+    }
+
+    gl_context = SDL_GL_CreateContext(window);
+    if (!gl_context) {
+        SDL_DestroyWindow(window);
+        window = nullptr;
+        return false;
+    }
+
+    SDL_GL_MakeCurrent(window, gl_context);
+    SDL_GL_SetSwapInterval(1);
+
+    return initialize_imgui_opengl("#version 330");
+}
+
+bool GUI::try_opengl_es() {
+    if (window) {
+        SDL_DestroyWindow(window);
+        window = nullptr;
     }
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
@@ -89,34 +140,88 @@ bool GUI::initialize() {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
-    window = SDL_CreateWindow(APPLICATION_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, GUI_WINDOW_WIDTH, GUI_WINDOW_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED);
+    window = SDL_CreateWindow(
+        APPLICATION_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, GUI_WINDOW_WIDTH, GUI_WINDOW_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED
+    );
     if (!window) {
-        printf("Failed to create SDL window: %s\n", SDL_GetError());
         return false;
     }
 
     gl_context = SDL_GL_CreateContext(window);
     if (!gl_context) {
-        printf("Failed to create OpenGL ES context: %s\n", SDL_GetError());
+        SDL_DestroyWindow(window);
+        window = nullptr;
         return false;
     }
 
     SDL_GL_MakeCurrent(window, gl_context);
     SDL_GL_SetSwapInterval(1);
 
+    return initialize_imgui_opengl("#version 100");
+}
+
+bool GUI::try_software_renderer() {
+    if (window) {
+        SDL_DestroyWindow(window);
+        window = nullptr;
+    }
+
+    window = SDL_CreateWindow(
+        APPLICATION_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, GUI_WINDOW_WIDTH, GUI_WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED
+    );
+    if (!window) {
+        return false;
+    }
+
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+    if (!renderer) {
+        SDL_DestroyWindow(window);
+        window = nullptr;
+        return false;
+    }
+
+    rendering_backend = RenderingBackend::Software;
+    return initialize_imgui_software();
+}
+
+bool GUI::initialize_imgui_opengl(const char *glsl_version) {
+    initialize_imgui_common();
+
+    if (!ImGui_ImplSDL2_InitForOpenGL(window, gl_context)) {
+        return false;
+    }
+
+    if (!ImGui_ImplOpenGL3_Init(glsl_version)) {
+        ImGui_ImplSDL2_Shutdown();
+        return false;
+    }
+
+    rendering_backend = RenderingBackend::OpenGL;
+    return true;
+}
+
+bool GUI::initialize_imgui_software() {
+    initialize_imgui_common();
+
+    if (!ImGui_ImplSDL2_InitForSDLRenderer(window, renderer)) {
+        return false;
+    }
+
+    if (!ImGui_ImplSDLRenderer2_Init(renderer)) {
+        ImGui_ImplSDL2_Shutdown();
+        return false;
+    }
+
+    return true;
+}
+
+bool GUI::initialize_imgui_common() {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     io = &ImGui::GetIO();
-    (void) io;
-
     io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-    // set_font();
-
     ImGui::StyleColorsDark();
-    ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
-    ImGui_ImplOpenGL3_Init("#version 100");
-
     return true;
 }
 
@@ -128,6 +233,17 @@ bool GUI::render() {
         ImGui_ImplSDL2_ProcessEvent(&event);
     }
 
+    switch (rendering_backend) {
+    case RenderingBackend::OpenGL:
+        return render_opengl();
+    case RenderingBackend::Software:
+        return render_software();
+    }
+
+    return done;
+}
+
+bool GUI::render_opengl() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
@@ -143,6 +259,21 @@ bool GUI::render() {
     return done;
 }
 
+bool GUI::render_software() {
+    ImGui_ImplSDLRenderer2_NewFrame();
+    ImGui_ImplSDL2_NewFrame();
+    ImGui::NewFrame();
+
+    frame();
+
+    ImGui::Render();
+    SDL_SetRenderDrawColor(renderer, 115, 140, 153, 255);
+    SDL_RenderClear(renderer);
+    ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), renderer);
+    SDL_RenderPresent(renderer);
+    return done;
+}
+
 void GUI::set_font() {
     ImFontConfig font_config;
     font_config.PixelSnapH = true;
@@ -151,13 +282,27 @@ void GUI::set_font() {
 }
 
 void GUI::terminate() {
-    if (gl_context) {
-        ImGui_ImplOpenGL3_Shutdown();
-        ImGui_ImplSDL2_Shutdown();
-        ImGui::DestroyContext();
+    switch (rendering_backend) {
+    case RenderingBackend::OpenGL:
+        if (gl_context) {
+            ImGui_ImplOpenGL3_Shutdown();
+            ImGui_ImplSDL2_Shutdown();
+            ImGui::DestroyContext();
 
-        SDL_GL_DeleteContext(gl_context);
-        gl_context = nullptr;
+            SDL_GL_DeleteContext(gl_context);
+            gl_context = nullptr;
+        }
+        break;
+    case RenderingBackend::Software:
+        if (renderer) {
+            ImGui_ImplSDLRenderer2_Shutdown();
+            ImGui_ImplSDL2_Shutdown();
+            ImGui::DestroyContext();
+
+            SDL_DestroyRenderer(renderer);
+            renderer = nullptr;
+        }
+        break;
     }
 
     if (window) {
@@ -465,6 +610,10 @@ bool GUI::is_paused() const {
     return false;
 }
 
+bool GUI::is_fullscreen() const {
+    return fullscreen;
+}
+
 const AudioHistory &GUI::get_audio_history() const {
     if (audio_engine) {
         return audio_engine->get_history();
@@ -696,4 +845,24 @@ bool GUI::is_pattern_view_active() const {
 bool GUI::is_commands_pattern_view_active() const {
     return commands_sequences_panel.is_active() ||
            (patterns_panel.is_active() && patterns_panel.is_commands_view_active());
+}
+
+void GUI::toggle_fullscreen() {
+    if (!window) {
+        return;
+    }
+
+    fullscreen = !fullscreen;
+
+    if (fullscreen) {
+        if (SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP) != 0) {
+            std::cerr << "Failed to enter fullscreen: " << SDL_GetError() << std::endl;
+            fullscreen = false;
+        }
+    } else {
+        if (SDL_SetWindowFullscreen(window, 0) != 0) {
+            std::cerr << "Failed to exit fullscreen: " << SDL_GetError() << std::endl;
+            fullscreen = true;
+        }
+    }
 }

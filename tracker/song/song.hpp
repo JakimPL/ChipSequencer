@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include <set>
@@ -56,46 +57,47 @@ class Song {
     nlohmann::json import_header(const std::string &directory);
     nlohmann::json save_gui_state() const;
 
-    std::string get_element_path(const std::string &directory, const std::string prefix, const size_t i, const char separator = '/') const;
+    std::string get_element_path(const std::string &directory, const std::string &prefix, const size_t i, const char separator) const;
+    std::string get_element_path(const std::filesystem::path &directory, const std::string &prefix, const size_t i) const;
     void calculate_song_length();
 
     void serialize_dsp(std::ofstream &file, void *dsp) const;
     void *deserialize_dsp(std::ifstream &file) const;
     void *deserialize_oscillator(std::ifstream &file) const;
 
-    void export_all(const std::string &directory, const CompilationTarget compilation_target) const;
-    void import_all(const std::string &directory, const nlohmann::json &json);
+    void export_all(const std::filesystem::path &directory, const CompilationTarget compilation_target) const;
+    void import_all(const std::filesystem::path &directory, const nlohmann::json &json);
 
-    void export_header_asm_file(const std::string &directory) const;
-    void export_data_asm_file(const std::string &directory, const CompilationTarget compilation_target) const;
-    void export_header(const std::string &directory) const;
-    void export_gui_state(const std::string &directory) const;
-    void export_lock_registry(const std::string &directory) const;
-
-    template <typename T>
-    void export_series(const std::string &directory, const std::string &prefix, const std::vector<T> &series, const std::vector<size_t> &sizes) const;
+    void export_header_asm_file(const std::filesystem::path &directory) const;
+    void export_data_asm_file(const std::filesystem::path &directory, const CompilationTarget compilation_target) const;
+    void export_header(const std::filesystem::path &directory) const;
+    void export_gui_state(const std::filesystem::path &directory) const;
+    void export_lock_registry(const std::filesystem::path &directory) const;
 
     template <typename T>
-    void export_arrays(const std::string &directory, const std::string &prefix, const std::vector<T> &arrays) const;
+    void export_series(const std::filesystem::path &directory, const std::string &prefix, const std::vector<T> &series, const std::vector<size_t> &sizes) const;
 
-    void export_channels(const std::string &directory) const;
-    void export_dsps(const std::string &directory) const;
-    void export_commands_sequences(const std::string &directory) const;
-    void export_links(const std::string &filename) const;
+    template <typename T>
+    void export_arrays(const std::filesystem::path &directory, const std::string &prefix, const std::vector<T> &arrays) const;
 
-    void import_channels(const std::string &directory, const nlohmann::json &json);
-    void import_dsps(const std::string &directory, const nlohmann::json &json);
-    void import_links(const std::string &directory, const nlohmann::json &json);
+    void export_channels(const std::filesystem::path &directory) const;
+    void export_dsps(const std::filesystem::path &directory) const;
+    void export_commands_sequences(const std::filesystem::path &directory) const;
+    void export_links(const std::filesystem::path &filename) const;
 
-    void import_envelopes(const std::string &directory, const nlohmann::json &json);
-    void import_sequences(const std::string &directory, const nlohmann::json &json);
-    void import_orders(const std::string &directory, const nlohmann::json &json);
-    void import_wavetables(const std::string &directory, const nlohmann::json &json);
-    void import_oscillators(const std::string &directory, const nlohmann::json &json);
-    void import_commands_sequences(const std::string &directory, const nlohmann::json &json);
-    void import_commands_channels(const std::string &directory, const nlohmann::json &json);
-    void import_gui_state(const std::string &directory);
-    void import_lock_registry(const std::string &directory);
+    void import_channels(const std::filesystem::path &directory, const nlohmann::json &json);
+    void import_dsps(const std::filesystem::path &directory, const nlohmann::json &json);
+    void import_links(const std::filesystem::path &directory, const nlohmann::json &json);
+
+    void import_envelopes(const std::filesystem::path &directory, const nlohmann::json &json);
+    void import_sequences(const std::filesystem::path &directory, const nlohmann::json &json);
+    void import_orders(const std::filesystem::path &directory, const nlohmann::json &json);
+    void import_wavetables(const std::filesystem::path &directory, const nlohmann::json &json);
+    void import_oscillators(const std::filesystem::path &directory, const nlohmann::json &json);
+    void import_commands_sequences(const std::filesystem::path &directory, const nlohmann::json &json);
+    void import_commands_channels(const std::filesystem::path &directory, const nlohmann::json &json);
+    void import_gui_state(const std::filesystem::path &directory);
+    void import_lock_registry(const std::filesystem::path &directory);
 
     void compile_sources(const std::string &directory, const std::string &filename, const CompilationScheme scheme, const std::string platform = "linux") const;
     void compress_directory(const std::string &directory, const std::string &output_file) const;

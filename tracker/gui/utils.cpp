@@ -12,6 +12,7 @@
 #include "names.hpp"
 #include "utils.hpp"
 #include "history/actions/add.hpp"
+#include "history/actions/lock.hpp"
 #include "history/actions/note.hpp"
 #include "history/actions/remove.hpp"
 #include "history/actions/routing.hpp"
@@ -313,7 +314,6 @@ std::pair<size_t, bool> draw_pattern(
     const int playing_row,
     const uint16_t start,
     const uint16_t end,
-    const RowDisplayStyle row_display,
     const bool locked
 ) {
     bool current = false;
@@ -359,7 +359,7 @@ std::pair<size_t, bool> draw_pattern(
             }
 
             ImGui::TableSetColumnIndex(0);
-            const std::string displayed_row = get_displayed_row(i, j, row_display);
+            const std::string displayed_row = get_displayed_row(i, j, gui.row_display);
             if (ImGui::Selectable(displayed_row.c_str(), is_current, ImGuiSelectableFlags_SpanAllColumns)) {
                 pattern.current_row = i;
                 current = true;
@@ -422,7 +422,6 @@ std::pair<size_t, bool> draw_commands_pattern(
     const int playing_row,
     const uint16_t start,
     const uint16_t end,
-    const RowDisplayStyle row_display,
     const bool locked
 ) {
     bool current = false;
@@ -472,7 +471,7 @@ std::pair<size_t, bool> draw_commands_pattern(
             }
 
             ImGui::TableSetColumnIndex(0);
-            const std::string displayed_row = get_displayed_row(i, j, row_display);
+            const std::string displayed_row = get_displayed_row(i, j, gui.row_display);
             if (ImGui::Selectable(displayed_row.c_str(), false, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)) {
             }
             selection.form(true, channel_index, j);
@@ -1011,6 +1010,17 @@ void perform_action(
             std::make_unique<ChangeValueAction<T>>(label, owner, key, value_change)
         );
     }
+}
+
+void perform_action_lock(
+    GUIPanel *owner,
+    const LinkKey key,
+    const bool &reference
+) {
+    const std::string label = target_names.at(key.target) + " " + std::to_string(key.index);
+    history_manager.add_action(
+        std::make_unique<ChangeLockAction>(label, owner, key, reference)
+    );
 }
 
 void perform_action_float(

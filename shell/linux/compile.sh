@@ -1,6 +1,5 @@
 #!/bin/bash
 
-FORMAT="bin"
 DEBUG_MODE=0
 NASM_FLAGS=""
 OUTPUT_FILE="bin/main"
@@ -9,7 +8,6 @@ while [[ $# -gt 0 ]]; do
     case $1 in
         DEBUG|--debug)
             DEBUG_MODE=1
-            FORMAT="elf32"
             shift
             ;;
         -d=*|--define=*)
@@ -26,7 +24,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         *)
             echo "Unknown option: $1"
-            echo "Usage: $0 [DEBUG] [--define=KEY=VALUE] [--define KEY=VALUE]"
+            echo "Usage: $0 [DEBUG] [--define=KEY=VALUE] [-d KEY=VALUE]"
             exit 1
             ;;
     esac
@@ -34,12 +32,17 @@ done
 
 if [ $DEBUG_MODE -eq 1 ]; then
     echo "Compiling in DEBUG mode (ELF32)..."
-    nasm -f elf32 -D DEBUG -g -F dwarf core/main.asm -o build/main.o $NASM_FLAGS
+    nasm -f elf32 -d DEBUG -g -F dwarf core/main.asm -o build/main.o $NASM_FLAGS
     ld -m elf_i386 -o $OUTPUT_FILE build/main.o
 else
     echo "Compiling in BIN mode..."
     nasm -f bin core/main.asm -o $OUTPUT_FILE $NASM_FLAGS
     chmod +x $OUTPUT_FILE
+fi
+
+if [ $? -ne 0 ]; then
+    echo "Compilation failed."
+    exit 1
 fi
 
 echo "Compilation complete."

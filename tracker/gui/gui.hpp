@@ -34,6 +34,7 @@ class GUI {
     void set_font();
     void terminate();
     bool is_done();
+    void toggle_fullscreen();
     void from();
     void to() const;
 
@@ -44,6 +45,7 @@ class GUI {
     void stop(const bool restore_parameters = true) const;
     bool is_playing() const;
     bool is_paused() const;
+    bool is_fullscreen() const;
 
     const AudioHistory &get_audio_history() const;
     void lock_audio_history() const;
@@ -108,6 +110,10 @@ class GUI {
     int jump_step = GUI_DEFAULT_JUMP_STEP;
     int page_size = GUI_DEFAULT_PAGE_SIZE;
 
+    bool repeat_patterns = false;
+    int row_display_index = 0;
+    RowDisplayStyle row_display = RowDisplayStyle::Page;
+
   private:
     AudioEngine *audio_engine;
     AudioHistory empty_history;
@@ -129,11 +135,23 @@ class GUI {
     GUISummaryPanel summary_panel;
     GUIWaveformPanel waveform_panel;
 
+    RenderingBackend rendering_backend;
     SDL_Window *window;
     SDL_GLContext gl_context;
+    SDL_Renderer *renderer;
     ImGuiIO *io;
     ImFont *font;
     bool done = false;
+    bool fullscreen = false;
+
+    bool try_opengl_es();
+    bool try_opengl_core();
+    bool try_software_renderer();
+    bool initialize_imgui_opengl(const char *glsl_version);
+    bool initialize_imgui_software();
+    bool initialize_imgui_common();
+    bool render_opengl();
+    bool render_software();
 
     void update_all();
     void frame_all();
