@@ -5,6 +5,7 @@
 #include "../../song/links/target.hpp"
 #include "../../utils/math.hpp"
 #include "../names.hpp"
+#include "../undo.hpp"
 #include "../utils.hpp"
 #include "channels.hpp"
 

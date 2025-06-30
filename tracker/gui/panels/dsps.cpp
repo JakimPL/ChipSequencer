@@ -3,6 +3,7 @@
 #include "../../general.hpp"
 #include "../../song/links/manager.hpp"
 #include "../names.hpp"
+#include "../undo.hpp"
 #include "../utils.hpp"
 #include "dsps.hpp"
 

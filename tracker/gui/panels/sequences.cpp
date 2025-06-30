@@ -4,6 +4,7 @@
 #include "../../maps/keys.hpp"
 #include "../enums.hpp"
 #include "../names.hpp"
+#include "../undo.hpp"
 #include "../utils.hpp"
 #include "../patterns/selection.hpp"
 #include "sequences.hpp"

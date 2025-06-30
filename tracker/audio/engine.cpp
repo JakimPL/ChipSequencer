@@ -147,7 +147,7 @@ void AudioEngine::skip_rows(const uint16_t from_row) {
 
     SETUP_EXCEPTION_FILTER()
 
-    while (global_row <= from_row) {
+    while (global_row < from_row) {
         if (!safe_frame()) {
             handle_frame_exception();
             break;

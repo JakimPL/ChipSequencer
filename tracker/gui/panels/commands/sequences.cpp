@@ -4,6 +4,7 @@
 #include "../../../maps/commands.hpp"
 #include "../../../structures/commands/command.hpp"
 #include "../../names.hpp"
+#include "../../undo.hpp"
 #include "../../utils.hpp"
 #include "sequences.hpp"
 

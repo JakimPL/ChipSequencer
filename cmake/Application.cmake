@@ -8,6 +8,7 @@ set(TRACKER_SOURCES
     tracker/gui/gui.cpp
     tracker/gui/history/actions/action.cpp
     tracker/gui/history/actions/add.cpp
+    tracker/gui/history/actions/command.cpp
     tracker/gui/history/actions/lock.cpp
     tracker/gui/history/actions/note.cpp
     tracker/gui/history/actions/remove.cpp
@@ -44,6 +45,7 @@ set(TRACKER_SOURCES
     tracker/gui/patterns/commands.cpp
     tracker/gui/patterns/pattern.cpp
     tracker/gui/patterns/selection.cpp
+    tracker/gui/undo.cpp
     tracker/gui/utils.cpp
     tracker/main.cpp
     tracker/maps/routing.cpp

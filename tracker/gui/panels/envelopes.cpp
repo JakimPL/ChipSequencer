@@ -1,6 +1,7 @@
 #include "../../general.hpp"
 #include "../enums.hpp"
 #include "../names.hpp"
+#include "../undo.hpp"
 #include "../utils.hpp"
 #include "envelopes.hpp"
 

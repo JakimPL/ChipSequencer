@@ -1,6 +1,7 @@
 
 #include "../../general.hpp"
 #include "../names.hpp"
+#include "../undo.hpp"
 #include "../history/actions/action.hpp"
 #include "panel.hpp"
 

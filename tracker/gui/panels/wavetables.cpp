@@ -7,6 +7,7 @@
 #include "../../utils/math.hpp"
 #include "../enums.hpp"
 #include "../names.hpp"
+#include "../undo.hpp"
 #include "../utils.hpp"
 #include "wavetables.hpp"
 

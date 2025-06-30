@@ -20,6 +20,7 @@
 #include "../../utils/math.hpp"
 #include "../constants.hpp"
 #include "../names.hpp"
+#include "../undo.hpp"
 #include "../utils.hpp"
 #include "routings.hpp"
 

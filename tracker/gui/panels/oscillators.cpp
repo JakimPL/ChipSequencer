@@ -5,6 +5,7 @@
 #include "../../general.hpp"
 #include "../enums.hpp"
 #include "../names.hpp"
+#include "../undo.hpp"
 #include "../utils.hpp"
 
 GUIOscillatorsPanel::GUIOscillatorsPanel(const bool visible, const bool windowed)
