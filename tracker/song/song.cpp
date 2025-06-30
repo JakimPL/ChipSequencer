@@ -7,8 +7,10 @@
 
 #include "zip_file.hpp"
 
+#include "../maps/commands.hpp"
 #include "../general.hpp"
 #include "../gui/names.hpp"
+#include "../structures/commands/command.hpp"
 #include "../structures/sizes.hpp"
 #include "../utils/file.hpp"
 #include "../utils/math.hpp"
@@ -605,8 +607,12 @@ CommandsSequence *Song::add_commands_sequence(const size_t index) {
     }
 
     CommandsSequence *sequence = resource_manager.allocate<CommandsSequence>();
-    sequence->size = 0;
-    sequence->length = 1;
+    sequence->size = COMMANDS_SEQUENCE_DATA + commands_sizes[static_cast<size_t>(Instruction::Empty)];
+    sequence->length = DEFAULT_COMMANDS_SEQUENCE_LENGTH;
+
+    Command command;
+    command.duration = DEFAULT_COMMANDS_SEQUENCE_LENGTH;
+    sequence->commands[0] = command;
 
     return insert_commands_sequence(sequence, index);
 }
