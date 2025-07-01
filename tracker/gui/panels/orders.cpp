@@ -11,7 +11,6 @@
 
 GUIOrdersPanel::GUIOrdersPanel(const bool visible, const bool windowed)
     : GUIPanel("Orders", visible, windowed) {
-    initialize();
 }
 
 GUIElement GUIOrdersPanel::get_element() const {

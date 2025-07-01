@@ -24,8 +24,8 @@ extern ShortcutManager shortcut_manager;
 extern ResourceManager resource_manager;
 extern Buffers buffers;
 
-extern Song song;
-extern GUI gui;
 extern std::filesystem::path current_path;
+extern GUI gui;
+extern Song song;
 
 void terminate();

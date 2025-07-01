@@ -39,7 +39,7 @@ ifeq ($(OS),Windows_NT)
 else
 	@cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
 endif
-	@cmake --build build --config Debug -- --no-print-directory -j $NUM_PROCESSORS
+	@cmake --build build --config Debug -- --no-print-directory -j ${NUM_PROCESSORS}
 
 clean:
 	@echo "Cleaning the project..."

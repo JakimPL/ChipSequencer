@@ -13,7 +13,6 @@ GUICommandsChannelsPanel::GUICommandsChannelsPanel(
     const bool windowed
 )
     : GUIPanel("Commands channels", visible, windowed) {
-    initialize();
 }
 
 GUIElement GUICommandsChannelsPanel::get_element() const {

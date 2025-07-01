@@ -14,7 +14,6 @@
 
 GUICommandsSequencesPanel::GUICommandsSequencesPanel(const bool visible, const bool windowed)
     : GUIPanel("Commands sequences", visible, windowed) {
-    initialize();
 }
 
 GUIElement GUICommandsSequencesPanel::get_element() const {

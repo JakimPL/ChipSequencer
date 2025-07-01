@@ -11,7 +11,6 @@
 
 GUIPatternsPanel::GUIPatternsPanel(const bool visible, const bool windowed)
     : GUIPanel("Patterns", visible, windowed) {
-    initialize();
 }
 
 GUIElement GUIPatternsPanel::get_element() const {

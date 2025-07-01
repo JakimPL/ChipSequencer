@@ -13,7 +13,6 @@
 
 GUIDSPsPanel::GUIDSPsPanel(const bool visible, const bool windowed)
     : GUIPanel("DSPs", visible, windowed) {
-    initialize();
 }
 
 GUIElement GUIDSPsPanel::get_element() const {

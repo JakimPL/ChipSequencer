@@ -23,9 +23,9 @@ ShortcutManager shortcut_manager;
 ResourceManager resource_manager;
 Buffers buffers;
 
-Song song;
-GUI gui;
 std::filesystem::path current_path;
+GUI gui;
+Song song;
 
 void terminate() {
     gui.terminate();

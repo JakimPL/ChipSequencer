@@ -4,13 +4,13 @@
 #include "../constants.hpp"
 #include "../gui.hpp"
 #include "../names.hpp"
+#include "../utils.hpp"
 #include "../history/manager.hpp"
 #include "../history/shortcuts.hpp"
 #include "editor.hpp"
 
 GUIEditorPanel::GUIEditorPanel(const bool visible, const bool windowed)
     : GUIPanel("Editor", visible, windowed) {
-    initialize();
 }
 
 GUIElement GUIEditorPanel::get_element() const {

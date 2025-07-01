@@ -12,7 +12,6 @@
 
 GUIEnvelopesPanel::GUIEnvelopesPanel(const bool visible, const bool windowed)
     : GUIPanel("Envelopes", visible, windowed) {
-    initialize();
 }
 
 GUIElement GUIEnvelopesPanel::get_element() const {

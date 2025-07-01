@@ -16,7 +16,6 @@
 
 GUISummaryPanel::GUISummaryPanel(const bool visible, const bool windowed)
     : GUIPanel("Summary", visible, windowed) {
-    initialize();
 }
 
 GUIElement GUISummaryPanel::get_element() const {

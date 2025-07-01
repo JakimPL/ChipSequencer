@@ -14,7 +14,6 @@
 
 GUIWaveformPanel::GUIWaveformPanel(const bool visible, const bool windowed)
     : GUIPanel("Waveform", visible, windowed) {
-    initialize();
 }
 
 GUIElement GUIWaveformPanel::get_element() const {

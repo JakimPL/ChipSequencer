@@ -11,10 +11,43 @@
 #include "default.hpp"
 #include "gui.hpp"
 #include "init.hpp"
+#include "utils.hpp"
 #include "history/manager.hpp"
+#include "panels/channels.hpp"
+#include "panels/dsps.hpp"
+#include "panels/editor.hpp"
+#include "panels/envelopes.hpp"
+#include "panels/general.hpp"
+#include "panels/menu.hpp"
+#include "panels/oscillators.hpp"
+#include "panels/orders.hpp"
+#include "panels/patterns.hpp"
+#include "panels/routings.hpp"
+#include "panels/sequences.hpp"
+#include "panels/summary.hpp"
+#include "panels/waveform.hpp"
+#include "panels/wavetables.hpp"
+#include "panels/commands/channels.hpp"
+#include "panels/commands/sequences.hpp"
 
 GUI::GUI()
     : window(nullptr), gl_context(nullptr), renderer(nullptr), rendering_backend(RenderingBackend::OpenGL), fullscreen(false) {
+    menu = std::make_unique<GUIMenu>(true, false);
+    editor = std::make_unique<GUIEditorPanel>();
+    general_panel = std::make_unique<GUIGeneralPanel>();
+    channels_panel = std::make_unique<GUIChannelsPanel>();
+    commands_channels_panel = std::make_unique<GUICommandsChannelsPanel>();
+    commands_sequences_panel = std::make_unique<GUICommandsSequencesPanel>();
+    dsps_panel = std::make_unique<GUIDSPsPanel>();
+    envelopes_panel = std::make_unique<GUIEnvelopesPanel>();
+    orders_panel = std::make_unique<GUIOrdersPanel>();
+    oscillators_panel = std::make_unique<GUIOscillatorsPanel>();
+    sequences_panel = std::make_unique<GUISequencesPanel>();
+    wavetables_panel = std::make_unique<GUIWavetablesPanel>();
+    patterns_panel = std::make_unique<GUIPatternsPanel>();
+    routing_panel = std::make_unique<GUIRoutingsPanel>();
+    summary_panel = std::make_unique<GUISummaryPanel>();
+    waveform_panel = std::make_unique<GUIWaveformPanel>();
 }
 
 GUI::~GUI() {
@@ -70,11 +103,11 @@ int GUI::get_page_size() const {
 }
 
 int GUI::get_current_page() const {
-    return patterns_panel.get_current_page();
+    return patterns_panel->get_current_page();
 }
 
 int GUI::get_current_row() const {
-    return patterns_panel.get_current_row();
+    return patterns_panel->get_current_row();
 }
 
 std::pair<int, int> GUI::get_page_start_end(const int page) const {
@@ -84,6 +117,8 @@ std::pair<int, int> GUI::get_page_start_end(const int page) const {
 }
 
 bool GUI::initialize() {
+    initialize_all();
+
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0) {
         std::cerr << "Error: " << SDL_GetError() << std::endl;
         return false;
@@ -344,40 +379,40 @@ void GUI::set_index(const GUIElement element, const int index) {
     case GUIElement::Summary:
         break;
     case GUIElement::Channels:
-        channels_panel.set_index(index);
+        channels_panel->set_index(index);
         break;
     case GUIElement::CommandsChannels:
-        commands_channels_panel.set_index(index);
+        commands_channels_panel->set_index(index);
         break;
     case GUIElement::CommandsSequences:
-        commands_sequences_panel.set_index(index);
+        commands_sequences_panel->set_index(index);
         break;
     case GUIElement::DSPs:
-        dsps_panel.set_index(index);
+        dsps_panel->set_index(index);
         break;
     case GUIElement::Envelopes:
-        envelopes_panel.set_index(index);
+        envelopes_panel->set_index(index);
         break;
     case GUIElement::Orders:
-        orders_panel.set_index(index);
+        orders_panel->set_index(index);
         break;
     case GUIElement::Oscillators:
-        oscillators_panel.set_index(index);
+        oscillators_panel->set_index(index);
         break;
     case GUIElement::Patterns:
-        patterns_panel.set_index(index);
+        patterns_panel->set_index(index);
         break;
     case GUIElement::Routings:
-        routing_panel.set_index(index);
+        routing_panel->set_index(index);
         break;
     case GUIElement::Sequences:
-        sequences_panel.set_index(index);
+        sequences_panel->set_index(index);
         break;
     case GUIElement::Waveform:
-        waveform_panel.set_index(index);
+        waveform_panel->set_index(index);
         break;
     case GUIElement::Wavetables:
-        wavetables_panel.set_index(index);
+        wavetables_panel->set_index(index);
         break;
     }
 }
@@ -389,57 +424,76 @@ void GUI::update(GUIElement element) {
     case GUIElement::All:
         return update_all();
     case GUIElement::Menu:
-        return menu.update();
+        return menu->update();
     case GUIElement::Editor:
-        return editor.update();
+        return editor->update();
     case GUIElement::General:
-        return general_panel.update();
+        return general_panel->update();
     case GUIElement::Channels:
-        return channels_panel.update();
+        return channels_panel->update();
     case GUIElement::CommandsChannels:
-        return commands_channels_panel.update();
+        return commands_channels_panel->update();
     case GUIElement::CommandsSequences:
-        return commands_sequences_panel.update();
+        return commands_sequences_panel->update();
     case GUIElement::DSPs:
-        return dsps_panel.update();
+        return dsps_panel->update();
     case GUIElement::Envelopes:
-        return envelopes_panel.update();
+        return envelopes_panel->update();
     case GUIElement::Orders:
-        return orders_panel.update();
+        return orders_panel->update();
     case GUIElement::Oscillators:
-        return oscillators_panel.update();
+        return oscillators_panel->update();
     case GUIElement::Patterns:
-        return patterns_panel.update();
+        return patterns_panel->update();
     case GUIElement::Routings:
-        return routing_panel.update();
+        return routing_panel->update();
     case GUIElement::Sequences:
-        return sequences_panel.update();
+        return sequences_panel->update();
     case GUIElement::Summary:
-        return summary_panel.update();
+        return summary_panel->update();
     case GUIElement::Waveform:
-        return waveform_panel.update();
+        return waveform_panel->update();
     case GUIElement::Wavetables:
-        return wavetables_panel.update();
+        return wavetables_panel->update();
     }
 }
 
+void GUI::initialize_all() {
+    menu->initialize();
+    editor->initialize();
+    general_panel->initialize();
+    channels_panel->initialize();
+    commands_channels_panel->initialize();
+    commands_sequences_panel->initialize();
+    dsps_panel->initialize();
+    envelopes_panel->initialize();
+    orders_panel->initialize();
+    oscillators_panel->initialize();
+    patterns_panel->initialize();
+    routing_panel->initialize();
+    sequences_panel->initialize();
+    summary_panel->initialize();
+    waveform_panel->initialize();
+    wavetables_panel->initialize();
+}
+
 void GUI::update_all() {
-    menu.update();
-    editor.update();
-    general_panel.update();
-    channels_panel.update();
-    commands_channels_panel.update();
-    commands_sequences_panel.update();
-    dsps_panel.update();
-    envelopes_panel.update();
-    orders_panel.update();
-    oscillators_panel.update();
-    patterns_panel.update();
-    routing_panel.update();
-    sequences_panel.update();
-    summary_panel.update();
-    waveform_panel.update();
-    wavetables_panel.update();
+    menu->update();
+    editor->update();
+    general_panel->update();
+    channels_panel->update();
+    commands_channels_panel->update();
+    commands_sequences_panel->update();
+    dsps_panel->update();
+    envelopes_panel->update();
+    orders_panel->update();
+    oscillators_panel->update();
+    patterns_panel->update();
+    routing_panel->update();
+    sequences_panel->update();
+    summary_panel->update();
+    waveform_panel->update();
+    wavetables_panel->update();
 }
 
 void GUI::frame() {
@@ -473,79 +527,79 @@ void GUI::frame() {
 }
 
 void GUI::frame_all() {
-    menu.frame();
-    editor.frame();
-    general_panel.frame();
-    channels_panel.frame();
-    commands_channels_panel.frame();
-    commands_sequences_panel.frame();
-    dsps_panel.frame();
-    envelopes_panel.frame();
-    orders_panel.frame();
-    oscillators_panel.frame();
-    patterns_panel.frame();
-    routing_panel.frame();
-    sequences_panel.frame();
-    summary_panel.frame();
-    waveform_panel.frame();
-    wavetables_panel.frame();
+    menu->frame();
+    editor->frame();
+    general_panel->frame();
+    channels_panel->frame();
+    commands_channels_panel->frame();
+    commands_sequences_panel->frame();
+    dsps_panel->frame();
+    envelopes_panel->frame();
+    orders_panel->frame();
+    oscillators_panel->frame();
+    patterns_panel->frame();
+    routing_panel->frame();
+    sequences_panel->frame();
+    summary_panel->frame();
+    waveform_panel->frame();
+    wavetables_panel->frame();
 }
 
 void GUI::from() {
-    menu.from();
-    editor.from();
-    general_panel.from();
-    channels_panel.from();
-    commands_channels_panel.from();
-    commands_sequences_panel.from();
-    dsps_panel.from();
-    envelopes_panel.from();
-    orders_panel.from();
-    oscillators_panel.from();
-    patterns_panel.from();
-    routing_panel.from();
-    sequences_panel.from();
-    summary_panel.from();
-    waveform_panel.from();
-    wavetables_panel.from();
+    menu->from();
+    editor->from();
+    general_panel->from();
+    channels_panel->from();
+    commands_channels_panel->from();
+    commands_sequences_panel->from();
+    dsps_panel->from();
+    envelopes_panel->from();
+    orders_panel->from();
+    oscillators_panel->from();
+    patterns_panel->from();
+    routing_panel->from();
+    sequences_panel->from();
+    summary_panel->from();
+    waveform_panel->from();
+    wavetables_panel->from();
 }
 
 void GUI::to() const {
-    menu.to();
-    editor.to();
-    general_panel.to();
-    channels_panel.to();
-    commands_channels_panel.to();
-    commands_sequences_panel.to();
-    dsps_panel.to();
-    envelopes_panel.to();
-    orders_panel.to();
-    oscillators_panel.to();
-    patterns_panel.to();
-    routing_panel.to();
-    sequences_panel.to();
-    summary_panel.to();
-    waveform_panel.to();
-    wavetables_panel.to();
+    menu->to();
+    editor->to();
+    general_panel->to();
+    channels_panel->to();
+    commands_channels_panel->to();
+    commands_sequences_panel->to();
+    dsps_panel->to();
+    envelopes_panel->to();
+    orders_panel->to();
+    oscillators_panel->to();
+    patterns_panel->to();
+    routing_panel->to();
+    sequences_panel->to();
+    summary_panel->to();
+    waveform_panel->to();
+    wavetables_panel->to();
 }
 
 void GUI::set_visibility_all(const bool visible) {
-    menu.visible = visible;
-    editor.visible = visible;
-    general_panel.visible = visible;
-    channels_panel.visible = visible;
-    commands_channels_panel.visible = visible;
-    commands_sequences_panel.visible = visible;
-    dsps_panel.visible = visible;
-    envelopes_panel.visible = visible;
-    orders_panel.visible = visible;
-    oscillators_panel.visible = visible;
-    patterns_panel.visible = visible;
-    routing_panel.visible = visible;
-    sequences_panel.visible = visible;
-    summary_panel.visible = visible;
-    waveform_panel.visible = visible;
-    wavetables_panel.visible = visible;
+    menu->visible = visible;
+    editor->visible = visible;
+    general_panel->visible = visible;
+    channels_panel->visible = visible;
+    commands_channels_panel->visible = visible;
+    commands_sequences_panel->visible = visible;
+    dsps_panel->visible = visible;
+    envelopes_panel->visible = visible;
+    orders_panel->visible = visible;
+    oscillators_panel->visible = visible;
+    patterns_panel->visible = visible;
+    routing_panel->visible = visible;
+    sequences_panel->visible = visible;
+    summary_panel->visible = visible;
+    waveform_panel->visible = visible;
+    wavetables_panel->visible = visible;
 }
 
 std::pair<ValidationResult, int> GUI::pre_play() const {
@@ -640,7 +694,7 @@ void GUI::unlock_audio_history() const {
 }
 
 void GUI::deselect_all_rows() {
-    gui.patterns_panel.deselect_all_rows();
+    patterns_panel->deselect_all_rows();
 }
 
 void GUI::set_visibility(const GUIElement element, const bool visible) {
@@ -649,52 +703,52 @@ void GUI::set_visibility(const GUIElement element, const bool visible) {
     case GUIElement::All:
         break;
     case GUIElement::Menu:
-        menu.visible = visible;
+        menu->visible = visible;
         break;
     case GUIElement::Editor:
-        editor.visible = visible;
+        editor->visible = visible;
         break;
     case GUIElement::General:
-        general_panel.visible = visible;
+        general_panel->visible = visible;
         break;
     case GUIElement::Channels:
-        channels_panel.visible = visible;
+        channels_panel->visible = visible;
         break;
     case GUIElement::CommandsChannels:
-        commands_channels_panel.visible = visible;
+        commands_channels_panel->visible = visible;
         break;
     case GUIElement::CommandsSequences:
-        commands_sequences_panel.visible = visible;
+        commands_sequences_panel->visible = visible;
         break;
     case GUIElement::DSPs:
-        dsps_panel.visible = visible;
+        dsps_panel->visible = visible;
         break;
     case GUIElement::Envelopes:
-        envelopes_panel.visible = visible;
+        envelopes_panel->visible = visible;
         break;
     case GUIElement::Orders:
-        orders_panel.visible = visible;
+        orders_panel->visible = visible;
         break;
     case GUIElement::Oscillators:
-        oscillators_panel.visible = visible;
+        oscillators_panel->visible = visible;
         break;
     case GUIElement::Patterns:
-        patterns_panel.visible = visible;
+        patterns_panel->visible = visible;
         break;
     case GUIElement::Routings:
-        routing_panel.visible = visible;
+        routing_panel->visible = visible;
         break;
     case GUIElement::Sequences:
-        sequences_panel.visible = visible;
+        sequences_panel->visible = visible;
         break;
     case GUIElement::Summary:
-        summary_panel.visible = visible;
+        summary_panel->visible = visible;
         break;
     case GUIElement::Waveform:
-        waveform_panel.visible = visible;
+        waveform_panel->visible = visible;
         break;
     case GUIElement::Wavetables:
-        wavetables_panel.visible = visible;
+        wavetables_panel->visible = visible;
         break;
     }
 }
@@ -705,80 +759,80 @@ bool GUI::get_visibility(const GUIElement element) const {
     case GUIElement::All:
         return false;
     case GUIElement::Menu:
-        return menu.visible;
+        return menu->visible;
     case GUIElement::Editor:
-        return editor.visible;
+        return editor->visible;
     case GUIElement::General:
-        return general_panel.visible;
+        return general_panel->visible;
     case GUIElement::Channels:
-        return channels_panel.visible;
+        return channels_panel->visible;
     case GUIElement::CommandsChannels:
-        return commands_channels_panel.visible;
+        return commands_channels_panel->visible;
     case GUIElement::CommandsSequences:
-        return commands_sequences_panel.visible;
+        return commands_sequences_panel->visible;
     case GUIElement::DSPs:
-        return dsps_panel.visible;
+        return dsps_panel->visible;
     case GUIElement::Envelopes:
-        return envelopes_panel.visible;
+        return envelopes_panel->visible;
     case GUIElement::Orders:
-        return orders_panel.visible;
+        return orders_panel->visible;
     case GUIElement::Oscillators:
-        return oscillators_panel.visible;
+        return oscillators_panel->visible;
     case GUIElement::Patterns:
-        return patterns_panel.visible;
+        return patterns_panel->visible;
     case GUIElement::Routings:
-        return routing_panel.visible;
+        return routing_panel->visible;
     case GUIElement::Sequences:
-        return sequences_panel.visible;
+        return sequences_panel->visible;
     case GUIElement::Summary:
-        return summary_panel.visible;
+        return summary_panel->visible;
     case GUIElement::Waveform:
-        return waveform_panel.visible;
+        return waveform_panel->visible;
     case GUIElement::Wavetables:
-        return wavetables_panel.visible;
+        return wavetables_panel->visible;
     }
 
     return false;
 }
 
 void GUI::clear_input_buffers() {
-    commands_sequences_panel.clear_input_buffers();
+    commands_sequences_panel->clear_input_buffers();
 }
 
 int GUI::get_current_channel_index() const {
-    return channels_panel.channel_index;
+    return channels_panel->channel_index;
 }
 
 int GUI::get_current_dsp_index() const {
-    return dsps_panel.dsp_index;
+    return dsps_panel->dsp_index;
 }
 
 int GUI::get_current_commands_channel_index() const {
-    return commands_channels_panel.channel_index;
+    return commands_channels_panel->channel_index;
 }
 
 int GUI::get_current_oscillator_index() const {
-    return oscillators_panel.oscillator_index;
+    return oscillators_panel->oscillator_index;
 }
 
 int GUI::get_current_envelope_index() const {
-    return envelopes_panel.envelope_index;
+    return envelopes_panel->envelope_index;
 }
 
 int GUI::get_current_sequence_index() const {
-    return sequences_panel.sequence_index;
+    return sequences_panel->sequence_index;
 }
 
 int GUI::get_current_order_index() const {
-    return orders_panel.order_index;
+    return orders_panel->order_index;
 }
 
 int GUI::get_current_wavetable_index() const {
-    return wavetables_panel.wavetable_index;
+    return wavetables_panel->wavetable_index;
 }
 
 int GUI::get_current_commands_sequence_index() const {
-    return commands_sequences_panel.sequence_index;
+    return commands_sequences_panel->sequence_index;
 }
 
 void GUI::set_current_octave(const int octave) {
@@ -794,62 +848,62 @@ void GUI::set_page_size(const int size) {
 }
 
 void GUI::set_current_channel_index(const int index) {
-    channels_panel.set_index(index);
+    channels_panel->set_index(index);
 }
 
 void GUI::set_current_dsp_index(const int index) {
-    dsps_panel.set_index(index);
+    dsps_panel->set_index(index);
 }
 
 void GUI::set_current_commands_channel_index(const int index) {
-    commands_channels_panel.set_index(index);
+    commands_channels_panel->set_index(index);
 }
 
 void GUI::set_current_oscillator_index(const int index) {
-    oscillators_panel.set_index(index);
+    oscillators_panel->set_index(index);
 }
 
 void GUI::set_current_envelope_index(const int index) {
-    envelopes_panel.set_index(index);
+    envelopes_panel->set_index(index);
 }
 
 void GUI::set_current_sequence_index(const int index) {
-    sequences_panel.set_index(index);
+    sequences_panel->set_index(index);
 }
 
 void GUI::set_current_order_index(const int index) {
-    orders_panel.set_index(index);
+    orders_panel->set_index(index);
 }
 
 void GUI::set_current_wavetable_index(const int index) {
-    wavetables_panel.set_index(index);
+    wavetables_panel->set_index(index);
 }
 
 void GUI::set_current_commands_sequence_index(const int index) {
-    commands_sequences_panel.set_index(index);
+    commands_sequences_panel->set_index(index);
 }
 
 void GUI::clear_routing_nodes() {
-    routing_panel.clear_nodes();
+    routing_panel->clear_nodes();
 }
 
 std::vector<std::pair<NodeIdentifier, ImVec2>> GUI::get_routing_nodes_positions() const {
-    return routing_panel.get_nodes_positions();
+    return routing_panel->get_nodes_positions();
 }
 
 void GUI::set_routing_nodes_positions(const std::vector<std::pair<NodeIdentifier, ImVec2>> &nodes_positions) {
-    routing_panel.set_nodes_positions(nodes_positions);
+    routing_panel->set_nodes_positions(nodes_positions);
 }
 
 bool GUI::is_pattern_view_active() const {
-    return patterns_panel.is_active() ||
-           commands_sequences_panel.is_active() ||
-           sequences_panel.is_active();
+    return patterns_panel->is_active() ||
+           commands_sequences_panel->is_active() ||
+           sequences_panel->is_active();
 }
 
 bool GUI::is_commands_pattern_view_active() const {
-    return commands_sequences_panel.is_active() ||
-           (patterns_panel.is_active() && patterns_panel.is_commands_view_active());
+    return commands_sequences_panel->is_active() ||
+           (patterns_panel->is_active() && patterns_panel->is_commands_view_active());
 }
 
 void GUI::toggle_fullscreen() {

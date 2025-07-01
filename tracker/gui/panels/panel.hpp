@@ -25,6 +25,7 @@ class GUIPanel {
     virtual void set_index(const int) {};
     virtual void from() {};
     virtual void to() const {};
+    void initialize();
 
     bool visible = true;
     const bool windowed;
@@ -51,7 +52,6 @@ class GUIPanel {
     virtual void pre_actions() {};
     virtual void post_actions() { save = false; };
 
-    void initialize();
     void history_actions();
     void lock_item(const Target target, const size_t index);
     void draw_add_or_remove(

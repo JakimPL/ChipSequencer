@@ -8,6 +8,10 @@
 #include <vector>
 #include <unordered_map>
 
+#define IMGUI_DEFINE_MATH_OPERATORS
+
+#include "../imgui/imgui_internal.h"
+
 #include "../../general.hpp"
 #include "../../maps/routing.hpp"
 #include "../../song/song.hpp"
@@ -28,7 +32,6 @@
 
 GUIRoutingsPanel::GUIRoutingsPanel(const bool visible, const bool windowed)
     : GUIPanel("Routings", visible, windowed) {
-    initialize();
 }
 
 GUIElement GUIRoutingsPanel::get_element() const {
