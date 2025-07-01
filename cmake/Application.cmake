@@ -132,7 +132,6 @@ if (WIN32)
     endforeach()
 else()
     target_link_libraries(ChipSequencer
-        song
         imgui
         imgui_knobs
         nlohmann_json::nlohmann_json

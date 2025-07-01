@@ -157,12 +157,15 @@ class GUI {
 
     bool try_opengl_es();
     bool try_opengl_core();
-    bool try_software_renderer();
     bool initialize_imgui_opengl(const char *glsl_version);
     bool initialize_imgui_software();
     bool initialize_imgui_common();
     bool render_opengl();
+
+#if HAVE_SDL_RENDERER
+    bool try_software_renderer();
     bool render_software();
+#endif
 
     void initialize_all();
     void update_all();

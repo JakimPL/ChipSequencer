@@ -134,10 +134,12 @@ bool GUI::initialize() {
         return true;
     }
 
+#if HAVE_SDL_RENDERER
     if (try_software_renderer()) {
         std::cout << "Using Software Renderer (fallback)" << std::endl;
         return true;
     }
+#endif
 
     std::cerr << "Failed to initialize any rendering backend" << std::endl;
     return false;
@@ -200,6 +202,7 @@ bool GUI::try_opengl_es() {
     return initialize_imgui_opengl("#version 100");
 }
 
+#if HAVE_SDL_RENDERER
 bool GUI::try_software_renderer() {
     if (window) {
         SDL_DestroyWindow(window);
@@ -223,6 +226,7 @@ bool GUI::try_software_renderer() {
     rendering_backend = RenderingBackend::Software;
     return initialize_imgui_software();
 }
+#endif
 
 bool GUI::initialize_imgui_opengl(const char *glsl_version) {
     initialize_imgui_common();
@@ -247,10 +251,12 @@ bool GUI::initialize_imgui_software() {
         return false;
     }
 
+#if HAVE_SDL_RENDERER
     if (!ImGui_ImplSDLRenderer2_Init(renderer)) {
         ImGui_ImplSDL2_Shutdown();
         return false;
     }
+#endif
 
     return true;
 }
@@ -277,7 +283,13 @@ bool GUI::render() {
     case RenderingBackend::OpenGL:
         return render_opengl();
     case RenderingBackend::Software:
+#if HAVE_SDL_RENDERER
         return render_software();
+#else
+        std::cerr << "Software rendering is not supported in this build." << std::endl;
+        done = true;
+        return false;
+#endif
     }
 
     return done;
@@ -299,6 +311,7 @@ bool GUI::render_opengl() {
     return done;
 }
 
+#if HAVE_SDL_RENDERER
 bool GUI::render_software() {
     ImGui_ImplSDLRenderer2_NewFrame();
     ImGui_ImplSDL2_NewFrame();
@@ -313,6 +326,7 @@ bool GUI::render_software() {
     SDL_RenderPresent(renderer);
     return done;
 }
+#endif
 
 void GUI::set_font() {
     ImFontConfig font_config;
@@ -334,6 +348,7 @@ void GUI::terminate() {
         }
         break;
     case RenderingBackend::Software:
+#if HAVE_SDL_RENDERER
         if (renderer) {
             ImGui_ImplSDLRenderer2_Shutdown();
             ImGui_ImplSDL2_Shutdown();
@@ -342,6 +357,7 @@ void GUI::terminate() {
             SDL_DestroyRenderer(renderer);
             renderer = nullptr;
         }
+#endif
         break;
     }
 
