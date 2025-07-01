@@ -4,10 +4,14 @@
 #include "../imgui/imgui_internal.h"
 
 #include "../general.hpp"
+#include "../song/song.hpp"
+#include "../song/links/manager.hpp"
+#include "../tuning/frequencies.hpp"
 #include "../utils/math.hpp"
 #include "default.hpp"
 #include "gui.hpp"
 #include "init.hpp"
+#include "history/manager.hpp"
 
 GUI::GUI()
     : window(nullptr), gl_context(nullptr), renderer(nullptr), rendering_backend(RenderingBackend::OpenGL), fullscreen(false) {

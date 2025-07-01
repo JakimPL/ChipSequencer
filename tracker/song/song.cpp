@@ -7,19 +7,25 @@
 
 #include "zip_file.hpp"
 
+#include "../driver/file.hpp"
 #include "../maps/commands.hpp"
 #include "../general.hpp"
+#include "../gui/gui.hpp"
 #include "../gui/names.hpp"
-#include "../structures/commands/command.hpp"
 #include "../structures/sizes.hpp"
+#include "../structures/commands/command.hpp"
+#include "../structures/resources/manager.hpp"
 #include "../utils/file.hpp"
 #include "../utils/math.hpp"
 #include "../utils/paths.hpp"
 #include "../utils/system.hpp"
+#include "buffers.hpp"
 #include "core.hpp"
 #include "functions.hpp"
 #include "headers.hpp"
 #include "song.hpp"
+#include "links/manager.hpp"
+#include "lock/registry.hpp"
 
 #define JSON_INDENTATION 4
 

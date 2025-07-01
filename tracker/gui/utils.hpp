@@ -11,7 +11,7 @@
 #include "../song/links/key.hpp"
 #include "init.hpp"
 #include "enums.hpp"
-#include "node.hpp"
+#include "keys.hpp"
 #include "panels/panel.hpp"
 #include "history/shortcuts.hpp"
 #include "patterns/commands.hpp"

@@ -2,6 +2,7 @@
 
 #include "../general.hpp"
 #include "../maps/commands.hpp"
+#include "../tuning/frequencies.hpp"
 #include "names.hpp"
 
 std::vector<std::string> channel_names;

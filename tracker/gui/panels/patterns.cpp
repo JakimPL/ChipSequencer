@@ -1,5 +1,8 @@
 #include "../../general.hpp"
+#include "../../song/song.hpp"
+#include "../../song/lock/registry.hpp"
 #include "../../utils/math.hpp"
+#include "../gui.hpp"
 #include "../names.hpp"
 #include "../undo.hpp"
 #include "../utils.hpp"

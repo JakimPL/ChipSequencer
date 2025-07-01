@@ -5,9 +5,12 @@
 #include "nfd.h"
 
 #include "../../general.hpp"
+#include "../../song/song.hpp"
 #include "../../utils/paths.hpp"
+#include "../gui.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
+#include "../history/manager.hpp"
 #include "menu.hpp"
 
 GUIMenu::GUIMenu(const bool visible, const bool windowed)

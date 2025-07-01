@@ -3,7 +3,10 @@
 #include <stdexcept>
 
 #include "../../general.hpp"
+#include "../../song/song.hpp"
+#include "../../song/lock/registry.hpp"
 #include "../enums.hpp"
+#include "../gui.hpp"
 #include "../names.hpp"
 #include "../undo.hpp"
 #include "../utils.hpp"

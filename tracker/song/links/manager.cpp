@@ -1,9 +1,13 @@
+#include <algorithm>
 #include <iostream>
 #include <map>
+#include <set>
 #include <sstream>
 #include <stdexcept>
 
 #include "../../general.hpp"
+#include "../../maps/routing.hpp"
+#include "../core.hpp"
 #include "manager.hpp"
 
 void LinkManager::reset() {

@@ -1,6 +1,8 @@
 #include "../maps/routing.hpp"
+#include "../song/song.hpp"
 #include "../utils/math.hpp"
 #include "../utils/string.hpp"
+#include "history/manager.hpp"
 #include "history/actions/add.hpp"
 #include "history/actions/command.hpp"
 #include "history/actions/lock.hpp"

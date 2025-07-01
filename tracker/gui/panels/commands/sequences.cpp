@@ -1,8 +1,12 @@
 #include <stdexcept>
 
 #include "../../../general.hpp"
+#include "../../../song/buffers.hpp"
+#include "../../../song/song.hpp"
+#include "../../../song/lock/registry.hpp"
 #include "../../../maps/commands.hpp"
 #include "../../../structures/commands/command.hpp"
+#include "../../gui.hpp"
 #include "../../names.hpp"
 #include "../../undo.hpp"
 #include "../../utils.hpp"

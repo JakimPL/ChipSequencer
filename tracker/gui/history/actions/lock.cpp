@@ -1,6 +1,7 @@
 #include <sstream>
 
 #include "../../../general.hpp"
+#include "../../../song/lock/registry.hpp"
 #include "lock.hpp"
 
 ChangeLockAction::ChangeLockAction(

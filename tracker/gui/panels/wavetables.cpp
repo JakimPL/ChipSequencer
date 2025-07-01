@@ -3,9 +3,13 @@
 #include "nfd.h"
 
 #include "../../general.hpp"
+#include "../../song/buffers.hpp"
+#include "../../song/song.hpp"
+#include "../../song/lock/registry.hpp"
 #include "../../utils/math.hpp"
 #include "../../utils/paths.hpp"
 #include "../enums.hpp"
+#include "../gui.hpp"
 #include "../init.hpp"
 #include "../names.hpp"
 #include "../undo.hpp"

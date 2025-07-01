@@ -1,7 +1,10 @@
 #include "../../general.hpp"
+#include "../../song/song.hpp"
 #include "../../song/functions.hpp"
 #include "../../structures/offsets.hpp"
+#include "../../tuning/frequencies.hpp"
 #include "../../utils/string.hpp"
+#include "../gui.hpp"
 #include "../utils.hpp"
 #include "general.hpp"
 

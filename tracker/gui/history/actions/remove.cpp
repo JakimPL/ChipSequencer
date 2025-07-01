@@ -1,5 +1,7 @@
 #include <sstream>
 
+#include "../../../structures.hpp"
+#include "../../../structures/resources/manager.hpp"
 #include "../../names.hpp"
 #include "remove.hpp"
 

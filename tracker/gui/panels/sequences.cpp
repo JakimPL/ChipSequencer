@@ -2,7 +2,11 @@
 
 #include "../../general.hpp"
 #include "../../maps/keys.hpp"
+#include "../../song/buffers.hpp"
+#include "../../song/song.hpp"
+#include "../../song/lock/registry.hpp"
 #include "../enums.hpp"
+#include "../gui.hpp"
 #include "../init.hpp"
 #include "../names.hpp"
 #include "../undo.hpp"

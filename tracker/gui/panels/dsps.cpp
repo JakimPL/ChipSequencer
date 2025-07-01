@@ -1,7 +1,11 @@
 #include <stdexcept>
 
 #include "../../general.hpp"
+#include "../../song/song.hpp"
 #include "../../song/links/manager.hpp"
+#include "../../song/lock/registry.hpp"
+#include "../keys.hpp"
+#include "../gui.hpp"
 #include "../names.hpp"
 #include "../undo.hpp"
 #include "../utils.hpp"

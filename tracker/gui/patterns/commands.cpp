@@ -1,9 +1,13 @@
+#include <cmath>
 #include <sstream>
 #include <stdexcept>
 
 #include "../../general.hpp"
 #include "../../maps/commands.hpp"
 #include "../../maps/keys.hpp"
+#include "../../song/buffers.hpp"
+#include "../../song/core.hpp"
+#include "../../song/links/manager.hpp"
 #include "../../utils/string.hpp"
 #include "../../utils/math.hpp"
 #include "commands.hpp"

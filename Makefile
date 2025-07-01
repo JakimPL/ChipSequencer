@@ -14,6 +14,7 @@ REQUIREMENTS_FILE = scripts/requirements.txt
 TOOLS_DIR = tools
 VENV_DIR = venv
 
+NUM_PROCESSORS = 4
 MAKEFLAGS += --no-print-directory
 
 ifeq ($(OS),Windows_NT)
@@ -38,7 +39,7 @@ ifeq ($(OS),Windows_NT)
 else
 	@cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
 endif
-	@cmake --build build --config Debug -- --no-print-directory -j 4
+	@cmake --build build --config Debug -- --no-print-directory -j $NUM_PROCESSORS
 
 clean:
 	@echo "Cleaning the project..."

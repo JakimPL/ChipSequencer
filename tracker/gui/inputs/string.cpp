@@ -1,4 +1,5 @@
 #include "../../general.hpp"
+#include "../history/shortcuts.hpp"
 #include "string.hpp"
 
 StringInputHandler::StringInputHandler(const std::vector<ImGuiKey> keys, const bool synchronize)
