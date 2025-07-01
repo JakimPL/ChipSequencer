@@ -295,6 +295,7 @@ void GUICommandsSequencesPanel::open_edit_dialog_box(const int item) {
         edit_dialog_box.output_type.target = static_cast<int>(target);
         edit_dialog_box.output_type.index = index;
         edit_dialog_box.output_type.offset = offset;
+        edit_dialog_box.output_type.synchronize_parameter_type();
 
         if (is_instruction_float(instruction)) {
             edit_dialog_box.value_float = *reinterpret_cast<float *>(&value);
