@@ -240,7 +240,7 @@ void draw_popup(const std::string &message) {
     const float button_width = GUI_BUTTON_WIDTH;
     const float window_width = ImGui::GetWindowSize().x;
     ImGui::SetCursorPosX((window_width - button_width) * 0.5f);
-    if (ImGui::Button("Close", ImVec2(button_width, 0))) {
+    if (ImGui::Button("Close", ImVec2(button_width, 0)) || ImGui::IsKeyPressed(ImGuiKey_Enter)) {
         ImGui::CloseCurrentPopup();
     }
     ImGui::EndPopup();

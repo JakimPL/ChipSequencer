@@ -69,6 +69,7 @@ static void segfault_handler(int signal) {
 AudioEngine::AudioEngine(PortAudioDriver &driver)
     : driver(driver), playing(false), paused(false) {
     std::cout << "Starting playback with " << sample_rate << " Hz" << std::endl;
+    error = false;
     for (auto &channel_history : history) {
         channel_history.resize(HISTORY_SIZE, 0.0f);
     }
