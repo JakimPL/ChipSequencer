@@ -1,3 +1,10 @@
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM)
+    message(STATUS "Using ccache: ${CCACHE_PROGRAM}")
+    set(CMAKE_C_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+    set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+endif()
+
 if(WIN32)
     set(COMMON_C_FLAGS "-Wno-pointer-arith -Wno-address-of-packed-member -DCATCH_SEGFAULT")
     set(COMMON_CXX_FLAGS "-Wno-pointer-arith -Wno-address-of-packed-member -DCATCH_SEGFAULT")

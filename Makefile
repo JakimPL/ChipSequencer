@@ -38,7 +38,7 @@ ifeq ($(OS),Windows_NT)
 else
 	@cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
 endif
-	@cmake --build build --config Debug -- --no-print-directory
+	@cmake --build build --config Debug -- --no-print-directory -j 4
 
 clean:
 	@echo "Cleaning the project..."
