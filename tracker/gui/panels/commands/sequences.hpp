@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../../constants.hpp"
-#include "../../init.hpp"
 #include "../../utils.hpp"
 #include "../../patterns/commands.hpp"
 #include "../../patterns/selection.hpp"

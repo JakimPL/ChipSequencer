@@ -3,10 +3,12 @@
 #include <functional>
 #include <string>
 
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_opengles2.h>
+
 #include "../audio/engine.hpp"
 #include "../song/validation.hpp"
 #include "enums.hpp"
-#include "init.hpp"
 #include "panels/channels.hpp"
 #include "panels/dsps.hpp"
 #include "panels/editor.hpp"
@@ -23,6 +25,9 @@
 #include "panels/wavetables.hpp"
 #include "panels/commands/channels.hpp"
 #include "panels/commands/sequences.hpp"
+
+class ImGuiIO;
+struct ImFont;
 
 class GUI {
   public:

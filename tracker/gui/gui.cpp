@@ -7,6 +7,7 @@
 #include "../utils/math.hpp"
 #include "default.hpp"
 #include "gui.hpp"
+#include "init.hpp"
 
 GUI::GUI()
     : window(nullptr), gl_context(nullptr), renderer(nullptr), rendering_backend(RenderingBackend::OpenGL), fullscreen(false) {

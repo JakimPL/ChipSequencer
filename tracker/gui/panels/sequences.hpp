@@ -3,8 +3,6 @@
 #include <string>
 
 #include "../constants.hpp"
-#include "../init.hpp"
-#include "../utils.hpp"
 #include "../patterns/pattern.hpp"
 #include "../patterns/selection.hpp"
 #include "panel.hpp"

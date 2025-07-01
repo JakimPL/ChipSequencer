@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+
 #include "action.hpp"
 
 using AddFunction = std::function<void *()>;

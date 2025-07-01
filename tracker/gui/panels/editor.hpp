@@ -2,7 +2,6 @@
 
 #include <functional>
 
-#include "../init.hpp"
 #include "panel.hpp"
 
 class GUIEditorPanel : public GUIPanel {

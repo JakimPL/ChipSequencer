@@ -6,6 +6,7 @@
 #include "../../utils/math.hpp"
 #include "../../utils/paths.hpp"
 #include "../enums.hpp"
+#include "../init.hpp"
 #include "../names.hpp"
 #include "../undo.hpp"
 #include "../utils.hpp"

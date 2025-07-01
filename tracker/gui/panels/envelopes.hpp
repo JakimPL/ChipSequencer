@@ -4,7 +4,6 @@
 #include <string>
 
 #include "../constants.hpp"
-#include "../init.hpp"
 #include "panel.hpp"
 
 class GUIEnvelopesPanel : public GUIPanel {

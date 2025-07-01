@@ -8,8 +8,6 @@
 #include <vector>
 #include <unordered_map>
 
-#include "../init.hpp"
-
 #include "../../general.hpp"
 #include "../../maps/routing.hpp"
 #include "../../song/links/link.hpp"
@@ -19,6 +17,7 @@
 #include "../../structures/dsp.hpp"
 #include "../../utils/math.hpp"
 #include "../constants.hpp"
+#include "../init.hpp"
 #include "../names.hpp"
 #include "../undo.hpp"
 #include "../utils.hpp"

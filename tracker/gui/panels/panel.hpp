@@ -7,7 +7,6 @@
 
 #include "../../song/links/target.hpp"
 #include "../../song/links/type.hpp"
-#include "../init.hpp"
 #include "../enums.hpp"
 
 class Action;
