@@ -60,6 +60,7 @@ set(TRACKER_SOURCES
     tracker/structures/channel.cpp
     tracker/structures/commands/command.cpp
     tracker/structures/commands/sequence.cpp
+    tracker/structures/resources/manager.cpp
     tracker/structures/order.cpp
     tracker/structures/sequence.cpp
     tracker/structures/wavetable.cpp
