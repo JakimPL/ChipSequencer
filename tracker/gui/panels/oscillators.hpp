@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 
-#include "../init.hpp"
 #include "panel.hpp"
 
 class GUIOscillatorsPanel : public GUIPanel {

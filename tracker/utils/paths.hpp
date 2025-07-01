@@ -12,3 +12,5 @@ std::filesystem::path get_resource_path(const std::string &resource);
 std::filesystem::path get_core_path();
 std::filesystem::path get_scripts_path();
 std::string get_python_path();
+
+std::filesystem::path check_and_correct_path_by_extension(const std::filesystem::path &path, const std::string &extension);

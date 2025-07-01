@@ -3,16 +3,21 @@
 #include "nfd.h"
 
 #include "../../general.hpp"
-#include "../../utils/file.hpp"
+#include "../../song/buffers.hpp"
+#include "../../song/song.hpp"
+#include "../../song/lock/registry.hpp"
 #include "../../utils/math.hpp"
+#include "../../utils/paths.hpp"
 #include "../enums.hpp"
+#include "../gui.hpp"
+#include "../init.hpp"
 #include "../names.hpp"
+#include "../undo.hpp"
 #include "../utils.hpp"
 #include "wavetables.hpp"
 
 GUIWavetablesPanel::GUIWavetablesPanel(const bool visible, const bool windowed)
     : GUIPanel("Wavetables", visible, windowed) {
-    initialize();
 }
 
 GUIElement GUIWavetablesPanel::get_element() const {

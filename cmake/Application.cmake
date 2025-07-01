@@ -8,6 +8,7 @@ set(TRACKER_SOURCES
     tracker/gui/gui.cpp
     tracker/gui/history/actions/action.cpp
     tracker/gui/history/actions/add.cpp
+    tracker/gui/history/actions/command.cpp
     tracker/gui/history/actions/lock.cpp
     tracker/gui/history/actions/note.cpp
     tracker/gui/history/actions/remove.cpp
@@ -22,6 +23,7 @@ set(TRACKER_SOURCES
     tracker/gui/inputs/input.cpp
     tracker/gui/inputs/numeric.cpp
     tracker/gui/inputs/string.cpp
+    tracker/gui/keys.cpp
     tracker/gui/names.cpp
     tracker/gui/node.cpp
     tracker/gui/panels/channels.cpp
@@ -44,6 +46,7 @@ set(TRACKER_SOURCES
     tracker/gui/patterns/commands.cpp
     tracker/gui/patterns/pattern.cpp
     tracker/gui/patterns/selection.cpp
+    tracker/gui/undo.cpp
     tracker/gui/utils.cpp
     tracker/main.cpp
     tracker/maps/routing.cpp
@@ -58,11 +61,13 @@ set(TRACKER_SOURCES
     tracker/structures/channel.cpp
     tracker/structures/commands/command.cpp
     tracker/structures/commands/sequence.cpp
+    tracker/structures/resources/manager.cpp
     tracker/structures/order.cpp
     tracker/structures/sequence.cpp
     tracker/structures/wavetable.cpp
     tracker/tuning/frequencies.cpp
     tracker/tuning/scale.cpp
+    tracker/utils/file.cpp
     tracker/utils/math.cpp
     tracker/utils/paths.cpp
     tracker/utils/string.cpp

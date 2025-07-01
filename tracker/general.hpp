@@ -3,18 +3,16 @@
 #include <filesystem>
 
 class GUI;
-
-#include "driver/file.hpp"
-#include "gui/gui.hpp"
-#include "gui/history/manager.hpp"
-#include "gui/history/shortcuts.hpp"
-#include "song/buffers.hpp"
-#include "song/song.hpp"
-#include "song/links/manager.hpp"
-#include "song/lock/registry.hpp"
-#include "structures/resources/manager.hpp"
-#include "tuning/frequencies.hpp"
-#include "tuning/scale.hpp"
+class ScaleComposer;
+class FrequencyTable;
+class LockRegistry;
+class LinkManager;
+class FileDriver;
+class HistoryManager;
+class ShortcutManager;
+class ResourceManager;
+class Buffers;
+class Song;
 
 extern ScaleComposer scale_composer;
 extern FrequencyTable frequency_table;
@@ -26,8 +24,8 @@ extern ShortcutManager shortcut_manager;
 extern ResourceManager resource_manager;
 extern Buffers buffers;
 
-extern Song song;
-extern GUI gui;
 extern std::filesystem::path current_path;
+extern GUI gui;
+extern Song song;
 
 void terminate();

@@ -1,12 +1,17 @@
 #include "../../general.hpp"
+#include "../../song/song.hpp"
+#include "../../song/links/manager.hpp"
+#include "../../song/lock/registry.hpp"
 #include "../enums.hpp"
+#include "../keys.hpp"
+#include "../gui.hpp"
 #include "../names.hpp"
+#include "../undo.hpp"
 #include "../utils.hpp"
 #include "envelopes.hpp"
 
 GUIEnvelopesPanel::GUIEnvelopesPanel(const bool visible, const bool windowed)
     : GUIPanel("Envelopes", visible, windowed) {
-    initialize();
 }
 
 GUIElement GUIEnvelopesPanel::get_element() const {

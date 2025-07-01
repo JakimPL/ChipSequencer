@@ -8,24 +8,30 @@
 #include <vector>
 #include <unordered_map>
 
-#include "../init.hpp"
+#define IMGUI_DEFINE_MATH_OPERATORS
+
+#include "../imgui/imgui_internal.h"
 
 #include "../../general.hpp"
 #include "../../maps/routing.hpp"
-#include "../../song/links/link.hpp"
-#include "../../song/links/target.hpp"
 #include "../../song/song.hpp"
+#include "../../song/links/link.hpp"
+#include "../../song/links/manager.hpp"
+#include "../../song/links/target.hpp"
+#include "../../song/lock/registry.hpp"
 #include "../../structures/channel.hpp"
 #include "../../structures/dsp.hpp"
 #include "../../utils/math.hpp"
 #include "../constants.hpp"
+#include "../gui.hpp"
+#include "../init.hpp"
 #include "../names.hpp"
+#include "../undo.hpp"
 #include "../utils.hpp"
 #include "routings.hpp"
 
 GUIRoutingsPanel::GUIRoutingsPanel(const bool visible, const bool windowed)
     : GUIPanel("Routings", visible, windowed) {
-    initialize();
 }
 
 GUIElement GUIRoutingsPanel::get_element() const {

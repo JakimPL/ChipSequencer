@@ -1,13 +1,16 @@
 #include "../../general.hpp"
+#include "../../song/song.hpp"
+#include "../../song/lock/registry.hpp"
 #include "../../utils/math.hpp"
+#include "../gui.hpp"
 #include "../names.hpp"
+#include "../undo.hpp"
 #include "../utils.hpp"
 #include "../history/actions/selection.hpp"
 #include "patterns.hpp"
 
 GUIPatternsPanel::GUIPatternsPanel(const bool visible, const bool windowed)
     : GUIPanel("Patterns", visible, windowed) {
-    initialize();
 }
 
 GUIElement GUIPatternsPanel::get_element() const {
@@ -576,7 +579,13 @@ void GUIPatternsPanel::check_keyboard_input() {
             perform_action_note(this, key, pattern_row, old_note, new_note);
         }
     } else if (commands_pattern != nullptr) {
+        const CommandValue old_command = commands_pattern->get_command(commands_index);
         handle_commands_pattern_input(commands_pattern, commands_index);
+        const CommandValue new_command = commands_pattern->get_command(commands_index);
+        const uint16_t offset = COMMANDS_SEQUENCE_DATA + sizeof(Command) * (current_row - commands_index);
+        const LinkKey key = {Target::COMMANDS_SEQUENCE, commands_pattern->sequence_index, offset};
+        const PatternRow pattern_row = {current_channel.index, commands_pattern_id, commands_index};
+        perform_action_command(this, key, pattern_row, old_command, new_command);
     }
 }
 

@@ -35,6 +35,8 @@ class AudioEngine {
 
   private:
     void playback_function();
+    bool safe_frame();
+    void handle_frame_exception();
 
     PortAudioDriver &driver;
     std::atomic<bool> error;

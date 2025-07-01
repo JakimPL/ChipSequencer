@@ -19,10 +19,10 @@ void ChangeNoteAction::redo() {
     GUIElement element = owner->get_element();
     if (element == GUIElement::Patterns) {
         GUIPatternsPanel *panel = static_cast<GUIPatternsPanel *>(owner);
-        panel->set_note(note_change.pattern_row.channel_index, note_change.pattern_row.pattern_id, note_change.pattern_row.row, note_change.new_note);
+        panel->set_note(note_change.pattern_row, note_change.new_note);
     } else if (element == GUIElement::Sequences) {
         GUISequencesPanel *panel = static_cast<GUISequencesPanel *>(owner);
-        panel->set_note(note_change.pattern_row.channel_index, note_change.pattern_row.row, note_change.new_note);
+        panel->set_note(note_change.pattern_row, note_change.new_note);
     } else {
         throw std::runtime_error("Invalid GUIElement for ChangeNoteAction");
     }
@@ -32,10 +32,10 @@ void ChangeNoteAction::undo() {
     GUIElement element = owner->get_element();
     if (element == GUIElement::Patterns) {
         GUIPatternsPanel *panel = static_cast<GUIPatternsPanel *>(owner);
-        panel->set_note(note_change.pattern_row.channel_index, note_change.pattern_row.pattern_id, note_change.pattern_row.row, note_change.old_note);
+        panel->set_note(note_change.pattern_row, note_change.old_note);
     } else if (element == GUIElement::Sequences) {
         GUISequencesPanel *panel = static_cast<GUISequencesPanel *>(owner);
-        panel->set_note(note_change.pattern_row.channel_index, note_change.pattern_row.row, note_change.old_note);
+        panel->set_note(note_change.pattern_row, note_change.old_note);
     } else {
         throw std::runtime_error("Invalid GUIElement for ChangeNoteAction");
     }

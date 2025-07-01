@@ -63,8 +63,7 @@ void OutputType::update_routing_item(const Target target) {
 
 void OutputType::from_link(const Link &link) {
     target = static_cast<int>(link.target);
-    const int max_parameter = static_cast<int>(OutputTarget::Parameter);
-    OutputTarget output_target = static_cast<OutputTarget>(std::min(max_parameter, target));
+    OutputTarget output_target = static_cast<OutputTarget>(std::min(MAX_PARAMETER, target));
 
     output_channel = 0;
     dsp_channel = 0;
@@ -89,9 +88,8 @@ void OutputType::from_link(const Link &link) {
         break;
     }
     case OutputTarget::Parameter: {
-        const int target_offset = max_parameter;
-        parameter_type = target - target_offset;
-        target = target_offset;
+        synchronize_parameter_type();
+
         const auto &routing = routing_variables.at(link.target);
         index = link.index;
         offset = link.offset;
@@ -143,4 +141,9 @@ void OutputType::set_splitter(uint8_t target[]) const {
         const float value = splitter[i];
         target[i] = static_cast<uint8_t>(std::round(value * UINT8_MAX));
     }
+}
+
+void OutputType::synchronize_parameter_type() {
+    parameter_type = target - MAX_PARAMETER;
+    target = MAX_PARAMETER;
 }

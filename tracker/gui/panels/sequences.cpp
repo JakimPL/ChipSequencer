@@ -2,15 +2,20 @@
 
 #include "../../general.hpp"
 #include "../../maps/keys.hpp"
+#include "../../song/buffers.hpp"
+#include "../../song/song.hpp"
+#include "../../song/lock/registry.hpp"
 #include "../enums.hpp"
+#include "../gui.hpp"
+#include "../init.hpp"
 #include "../names.hpp"
+#include "../undo.hpp"
 #include "../utils.hpp"
 #include "../patterns/selection.hpp"
 #include "sequences.hpp"
 
 GUISequencesPanel::GUISequencesPanel(const bool visible, const bool windowed)
     : GUIPanel("Sequences", visible, windowed) {
-    initialize();
 }
 
 GUIElement GUISequencesPanel::get_element() const {

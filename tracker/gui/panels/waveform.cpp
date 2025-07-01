@@ -3,14 +3,17 @@
 
 #include "../../general.hpp"
 #include "../../song/core.hpp"
+#include "../../song/song.hpp"
+#include "../../tuning/frequencies.hpp"
+#include "../../tuning/scale.hpp"
 #include "../../utils/math.hpp"
+#include "../gui.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
 #include "waveform.hpp"
 
 GUIWaveformPanel::GUIWaveformPanel(const bool visible, const bool windowed)
     : GUIPanel("Waveform", visible, windowed) {
-    initialize();
 }
 
 GUIElement GUIWaveformPanel::get_element() const {

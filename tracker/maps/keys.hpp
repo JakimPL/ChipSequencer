@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+
 #include "../gui/init.hpp"
 
 struct KeyNoteMapping {

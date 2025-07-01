@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../init.hpp"
 #include "panel.hpp"
 
 class GUIDSPsPanel : public GUIPanel {

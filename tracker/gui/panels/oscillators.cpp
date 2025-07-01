@@ -3,13 +3,17 @@
 #include <stdexcept>
 
 #include "../../general.hpp"
+#include "../../song/song.hpp"
+#include "../../song/lock/registry.hpp"
 #include "../enums.hpp"
+#include "../gui.hpp"
 #include "../names.hpp"
+#include "../undo.hpp"
 #include "../utils.hpp"
+#include "oscillators.hpp"
 
 GUIOscillatorsPanel::GUIOscillatorsPanel(const bool visible, const bool windowed)
     : GUIPanel("Oscillators", visible, windowed) {
-    initialize();
 }
 
 GUIElement GUIOscillatorsPanel::get_element() const {

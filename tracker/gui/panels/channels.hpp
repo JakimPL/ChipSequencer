@@ -5,7 +5,6 @@
 #include <string>
 
 #include "../../song/output.hpp"
-#include "../init.hpp"
 #include "panel.hpp"
 
 class GUIChannelsPanel : public GUIPanel {

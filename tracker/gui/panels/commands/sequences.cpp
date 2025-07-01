@@ -1,15 +1,19 @@
 #include <stdexcept>
 
 #include "../../../general.hpp"
+#include "../../../song/buffers.hpp"
+#include "../../../song/song.hpp"
+#include "../../../song/lock/registry.hpp"
 #include "../../../maps/commands.hpp"
 #include "../../../structures/commands/command.hpp"
+#include "../../gui.hpp"
 #include "../../names.hpp"
+#include "../../undo.hpp"
 #include "../../utils.hpp"
 #include "sequences.hpp"
 
 GUICommandsSequencesPanel::GUICommandsSequencesPanel(const bool visible, const bool windowed)
     : GUIPanel("Commands sequences", visible, windowed) {
-    initialize();
 }
 
 GUIElement GUICommandsSequencesPanel::get_element() const {
@@ -294,6 +298,7 @@ void GUICommandsSequencesPanel::open_edit_dialog_box(const int item) {
         edit_dialog_box.output_type.target = static_cast<int>(target);
         edit_dialog_box.output_type.index = index;
         edit_dialog_box.output_type.offset = offset;
+        edit_dialog_box.output_type.synchronize_parameter_type();
 
         if (is_instruction_float(instruction)) {
             edit_dialog_box.value_float = *reinterpret_cast<float *>(&value);

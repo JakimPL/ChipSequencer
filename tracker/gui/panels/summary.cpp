@@ -7,13 +7,15 @@
 #include "../../maps/dsps.hpp"
 #include "../../maps/oscillators.hpp"
 #include "../../maps/sizes.hpp"
+#include "../../song/core.hpp"
+#include "../../song/song.hpp"
+#include "../../song/links/manager.hpp"
 #include "../init.hpp"
 #include "../names.hpp"
 #include "summary.hpp"
 
 GUISummaryPanel::GUISummaryPanel(const bool visible, const bool windowed)
     : GUIPanel("Summary", visible, windowed) {
-    initialize();
 }
 
 GUIElement GUISummaryPanel::get_element() const {

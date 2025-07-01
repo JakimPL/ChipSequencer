@@ -3,6 +3,7 @@
 #include "../general.hpp"
 #include "../utils/file.hpp"
 #include "order.hpp"
+#include "resources/manager.hpp"
 
 void Order::serialize(std::ofstream &file) const {
     write_data(file, &order_length, 1);
