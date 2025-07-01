@@ -3,8 +3,8 @@
 #include "nfd.h"
 
 #include "../../general.hpp"
-#include "../../utils/file.hpp"
 #include "../../utils/math.hpp"
+#include "../../utils/paths.hpp"
 #include "../enums.hpp"
 #include "../names.hpp"
 #include "../undo.hpp"

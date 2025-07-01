@@ -5,7 +5,7 @@
 #include "nfd.h"
 
 #include "../../general.hpp"
-#include "../../utils/file.hpp"
+#include "../../utils/paths.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
 #include "menu.hpp"

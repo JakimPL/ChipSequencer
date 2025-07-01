@@ -66,6 +66,7 @@ set(TRACKER_SOURCES
     tracker/structures/wavetable.cpp
     tracker/tuning/frequencies.cpp
     tracker/tuning/scale.cpp
+    tracker/utils/file.cpp
     tracker/utils/math.cpp
     tracker/utils/paths.cpp
     tracker/utils/string.cpp

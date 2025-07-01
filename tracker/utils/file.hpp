@@ -6,82 +6,23 @@
 #include <vector>
 
 template <typename T>
-void write_data(std::ofstream &file, const T *data, const size_t size) {
-    file.write(reinterpret_cast<const char *>(data), size);
-}
+void write_data(std::ofstream &file, const T *data, const size_t size);
 
 template <typename T>
-void read_data(std::ifstream &file, T *data, const size_t size) {
-    file.read(reinterpret_cast<char *>(data), size);
-    if (!file) {
-        throw std::runtime_error("Failed to read data from file. Bytes read: " + std::to_string(file.gcount()) + " out of " + std::to_string(size));
-    }
-}
+void read_data(std::ifstream &file, T *data, const size_t size);
 
 template <typename T>
-void write_vector(std::ofstream &file, const std::vector<T> &vector, const std::vector<size_t> &sizes, bool write_count) {
-    size_t count = vector.size();
-    if (write_count) {
-        write_data(file, &count, 1);
-    }
-    for (size_t i = 0; i < count; i++) {
-        write_data(file, vector[i], sizes[i % sizes.size()]);
-    }
-}
+void write_vector(std::ofstream &file, const std::vector<T> &vector, const std::vector<size_t> &sizes, bool write_count);
 
 template <typename T>
-void export_data(const std::string &filename, const T &data, const size_t size) {
-    std::ofstream file(filename, std::ios::binary);
-    if (!file) {
-        throw std::runtime_error("Failed to create file: " + filename);
-    }
-
-    write_data(file, data, size);
-    file.close();
-}
+void export_data(const std::string &filename, const T &data, const size_t size);
 
 template <typename T>
-void export_vector(const std::string &filename, const std::vector<T> &vector, const std::vector<size_t> &sizes) {
-    std::ofstream file(filename, std::ios::binary);
-    if (!file) {
-        throw std::runtime_error("Failed to create file: " + filename);
-    }
-
-    write_vector(file, vector, sizes, false);
-    file.close();
-}
-
-inline size_t get_struct_size(const void *pointer) {
-    const uint8_t *size_pointer = static_cast<const uint8_t *>(pointer);
-    return static_cast<size_t>(*size_pointer);
-}
+void export_vector(const std::string &filename, const std::vector<T> &vector, const std::vector<size_t> &sizes);
 
 template <typename T>
-std::vector<size_t> get_struct_sizes(const std::vector<T> &data) {
-    std::vector<size_t> sizes;
-    for (const void *pointer : data) {
-        sizes.push_back(get_struct_size(pointer) + 1);
-    }
-    return sizes;
-}
+std::vector<size_t> get_struct_sizes(const std::vector<T> &data);
 
-inline nlohmann::json read_json(const std::string &filename) {
-    std::ifstream file(filename);
-    if (!file) {
-        throw std::runtime_error("Failed to open file: " + filename);
-    }
-    nlohmann::json json;
-    file >> json;
-    return json;
-}
+size_t get_struct_size(const void *pointer);
 
-inline std::filesystem::path check_and_correct_path_by_extension(const std::filesystem::path &path, const std::string &extension) {
-    std::filesystem::path new_path = path;
-    std::string ext = path.extension().string();
-    std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-    if (ext != extension) {
-        new_path.replace_extension(extension);
-    }
-
-    return new_path;
-}
+nlohmann::json read_json(const std::string &filename);
