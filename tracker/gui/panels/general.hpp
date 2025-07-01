@@ -6,7 +6,6 @@
 #include <thread>
 
 #include "../constants.hpp"
-#include "../init.hpp"
 #include "panel.hpp"
 
 class GUIGeneralPanel : public GUIPanel {

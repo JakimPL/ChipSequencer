@@ -3,6 +3,7 @@
 #include "../general.hpp"
 #include "../utils/file.hpp"
 #include "sequence.hpp"
+#include "resources/manager.hpp"
 
 void Sequence::from_note_vector(const std::vector<Note> &note_vector) {
     const size_t length = note_vector.size();

@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "paths.hpp"
 
 #ifdef _WIN32
@@ -94,4 +96,15 @@ std::string get_python_path() {
     }
 
     return executable;
+}
+
+std::filesystem::path check_and_correct_path_by_extension(const std::filesystem::path &path, const std::string &extension) {
+    std::filesystem::path new_path = path;
+    std::string ext = path.extension().string();
+    std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+    if (ext != extension) {
+        new_path.replace_extension(extension);
+    }
+
+    return new_path;
 }

@@ -1,6 +1,7 @@
 #include "../general.hpp"
 #include "../utils/file.hpp"
 #include "channel.hpp"
+#include "resources/manager.hpp"
 
 void Channel::serialize(std::ofstream &file) const {
     write_data(file, this, sizeof(Channel));

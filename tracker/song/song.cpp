@@ -7,17 +7,25 @@
 
 #include "zip_file.hpp"
 
+#include "../driver/file.hpp"
+#include "../maps/commands.hpp"
 #include "../general.hpp"
+#include "../gui/gui.hpp"
 #include "../gui/names.hpp"
 #include "../structures/sizes.hpp"
+#include "../structures/commands/command.hpp"
+#include "../structures/resources/manager.hpp"
 #include "../utils/file.hpp"
 #include "../utils/math.hpp"
 #include "../utils/paths.hpp"
 #include "../utils/system.hpp"
+#include "buffers.hpp"
 #include "core.hpp"
 #include "functions.hpp"
 #include "headers.hpp"
 #include "song.hpp"
+#include "links/manager.hpp"
+#include "lock/registry.hpp"
 
 #define JSON_INDENTATION 4
 
@@ -605,8 +613,12 @@ CommandsSequence *Song::add_commands_sequence(const size_t index) {
     }
 
     CommandsSequence *sequence = resource_manager.allocate<CommandsSequence>();
-    sequence->size = 0;
-    sequence->length = 1;
+    sequence->size = COMMANDS_SEQUENCE_DATA + commands_sizes[static_cast<size_t>(Instruction::Empty)];
+    sequence->length = DEFAULT_COMMANDS_SEQUENCE_LENGTH;
+
+    Command command;
+    command.duration = DEFAULT_COMMANDS_SEQUENCE_LENGTH;
+    sequence->commands[0] = command;
 
     return insert_commands_sequence(sequence, index);
 }

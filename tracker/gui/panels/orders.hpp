@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "../constants.hpp"
-#include "../init.hpp"
 #include "../inputs/numeric.hpp"
 #include "panel.hpp"
 

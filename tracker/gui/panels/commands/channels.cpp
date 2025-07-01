@@ -1,5 +1,10 @@
 #include "../../../general.hpp"
+#include "../../../song/song.hpp"
+#include "../../../song/lock/registry.hpp"
+#include "../../gui.hpp"
+#include "../../keys.hpp"
 #include "../../names.hpp"
+#include "../../undo.hpp"
 #include "../../utils.hpp"
 #include "channels.hpp"
 
@@ -8,7 +13,6 @@ GUICommandsChannelsPanel::GUICommandsChannelsPanel(
     const bool windowed
 )
     : GUIPanel("Commands channels", visible, windowed) {
-    initialize();
 }
 
 GUIElement GUICommandsChannelsPanel::get_element() const {

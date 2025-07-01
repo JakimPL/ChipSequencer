@@ -4,7 +4,6 @@
 #include <optional>
 
 #include "../../song/compilation.hpp"
-#include "../init.hpp"
 #include "../history/shortcuts.hpp"
 #include "panel.hpp"
 

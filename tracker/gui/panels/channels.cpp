@@ -1,16 +1,19 @@
 #include <iostream>
 
 #include "../../general.hpp"
+#include "../../song/song.hpp"
 #include "../../song/links/manager.hpp"
 #include "../../song/links/target.hpp"
+#include "../../song/lock/registry.hpp"
 #include "../../utils/math.hpp"
+#include "../gui.hpp"
 #include "../names.hpp"
+#include "../undo.hpp"
 #include "../utils.hpp"
 #include "channels.hpp"
 
 GUIChannelsPanel::GUIChannelsPanel(const bool visible, const bool windowed)
     : GUIPanel("Channels", visible, windowed) {
-    initialize();
 }
 
 GUIElement GUIChannelsPanel::get_element() const {

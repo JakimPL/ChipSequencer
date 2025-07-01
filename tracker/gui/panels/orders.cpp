@@ -1,12 +1,16 @@
 #include "../../general.hpp"
+#include "../../song/buffers.hpp"
+#include "../../song/song.hpp"
+#include "../../song/lock/registry.hpp"
 #include "../enums.hpp"
+#include "../gui.hpp"
 #include "../names.hpp"
+#include "../undo.hpp"
 #include "../utils.hpp"
 #include "orders.hpp"
 
 GUIOrdersPanel::GUIOrdersPanel(const bool visible, const bool windowed)
     : GUIPanel("Orders", visible, windowed) {
-    initialize();
 }
 
 GUIElement GUIOrdersPanel::get_element() const {

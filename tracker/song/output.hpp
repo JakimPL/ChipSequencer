@@ -21,6 +21,8 @@ enum class OutputOperation {
     Zero = 0b11,
 };
 
+constexpr int MAX_PARAMETER = static_cast<int>(OutputTarget::Parameter);
+
 struct OutputType {
     bool bypass = false;
 
@@ -54,6 +56,7 @@ struct OutputType {
     void from_flags(const uint8_t output_flag, const uint8_t item_flag);
     void from_link(const Link &link);
     void set_link(Link &link, const ItemType type, const uint8_t id) const;
+    void synchronize_parameter_type();
 
     void load_splitter(const uint8_t target[]);
     void set_splitter(uint8_t target[]) const;

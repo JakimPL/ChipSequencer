@@ -1,4 +1,5 @@
 #include "../../general.hpp"
+#include "../gui.hpp"
 #include "manager.hpp"
 
 void HistoryManager::add_action(std::unique_ptr<Action> action) {

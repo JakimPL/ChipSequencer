@@ -1,24 +1,18 @@
 #pragma once
 
-#include <functional>
-
+#include "../changes/command.hpp"
 #include "action.hpp"
 
-using AddFunction = std::function<void *()>;
-using RemoveFunction = std::function<void(size_t)>;
-
-class AddItemAction : public Action {
+class ChangeCommandAction : public Action {
   private:
-    AddFunction add_function;
-    RemoveFunction remove_function;
+    CommandChange command_change;
 
   public:
-    AddItemAction(
+    ChangeCommandAction(
         const std::string &nm,
         GUIPanel *own,
         const LinkKey k,
-        AddFunction add,
-        RemoveFunction remove
+        const CommandChange &cmd_ch
     );
 
     void redo() override;
@@ -26,4 +20,5 @@ class AddItemAction : public Action {
     bool can_merge(const Action *other) const override;
     void merge(const Action *other) override;
     std::string get_name() const override;
+    PatternRow get_pattern_row() const;
 };

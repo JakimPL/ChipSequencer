@@ -3,6 +3,7 @@
 #include "../general.hpp"
 #include "../utils/file.hpp"
 #include "wavetable.hpp"
+#include "resources/manager.hpp"
 
 void Wavetable::serialize(std::ofstream &file) const {
     write_data(file, &wavetable_size, sizeof(wavetable_size));

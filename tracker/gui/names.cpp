@@ -1,6 +1,8 @@
 #include <sstream>
 
 #include "../general.hpp"
+#include "../maps/commands.hpp"
+#include "../tuning/frequencies.hpp"
 #include "names.hpp"
 
 std::vector<std::string> channel_names;
@@ -87,4 +89,14 @@ std::string get_full_note_name(const uint8_t note) {
     }
 
     return oss.str();
+}
+
+std::string get_command_name(const CommandValue &command_value) {
+    if (command_value.first.empty()) {
+        return "Empty";
+    }
+
+    const char command_character = command_value.first[0];
+    const Instruction instruction = command_characters.at(command_character);
+    return instruction_names.at(instruction);
 }

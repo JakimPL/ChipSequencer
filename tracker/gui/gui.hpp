@@ -1,28 +1,39 @@
 #pragma once
 
 #include <functional>
+#include <memory>
 #include <string>
+#include <vector>
+#include <utility>
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_opengles2.h>
 
 #include "../audio/engine.hpp"
 #include "../song/validation.hpp"
+#include "constants.hpp"
 #include "enums.hpp"
-#include "init.hpp"
-#include "panels/channels.hpp"
-#include "panels/dsps.hpp"
-#include "panels/editor.hpp"
-#include "panels/envelopes.hpp"
-#include "panels/general.hpp"
-#include "panels/menu.hpp"
-#include "panels/oscillators.hpp"
-#include "panels/orders.hpp"
-#include "panels/patterns.hpp"
-#include "panels/routings.hpp"
-#include "panels/sequences.hpp"
-#include "panels/summary.hpp"
-#include "panels/waveform.hpp"
-#include "panels/wavetables.hpp"
-#include "panels/commands/channels.hpp"
-#include "panels/commands/sequences.hpp"
+#include "node.hpp"
+#include "patterns/display.hpp"
+
+class ImGuiIO;
+struct ImFont;
+class GUIMenu;
+class GUIEditorPanel;
+class GUIGeneralPanel;
+class GUIChannelsPanel;
+class GUICommandsChannelsPanel;
+class GUICommandsSequencesPanel;
+class GUIDSPsPanel;
+class GUIEnvelopesPanel;
+class GUIOrdersPanel;
+class GUIOscillatorsPanel;
+class GUISequencesPanel;
+class GUIWavetablesPanel;
+class GUIPatternsPanel;
+class GUIRoutingsPanel;
+class GUISummaryPanel;
+class GUIWaveformPanel;
 
 class GUI {
   public:
@@ -118,22 +129,22 @@ class GUI {
     AudioEngine *audio_engine;
     AudioHistory empty_history;
 
-    GUIMenu menu = GUIMenu(true, false);
-    GUIEditorPanel editor;
-    GUIGeneralPanel general_panel;
-    GUIChannelsPanel channels_panel;
-    GUICommandsChannelsPanel commands_channels_panel;
-    GUICommandsSequencesPanel commands_sequences_panel;
-    GUIDSPsPanel dsps_panel;
-    GUIEnvelopesPanel envelopes_panel;
-    GUIOrdersPanel orders_panel;
-    GUIOscillatorsPanel oscillators_panel;
-    GUISequencesPanel sequences_panel;
-    GUIWavetablesPanel wavetables_panel;
-    GUIPatternsPanel patterns_panel;
-    GUIRoutingsPanel routing_panel;
-    GUISummaryPanel summary_panel;
-    GUIWaveformPanel waveform_panel;
+    std::unique_ptr<GUIMenu> menu;
+    std::unique_ptr<GUIEditorPanel> editor;
+    std::unique_ptr<GUIGeneralPanel> general_panel;
+    std::unique_ptr<GUIChannelsPanel> channels_panel;
+    std::unique_ptr<GUICommandsChannelsPanel> commands_channels_panel;
+    std::unique_ptr<GUICommandsSequencesPanel> commands_sequences_panel;
+    std::unique_ptr<GUIDSPsPanel> dsps_panel;
+    std::unique_ptr<GUIEnvelopesPanel> envelopes_panel;
+    std::unique_ptr<GUIOrdersPanel> orders_panel;
+    std::unique_ptr<GUIOscillatorsPanel> oscillators_panel;
+    std::unique_ptr<GUISequencesPanel> sequences_panel;
+    std::unique_ptr<GUIWavetablesPanel> wavetables_panel;
+    std::unique_ptr<GUIPatternsPanel> patterns_panel;
+    std::unique_ptr<GUIRoutingsPanel> routing_panel;
+    std::unique_ptr<GUISummaryPanel> summary_panel;
+    std::unique_ptr<GUIWaveformPanel> waveform_panel;
 
     RenderingBackend rendering_backend;
     SDL_Window *window;
@@ -153,6 +164,7 @@ class GUI {
     bool render_opengl();
     bool render_software();
 
+    void initialize_all();
     void update_all();
     void frame_all();
     void set_visibility_all(const bool visible);

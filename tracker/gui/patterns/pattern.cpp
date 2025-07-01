@@ -3,8 +3,13 @@
 #include "../../constants.hpp"
 #include "../../general.hpp"
 #include "../../maps/keys.hpp"
+#include "../../song/buffers.hpp"
 #include "../../song/core.hpp"
+#include "../../tuning/frequencies.hpp"
+#include "../../tuning/scale.hpp"
 #include "../../utils/math.hpp"
+#include "../gui.hpp"
+#include "../history/shortcuts.hpp"
 #include "pattern.hpp"
 
 Pattern::Pattern() {
