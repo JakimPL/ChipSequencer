@@ -12,5 +12,5 @@ struct ClipboardNotes : public ClipboardItem {
     ClipboardNotes(const std::string &nm, const PatternNotes &notes);
     PatternNotes pattern_notes;
 
-    std::string generate_hash() const override;
+    void generate_hash() override;
 };

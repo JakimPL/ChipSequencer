@@ -7,6 +7,8 @@
 #include "category.hpp"
 #include "items/item.hpp"
 
+constexpr size_t MAX_CLIPBOARD_ITEMS = 100;
+
 class Clipboard {
   public:
     Clipboard() = default;

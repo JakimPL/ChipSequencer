@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "clipboard.hpp"
 
 void Clipboard::add_item(std::unique_ptr<ClipboardItem> item) {
@@ -6,5 +8,20 @@ void Clipboard::add_item(std::unique_ptr<ClipboardItem> item) {
     }
 
     auto &category_items = items[item->category];
-    category_items.push_back(std::move(item));
+    const std::string &hash = item->get_hash();
+
+    auto it = std::find_if(category_items.begin(), category_items.end(), [&hash](const std::unique_ptr<ClipboardItem> &existing_item) {
+        return existing_item->get_hash() == hash;
+    });
+
+    if (it != category_items.end()) {
+        auto existing_item = std::move(*it);
+        category_items.erase(it);
+        category_items.push_front(std::move(existing_item));
+    } else {
+        category_items.push_front(std::move(item));
+        if (category_items.size() > MAX_CLIPBOARD_ITEMS) {
+            category_items.pop_back();
+        }
+    }
 }

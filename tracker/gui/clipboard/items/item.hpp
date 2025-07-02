@@ -5,13 +5,15 @@
 #include "../category.hpp"
 
 struct ClipboardItem {
-    ClipboardItem(ClipboardCategory cat, const std::string &nm, const std::string &h);
+    ClipboardItem(ClipboardCategory cat, const std::string &nm);
+    virtual ~ClipboardItem() = default;
+
     const ClipboardCategory category;
     const std::string name;
 
-    virtual std::string generate_hash() const = 0;
+    virtual void generate_hash() = 0;
     std::string get_hash() const;
 
-  private:
-    const std::string hash;
+  protected:
+    std::string hash;
 };
