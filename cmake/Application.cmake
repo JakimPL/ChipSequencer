@@ -5,6 +5,7 @@ set(TRACKER_SOURCES
     tracker/driver/file.cpp
     tracker/driver/port.cpp
     tracker/general.cpp
+    tracker/gui/clipboard/manager.cpp
     tracker/gui/gui.cpp
     tracker/gui/history/actions/action.cpp
     tracker/gui/history/actions/add.cpp
@@ -61,8 +62,8 @@ set(TRACKER_SOURCES
     tracker/structures/channel.cpp
     tracker/structures/commands/command.cpp
     tracker/structures/commands/sequence.cpp
-    tracker/structures/resources/manager.cpp
     tracker/structures/order.cpp
+    tracker/structures/resources/manager.cpp
     tracker/structures/sequence.cpp
     tracker/structures/wavetable.cpp
     tracker/tuning/frequencies.cpp
