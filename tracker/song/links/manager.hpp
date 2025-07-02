@@ -30,6 +30,13 @@ class LinkManager {
     void clear();
 
   public:
+    LinkManager() = default;
+    ~LinkManager() = default;
+    LinkManager(const LinkManager &) = delete;
+    LinkManager &operator=(const LinkManager &) = delete;
+    LinkManager(LinkManager &&) = delete;
+    LinkManager &operator=(LinkManager &&) = delete;
+
     void reset();
     void set_link(Link &link, void *item, const uint8_t i);
     void set_links();

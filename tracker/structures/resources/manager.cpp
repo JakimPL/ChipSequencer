@@ -1,25 +1,21 @@
 #include "../../structures.hpp"
 #include "manager.hpp"
 
-template <typename T>
-T *ResourceManager::allocate() {
-    T *resource = new T();
-    deleters[resource] = [](void *ptr) { delete static_cast<T *>(ptr); };
-    return resource;
-}
-
-template <typename T>
-T *ResourceManager::allocateArray(size_t count) {
-    T *resource = new T[count];
-    deleters[resource] = [](void *ptr) { delete[] static_cast<T *>(ptr); };
-    return resource;
+ResourceManager::~ResourceManager() {
+    clear();
 }
 
 template <typename T, typename... Args>
 T *ResourceManager::allocate(Args &&...args) {
-    T *resource = new T(std::forward<Args>(args)...);
-    deleters[resource] = [](void *ptr) { delete static_cast<T *>(ptr); };
-    return resource;
+    T *resource = nullptr;
+    try {
+        resource = new T(std::forward<Args>(args)...);
+        deleters[resource] = [](void *ptr) { delete static_cast<T *>(ptr); };
+        return resource;
+    } catch (...) {
+        delete resource;
+        throw;
+    }
 }
 
 void ResourceManager::deallocate(void *ptr) {

@@ -64,6 +64,13 @@ struct Shortcut {
 
 class ShortcutManager {
   public:
+    ShortcutManager() = default;
+    ~ShortcutManager() = default;
+    ShortcutManager(const ShortcutManager &) = delete;
+    ShortcutManager &operator=(const ShortcutManager &) = delete;
+    ShortcutManager(ShortcutManager &&) = delete;
+    ShortcutManager &operator=(ShortcutManager &&) = delete;
+
     void register_shortcut(
         const ShortcutAction id,
         const std::function<void()> &action

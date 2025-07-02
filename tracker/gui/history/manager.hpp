@@ -15,6 +15,13 @@ class HistoryManager {
     size_t current_index = 0;
 
   public:
+    HistoryManager() = default;
+    ~HistoryManager() = default;
+    HistoryManager(const HistoryManager &) = delete;
+    HistoryManager &operator=(const HistoryManager &) = delete;
+    HistoryManager(HistoryManager &&) = delete;
+    HistoryManager &operator=(HistoryManager &&) = delete;
+
     void add_action(std::unique_ptr<Action> action);
     void undo();
     void redo();
