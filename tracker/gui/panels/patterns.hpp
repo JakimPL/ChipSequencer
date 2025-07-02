@@ -72,6 +72,8 @@ class GUIPatternsPanel : public GUIPanel {
     void select_all();
     void deselect_all();
     void set_selection_note(const uint8_t note);
+    void copy_selection();
+    void paste_selection();
     void delete_selection();
     void transpose_selected_rows(const int value);
     void prepare_secondary_selection();

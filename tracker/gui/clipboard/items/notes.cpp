@@ -3,12 +3,12 @@
 #include "../../../utils/math.hpp"
 #include "notes.hpp"
 
-PatternNotesClipboardItem::PatternNotesClipboardItem(const std::string &nm)
-    : ClipboardItem(ClipboardCategory::Pattern, nm, generate_hash()) {
-    ;
+ClipboardNotes::ClipboardNotes(const std::string &nm, const PatternNotes &notes)
+    : ClipboardItem(ClipboardCategory::Pattern, nm, generate_hash()),
+      pattern_notes(notes) {
 }
 
-std::string PatternNotesClipboardItem::generate_hash() const {
+std::string ClipboardNotes::generate_hash() const {
     size_t seed = 0;
 
     combine_hash(seed, pattern_notes.size());

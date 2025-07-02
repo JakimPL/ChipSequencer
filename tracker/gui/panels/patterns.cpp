@@ -1,3 +1,5 @@
+#include <optional>
+
 #include "../../general.hpp"
 #include "../../song/song.hpp"
 #include "../../song/lock/registry.hpp"
@@ -6,6 +8,8 @@
 #include "../names.hpp"
 #include "../undo.hpp"
 #include "../utils.hpp"
+#include "../clipboard/clipboard.hpp"
+#include "../clipboard/items/notes.hpp"
 #include "../history/actions/selection.hpp"
 #include "patterns.hpp"
 
@@ -395,6 +399,18 @@ void GUIPatternsPanel::shortcut_actions() {
         delete_selection();
         break;
     }
+    case PatternSelectionAction::Cut: {
+        copy_selection();
+        delete_selection();
+    };
+    case PatternSelectionAction::Copy: {
+        copy_selection();
+        break;
+    }
+    case PatternSelectionAction::Paste: {
+        paste_selection();
+        break;
+    }
     case PatternSelectionAction::SetNoteRest: {
         set_selection_note(NOTE_REST);
         break;
@@ -449,6 +465,38 @@ void GUIPatternsPanel::set_selection_note(const uint8_t note) {
             pattern->set_note(pattern->current_row, note);
         }
     }
+}
+
+void GUIPatternsPanel::copy_selection() {
+    if (!selection.is_active() || selection.command) {
+        return;
+    }
+
+    std::optional<size_t> current_channel_index;
+    PatternNotes pattern_notes;
+    std::vector<uint8_t> notes;
+    for (const auto &pattern_row : pattern_rows) {
+        if (!current_channel_index.has_value() || current_channel_index.value() != pattern_row.channel_index) {
+            if (current_channel_index.has_value()) {
+                pattern_notes.push_back(notes);
+            }
+
+            notes.clear();
+            current_channel_index = pattern_row.channel_index;
+        }
+
+        Pattern &pattern = current_patterns.patterns[pattern_row.channel_index][pattern_row.pattern_id];
+        const uint8_t note = pattern.get_note(pattern_row.row);
+        notes.push_back(note);
+    }
+
+    pattern_notes.push_back(notes);
+    clipboard.add_item(
+        std::make_unique<ClipboardNotes>("Pattern Notes", pattern_notes)
+    );
+}
+
+void GUIPatternsPanel::paste_selection() {
 }
 
 void GUIPatternsPanel::delete_selection() {
@@ -1048,6 +1096,27 @@ void GUIPatternsPanel::register_shortcuts() {
         ShortcutAction::EditDelete,
         [this]() {
             selection_action = PatternSelectionAction::Delete;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::EditCut,
+        [this]() {
+            selection_action = PatternSelectionAction::Cut;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::EditCopy,
+        [this]() {
+            selection_action = PatternSelectionAction::Copy;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::EditPaste,
+        [this]() {
+            selection_action = PatternSelectionAction::Paste;
         }
     );
 

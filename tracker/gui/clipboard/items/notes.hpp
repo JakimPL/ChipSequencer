@@ -8,8 +8,8 @@
 
 typedef std::vector<std::vector<uint8_t>> PatternNotes;
 
-struct PatternNotesClipboardItem : public ClipboardItem {
-    PatternNotesClipboardItem(const std::string &nm);
+struct ClipboardNotes : public ClipboardItem {
+    ClipboardNotes(const std::string &nm, const PatternNotes &notes);
     PatternNotes pattern_notes;
 
     std::string generate_hash() const override;

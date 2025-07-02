@@ -1,6 +1,7 @@
 #pragma once
 
 #include <deque>
+#include <memory>
 #include <unordered_map>
 
 #include "category.hpp"
@@ -15,5 +16,8 @@ class Clipboard {
     Clipboard(Clipboard &&) = delete;
     Clipboard &operator=(Clipboard &&) = delete;
 
-    std::unordered_map<ClipboardCategory, std::deque<ClipboardItem>> items;
+    void add_item(std::unique_ptr<ClipboardItem> item);
+
+  private:
+    std::unordered_map<ClipboardCategory, std::deque<std::unique_ptr<ClipboardItem>>> items;
 };
