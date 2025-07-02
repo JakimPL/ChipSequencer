@@ -10,7 +10,6 @@
 #include "../utils.hpp"
 #include "../clipboard/clipboard.hpp"
 #include "../clipboard/items/notes.hpp"
-#include "../history/actions/selection.hpp"
 #include "patterns.hpp"
 
 GUIPatternsPanel::GUIPatternsPanel(const bool visible, const bool windowed)
@@ -546,13 +545,19 @@ void GUIPatternsPanel::paste_selection() {
         }
     }
 
+    PatternSelectionChange<uint8_t> changes;
     prepare_secondary_selection();
     for (const auto &[sequence_row, pattern_rows] : pattern_rows_by_sequence_row) {
         for (const PatternRow &pattern_row : pattern_rows) {
             Pattern &pattern = current_patterns.patterns[pattern_row.channel_index][pattern_row.pattern_id];
-            pattern.set_note(sequence_row.row, selection_notes[sequence_row]);
+            const uint8_t old_note = pattern.get_note(sequence_row.row);
+            const uint8_t new_note = selection_notes[sequence_row];
+            pattern.set_note(sequence_row.row, new_note);
+            changes[pattern_row] = {old_note, new_note};
         }
     }
+
+    perform_notes_action("Paste", changes);
 }
 
 void GUIPatternsPanel::delete_selection() {
@@ -578,17 +583,9 @@ void GUIPatternsPanel::delete_selection() {
     }
 
     if (selection.command) {
-        const SetItemsFunction<CommandValue> function = [this](const std::map<PatternRow, CommandValue> &commands_changes) {
-            return this->set_commands(commands_changes);
-        };
-
-        perform_action_pattern_selection<CommandValue>(this, {Target::COMMANDS_SEQUENCE}, "Delete", commands_changes, function);
+        perform_commands_action("Delete", commands_changes);
     } else {
-        const SetItemsFunction<uint8_t> function = [this](const std::map<PatternRow, uint8_t> &notes) {
-            return this->set_notes(notes);
-        };
-
-        perform_action_pattern_selection<uint8_t>(this, {Target::SEQUENCE}, "Delete", changes, function);
+        perform_notes_action("Delete", changes);
     }
 }
 
@@ -1010,6 +1007,22 @@ CommandsPatternIndex GUIPatternsPanel::find_commands_pattern_by_current_row() co
 
     CommandsPattern *pattern = const_cast<CommandsPattern *>(&patterns.at(pattern_id));
     return {pattern, pattern_id, rows};
+}
+
+void GUIPatternsPanel::perform_notes_action(const std::string &action_name, const PatternSelectionChange<uint8_t> &changes) {
+    const SetItemsFunction<uint8_t> function = [this](const std::map<PatternRow, uint8_t> &notes) {
+        return this->set_notes(notes);
+    };
+
+    perform_action_pattern_selection<uint8_t>(this, {Target::SEQUENCE}, action_name, changes, function);
+}
+
+void GUIPatternsPanel::perform_commands_action(const std::string &action_name, const PatternSelectionChange<CommandValue> &changes) {
+    const SetItemsFunction<CommandValue> function = [this](const std::map<PatternRow, CommandValue> &commands_changes) {
+        return this->set_commands(commands_changes);
+    };
+
+    perform_action_pattern_selection<CommandValue>(this, {Target::COMMANDS_SEQUENCE}, action_name, changes, function);
 }
 
 int GUIPatternsPanel::get_pages() const {

@@ -5,6 +5,7 @@
 
 #include "../constants.hpp"
 #include "../utils.hpp"
+#include "../history/actions/selection.hpp"
 #include "../patterns/commands.hpp"
 #include "../patterns/display.hpp"
 #include "../patterns/index.hpp"
@@ -49,12 +50,17 @@ class GUIPatternsPanel : public GUIPanel {
     void delete_selection();
     void transpose_selected_rows(const int value);
     void prepare_secondary_selection();
+
     void mark_selected_rows(const bool command, const PatternRow &pattern_row);
     void mark_selected_rows(const bool command, const size_t channel_index, const size_t pattern_id, const int row);
     void mark_selected_pattern_rows(const size_t channel_index, const size_t pattern_id, const int row);
     void mark_selected_commands_pattern_rows(const size_t channel_index, const size_t pattern_id, const int row);
+
     PatternIndex find_pattern_by_current_row() const;
     CommandsPatternIndex find_commands_pattern_by_current_row() const;
+
+    void perform_notes_action(const std::string &action_name, const PatternSelectionChange<uint8_t> &changes);
+    void perform_commands_action(const std::string &action_name, const PatternSelectionChange<CommandValue> &changes);
 
     void process_sequence(
         const size_t channel_index,
