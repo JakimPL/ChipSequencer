@@ -188,14 +188,49 @@ void GUIWavetablesPanel::draw_waveform() {
     const float y_center = canvas_p0.y + size.y / 2.0f;
     const int grid_lines = 4;
 
-    ImGuiIO &io = ImGui::GetIO();
-    ImVec2 mouse_pos = io.MousePos;
-    bool is_hovered = ImGui::IsItemHovered();
-    bool is_active = ImGui::IsItemActive();
+    const ImGuiIO &io = ImGui::GetIO();
+    const ImVec2 mouse_pos = io.MousePos;
+    const bool is_hovered = ImGui::IsItemHovered();
+    const bool is_active = ImGui::IsItemActive();
+
+    if (is_hovered) {
+        const float relative_x = mouse_pos.x - canvas_p0.x;
+        const float x_position = relative_x / x_step;
+
+        if (x_position >= 0.0f && x_position < static_cast<float>(data_size)) {
+            float value;
+            int point_index;
+
+            if (current_wavetable.interpolation) {
+                const int index_low = static_cast<int>(std::floor(x_position));
+                const int index_high = (index_low + 1) % static_cast<int>(data_size);
+                const float fraction = x_position - static_cast<float>(index_low);
+
+                const float value_low = current_wavetable.wave[index_low];
+                const float value_high = current_wavetable.wave[index_high];
+                value = value_low + fraction * (value_high - value_low);
+                point_index = -1;
+            } else {
+                point_index = static_cast<int>(std::round(x_position));
+                if (point_index >= static_cast<int>(data_size)) {
+                    point_index = static_cast<int>(data_size) - 1;
+                }
+                value = current_wavetable.wave[point_index];
+            }
+
+            ImGui::BeginTooltip();
+            if (point_index >= 0) {
+                ImGui::Text("Point %d: %.3f", point_index, value);
+            } else {
+                ImGui::Text("Position %.2f: %.3f", x_position, value);
+            }
+            ImGui::EndTooltip();
+        }
+    }
 
     if (is_hovered && ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
         const float relative_x = mouse_pos.x - canvas_p0.x;
-        int index = static_cast<int>(std::round(relative_x / x_step));
+        const int index = static_cast<int>(std::round(relative_x / x_step));
         if (index >= 0 && index < static_cast<int>(data_size)) {
             const int current_point = index;
             const float relative_y = mouse_pos.y - canvas_p0.y;
