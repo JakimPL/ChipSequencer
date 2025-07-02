@@ -194,8 +194,49 @@ void GUIEnvelopesPanel::draw_envelope_graph() {
     draw_list->AddRectFilled(canvas_p0, canvas_p1, IM_COL32(50, 50, 50, 255));
     draw_list->AddRect(canvas_p0, canvas_p1, IM_COL32(200, 200, 200, 255));
 
+    const float tick_duration_base = song.get_row_duration();
     float total_time = current_envelope.attack + current_envelope.decay + current_envelope.hold + current_envelope.release;
     total_time = std::max(total_time, 0.001f);
+
+    const bool is_hovered = ImGui::IsItemHovered();
+    if (is_hovered) {
+        const ImGuiIO &io = ImGui::GetIO();
+        const ImVec2 mouse_pos = io.MousePos;
+        const float relative_x = mouse_pos.x - canvas_p0.x;
+        const float time_position = (relative_x / size.x) * total_time;
+
+        if (time_position >= 0.0f && time_position <= total_time) {
+            float envelope_value = 0.0f;
+            const char *phase_name = "";
+
+            if (time_position <= current_envelope.attack) {
+                const float progress = time_position / std::max(current_envelope.attack, 0.001f);
+                envelope_value = progress * current_envelope.base_volume;
+                phase_name = "Attack";
+            } else if (time_position <= current_envelope.attack + current_envelope.decay) {
+                const float decay_start_time = current_envelope.attack;
+                const float progress = (time_position - decay_start_time) / std::max(current_envelope.decay, 0.001f);
+                envelope_value = current_envelope.base_volume + progress * (current_envelope.sustain_level - current_envelope.base_volume);
+                phase_name = "Decay";
+            } else if (time_position <= current_envelope.attack + current_envelope.decay + current_envelope.hold) {
+                envelope_value = current_envelope.sustain_level;
+                phase_name = "Hold";
+            } else {
+                const float release_start_time = current_envelope.attack + current_envelope.decay + current_envelope.hold;
+                const float progress = (time_position - release_start_time) / std::max(current_envelope.release, 0.001f);
+                envelope_value = current_envelope.sustain_level * (1.0f - progress);
+                phase_name = "Release";
+            }
+
+            const float row_number = time_position / tick_duration_base;
+
+            ImGui::BeginTooltip();
+            ImGui::Text("%s", phase_name);
+            ImGui::Text("Time: %.3fs (Row %.1f)", time_position, row_number);
+            ImGui::Text("Value: %.3f", envelope_value);
+            ImGui::EndTooltip();
+        }
+    }
 
     const float attack_time = current_envelope.attack / total_time;
     const float decay_time = current_envelope.decay / total_time;
@@ -234,7 +275,6 @@ void GUIEnvelopesPanel::draw_envelope_graph() {
         draw_list->AddLine(ImVec2(x, canvas_p0.y), ImVec2(x, canvas_p1.y), IM_COL32(255, 255, 0, 128), 1.0f);
     }
 
-    const float tick_duration_base = song.get_row_duration();
     float tick_duration_seconds = tick_duration_base;
     int tick_label_multiplier = 1;
     while ((total_time / tick_duration_seconds) > GUI_ENVELOPE_MAX_TICK_DURATION_COUNT) {
