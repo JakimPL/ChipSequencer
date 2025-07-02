@@ -20,7 +20,6 @@ set(TRACKER_SOURCES
     tracker/gui/history/actions/value.cpp
     tracker/gui/history/actions/wavetable.cpp
     tracker/gui/history/manager.cpp
-    tracker/gui/history/shortcuts.cpp
     tracker/gui/inputs/input.cpp
     tracker/gui/inputs/numeric.cpp
     tracker/gui/inputs/string.cpp
@@ -47,6 +46,7 @@ set(TRACKER_SOURCES
     tracker/gui/patterns/commands.cpp
     tracker/gui/patterns/pattern.cpp
     tracker/gui/patterns/selection.cpp
+    tracker/gui/shortcuts/manager.cpp
     tracker/gui/undo.cpp
     tracker/gui/utils.cpp
     tracker/main.cpp

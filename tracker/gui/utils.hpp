@@ -13,11 +13,11 @@
 #include "enums.hpp"
 #include "keys.hpp"
 #include "panels/panel.hpp"
-#include "history/shortcuts.hpp"
 #include "patterns/commands.hpp"
 #include "patterns/display.hpp"
 #include "patterns/pattern.hpp"
 #include "patterns/selection.hpp"
+#include "shortcuts/manager.hpp"
 
 struct GUIState {
     bool value_changed;

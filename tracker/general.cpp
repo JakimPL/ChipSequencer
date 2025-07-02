@@ -2,7 +2,7 @@
 #include "driver/file.hpp"
 #include "gui/gui.hpp"
 #include "gui/history/manager.hpp"
-#include "gui/history/shortcuts.hpp"
+#include "gui/shortcuts/manager.hpp"
 #include "song/buffers.hpp"
 #include "song/core.hpp"
 #include "song/song.hpp"

@@ -6,7 +6,7 @@
 #include "../names.hpp"
 #include "../utils.hpp"
 #include "../history/manager.hpp"
-#include "../history/shortcuts.hpp"
+#include "../shortcuts/manager.hpp"
 #include "editor.hpp"
 
 GUIEditorPanel::GUIEditorPanel(const bool visible, const bool windowed)

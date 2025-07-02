@@ -9,7 +9,7 @@
 #include "../../tuning/scale.hpp"
 #include "../../utils/math.hpp"
 #include "../gui.hpp"
-#include "../history/shortcuts.hpp"
+#include "../shortcuts/manager.hpp"
 #include "pattern.hpp"
 
 Pattern::Pattern() {

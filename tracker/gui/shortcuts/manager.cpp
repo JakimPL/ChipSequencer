@@ -1,5 +1,5 @@
 #include "../../general.hpp"
-#include "shortcuts.hpp"
+#include "manager.hpp"
 
 std::string Shortcut::get_display_string() const {
     std::string display_string;
