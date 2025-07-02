@@ -509,7 +509,6 @@ void GUIPatternsPanel::paste_selection() {
             continue;
         }
 
-        const size_t channel_index = current_channel.index;
         auto [pattern, pattern_id, index] = find_pattern_by_current_row();
         for (size_t i = 0; i < notes.size(); ++i) {
             const uint8_t note = notes[i];
@@ -517,21 +516,32 @@ void GUIPatternsPanel::paste_selection() {
             int j = row - index;
             if (j >= pattern->notes.size()) {
                 pattern_id++;
-                if (pattern_id >= current_patterns.patterns[channel_index].size()) {
+                if (pattern_id >= current_patterns.patterns[current_channel.index].size()) {
                     break;
                 }
 
                 const size_t size = pattern->notes.size();
-                pattern = &current_patterns.patterns[channel_index][pattern_id];
+                pattern = &current_patterns.patterns[current_channel.index][pattern_id];
                 index += size;
                 j -= size;
             }
 
             const SequenceRow sequence_row = {pattern->sequence_index, j};
-            const PatternRow pattern_row = {channel_index, pattern_id, j};
+            const PatternRow pattern_row = {current_channel.index, pattern_id, j};
             selection_notes[sequence_row] = note;
             pattern_rows.insert(pattern_row);
             pattern_rows_by_sequence_row[sequence_row].insert(pattern_row);
+        }
+
+        auto it = current_patterns.patterns.find(current_channel.index);
+        if (it != current_patterns.patterns.end()) {
+            ++it;
+            if (it == current_patterns.patterns.end()) {
+                break;
+            }
+            current_channel.index = it->first;
+        } else {
+            break;
         }
     }
 
