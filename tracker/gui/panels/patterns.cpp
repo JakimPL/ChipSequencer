@@ -508,11 +508,11 @@ void GUIPatternsPanel::copy_selection() {
 
     if (selection.command) {
         clipboard.add_item(
-            std::make_unique<ClipboardCommands>("Pattern Commands", pattern_commands)
+            std::make_unique<ClipboardCommands>("Pattern commands", pattern_commands)
         );
     } else {
         clipboard.add_item(
-            std::make_unique<ClipboardNotes>("Pattern Notes", pattern_notes)
+            std::make_unique<ClipboardNotes>("Pattern notes", pattern_notes)
         );
     }
 }

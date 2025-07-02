@@ -11,6 +11,8 @@
 #include "../names.hpp"
 #include "../undo.hpp"
 #include "../utils.hpp"
+#include "../clipboard/clipboard.hpp"
+#include "../clipboard/items/notes.hpp"
 #include "../patterns/selection.hpp"
 #include "sequences.hpp"
 
@@ -143,9 +145,17 @@ void GUISequencesPanel::shortcut_actions() {
         delete_selection();
         break;
     }
-    case PatternSelectionAction::Cut:
-    case PatternSelectionAction::Copy:
+    case PatternSelectionAction::Cut: {
+        copy_selection();
+        delete_selection();
+        break;
+    }
+    case PatternSelectionAction::Copy: {
+        copy_selection();
+        break;
+    }
     case PatternSelectionAction::Paste: {
+        paste_selection();
         break;
     }
     case PatternSelectionAction::SetNoteRest: {
@@ -200,14 +210,33 @@ void GUISequencesPanel::delete_selection() {
             changes[{0, 0, row}] = {old_note, new_note};
         }
 
-        SetItemsFunction<uint8_t> function = [this](const std::map<PatternRow, uint8_t> &notes) {
-            this->set_notes(notes);
-        };
-        perform_action_pattern_selection<uint8_t>(this, {Target::SEQUENCE}, "Delete", changes, function);
+        perform_notes_action("Delete", changes);
     } else {
         const int row = current_sequence.pattern.current_row;
         current_sequence.pattern.clear_row(row);
     }
+}
+
+void GUISequencesPanel::copy_selection() {
+    if (!selection.is_active()) {
+        return;
+    }
+
+    std::vector<uint8_t> notes;
+    PatternNotes pattern_notes;
+
+    for (int row = selection.start; row <= selection.end; ++row) {
+        const uint8_t note = current_sequence.pattern.get_note(row);
+        notes.push_back(note);
+    }
+
+    pattern_notes.push_back(notes);
+    clipboard.add_item(
+        std::make_unique<ClipboardNotes>("Sequence notes", pattern_notes)
+    );
+}
+
+void GUISequencesPanel::paste_selection() {
 }
 
 void GUISequencesPanel::transpose_selected_rows(const int value) {
@@ -222,6 +251,14 @@ void GUISequencesPanel::transpose_selected_rows(const int value) {
     } else {
         current_sequence.pattern.transpose(value);
     }
+}
+
+void GUISequencesPanel::perform_notes_action(const std::string &action_name, const PatternSelectionChange<uint8_t> &changes) {
+    SetItemsFunction<uint8_t> function = [this](const std::map<PatternRow, uint8_t> &notes) {
+        this->set_notes(notes);
+    };
+
+    perform_action_pattern_selection<uint8_t>(this, {Target::SEQUENCE}, action_name, changes, function);
 }
 
 void GUISequencesPanel::draw_sequence_length() {
@@ -346,6 +383,27 @@ void GUISequencesPanel::register_shortcuts() {
         ShortcutAction::EditDelete,
         [this]() {
             selection_action = PatternSelectionAction::Delete;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::EditCut,
+        [this]() {
+            selection_action = PatternSelectionAction::Cut;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::EditCopy,
+        [this]() {
+            selection_action = PatternSelectionAction::Copy;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::EditPaste,
+        [this]() {
+            selection_action = PatternSelectionAction::Paste;
         }
     );
 

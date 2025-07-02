@@ -22,6 +22,11 @@ class GUISequencesPanel : public GUIPanel {
     void deselect_all();
     void set_selection_note(const uint8_t note);
     void delete_selection();
+    void copy_selection();
+    void paste_selection();
+
+    void perform_notes_action(const std::string &action_name, const PatternSelectionChange<uint8_t> &changes);
+
     void draw_sequence_length();
     void draw_sequence();
 
