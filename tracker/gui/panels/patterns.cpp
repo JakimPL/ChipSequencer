@@ -400,6 +400,7 @@ void GUIPatternsPanel::shortcut_actions() {
     case PatternSelectionAction::Cut: {
         copy_selection();
         delete_selection();
+        break;
     };
     case PatternSelectionAction::Copy: {
         copy_selection();
