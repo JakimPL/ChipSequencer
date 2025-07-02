@@ -170,10 +170,15 @@ void GUIWaveformPanel::draw_channel_waveform(const int output_channel_index, con
                 break;
             }
 
+            float y1_raw = history[idx1];
+            float y2_raw = history[idx2];
+            y1_raw = clamp(y1_raw, -1.0f, 1.0f);
+            y2_raw = clamp(y2_raw, -1.0f, 1.0f);
+
             const float x1 = position.x + i * scale_x;
-            const float y1 = zero_y - (history[idx1] * scale_y);
+            const float y1 = zero_y - (y1_raw * scale_y);
             const float x2 = position.x + (i + 1) * scale_x;
-            const float y2 = zero_y - (history[idx2] * scale_y);
+            const float y2 = zero_y - (y2_raw * scale_y);
 
             draw_list->AddLine(
                 ImVec2(x1, y1),
