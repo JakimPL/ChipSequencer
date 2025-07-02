@@ -5,6 +5,7 @@
 #include "../../song/buffers.hpp"
 #include "../../song/song.hpp"
 #include "../../song/lock/registry.hpp"
+#include "../../utils/math.hpp"
 #include "../enums.hpp"
 #include "../gui.hpp"
 #include "../init.hpp"
@@ -60,11 +61,12 @@ void GUISequencesPanel::from() {
 }
 
 void GUISequencesPanel::to() const {
+    const bool focus = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
     if (!is_index_valid()) {
         return;
     }
 
-    if (!save && !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+    if (!save && !focus && !dialog_box_open) {
         return;
     }
 
@@ -178,6 +180,7 @@ void GUISequencesPanel::shortcut_actions() {
 }
 
 void GUISequencesPanel::post_actions() {
+    dialog_box_open = edit_dialog_box.visible;
     selection_action = PatternSelectionAction::None;
 }
 
@@ -289,6 +292,52 @@ void GUISequencesPanel::perform_notes_action(const std::string &action_name, con
     perform_action_pattern_selection<uint8_t>(this, {Target::SEQUENCE}, action_name, changes, function);
 }
 
+void GUISequencesPanel::open_edit_dialog_box(const int item) {
+    if (item < 0 || item >= current_sequence.pattern.steps) {
+        return;
+    }
+
+    dialog_box_open = true;
+    edit_dialog_box.visible = true;
+    edit_dialog_box.item = item;
+    edit_dialog_box.note = mod(current_sequence.pattern.get_note(item) - NOTE_CUT, 256);
+}
+
+void GUISequencesPanel::draw_dialog_box() {
+    if (!edit_dialog_box.visible) {
+        return;
+    }
+
+    ImGui::SetNextWindowSize(ImVec2(450.0f, 100.0f), ImGuiCond_FirstUseEver);
+    if (ImGui::Begin("Edit note", &edit_dialog_box.visible, ImGuiWindowFlags_NoCollapse)) {
+        std::vector<std::string> note_names = get_note_names();
+
+        ImGui::Text("Note:");
+        push_tertiary_style();
+        prepare_combo(this, note_names, "##EditNote", edit_dialog_box.note);
+        pop_tertiary_style();
+        ImGui::Separator();
+
+        GUIAction action = draw_dialog_box_bottom();
+        switch (action) {
+        case GUIAction::OK: {
+            const int note = mod(edit_dialog_box.note + NOTE_CUT, 256);
+            set_note(edit_dialog_box.item, note);
+        }
+        case GUIAction::Cancel: {
+            edit_dialog_box.visible = false;
+            break;
+        }
+        case GUIAction::None:
+        default: {
+            break;
+        }
+        }
+
+        ImGui::End();
+    }
+}
+
 void GUISequencesPanel::draw_sequence_length() {
     const size_t old_size = current_sequence.pattern.steps;
     const LinkKey key = {Target::SPECIAL, sequence_index, SPECIAL_SEQUENCE_LENGTH};
@@ -314,9 +363,15 @@ void GUISequencesPanel::draw_sequence() {
     ImGui::Text("Pattern:");
     PatternSelection empty_selection;
     PatternSelection &sequence_selection = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ? selection : empty_selection;
-    SequenceRows secondary_sequence_rows;
 
     draw_sequence_length();
+    if (current_sequence.pattern.steps > 0) {
+        if (ImGui::Button("Edit")) {
+            open_edit_dialog_box(current_sequence.pattern.current_row);
+        }
+    }
+
+    SequenceRows secondary_sequence_rows;
     draw_pattern(current_sequence.pattern, sequence_selection, secondary_sequence_rows, false);
 }
 

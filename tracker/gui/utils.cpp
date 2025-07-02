@@ -235,6 +235,46 @@ void draw_link_tooltip(const LinkKey &key) {
     }
 }
 
+GUIAction draw_dialog_box_bottom() {
+    GUIAction action = GUIAction::None;
+
+    const float button_width = 75.0f;
+    const float total_button_width = (button_width * 2) + ImGui::GetStyle().ItemSpacing.x;
+    const float available_width = ImGui::GetContentRegionAvail().x;
+    const float offset_x = (available_width - total_button_width) * 0.5f;
+
+    if (offset_x > 0.0f) {
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset_x);
+    }
+
+    if (ImGui::Button("OK", ImVec2(button_width, 0))) {
+        action = GUIAction::OK;
+    }
+
+    ImGui::SameLine();
+    if (ImGui::Button("Cancel", ImVec2(button_width, 0))) {
+        action = GUIAction::Cancel;
+    }
+
+    if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+        if (ImGui::IsKeyPressed(ImGuiKey_Enter)) {
+            action = GUIAction::OK;
+        } else if (ImGui::IsKeyPressed(ImGuiKey_Escape)) {
+            action = GUIAction::Cancel;
+        }
+    }
+
+    return action;
+}
+
+bool draw_button(const char *label, const float button_padding) {
+    const float text_width = ImGui::CalcTextSize(label).x;
+    const float button_width = text_width + button_padding;
+    const float full_width = ImGui::GetWindowContentRegionMax().x;
+    ImGui::SetCursorPosX((full_width - button_width) * 0.5f);
+    return ImGui::Button(label, ImVec2(button_width, 0));
+}
+
 void draw_popup(const std::string &message) {
     ImGui::Text("%s", message.c_str());
     const float button_width = GUI_BUTTON_WIDTH;
@@ -289,14 +329,6 @@ void draw_confirmation_popup(
 
     ImGui::SetItemDefaultFocus();
     ImGui::EndPopup();
-}
-
-bool draw_button(const char *label, const float button_padding) {
-    const float text_width = ImGui::CalcTextSize(label).x;
-    const float button_width = text_width + button_padding;
-    const float full_width = ImGui::GetWindowContentRegionMax().x;
-    ImGui::SetCursorPosX((full_width - button_width) * 0.5f);
-    return ImGui::Button(label, ImVec2(button_width, 0));
 }
 
 std::pair<size_t, bool> draw_pattern(

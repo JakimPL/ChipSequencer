@@ -38,13 +38,15 @@ class GUICommandsSequencesPanel : public GUIPanel {
     void delete_selection();
     void copy_selection();
     void paste_selection();
-    void draw_sequence();
-    void draw_sequence_length();
-    void open_edit_dialog_box(const int item);
-    void draw_output_section();
     void set_current_command();
 
     void perform_commands_action(const std::string &action_name, const PatternSelectionChange<CommandValue> &changes);
+
+    void draw_sequence();
+    void draw_sequence_length();
+
+    void open_edit_dialog_box(const int item);
+    void draw_output_section();
 
     void register_shortcuts() override;
     bool is_disabled() const override;

@@ -13,6 +13,14 @@ class GUISequencesPanel : public GUIPanel {
         Pattern pattern;
     } current_sequence;
 
+    struct EditDialogBox {
+        bool visible = false;
+        int item = -1;
+
+        int note = NOTE_REST;
+    } edit_dialog_box;
+
+    bool dialog_box_open = false;
     PatternSelection selection;
     PatternSelectionAction selection_action = PatternSelectionAction::None;
 
@@ -30,6 +38,8 @@ class GUISequencesPanel : public GUIPanel {
     void draw_sequence_length();
     void draw_sequence();
 
+    void open_edit_dialog_box(const int item);
+
     void register_shortcuts() override;
     bool select_item() override;
     void empty() override;
@@ -37,6 +47,7 @@ class GUISequencesPanel : public GUIPanel {
     void duplicate() override;
     void remove() override;
     void draw() override;
+    void draw_dialog_box() override;
     void check_keyboard_input() override;
     void shortcut_actions() override;
     void post_actions() override;

@@ -24,6 +24,12 @@ struct GUIState {
     bool right_clicked;
 };
 
+enum class GUIAction : uint8_t {
+    None,
+    OK,
+    Cancel,
+};
+
 extern std::unordered_map<LinkKey, bool> slider_states;
 extern std::unordered_map<LinkKey, float> slider_float_values;
 
@@ -38,6 +44,7 @@ bool draw_float_slider(GUIPanel *owner, const char *label, float &reference, con
 bool draw_knob(GUIPanel *owner, const char *label, float &reference, const LinkKey key, float min = 0.0f, float max = 1.0f);
 void draw_link_tooltip(const LinkKey &key);
 
+GUIAction draw_dialog_box_bottom();
 bool draw_button(const char *label, const float button_padding = 0.0f);
 void draw_popup(const std::string &message);
 void draw_confirmation_popup(

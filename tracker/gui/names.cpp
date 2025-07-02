@@ -53,7 +53,7 @@ std::string get_note_octave(const uint8_t note_value) {
     }
     }
 
-    return 0;
+    throw std::runtime_error("Invalid note value: " + std::to_string(note_value));
 }
 
 uint8_t get_note_value(const std::string &note_name, const int octave) {
@@ -99,4 +99,17 @@ std::string get_command_name(const CommandValue &command_value) {
     const char command_character = command_value.first[0];
     const Instruction instruction = command_characters.at(command_character);
     return instruction_names.at(instruction);
+}
+
+std::vector<std::string> get_note_names() {
+    std::vector<std::string> note_names;
+    for (int note = NOTE_CUT; note <= NOTE_OFF; ++note) {
+        note_names.push_back(get_full_note_name(note));
+    }
+
+    for (uint8_t note = 0; note < NOTES; ++note) {
+        note_names.push_back(get_full_note_name(note));
+    }
+
+    return note_names;
 }

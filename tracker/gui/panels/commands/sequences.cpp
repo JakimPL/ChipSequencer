@@ -435,16 +435,11 @@ void GUICommandsSequencesPanel::draw_dialog_box() {
 
     ImGui::SetNextWindowSize(ImVec2(450.0f, 250.0f), ImGuiCond_FirstUseEver);
     if (ImGui::Begin("Edit command", &edit_dialog_box.visible, ImGuiWindowFlags_NoCollapse)) {
-        std::vector<std::string> names;
-        for (const auto &[key, value] : simple_instruction_names) {
-            names.push_back(value);
-        }
-
-        edit_dialog_box.instruction = clamp_index(edit_dialog_box.instruction, names.size());
+        edit_dialog_box.instruction = clamp_index(edit_dialog_box.instruction, simple_instruction_names.size());
 
         ImGui::Text("Command:");
         push_tertiary_style();
-        prepare_combo(this, names, "##EditCommand", edit_dialog_box.instruction);
+        prepare_combo(this, simple_instruction_names, "##EditCommand", edit_dialog_box.instruction);
         pop_tertiary_style();
         ImGui::Separator();
 
@@ -490,25 +485,22 @@ void GUICommandsSequencesPanel::draw_dialog_box() {
         }
 
         pop_secondary_style();
+
         ImGui::Separator();
 
-        const float button_width = 75.0f;
-        const float total_button_width = (button_width * 2) + ImGui::GetStyle().ItemSpacing.x;
-        const float available_width = ImGui::GetContentRegionAvail().x;
-        const float offset_x = (available_width - total_button_width) * 0.5f;
-
-        if (offset_x > 0.0f) {
-            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset_x);
-        }
-
-        if (ImGui::Button("OK", ImVec2(button_width, 0))) {
+        GUIAction action = draw_dialog_box_bottom();
+        switch (action) {
+        case GUIAction::OK: {
             set_current_command();
-            edit_dialog_box.visible = false;
         }
-
-        ImGui::SameLine();
-        if (ImGui::Button("Cancel", ImVec2(button_width, 0))) {
+        case GUIAction::Cancel: {
             edit_dialog_box.visible = false;
+            break;
+        }
+        case GUIAction::None: {
+        default:
+            break;
+        }
         }
 
         ImGui::End();
