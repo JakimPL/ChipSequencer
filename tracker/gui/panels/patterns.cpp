@@ -9,7 +9,6 @@
 #include "../undo.hpp"
 #include "../utils.hpp"
 #include "../clipboard/clipboard.hpp"
-#include "../clipboard/items/notes.hpp"
 #include "patterns.hpp"
 
 GUIPatternsPanel::GUIPatternsPanel(const bool visible, const bool windowed)
@@ -466,41 +465,70 @@ void GUIPatternsPanel::set_selection_note(const uint8_t note) {
 }
 
 void GUIPatternsPanel::copy_selection() {
-    if (!selection.is_active() || selection.command) {
+    if (!selection.is_active()) {
         return;
     }
 
-    std::optional<size_t> current_channel_index;
-    PatternNotes pattern_notes;
     std::vector<uint8_t> notes;
+    std::vector<CommandValue> commands_values;
+    PatternNotes pattern_notes;
+    PatternCommands pattern_commands;
+
+    std::optional<size_t> current_channel_index;
     for (const auto &pattern_row : pattern_rows) {
         if (!current_channel_index.has_value() || current_channel_index.value() != pattern_row.channel_index) {
             if (current_channel_index.has_value()) {
                 pattern_notes.push_back(notes);
+                pattern_commands.push_back(commands_values);
             }
 
             notes.clear();
+            commands_values.clear();
             current_channel_index = pattern_row.channel_index;
         }
 
-        Pattern &pattern = current_patterns.patterns[pattern_row.channel_index][pattern_row.pattern_id];
-        const uint8_t note = pattern.get_note(pattern_row.row);
-        notes.push_back(note);
+        if (selection.command) {
+            CommandsPattern &pattern = current_patterns.commands_patterns[pattern_row.channel_index][pattern_row.pattern_id];
+            const CommandValue command_value = pattern.get_command(pattern_row.row);
+            commands_values.push_back(command_value);
+        } else {
+            Pattern &pattern = current_patterns.patterns[pattern_row.channel_index][pattern_row.pattern_id];
+            const uint8_t note = pattern.get_note(pattern_row.row);
+            notes.push_back(note);
+        }
     }
 
     pattern_notes.push_back(notes);
-    clipboard.add_item(
-        std::make_unique<ClipboardNotes>("Pattern Notes", pattern_notes)
-    );
+    pattern_commands.push_back(commands_values);
+
+    if (selection.command) {
+        clipboard.add_item(
+            std::make_unique<ClipboardCommands>("Pattern Commands", pattern_commands)
+        );
+    } else {
+        clipboard.add_item(
+            std::make_unique<ClipboardNotes>("Pattern Notes", pattern_notes)
+        );
+    }
 }
 
 void GUIPatternsPanel::paste_selection() {
-    ClipboardItem *item = clipboard.get_recent_item(ClipboardCategory::Notes);
-    ClipboardNotes *notes = dynamic_cast<ClipboardNotes *>(item);
-    if (!notes || current_channel.command) {
-        return;
+    if (current_channel.command) {
+        ClipboardItem *item = clipboard.get_recent_item(ClipboardCategory::Commands);
+        ClipboardCommands *commands = dynamic_cast<ClipboardCommands *>(item);
+        if (commands) {
+            paste_commands_pattern_selection(commands);
+        }
+    } else {
+        ClipboardItem *item = clipboard.get_recent_item(ClipboardCategory::Notes);
+        ClipboardNotes *notes = dynamic_cast<ClipboardNotes *>(item);
+        if (notes) {
+            paste_pattern_selection(notes);
+        }
     }
+}
 
+void GUIPatternsPanel::paste_pattern_selection(ClipboardNotes *notes) {
     pattern_rows_by_sequence_row.clear();
     PatternNotes &pattern_notes = notes->pattern_notes;
     std::map<SequenceRow, uint8_t> selection_notes;
@@ -558,6 +586,66 @@ void GUIPatternsPanel::paste_selection() {
     }
 
     perform_notes_action("Paste", changes);
+}
+
+void GUIPatternsPanel::paste_commands_pattern_selection(ClipboardCommands *commands) {
+    pattern_rows_by_sequence_row.clear();
+    PatternCommands &pattern_commands = commands->pattern_commands;
+    std::map<SequenceRow, CommandValue> selection_commands;
+    for (const auto &commands_values : pattern_commands) {
+        if (commands_values.empty()) {
+            continue;
+        }
+
+        auto [pattern, pattern_id, index] = find_commands_pattern_by_current_row();
+        for (size_t i = 0; i < commands_values.size(); ++i) {
+            const CommandValue command_value = commands_values[i];
+            const int row = current_row + i;
+            int j = row - index;
+            if (j >= pattern->commands.size()) {
+                pattern_id++;
+                if (pattern_id >= current_patterns.commands_patterns[current_channel.index].size()) {
+                    break;
+                }
+
+                const size_t size = pattern->commands.size();
+                pattern = &current_patterns.commands_patterns[current_channel.index][pattern_id];
+                index += size;
+                j -= size;
+            }
+
+            const SequenceRow sequence_row = {pattern->sequence_index, j};
+            const PatternRow pattern_row = {current_channel.index, pattern_id, j};
+            selection_commands[sequence_row] = command_value;
+            pattern_rows.insert(pattern_row);
+            pattern_rows_by_sequence_row[sequence_row].insert(pattern_row);
+        }
+
+        auto it = current_patterns.commands_patterns.find(current_channel.index);
+        if (it != current_patterns.commands_patterns.end()) {
+            ++it;
+            if (it == current_patterns.commands_patterns.end()) {
+                break;
+            }
+            current_channel.index = it->first;
+        } else {
+            break;
+        }
+    }
+
+    PatternSelectionChange<CommandValue> changes;
+    prepare_secondary_selection();
+    for (const auto &[sequence_row, pattern_rows] : pattern_rows_by_sequence_row) {
+        for (const PatternRow &pattern_row : pattern_rows) {
+            CommandsPattern &pattern = current_patterns.commands_patterns[pattern_row.channel_index][pattern_row.pattern_id];
+            const CommandValue old_command = pattern.get_command(sequence_row.row);
+            const CommandValue new_command = selection_commands[sequence_row];
+            pattern.set_command(sequence_row.row, new_command);
+            changes[pattern_row] = {old_command, new_command};
+        }
+    }
+
+    perform_commands_action("Paste", changes);
 }
 
 void GUIPatternsPanel::delete_selection() {

@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <map>
 #include <vector>
+#include <utility>
 
 #include "../../song/output.hpp"
 #include "../../structures/commands/sequence.hpp"

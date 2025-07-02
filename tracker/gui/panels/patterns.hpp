@@ -5,6 +5,8 @@
 
 #include "../constants.hpp"
 #include "../utils.hpp"
+#include "../clipboard/items/commands.hpp"
+#include "../clipboard/items/notes.hpp"
 #include "../history/actions/selection.hpp"
 #include "../patterns/commands.hpp"
 #include "../patterns/display.hpp"
@@ -50,6 +52,9 @@ class GUIPatternsPanel : public GUIPanel {
     void delete_selection();
     void transpose_selected_rows(const int value);
     void prepare_secondary_selection();
+
+    void paste_pattern_selection(ClipboardNotes *notes);
+    void paste_commands_pattern_selection(ClipboardCommands *commands);
 
     void mark_selected_rows(const bool command, const PatternRow &pattern_row);
     void mark_selected_rows(const bool command, const size_t channel_index, const size_t pattern_id, const int row);

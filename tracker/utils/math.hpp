@@ -15,3 +15,4 @@ constexpr T clamp(const T &value, const T &min, const T &max) {
 }
 
 void combine_hash(size_t &seed, const size_t value);
+void combine_hash(size_t &seed, const std::string &string);

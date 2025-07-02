@@ -6,6 +6,7 @@ set(TRACKER_SOURCES
     tracker/driver/port.cpp
     tracker/general.cpp
     tracker/gui/clipboard/clipboard.cpp
+    tracker/gui/clipboard/items/commands.cpp
     tracker/gui/clipboard/items/item.cpp
     tracker/gui/clipboard/items/notes.cpp
     tracker/gui/gui.cpp
