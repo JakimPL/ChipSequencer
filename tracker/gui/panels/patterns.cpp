@@ -430,7 +430,12 @@ void GUIPatternsPanel::shortcut_actions() {
 void GUIPatternsPanel::select_all() {
     const bool command = current_channel.command;
     const auto [start, end] = gui.get_page_start_end(page);
-    const size_t last_channel_index = current_patterns.patterns.empty() ? 0 : current_patterns.patterns.rbegin()->first;
+    size_t last_channel_index;
+    if (command) {
+        last_channel_index = current_patterns.commands_patterns.empty() ? 0 : current_patterns.commands_patterns.rbegin()->first;
+    } else {
+        last_channel_index = current_patterns.patterns.empty() ? 0 : current_patterns.patterns.rbegin()->first;
+    }
     selection.select(start, end, command, 0, last_channel_index);
 }
 
