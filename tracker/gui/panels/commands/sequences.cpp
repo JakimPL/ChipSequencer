@@ -10,6 +10,8 @@
 #include "../../names.hpp"
 #include "../../undo.hpp"
 #include "../../utils.hpp"
+#include "../../clipboard/clipboard.hpp"
+#include "../../clipboard/items/commands.hpp"
 #include "sequences.hpp"
 
 GUICommandsSequencesPanel::GUICommandsSequencesPanel(const bool visible, const bool windowed)
@@ -148,9 +150,17 @@ void GUICommandsSequencesPanel::shortcut_actions() {
         delete_selection();
         break;
     }
-    case PatternSelectionAction::Cut:
-    case PatternSelectionAction::Copy:
+    case PatternSelectionAction::Cut: {
+        copy_selection();
+        delete_selection();
+        break;
+    }
+    case PatternSelectionAction::Copy: {
+        copy_selection();
+        break;
+    }
     case PatternSelectionAction::Paste: {
+        paste_selection();
         break;
     }
     case PatternSelectionAction::SetNoteRest:
@@ -195,6 +205,66 @@ void GUICommandsSequencesPanel::delete_selection() {
         const int row = current_sequence.pattern.current_row;
         current_sequence.pattern.clear_row(row);
     }
+}
+
+void GUICommandsSequencesPanel::copy_selection() {
+    if (!selection.is_active()) {
+        return;
+    }
+
+    std::vector<CommandValue> commands_values;
+    PatternCommands pattern_commands;
+
+    for (int row = selection.start; row <= selection.end; ++row) {
+        const CommandValue command_value = current_sequence.pattern.get_command(row);
+        commands_values.push_back(command_value);
+    }
+
+    pattern_commands.push_back(commands_values);
+    clipboard.add_item(
+        std::make_unique<ClipboardCommands>("Sequence commands", pattern_commands)
+    );
+}
+
+void GUICommandsSequencesPanel::paste_selection() {
+    ClipboardItem *item = clipboard.get_recent_item(ClipboardCategory::Commands);
+    ClipboardCommands *commands = dynamic_cast<ClipboardCommands *>(item);
+    if (!commands) {
+        return;
+    }
+
+    const PatternCommands &pattern_commands = commands->pattern_commands;
+    if (pattern_commands.empty()) {
+        return;
+    }
+
+    PatternSelectionChange<CommandValue> changes;
+    const int current_row = current_sequence.pattern.current_row;
+    for (size_t i = 0; i < pattern_commands[0].size(); ++i) {
+        const int row = current_row + i;
+        if (row >= current_sequence.pattern.commands.size()) {
+            break;
+        }
+
+        const PatternRow pattern_row = {0, 0, row};
+        const std::string old_command = current_sequence.pattern.commands[row];
+        const std::string old_value = current_sequence.pattern.values[row];
+        const CommandValue old_command_value = {old_command, old_value};
+        const CommandValue command_value = pattern_commands[0][i];
+
+        set_command(row, command_value);
+        changes[pattern_row] = {old_command_value, command_value};
+    }
+
+    perform_commands_action("Paste", changes);
+}
+
+void GUICommandsSequencesPanel::perform_commands_action(const std::string &action_name, const PatternSelectionChange<CommandValue> &changes) {
+    const SetItemsFunction<CommandValue> function = [this](const std::map<PatternRow, CommandValue> &commands_changes) {
+        return this->set_commands(commands_changes);
+    };
+
+    perform_action_pattern_selection<CommandValue>(this, {Target::COMMANDS_SEQUENCE}, action_name, changes, function);
 }
 
 void GUICommandsSequencesPanel::draw_sequence_length() {
@@ -521,6 +591,10 @@ void GUICommandsSequencesPanel::set_command(const PatternRow &pattern_row, const
     set_command(pattern_row, command_value.first, command_value.second);
 }
 
+void GUICommandsSequencesPanel::set_command(const int row, const CommandValue &command_value) {
+    set_command(row, command_value.first, command_value.second);
+}
+
 void GUICommandsSequencesPanel::set_command(const int row, const std::string &command, const std::string &value) {
     current_sequence.pattern.set_command(row, command, value);
     current_sequence.pattern.current_row = row;
@@ -563,6 +637,27 @@ void GUICommandsSequencesPanel::register_shortcuts() {
         ShortcutAction::EditDelete,
         [this]() {
             selection_action = PatternSelectionAction::Delete;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::EditCut,
+        [this]() {
+            selection_action = PatternSelectionAction::Cut;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::EditCopy,
+        [this]() {
+            selection_action = PatternSelectionAction::Copy;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::EditPaste,
+        [this]() {
+            selection_action = PatternSelectionAction::Paste;
         }
     );
 }
