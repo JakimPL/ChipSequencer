@@ -1,6 +1,7 @@
 
 #include "driver/file.hpp"
 #include "gui/gui.hpp"
+#include "gui/clipboard/clipboard.hpp"
 #include "gui/history/manager.hpp"
 #include "gui/shortcuts/manager.hpp"
 #include "song/buffers.hpp"
@@ -18,6 +19,7 @@ FrequencyTable frequency_table = FrequencyTable(scale_composer, DEFAULT_A4_FREQU
 LockRegistry lock_registry;
 LinkManager link_manager;
 FileDriver file_driver;
+Clipboard clipboard;
 HistoryManager history_manager;
 ShortcutManager shortcut_manager;
 ResourceManager resource_manager;

@@ -1,6 +1,8 @@
 #pragma once
 
-enum class ClipboardCategory {
+#include <cstdint>
+
+enum class ClipboardCategory : uint8_t {
     None,
     Pattern,
     CommandsPattern,
