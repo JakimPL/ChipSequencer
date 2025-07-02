@@ -4,6 +4,6 @@
 
 enum class ClipboardCategory : uint8_t {
     None,
-    Pattern,
-    CommandsPattern,
+    Notes,
+    Commands,
 };

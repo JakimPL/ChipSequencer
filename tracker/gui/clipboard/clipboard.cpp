@@ -25,3 +25,12 @@ void Clipboard::add_item(std::unique_ptr<ClipboardItem> item) {
         }
     }
 }
+
+ClipboardItem *Clipboard::get_recent_item(const ClipboardCategory category) const {
+    auto it = items.find(category);
+    if (it != items.end() && !it->second.empty()) {
+        return it->second.front().get();
+    }
+
+    return nullptr;
+}

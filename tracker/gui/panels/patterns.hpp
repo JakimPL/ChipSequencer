@@ -7,38 +7,10 @@
 #include "../utils.hpp"
 #include "../patterns/commands.hpp"
 #include "../patterns/display.hpp"
+#include "../patterns/index.hpp"
 #include "../patterns/pattern.hpp"
 #include "../patterns/selection.hpp"
 #include "panel.hpp"
-
-struct VariantChannelIndex {
-    bool command;
-    size_t index;
-
-    bool operator<(const VariantChannelIndex &other) const {
-        return std::tie(command, index) < std::tie(other.command, other.index);
-    }
-};
-
-struct PatternIndex {
-    Pattern *pattern;
-    size_t pattern_id;
-    uint16_t index;
-
-    bool operator<(const PatternIndex &other) const {
-        return std::tie(pattern_id, index) < std::tie(other.pattern_id, other.index);
-    }
-};
-
-struct CommandsPatternIndex {
-    CommandsPattern *pattern;
-    size_t pattern_id;
-    uint16_t index;
-
-    bool operator<(const CommandsPatternIndex &other) const {
-        return std::tie(pattern_id, index) < std::tie(other.pattern_id, other.index);
-    }
-};
 
 class GUIPatternsPanel : public GUIPanel {
   private:
@@ -77,6 +49,7 @@ class GUIPatternsPanel : public GUIPanel {
     void delete_selection();
     void transpose_selected_rows(const int value);
     void prepare_secondary_selection();
+    void mark_selected_rows(const bool command, const PatternRow &pattern_row);
     void mark_selected_rows(const bool command, const size_t channel_index, const size_t pattern_id, const int row);
     void mark_selected_pattern_rows(const size_t channel_index, const size_t pattern_id, const int row);
     void mark_selected_commands_pattern_rows(const size_t channel_index, const size_t pattern_id, const int row);

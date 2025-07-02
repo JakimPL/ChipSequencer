@@ -142,8 +142,6 @@ void GUIPatternsPanel::clear() {
     current_patterns.playing_rows.clear();
     pattern_rows.clear();
     pattern_rows_by_sequence_row.clear();
-    secondary_pattern_rows.clear();
-    secondary_sequence_rows.clear();
     selection_starts.clear();
     current_patterns.patterns.clear();
     current_patterns.patterns_max_rows.clear();
@@ -497,6 +495,53 @@ void GUIPatternsPanel::copy_selection() {
 }
 
 void GUIPatternsPanel::paste_selection() {
+    ClipboardItem *item = clipboard.get_recent_item(ClipboardCategory::Notes);
+    ClipboardNotes *notes = dynamic_cast<ClipboardNotes *>(item);
+    if (!notes || current_channel.command) {
+        return;
+    }
+
+    pattern_rows_by_sequence_row.clear();
+    PatternNotes &pattern_notes = notes->pattern_notes;
+    std::map<SequenceRow, uint8_t> selection_notes;
+    for (const auto &notes : pattern_notes) {
+        if (notes.empty()) {
+            continue;
+        }
+
+        const size_t channel_index = current_channel.index;
+        auto [pattern, pattern_id, index] = find_pattern_by_current_row();
+        for (size_t i = 0; i < notes.size(); ++i) {
+            const uint8_t note = notes[i];
+            const int row = current_row + i;
+            int j = row - index;
+            if (j >= pattern->notes.size()) {
+                pattern_id++;
+                if (pattern_id >= current_patterns.patterns[channel_index].size()) {
+                    break;
+                }
+
+                const size_t size = pattern->notes.size();
+                pattern = &current_patterns.patterns[channel_index][pattern_id];
+                index += size;
+                j -= size;
+            }
+
+            const SequenceRow sequence_row = {pattern->sequence_index, j};
+            const PatternRow pattern_row = {channel_index, pattern_id, j};
+            selection_notes[sequence_row] = note;
+            pattern_rows.insert(pattern_row);
+            pattern_rows_by_sequence_row[sequence_row].insert(pattern_row);
+        }
+    }
+
+    prepare_secondary_selection();
+    for (const auto &[sequence_row, pattern_rows] : pattern_rows_by_sequence_row) {
+        for (const PatternRow &pattern_row : pattern_rows) {
+            Pattern &pattern = current_patterns.patterns[pattern_row.channel_index][pattern_row.pattern_id];
+            pattern.set_note(sequence_row.row, selection_notes[sequence_row]);
+        }
+    }
 }
 
 void GUIPatternsPanel::delete_selection() {
@@ -800,6 +845,10 @@ void GUIPatternsPanel::handle_commands_pattern_input(CommandsPattern *pattern, u
     current_row = pattern->current_row + index;
 }
 
+void GUIPatternsPanel::mark_selected_rows(const bool command, const PatternRow &pattern_row) {
+    mark_selected_rows(command, pattern_row.channel_index, pattern_row.pattern_id, pattern_row.row);
+}
+
 void GUIPatternsPanel::mark_selected_rows(const bool command, const size_t channel_index, const size_t pattern_id, const int row) {
     if (command) {
         mark_selected_commands_pattern_rows(channel_index, pattern_id, row);
@@ -858,6 +907,8 @@ void GUIPatternsPanel::prepare_secondary_selection() {
         sequence_rows.insert(sequence_row);
     }
 
+    secondary_pattern_rows.clear();
+    secondary_sequence_rows.clear();
     for (const SequenceRow &sequence_row : sequence_rows) {
         const uint8_t sequence_index = sequence_row.sequence_index;
         if (sequences.find(sequence_index) == sequences.end()) {

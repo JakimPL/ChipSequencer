@@ -4,7 +4,7 @@
 #include "notes.hpp"
 
 ClipboardNotes::ClipboardNotes(const std::string &nm, const PatternNotes &notes)
-    : ClipboardItem(ClipboardCategory::Pattern, nm),
+    : ClipboardItem(ClipboardCategory::Notes, nm),
       pattern_notes(notes) {
     generate_hash();
 }

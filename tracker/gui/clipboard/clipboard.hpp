@@ -7,7 +7,7 @@
 #include "category.hpp"
 #include "items/item.hpp"
 
-constexpr size_t MAX_CLIPBOARD_ITEMS = 100;
+constexpr size_t MAX_CLIPBOARD_ITEMS = 10;
 
 class Clipboard {
   public:
@@ -19,6 +19,7 @@ class Clipboard {
     Clipboard &operator=(Clipboard &&) = delete;
 
     void add_item(std::unique_ptr<ClipboardItem> item);
+    ClipboardItem *get_recent_item(const ClipboardCategory category) const;
 
   private:
     std::unordered_map<ClipboardCategory, std::deque<std::unique_ptr<ClipboardItem>>> items;
