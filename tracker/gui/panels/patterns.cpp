@@ -574,6 +574,7 @@ void GUIPatternsPanel::paste_pattern_selection(ClipboardNotes *notes) {
     }
 
     PatternSelectionChange<uint8_t> changes;
+    selection.command = false;
     prepare_secondary_selection();
     for (const auto &[sequence_row, pattern_rows] : pattern_rows_by_sequence_row) {
         for (const PatternRow &pattern_row : pattern_rows) {
@@ -634,6 +635,7 @@ void GUIPatternsPanel::paste_commands_pattern_selection(ClipboardCommands *comma
     }
 
     PatternSelectionChange<CommandValue> changes;
+    selection.command = true;
     prepare_secondary_selection();
     for (const auto &[sequence_row, pattern_rows] : pattern_rows_by_sequence_row) {
         for (const PatternRow &pattern_row : pattern_rows) {
