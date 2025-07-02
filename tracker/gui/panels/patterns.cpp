@@ -535,7 +535,7 @@ void GUIPatternsPanel::paste_selection() {
 
 void GUIPatternsPanel::paste_pattern_selection(ClipboardNotes *notes) {
     pattern_rows_by_sequence_row.clear();
-    PatternNotes &pattern_notes = notes->pattern_notes;
+    const PatternNotes &pattern_notes = notes->pattern_notes;
     std::map<SequenceRow, uint8_t> selection_notes;
     for (const auto &notes : pattern_notes) {
         if (notes.empty()) {
@@ -578,9 +578,10 @@ void GUIPatternsPanel::paste_pattern_selection(ClipboardNotes *notes) {
         }
     }
 
-    PatternSelectionChange<uint8_t> changes;
     selection.command = false;
     prepare_secondary_selection();
+
+    PatternSelectionChange<uint8_t> changes;
     for (const auto &[sequence_row, pattern_rows] : pattern_rows_by_sequence_row) {
         for (const PatternRow &pattern_row : pattern_rows) {
             Pattern &pattern = current_patterns.patterns[pattern_row.channel_index][pattern_row.pattern_id];
@@ -596,7 +597,7 @@ void GUIPatternsPanel::paste_pattern_selection(ClipboardNotes *notes) {
 
 void GUIPatternsPanel::paste_commands_pattern_selection(ClipboardCommands *commands) {
     pattern_rows_by_sequence_row.clear();
-    PatternCommands &pattern_commands = commands->pattern_commands;
+    const PatternCommands &pattern_commands = commands->pattern_commands;
     std::map<SequenceRow, CommandValue> selection_commands;
     for (const auto &commands_values : pattern_commands) {
         if (commands_values.empty()) {
@@ -639,9 +640,10 @@ void GUIPatternsPanel::paste_commands_pattern_selection(ClipboardCommands *comma
         }
     }
 
-    PatternSelectionChange<CommandValue> changes;
     selection.command = true;
     prepare_secondary_selection();
+
+    PatternSelectionChange<CommandValue> changes;
     for (const auto &[sequence_row, pattern_rows] : pattern_rows_by_sequence_row) {
         for (const PatternRow &pattern_row : pattern_rows) {
             CommandsPattern &pattern = current_patterns.commands_patterns[pattern_row.channel_index][pattern_row.pattern_id];

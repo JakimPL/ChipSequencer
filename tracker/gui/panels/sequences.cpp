@@ -237,6 +237,34 @@ void GUISequencesPanel::copy_selection() {
 }
 
 void GUISequencesPanel::paste_selection() {
+    ClipboardItem *item = clipboard.get_recent_item(ClipboardCategory::Notes);
+    ClipboardNotes *notes = dynamic_cast<ClipboardNotes *>(item);
+    if (!notes) {
+        return;
+    }
+
+    const PatternNotes &pattern_notes = notes->pattern_notes;
+    if (pattern_notes.empty()) {
+        return;
+    }
+
+    PatternSelectionChange<uint8_t> changes;
+    const int current_row = current_sequence.pattern.current_row;
+    for (size_t i = 0; i < pattern_notes[0].size(); ++i) {
+        const int row = current_row + i;
+        if (row >= current_sequence.pattern.notes.size()) {
+            break;
+        }
+
+        const PatternRow pattern_row = {0, 0, row};
+        const uint8_t old_note = current_sequence.pattern.notes[row];
+        const uint8_t note = pattern_notes[0][i];
+
+        set_note(row, note);
+        changes[pattern_row] = {old_note, note};
+    }
+
+    perform_notes_action("Paste", changes);
 }
 
 void GUISequencesPanel::transpose_selected_rows(const int value) {
@@ -320,10 +348,10 @@ void GUISequencesPanel::set_notes(const std::map<PatternRow, uint8_t> &notes) {
 }
 
 void GUISequencesPanel::set_note(const PatternRow &pattern_row, const uint8_t note) {
-    set_note(pattern_row.channel_index, pattern_row.row, note);
+    set_note(pattern_row.row, note);
 }
 
-void GUISequencesPanel::set_note(const size_t channel_index, const int row, const uint8_t note) {
+void GUISequencesPanel::set_note(const int row, const uint8_t note) {
     current_sequence.pattern.set_note(row, note);
     current_sequence.pattern.current_row = row;
 }
