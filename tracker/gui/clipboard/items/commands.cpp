@@ -27,13 +27,14 @@ void ClipboardCommands::generate_hash() {
 
 void ClipboardCommands::generate_name() {
     if (pattern_commands.empty()) {
-        name = "Empty pattern commands selection";
+        name = "Empty commands selection";
         return;
     }
 
     int count = 0;
     std::stringstream stream;
-    stream << "Commands (" << pattern_commands.size() << " channels): ";
+    const size_t size = pattern_commands.size();
+    stream << size << " channel" << (size > 1 ? "s" : "") << ": ";
     for (size_t channel = 0; channel < pattern_commands.size(); ++channel) {
         const auto &commands = pattern_commands[channel];
         for (int i = 0; i < commands.size(); ++i) {

@@ -27,13 +27,14 @@ void ClipboardNotes::generate_hash() {
 
 void ClipboardNotes::generate_name() {
     if (pattern_notes.empty()) {
-        name = "Empty pattern notes selection";
+        name = "Empty notes selection";
         return;
     }
 
     int count = 0;
     std::stringstream stream;
-    stream << "Notes (" << pattern_notes.size() << " channels): ";
+    const size_t size = pattern_notes.size();
+    stream << size << " channel" << (size > 1 ? "s" : "") << ": ";
     for (size_t channel = 0; channel < pattern_notes.size(); ++channel) {
         const auto &notes = pattern_notes[channel];
         for (int i = 0; i < notes.size(); ++i) {

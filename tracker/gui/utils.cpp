@@ -336,6 +336,7 @@ std::pair<size_t, bool> draw_pattern(
     PatternSelection &selection,
     SequenceRows &selected_rows,
     const bool pattern_view,
+    const int edited_row,
     const size_t channel_index,
     const bool header,
     const size_t index,
@@ -376,6 +377,8 @@ std::pair<size_t, bool> draw_pattern(
 
             if (playing_row == j) {
                 ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_PLAYING);
+            } else if (edited_row == j) {
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_EDITED);
             } else if (is_selected) {
                 ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_SELECTED);
             } else if (is_secondary_selected) {
@@ -444,6 +447,7 @@ std::pair<size_t, bool> draw_commands_pattern(
     PatternSelection &selection,
     SequenceRows &selected_rows,
     const bool pattern_view,
+    const int edited_row,
     const size_t channel_index,
     const bool header,
     const size_t index,
@@ -484,6 +488,8 @@ std::pair<size_t, bool> draw_commands_pattern(
             ImGui::TableNextRow();
             if (playing_row == j) {
                 ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_PLAYING);
+            } else if (edited_row == j) {
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_EDITED);
             } else if (is_selected) {
                 ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_SELECTED);
             } else if (is_secondary_selected) {

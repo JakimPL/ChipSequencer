@@ -372,7 +372,8 @@ void GUISequencesPanel::draw_sequence() {
     }
 
     SequenceRows secondary_sequence_rows;
-    draw_pattern(current_sequence.pattern, sequence_selection, secondary_sequence_rows, false);
+    const int edited_row = edit_dialog_box.visible ? edit_dialog_box.item : -1;
+    draw_pattern(current_sequence.pattern, sequence_selection, secondary_sequence_rows, false, edited_row);
 }
 
 void GUISequencesPanel::check_keyboard_input() {
