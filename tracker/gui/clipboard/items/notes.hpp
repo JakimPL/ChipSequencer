@@ -6,7 +6,7 @@
 
 #include "item.hpp"
 
-typedef std::vector<std::vector<uint8_t>> PatternNotes;
+using PatternNotes = std::vector<std::vector<uint8_t>>;
 
 struct ClipboardNotes : public ClipboardItem {
     ClipboardNotes(const PatternNotes &notes);

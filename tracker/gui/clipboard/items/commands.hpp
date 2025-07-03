@@ -6,8 +6,8 @@
 
 #include "item.hpp"
 
-typedef std::pair<std::string, std::string> CommandValue;
-typedef std::vector<std::vector<CommandValue>> PatternCommands;
+using CommandValue = std::pair<std::string, std::string>;
+using PatternCommands = std::vector<std::vector<CommandValue>>;
 
 struct ClipboardCommands : public ClipboardItem {
     ClipboardCommands(const PatternCommands &commands);

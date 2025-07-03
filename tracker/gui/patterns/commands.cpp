@@ -401,50 +401,50 @@ void CommandsPattern::split_change_value_parts(
         target = static_cast<Target>(target_id);
     }
     if (size >= 3) {
-        int index_id = string_to_integer(value_parts[2], 0);
+        index = string_to_integer(value_parts[2], 0);
 
         switch (target) {
         case Target::DIRECT_OUTPUT:
         case Target::SPLITTER_OUTPUT: {
-            index_id = clamp(index_id, 0, static_cast<int>(MAX_OUTPUT_CHANNELS - 1));
+            index = clamp<int>(index, 0, MAX_OUTPUT_CHANNELS - 1);
             break;
         }
         case Target::DSP:
         case Target::DIRECT_DSP:
         case Target::SPLITTER_DSP: {
-            index_id = clamp(index_id, 0, static_cast<int>(dsps.size()) - 1);
+            index = clamp<int>(index, 0, static_cast<int>(dsps.size()) - 1);
             break;
         }
         case Target::CHANNEL: {
-            index_id = clamp(index_id, 0, static_cast<int>(channels.size()) - 1);
+            index = clamp<int>(index, 0, static_cast<int>(channels.size()) - 1);
             break;
         }
         case Target::COMMANDS_CHANNEL: {
-            index_id = clamp(index_id, 0, static_cast<int>(commands_channels.size()) - 1);
+            index = clamp<int>(index, 0, static_cast<int>(commands_channels.size()) - 1);
             break;
         }
         case Target::ENVELOPE: {
-            index_id = clamp(index_id, 0, static_cast<int>(envelopes.size()) - 1);
+            index = clamp<int>(index, 0, static_cast<int>(envelopes.size()) - 1);
             break;
         }
         case Target::SEQUENCE: {
-            index_id = clamp(index_id, 0, static_cast<int>(sequences.size()) - 1);
+            index = clamp<int>(index, 0, static_cast<int>(sequences.size()) - 1);
             break;
         }
         case Target::COMMANDS_SEQUENCE: {
-            index_id = clamp(index_id, 0, static_cast<int>(commands_sequences.size()) - 1);
+            index = clamp<int>(index, 0, static_cast<int>(commands_sequences.size()) - 1);
             break;
         }
         case Target::ORDER: {
-            index_id = clamp(index_id, 0, static_cast<int>(orders.size()) - 1);
+            index = clamp<int>(index, 0, static_cast<int>(orders.size()) - 1);
             break;
         }
         case Target::OSCILLATOR: {
-            index_id = clamp(index_id, 0, static_cast<int>(oscillators.size()) - 1);
+            index = clamp<int>(index, 0, static_cast<int>(oscillators.size()) - 1);
             break;
         }
         case Target::WAVETABLE: {
-            index_id = clamp(index_id, 0, static_cast<int>(wavetables.size()) - 1);
+            index = clamp<int>(index, 0, static_cast<int>(wavetables.size()) - 1);
             break;
         }
         case Target::SPECIAL:

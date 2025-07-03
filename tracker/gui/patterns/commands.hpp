@@ -16,7 +16,7 @@ enum class CommandSelection {
     Value,
 };
 
-typedef std::pair<std::string, std::string> CommandValue;
+using CommandValue = std::pair<std::string, std::string>;
 
 struct CommandsPattern {
     CommandsPattern();

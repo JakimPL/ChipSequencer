@@ -11,7 +11,7 @@
 constexpr int BUFFER_SIZE = 128;
 constexpr int HISTORY_SIZE = 65536;
 
-typedef std::array<std::deque<_Float32>, MAX_OUTPUT_CHANNELS> AudioHistory;
+using AudioHistory = std::array<std::deque<_Float32>, MAX_OUTPUT_CHANNELS>;
 
 class AudioEngine {
   public:

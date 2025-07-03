@@ -10,7 +10,7 @@ struct CommandsChannel {
     uint8_t order_index;
 } __attribute__((packed));
 
-typedef std::vector<CommandsChannel *> CommandsChannels;
+using CommandsChannels = std::vector<CommandsChannel *>;
 
 constexpr size_t COMMANDS_CHANNEL_FLAG = offsetof(CommandsChannel, flag);
 constexpr size_t COMMANDS_CHANNEL_ORDER_INDEX = offsetof(CommandsChannel, order_index);

@@ -11,7 +11,7 @@
 #include "../node.hpp"
 #include "panel.hpp"
 
-typedef std::array<uint8_t, MAX_OUTPUT_CHANNELS> Splitter;
+using Splitter = std::array<uint8_t, MAX_OUTPUT_CHANNELS>;
 
 class GUIRoutingsPanel : public GUIPanel {
   private:

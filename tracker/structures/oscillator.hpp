@@ -56,7 +56,7 @@ struct OscillatorNoise {
     uint8_t pad[2];
 } __attribute__((packed));
 
-typedef std::vector<void *> Oscillators;
+using Oscillators = std::vector<void *>;
 
 constexpr size_t OSCILLATOR_SIZE = offsetof(Oscillator, oscillator_size);
 constexpr size_t OSCILLATOR_GENERATOR_INDEX = offsetof(Oscillator, generator_index);

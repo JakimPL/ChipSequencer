@@ -44,9 +44,9 @@ struct SequenceRow {
     }
 };
 
-typedef std::set<PatternRow> PatternRows;
-typedef std::set<SequenceRow> SequenceRows;
-typedef std::map<SequenceRow, std::set<PatternRow>> PatternRowsBySequenceRow;
+using PatternRows = std::set<PatternRow>;
+using SequenceRows = std::set<SequenceRow>;
+using PatternRowsBySequenceRow = std::map<SequenceRow, std::set<PatternRow>>;
 
 struct PatternSelection {
     bool command = false;

@@ -24,7 +24,7 @@ struct Channel {
     static Channel *deserialize(std::ifstream &file);
 } __attribute__((packed));
 
-typedef std::vector<Channel *> Channels;
+using Channels = std::vector<Channel *>;
 
 constexpr size_t CHANNEL_SPLITTER = offsetof(Channel, splitter);
 constexpr size_t CHANNEL_TARGET = offsetof(Channel, target);

@@ -18,7 +18,7 @@ struct CommandsSequence {
 };
 #pragma pack(pop)
 
-typedef std::vector<CommandsSequence *> CommandsSequences;
+using CommandsSequences = std::vector<CommandsSequence *>;
 
 constexpr size_t COMMANDS_SEQUENCE_SIZE = offsetof(CommandsSequence, size);
 constexpr size_t COMMANDS_SEQUENCE_LENGTH = offsetof(CommandsSequence, length);

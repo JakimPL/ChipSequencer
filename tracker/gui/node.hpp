@@ -11,8 +11,8 @@
 #include "../song/links/type.hpp"
 #include "../song/links/target.hpp"
 
-typedef std::pair<ItemType, int> InputKey;
-typedef LinkKey OutputKey;
+using InputKey = std::pair<ItemType, int>;
+using OutputKey = LinkKey;
 
 struct NodeIdentifier {
     Target type;

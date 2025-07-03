@@ -6,7 +6,7 @@
 #include <fstream>
 #include <vector>
 
-typedef std::array<uint8_t, UINT8_MAX> OrderSequences;
+using OrderSequences = std::array<uint8_t, UINT8_MAX>;
 
 struct Order {
     uint8_t order_length;
@@ -16,7 +16,7 @@ struct Order {
     static Order *deserialize(std::ifstream &file);
 } __attribute__((packed));
 
-typedef std::vector<Order *> Orders;
+using Orders = std::vector<Order *>;
 
 constexpr size_t ORDER_LENGTH = offsetof(Order, order_length);
 constexpr size_t ORDER_SEQUENCES = offsetof(Order, sequences);

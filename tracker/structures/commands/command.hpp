@@ -168,7 +168,7 @@ struct CommandAddDwordValue {
     uint16_t offset = 0;
 } __attribute__((packed));
 
-typedef std::array<Command, MAX_COMMANDS_SEQUENCES> CommandsArray;
+using CommandsArray = std::array<Command, MAX_COMMANDS_SEQUENCES>;
 
 bool is_instruction_linkable(const Instruction instruction);
 bool is_instruction_linkable(const uint8_t instruction);

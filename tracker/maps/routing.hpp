@@ -13,8 +13,7 @@ enum RoutingConstraints {
     ROUTING_NO_CONSTRAINTS = -1,
 };
 
-typedef std::tuple<std::vector<size_t>, std::vector<std::string>, std::vector<uint16_t>, std::vector<TargetVariableType>>
-    RoutingTuple;
+using RoutingTuple = std::tuple<std::vector<size_t>, std::vector<std::string>, std::vector<uint16_t>, std::vector<TargetVariableType>>;
 
 struct RoutingItem {
     std::string label;
