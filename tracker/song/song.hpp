@@ -39,33 +39,33 @@ class Song {
 
     void generate_targets_asm(
         std::stringstream &asm_content,
-        const CompilationTarget compilation_target,
-        const char separator = '/'
+        CompilationTarget compilation_target,
+        char separator = '/'
     ) const;
     void generate_header_vector(
         std::stringstream &asm_content,
         const std::string &name,
         const std::string &short_name,
-        const size_t size,
-        const char separator = '/'
+        size_t size,
+        char separator = '/'
     ) const;
     std::string generate_header_asm_file() const;
-    std::string generate_data_asm_file(const CompilationTarget compilation_target, const char separator = '/') const;
+    std::string generate_data_asm_file(CompilationTarget compilation_target, char separator = '/') const;
 
     void set_used_flags(std::stringstream &asm_content) const;
     nlohmann::json create_header_json() const;
     nlohmann::json import_header(const std::string &directory);
     nlohmann::json save_gui_state() const;
 
-    std::string get_element_path(const std::string &directory, const std::string &prefix, const size_t i, const char separator) const;
-    std::string get_element_path(const std::filesystem::path &directory, const std::string &prefix, const size_t i) const;
+    std::string get_element_path(const std::string &directory, const std::string &prefix, size_t i, char separator) const;
+    std::string get_element_path(const std::filesystem::path &directory, const std::string &prefix, size_t i) const;
     void calculate_song_length();
 
     void serialize_dsp(std::ofstream &file, void *dsp) const;
     void *deserialize_dsp(std::ifstream &file) const;
     void *deserialize_oscillator(std::ifstream &file) const;
 
-    void export_all(const std::filesystem::path &directory, const CompilationTarget compilation_target) const;
+    void export_all(const std::filesystem::path &directory, CompilationTarget compilation_target) const;
     void import_all(const std::filesystem::path &directory, const nlohmann::json &json);
 
     void export_header_asm_file(const std::filesystem::path &directory) const;

@@ -15,18 +15,24 @@ using AudioHistory = std::array<std::deque<_Float32>, MAX_OUTPUT_CHANNELS>;
 
 class AudioEngine {
   public:
-    AudioEngine(PortAudioDriver &driver);
+    explicit AudioEngine(PortAudioDriver &driver);
     ~AudioEngine();
 
-    void play(const uint16_t from_row = 0);
+    // Delete copy/move operations - this class manages threads and has reference members
+    AudioEngine(const AudioEngine &) = delete;
+    AudioEngine &operator=(const AudioEngine &) = delete;
+    AudioEngine(AudioEngine &&) = delete;
+    AudioEngine &operator=(AudioEngine &&) = delete;
+
+    void play(uint16_t from_row = 0);
     void pause();
     void stop();
     bool is_error();
     bool is_playing() const;
     bool is_paused() const;
 
-    void skip_rows(const uint16_t from_row = 0);
-    void set_output_channels(const int channels);
+    void skip_rows(uint16_t from_row = 0);
+    void set_output_channels(int channels);
 
     const AudioHistory &get_history() const;
     void clear_history();

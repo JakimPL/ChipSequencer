@@ -11,7 +11,7 @@
 
 class PortAudioDriver : public Driver {
   public:
-    PortAudioDriver(
+    explicit PortAudioDriver(
         unsigned long frames_per_buffer = DEFAULT_FRAMES_PER_BUFFER
     );
 
@@ -30,7 +30,7 @@ class PortAudioDriver : public Driver {
     std::vector<_Float32> pingpong_buffer;
     unsigned long get_frames_per_buffer() const;
     size_t get_output_channels() const;
-    void set_output_channels(const int channels);
+    void set_output_channels(int channels);
 
     std::mutex buffer_mutex;
     std::condition_variable buffer_cv;

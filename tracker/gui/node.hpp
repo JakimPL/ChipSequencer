@@ -20,7 +20,7 @@ struct NodeIdentifier {
 
     NodeIdentifier();
     NodeIdentifier(Target type, size_t id);
-    NodeIdentifier(const std::string &string);
+    explicit NodeIdentifier(const std::string &string);
     bool operator==(const NodeIdentifier &other) const;
     bool operator<(const NodeIdentifier &other) const;
     std::string to_string() const;

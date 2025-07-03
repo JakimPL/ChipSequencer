@@ -28,39 +28,12 @@ Checks: >
   -modernize-avoid-c-arrays,
   -readability-identifier-naming,
   -misc-non-private-member-variables-in-classes,
-  -cppcoreguidelines-pro-type-member-init
-
-CheckOptions:
-  - key: readability-identifier-naming.NamespaceCase
-    value: lower_case
-  - key: readability-identifier-naming.ClassCase
-    value: CamelCase
-  - key: readability-identifier-naming.StructCase
-    value: CamelCase
-  - key: readability-identifier-naming.FunctionCase
-    value: camelCase
-  - key: readability-identifier-naming.VariableCase
-    value: camelCase
-  - key: readability-identifier-naming.ConstantCase
-    value: UPPER_CASE
-  - key: readability-identifier-naming.EnumCase
-    value: CamelCase
-  - key: readability-identifier-naming.EnumConstantCase
-    value: UPPER_CASE
-  - key: readability-identifier-naming.MemberCase
-    value: camelCase
-  - key: readability-identifier-naming.ParameterCase
-    value: camelCase
-  - key: readability-identifier-naming.MacroDefinitionCase
-    value: UPPER_CASE
-  - key: cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor
-    value: true
-  - key: modernize-loop-convert.MaxCopySize
-    value: 16
-  - key: modernize-loop-convert.MinConfidence
-    value: reasonable
-  - key: modernize-use-nullptr.NullMacros
-    value: 'NULL'
+  -cppcoreguidelines-pro-type-member-init,
+  -cppcoreguidelines-avoid-c-arrays,
+  -hicpp-avoid-c-arrays,
+  -hicpp-member-init,
+  -cppcoreguidelines-non-private-member-variables-in-classes,
+  -google-runtime-int
 
 WarningsAsErrors: True
 HeaderFilterRegex: '^(?!.*/(imgui|json|nfd|fftw|build)/).*$'

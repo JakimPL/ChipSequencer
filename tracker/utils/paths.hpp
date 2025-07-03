@@ -3,8 +3,8 @@
 #include <filesystem>
 #include <utility>
 
-std::pair<std::filesystem::path, std::filesystem::path> prepare_temp_directory(const bool clean_temp);
-void remove_temp_directory(const std::filesystem::path &directory, const bool clear_temp);
+std::pair<std::filesystem::path, std::filesystem::path> prepare_temp_directory(bool clean_temp);
+void remove_temp_directory(const std::filesystem::path &directory, bool clear_temp);
 
 std::filesystem::path get_base_path();
 std::filesystem::path get_executable_directory();

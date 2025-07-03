@@ -670,7 +670,7 @@ bool draw_output_parameter(GUIPanel *owner, OutputType &output_type, const LinkK
     return value_changed;
 }
 
-void draw_output_parameter_generic(GUIPanel *owner, OutputType &output_type, const std::vector<std::string> &names, const std::string label) {
+void draw_output_parameter_generic(GUIPanel *owner, OutputType &output_type, const std::vector<std::string> &names, const std::string &label) {
     if (names.empty()) {
         const std::string text = "No " + to_lower(label) + "s available.";
         ImGui::Text("%s", text.c_str());

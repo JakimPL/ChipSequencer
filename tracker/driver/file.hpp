@@ -8,11 +8,11 @@ class FileDriver : public Driver {
     void terminate() override;
     void play() override;
 
-    void set_length(const size_t length);
-    void set_sample_rate(const int rate);
-    void set_output_channels(const int channels);
+    void set_length(size_t length);
+    void set_sample_rate(int rate);
+    void set_output_channels(int channels);
     void set_output_filename(const std::string &filename);
-    void set(const std::string &filename, const int rate, const int channels, const size_t length);
+    void set(const std::string &filename, int rate, int channels, size_t length);
 
   private:
     void save_output_to_file();
