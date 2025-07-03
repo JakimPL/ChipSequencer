@@ -41,6 +41,7 @@ class GUICommandsSequencesPanel : public GUIPanel {
     void set_current_command();
 
     void perform_commands_action(const std::string &action_name, const PatternSelectionChange<CommandValue> &changes);
+    void perform_command_action(const int row, const CommandValue &old_command, const CommandValue &new_command);
 
     void draw_sequence();
     void draw_sequence_length();

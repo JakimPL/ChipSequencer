@@ -267,6 +267,13 @@ void GUICommandsSequencesPanel::perform_commands_action(const std::string &actio
     perform_action_pattern_selection<CommandValue>(this, {Target::COMMANDS_SEQUENCE}, action_name, changes, function);
 }
 
+void GUICommandsSequencesPanel::perform_command_action(const int row, const CommandValue &old_command, const CommandValue &new_command) {
+    const PatternRow pattern_row = {0, 0, row};
+    const uint16_t offset = COMMANDS_SEQUENCE_DATA + sizeof(Command) * row;
+    const LinkKey key = {Target::COMMANDS_SEQUENCE, sequence_index, offset};
+    perform_action_command(this, key, pattern_row, old_command, new_command);
+}
+
 void GUICommandsSequencesPanel::draw_sequence_length() {
     const size_t old_size = current_sequence.pattern.steps;
     const LinkKey key = {Target::SPECIAL, sequence_index, SPECIAL_COMMANDS_SEQUENCE_LENGTH};
@@ -434,8 +441,12 @@ void GUICommandsSequencesPanel::draw_dialog_box() {
         return;
     }
 
+    if (!ImGui::IsPopupOpen("Edit command")) {
+        ImGui::OpenPopup("Edit command");
+    }
+
     ImGui::SetNextWindowSize(ImVec2(450.0f, 250.0f), ImGuiCond_FirstUseEver);
-    if (ImGui::Begin("Edit command", &edit_dialog_box.visible, ImGuiWindowFlags_NoCollapse)) {
+    if (ImGui::BeginPopupModal("Edit command", &edit_dialog_box.visible, ImGuiWindowFlags_NoCollapse)) {
         edit_dialog_box.instruction = clamp_index(edit_dialog_box.instruction, simple_instruction_names.size());
 
         ImGui::Text("Command:");
@@ -492,7 +503,10 @@ void GUICommandsSequencesPanel::draw_dialog_box() {
         GUIAction action = draw_dialog_box_bottom();
         switch (action) {
         case GUIAction::OK: {
+            const CommandValue old_command = current_sequence.pattern.get_command(edit_dialog_box.item);
             set_current_command();
+            const CommandValue new_command = current_sequence.pattern.get_command(edit_dialog_box.item);
+            perform_command_action(edit_dialog_box.item, old_command, new_command);
         }
         case GUIAction::Cancel: {
             edit_dialog_box.visible = false;
@@ -504,7 +518,7 @@ void GUICommandsSequencesPanel::draw_dialog_box() {
         }
         }
 
-        ImGui::End();
+        ImGui::EndPopup();
     }
 }
 
@@ -567,7 +581,13 @@ void GUICommandsSequencesPanel::check_keyboard_input() {
         return;
     }
 
+    const int old_row = current_sequence.pattern.current_row;
+    const CommandValue old_command = current_sequence.pattern.is_row_valid(current_sequence.pattern.current_row) ? current_sequence.pattern.get_command(old_row) : CommandValue{"", ""};
     current_sequence.pattern.handle_input();
+    if (!old_command.first.empty() || !old_command.second.empty()) {
+        const CommandValue new_command = current_sequence.pattern.get_command(old_row);
+        perform_command_action(old_row, old_command, new_command);
+    }
 }
 
 void GUICommandsSequencesPanel::set_commands(const std::map<PatternRow, CommandValue> &commands_values) {

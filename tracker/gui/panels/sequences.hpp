@@ -34,6 +34,7 @@ class GUISequencesPanel : public GUIPanel {
     void paste_selection();
 
     void perform_notes_action(const std::string &action_name, const PatternSelectionChange<uint8_t> &changes);
+    void perform_note_action(const int row, const uint8_t old_note, const uint8_t new_note);
 
     void draw_sequence_length();
     void draw_sequence();

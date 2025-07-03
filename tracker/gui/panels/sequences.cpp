@@ -292,6 +292,13 @@ void GUISequencesPanel::perform_notes_action(const std::string &action_name, con
     perform_action_pattern_selection<uint8_t>(this, {Target::SEQUENCE}, action_name, changes, function);
 }
 
+void GUISequencesPanel::perform_note_action(const int row, const uint8_t old_note, const uint8_t new_note) {
+    const PatternRow pattern_row = {0, 0, row};
+    const uint16_t offset = SEQUENCE_NOTES + sizeof(Note) * row;
+    const LinkKey key = {Target::SEQUENCE, sequence_index, offset};
+    perform_action_note(this, key, pattern_row, old_note, new_note);
+}
+
 void GUISequencesPanel::open_edit_dialog_box(const int item) {
     if (item < 0 || item >= current_sequence.pattern.steps) {
         return;
@@ -308,8 +315,12 @@ void GUISequencesPanel::draw_dialog_box() {
         return;
     }
 
+    if (!ImGui::IsPopupOpen("Edit note")) {
+        ImGui::OpenPopup("Edit note");
+    }
+
     ImGui::SetNextWindowSize(ImVec2(450.0f, 100.0f), ImGuiCond_FirstUseEver);
-    if (ImGui::Begin("Edit note", &edit_dialog_box.visible, ImGuiWindowFlags_NoCollapse)) {
+    if (ImGui::BeginPopupModal("Edit note", &edit_dialog_box.visible, ImGuiWindowFlags_NoCollapse)) {
         std::vector<std::string> note_names = get_note_names();
 
         ImGui::Text("Note:");
@@ -321,8 +332,10 @@ void GUISequencesPanel::draw_dialog_box() {
         GUIAction action = draw_dialog_box_bottom();
         switch (action) {
         case GUIAction::OK: {
-            const int note = mod(edit_dialog_box.note + NOTE_CUT, 256);
+            const uint8_t old_note = current_sequence.pattern.get_note(edit_dialog_box.item);
+            const uint8_t note = mod(edit_dialog_box.note + NOTE_CUT, 256);
             set_note(edit_dialog_box.item, note);
+            perform_note_action(edit_dialog_box.item, old_note, note);
         }
         case GUIAction::Cancel: {
             edit_dialog_box.visible = false;
@@ -334,7 +347,7 @@ void GUISequencesPanel::draw_dialog_box() {
         }
         }
 
-        ImGui::End();
+        ImGui::EndPopup();
     }
 }
 
@@ -389,11 +402,8 @@ void GUISequencesPanel::check_keyboard_input() {
     const uint8_t old_note = current_sequence.pattern.is_row_valid(current_sequence.pattern.current_row) ? current_sequence.pattern.notes[old_row] : NOTES;
     current_sequence.pattern.handle_input();
     if (old_note != NOTES) {
-        const uint8_t new_note = current_sequence.pattern.notes[old_row];
-        const PatternRow pattern_row = {0, 0, old_row};
-        const uint16_t offset = SEQUENCE_NOTES + sizeof(Note) * old_row;
-        const LinkKey key = {Target::SEQUENCE, sequence_index, offset};
-        perform_action_note(this, key, pattern_row, old_note, new_note);
+        const uint8_t new_note = current_sequence.pattern.get_note(old_row);
+        perform_note_action(old_row, old_note, new_note);
     }
 }
 
