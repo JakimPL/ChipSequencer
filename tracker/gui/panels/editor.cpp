@@ -7,6 +7,7 @@
 #include "../utils.hpp"
 #include "../history/manager.hpp"
 #include "../shortcuts/manager.hpp"
+#include "../clipboard/clipboard.hpp"
 #include "editor.hpp"
 
 GUIEditorPanel::GUIEditorPanel(const bool visible, const bool windowed)
@@ -29,6 +30,10 @@ void GUIEditorPanel::draw_tabs() {
         }
         if (ImGui::BeginTabItem("History")) {
             draw_history();
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Clipboard")) {
+            draw_clipboard();
             ImGui::EndTabItem();
         }
         ImGui::EndTabBar();
@@ -136,6 +141,107 @@ void GUIEditorPanel::draw_history() {
 
         if (i == static_cast<int>(current_index) - 1 || !is_applied) {
             ImGui::PopStyleColor();
+        }
+    }
+
+    ImGui::Columns(1);
+    ImGui::EndDisabled();
+    ImGui::EndChild();
+}
+
+void GUIEditorPanel::draw_clipboard() {
+    auto get_category_name = [](ClipboardCategory category) -> const char * {
+        switch (category) {
+        case ClipboardCategory::Notes:
+            return "Notes";
+        case ClipboardCategory::Commands:
+            return "Commands";
+        case ClipboardCategory::None:
+        default:
+            return "Unknown";
+        }
+    };
+
+    ImGui::BeginChild("ClipboardPanel", ImVec2(0, 0), false);
+    ImGui::BeginDisabled(gui.is_playing());
+    ImGui::Separator();
+
+    bool has_any_items = false;
+
+    for (auto category : {ClipboardCategory::Notes, ClipboardCategory::Commands}) {
+        const auto *items = clipboard.get_items(category);
+        if (items && !items->empty()) {
+            has_any_items = true;
+            break;
+        }
+    }
+
+    if (!has_any_items) {
+        ImGui::TextColored(GUI_TEXT_COLOR_UNAVAILABLE, "No clipboard items yet.");
+        ImGui::EndDisabled();
+        ImGui::EndChild();
+        return;
+    }
+
+    const float total_width = ImGui::GetContentRegionAvail().x;
+    ImGui::Columns(3, "ClipboardColumns", false);
+    ImGui::SetColumnWidth(0, total_width * 0.2f);
+    ImGui::SetColumnWidth(1, total_width * 0.6f);
+
+    ImGui::Text("Category");
+    ImGui::NextColumn();
+    ImGui::Text("Item");
+    ImGui::NextColumn();
+    ImGui::Text("Position");
+    ImGui::NextColumn();
+    ImGui::Separator();
+
+    for (auto category : {ClipboardCategory::Notes, ClipboardCategory::Commands}) {
+        const auto *items = clipboard.get_items(category);
+        if (!items || items->empty()) {
+            continue;
+        }
+
+        const char *category_name = get_category_name(category);
+
+        for (size_t i = 0; i < items->size(); ++i) {
+            const auto &item = (*items)[i];
+
+            if (i == 0) {
+                ImGui::Text("%s", category_name);
+            }
+
+            ImGui::NextColumn();
+
+            const std::string item_label = item->name + "##" + std::to_string(static_cast<int>(category)) + "_" + std::to_string(i);
+            char label[GUI_MAX_HISTORY_ITEM_LENGTH];
+            copy_string_to_buffer(item_label.c_str(), label, sizeof(label));
+
+            if (i == 0) {
+                ImGui::PushStyleColor(ImGuiCol_Text, GUI_CLIPBOARD_TEXT_COLOR_RECENT);
+            } else {
+                ImGui::PushStyleColor(ImGuiCol_Text, GUI_CLIPBOARD_TEXT_COLOR_OLDER);
+            }
+
+            if (ImGui::Selectable(label, false, ImGuiSelectableFlags_SpanAllColumns)) {
+                clipboard.move_item_to_front(category, i);
+            }
+
+            if (ImGui::IsItemHovered()) {
+                ImGui::BeginTooltip();
+                ImGui::Text("Click to move to front (making it the active clipboard item)");
+                ImGui::EndTooltip();
+            }
+
+            ImGui::PopStyleColor();
+            ImGui::NextColumn();
+
+            if (i == 0) {
+                ImGui::Text("Most recent");
+            } else {
+                ImGui::Text("%zu", i + 1);
+            }
+            ImGui::NextColumn();
         }
     }
 

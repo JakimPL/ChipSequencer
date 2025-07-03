@@ -21,6 +21,9 @@ class Clipboard {
     void add_item(std::unique_ptr<ClipboardItem> item);
     ClipboardItem *get_recent_item(const ClipboardCategory category) const;
 
+    const std::deque<std::unique_ptr<ClipboardItem>> *get_items(const ClipboardCategory category) const;
+    void move_item_to_front(const ClipboardCategory category, size_t index);
+
   private:
     std::unordered_map<ClipboardCategory, std::deque<std::unique_ptr<ClipboardItem>>> items;
 };

@@ -34,3 +34,28 @@ ClipboardItem *Clipboard::get_recent_item(const ClipboardCategory category) cons
 
     return nullptr;
 }
+
+const std::deque<std::unique_ptr<ClipboardItem>> *Clipboard::get_items(const ClipboardCategory category) const {
+    auto it = items.find(category);
+    if (it != items.end()) {
+        return &it->second;
+    }
+
+    return nullptr;
+}
+
+void Clipboard::move_item_to_front(const ClipboardCategory category, size_t index) {
+    auto it = items.find(category);
+    if (it == items.end() || index >= it->second.size()) {
+        return;
+    }
+
+    auto &category_items = it->second;
+    if (index == 0) {
+        return;
+    }
+
+    auto item = std::move(category_items[index]);
+    category_items.erase(category_items.begin() + index);
+    category_items.push_front(std::move(item));
+}
