@@ -6,6 +6,8 @@ endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 project(ChipSequencer)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -17,3 +19,4 @@ include(cmake/Dependencies.cmake)
 include(cmake/Assembly.cmake)
 include(cmake/ThirdParty.cmake)
 include(cmake/Application.cmake)
+include(cmake/ClangTidy.cmake)
