@@ -50,9 +50,9 @@ class LinkManager {
     std::pair<void *, LinkKey> get_pointer_and_key(size_t index) const;
     size_t find_pointer_id_by_key(LinkKey key) const;
 
-    std::vector<std::pair<ItemType, uint8_t>> find_dependencies(const Target target, const size_t index) const;
+    std::vector<std::pair<ItemType, uint8_t>> find_dependencies(Target target, size_t index) const;
     void remove_dependencies(Target target, size_t index);
-    void realign_links(Target target, size_t index, bool removal, const ItemType type);
+    void realign_links(Target target, size_t index, bool removal, ItemType type);
     void realign_links(Target target, size_t index, bool removal);
 
     void capture_parameters();

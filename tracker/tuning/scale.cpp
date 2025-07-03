@@ -72,7 +72,9 @@ std::string ScaleComposer::render(const std::string &name, int offset) const {
     if (edo == 12 && offset == -1) {
         if (name == "E") {
             return "D#";
-        } else if (name == "B") {
+        }
+
+        if (name == "B") {
             return "A#";
         }
     }

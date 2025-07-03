@@ -37,83 +37,83 @@ class Song {
 
     bool clear_temp = false;
 
-    void generate_targets_asm(
+    static void generate_targets_asm(
         std::stringstream &asm_content,
         CompilationTarget compilation_target,
         char separator = '/'
-    ) const;
-    void generate_header_vector(
+    );
+    static void generate_header_vector(
         std::stringstream &asm_content,
         const std::string &name,
         const std::string &short_name,
         size_t size,
         char separator = '/'
-    ) const;
+    );
     std::string generate_header_asm_file() const;
     std::string generate_data_asm_file(CompilationTarget compilation_target, char separator = '/') const;
 
     void set_used_flags(std::stringstream &asm_content) const;
     nlohmann::json create_header_json() const;
     nlohmann::json import_header(const std::string &directory);
-    nlohmann::json save_gui_state() const;
+    static nlohmann::json save_gui_state();
 
-    std::string get_element_path(const std::string &directory, const std::string &prefix, size_t i, char separator) const;
-    std::string get_element_path(const std::filesystem::path &directory, const std::string &prefix, size_t i) const;
+    static std::string get_element_path(const std::string &directory, const std::string &prefix, size_t i, char separator);
+    static std::string get_element_path(const std::filesystem::path &directory, const std::string &prefix, size_t i);
     void calculate_song_length();
 
-    void serialize_dsp(std::ofstream &file, void *dsp) const;
-    void *deserialize_dsp(std::ifstream &file) const;
-    void *deserialize_oscillator(std::ifstream &file) const;
+    static void serialize_dsp(std::ofstream &file, void *dsp);
+    static void *deserialize_dsp(std::ifstream &file);
+    static void *deserialize_oscillator(std::ifstream &file);
 
     void export_all(const std::filesystem::path &directory, CompilationTarget compilation_target) const;
-    void import_all(const std::filesystem::path &directory, const nlohmann::json &json);
+    static void import_all(const std::filesystem::path &directory, const nlohmann::json &json);
 
     void export_header_asm_file(const std::filesystem::path &directory) const;
     void export_data_asm_file(const std::filesystem::path &directory, const CompilationTarget compilation_target) const;
     void export_header(const std::filesystem::path &directory) const;
-    void export_gui_state(const std::filesystem::path &directory) const;
-    void export_lock_registry(const std::filesystem::path &directory) const;
+    static void export_gui_state(const std::filesystem::path &directory);
+    static void export_lock_registry(const std::filesystem::path &directory);
 
     template <typename T>
-    void export_series(const std::filesystem::path &directory, const std::string &prefix, const std::vector<T> &series, const std::vector<size_t> &sizes) const;
+    static void export_series(const std::filesystem::path &directory, const std::string &prefix, const std::vector<T> &series, const std::vector<size_t> &sizes);
 
     template <typename T>
-    void export_arrays(const std::filesystem::path &directory, const std::string &prefix, const std::vector<T> &arrays) const;
+    static void export_arrays(const std::filesystem::path &directory, const std::string &prefix, const std::vector<T> &arrays);
 
-    void export_channels(const std::filesystem::path &directory) const;
-    void export_dsps(const std::filesystem::path &directory) const;
-    void export_commands_sequences(const std::filesystem::path &directory) const;
-    void export_links(const std::filesystem::path &filename) const;
+    static void export_channels(const std::filesystem::path &directory);
+    static void export_dsps(const std::filesystem::path &directory);
+    static void export_commands_sequences(const std::filesystem::path &directory);
+    static void export_links(const std::filesystem::path &filename);
 
-    void import_channels(const std::filesystem::path &directory, const nlohmann::json &json);
-    void import_dsps(const std::filesystem::path &directory, const nlohmann::json &json);
-    void import_links(const std::filesystem::path &directory, const nlohmann::json &json);
+    static void import_channels(const std::filesystem::path &directory, const nlohmann::json &json);
+    static void import_dsps(const std::filesystem::path &directory, const nlohmann::json &json);
+    static void import_links(const std::filesystem::path &directory, const nlohmann::json &json);
 
-    void import_envelopes(const std::filesystem::path &directory, const nlohmann::json &json);
-    void import_sequences(const std::filesystem::path &directory, const nlohmann::json &json);
-    void import_orders(const std::filesystem::path &directory, const nlohmann::json &json);
-    void import_wavetables(const std::filesystem::path &directory, const nlohmann::json &json);
-    void import_oscillators(const std::filesystem::path &directory, const nlohmann::json &json);
-    void import_commands_sequences(const std::filesystem::path &directory, const nlohmann::json &json);
-    void import_commands_channels(const std::filesystem::path &directory, const nlohmann::json &json);
-    void import_gui_state(const std::filesystem::path &directory);
-    void import_lock_registry(const std::filesystem::path &directory);
+    static void import_envelopes(const std::filesystem::path &directory, const nlohmann::json &json);
+    static void import_sequences(const std::filesystem::path &directory, const nlohmann::json &json);
+    static void import_orders(const std::filesystem::path &directory, const nlohmann::json &json);
+    static void import_wavetables(const std::filesystem::path &directory, const nlohmann::json &json);
+    static void import_oscillators(const std::filesystem::path &directory, const nlohmann::json &json);
+    static void import_commands_sequences(const std::filesystem::path &directory, const nlohmann::json &json);
+    static void import_commands_channels(const std::filesystem::path &directory, const nlohmann::json &json);
+    static void import_gui_state(const std::filesystem::path &directory);
+    static void import_lock_registry(const std::filesystem::path &directory);
 
-    void compile_sources(const std::string &directory, const std::string &filename, const CompilationScheme scheme, const std::string platform = "linux") const;
-    void compress_directory(const std::string &directory, const std::string &output_file) const;
+    static void compile_sources(const std::string &directory, const std::string &filename, CompilationScheme scheme, const std::string &platform = "linux");
+    static void compress_directory(const std::string &directory, const std::string &output_file);
     void decompress_archive(const std::string &output_file, const std::string &directory);
 
-    void update_sizes();
+    static void update_sizes();
     void clear_data();
 
-    std::set<size_t> get_channel_orders() const;
-    std::set<size_t> get_commands_channel_orders() const;
+    static std::set<size_t> get_channel_orders();
+    static std::set<size_t> get_commands_channel_orders();
 
     void add_dsp_dependencies(
         std::set<std::string> &dependencies,
         std::vector<std::string> &names,
         const std::vector<Link> &links,
-        const size_t dsp_index
+        size_t dsp_index
     ) const;
 
   public:
@@ -123,7 +123,7 @@ class Song {
     void new_song();
     void load_from_file(const std::string &filename);
     void save_to_file(const std::string &filename);
-    void compile(const std::string &filename, const CompilationScheme scheme, const CompilationTarget compilation_target) const;
+    void compile(const std::string &filename, CompilationScheme scheme, const CompilationTarget compilation_target) const;
     void render(const std::string &filename);
 
     std::string get_title() const;
@@ -133,7 +133,7 @@ class Song {
     void set_author(const std::string &author);
     void set_message(const std::string &message);
 
-    void change_tuning(const uint8_t new_edo, const double base_frequency);
+    void change_tuning(uint8_t new_edo, double base_frequency);
 
     uint16_t get_max_rows();
     uint64_t get_song_length();
@@ -189,9 +189,9 @@ class Song {
     std::vector<std::string> find_commands_sequence_dependencies(const size_t sequence_index) const;
     std::vector<std::string> find_dsp_dependencies(const size_t dsp_index) const;
 
-    size_t calculate_dsps(const Effect effect) const;
-    size_t calculate_oscillators(const Generator generator) const;
-    size_t calculate_commands(const Instruction instruction) const;
+    static size_t calculate_dsps(const Effect effect);
+    static size_t calculate_oscillators(const Generator generator);
+    static size_t calculate_commands(const Instruction instruction);
     float calculate_real_bpm() const;
     float get_row_duration() const;
 };

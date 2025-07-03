@@ -9,7 +9,7 @@ std::pair<int, std::string> run_command(const std::string &command) {
     FILE *pipe = popen(full_command.c_str(), "r");
 #endif
 
-    if (!pipe) {
+    if (pipe == nullptr) {
         return {-1, "Failed to execute command"};
     }
 

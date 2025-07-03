@@ -105,8 +105,8 @@ void FrequencyTable::assign_note_names() {
     note_values.clear();
     note_names.clear();
     for (size_t i = 0; i < notes; ++i) {
-        const int difference = i - a4_index;
-        const int index = mod(difference + a_index, edo);
+        const int difference = static_cast<int>(i) - a4_index;
+        const int index = mod(difference + static_cast<int>(a_index), edo);
 
         const auto note_name = scale[index];
         const int octave = 4 + static_cast<int>(std::floor((difference + static_cast<int>(a_index)) / static_cast<double>(edo)));

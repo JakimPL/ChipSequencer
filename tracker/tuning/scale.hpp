@@ -20,6 +20,6 @@ class ScaleComposer {
     int a_index = -1;
     std::array<std::string, MAX_EDO> scale;
 
-    ptrdiff_t get_ordered_index(const std::string &note_name);
+    static ptrdiff_t get_ordered_index(const std::string &note_name);
     std::string render(const std::string &name, int offset) const;
 };

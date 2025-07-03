@@ -12,7 +12,8 @@ endif()
 
 if(CLANG_TIDY_EXE)
     file(GLOB_RECURSE PROJECT_SOURCES
-        "tracker/main.cpp"
+        "tracker/*.cpp"
+        "tracker/**/*.cpp"
     )
 
     add_custom_target(clang-tidy

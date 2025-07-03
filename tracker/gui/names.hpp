@@ -96,10 +96,10 @@ const std::vector<std::string> simple_instruction_names = {
     "Change value",
 };
 
-std::string get_note_name(const uint8_t note_value);
-std::string get_note_octave(const uint8_t note_value);
-uint8_t get_note_value(const std::string &note_name, const int octave);
-std::string get_full_note_name(const uint8_t note_value);
+std::string get_note_name(uint8_t note_value);
+std::string get_note_octave(uint8_t note_value);
+uint8_t get_note_value(const std::string &note_name, int octave);
+std::string get_full_note_name(uint8_t note_value);
 std::string get_command_name(const CommandValue &command_value);
 
 std::vector<std::string> get_note_names();

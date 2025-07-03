@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <string>
 
 int mod(int a, int b);
 void set_flag(uint8_t &flag, const uint8_t bit, const bool value);

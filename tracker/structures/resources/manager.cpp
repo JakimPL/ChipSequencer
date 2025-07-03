@@ -19,7 +19,7 @@ T *ResourceManager::allocate(Args &&...args) {
 }
 
 void ResourceManager::deallocate(void *ptr) {
-    if (deleters.count(ptr)) {
+    if (deleters.count(ptr) != 0u) {
         deleters[ptr](ptr);
         deleters.erase(ptr);
     }

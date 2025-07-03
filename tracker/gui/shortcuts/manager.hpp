@@ -19,10 +19,10 @@ class ShortcutManager {
         const ShortcutAction id,
         const std::function<void()> &action
     );
-    const Shortcut &get_shortcut(const ShortcutAction id) const;
-    std::string get_shortcut_display(const ShortcutAction id) const;
+    const Shortcut &get_shortcut(ShortcutAction id) const;
+    std::string get_shortcut_display(ShortcutAction id) const;
     void process_shortcuts() const;
-    void execute_action(const ShortcutAction id) const;
+    void execute_action(ShortcutAction id) const;
     bool is_shortcut_pressed(const ShortcutAction &action) const;
     bool is_shortcut_pressed(const Shortcut &shortcut) const;
 

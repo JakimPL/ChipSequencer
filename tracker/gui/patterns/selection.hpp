@@ -58,14 +58,14 @@ struct PatternSelection {
     int channel_end = -1;
 
     void select(
-        const int start,
-        const int end,
-        const bool command = false,
-        const size_t channel_start = 0,
-        const size_t channel_end = 0
+        int start,
+        int end,
+        bool command = false,
+        size_t channel_start = 0,
+        size_t channel_end = 0
     );
-    bool is_row_selected(const size_t channel_index, const int row) const;
-    void form(const bool command, const size_t channel_index, const int row);
+    bool is_row_selected(size_t channel_index, int row) const;
+    void form(bool command, size_t channel_index, int row);
     void clear();
     bool is_active() const;
     void adjust_selection();
