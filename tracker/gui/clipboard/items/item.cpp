@@ -1,9 +1,13 @@
 #include "item.hpp"
 
-ClipboardItem::ClipboardItem(ClipboardCategory cat, const std::string &nm)
-    : category(cat), name(nm) {
+ClipboardItem::ClipboardItem(ClipboardCategory cat)
+    : category(cat) {
 }
 
-std::string ClipboardItem::get_hash() const {
+const std::string &ClipboardItem::get_hash() const {
     return hash;
+}
+
+const std::string &ClipboardItem::get_name() const {
+    return name;
 }

@@ -213,7 +213,7 @@ void GUIEditorPanel::draw_clipboard() {
 
             ImGui::NextColumn();
 
-            const std::string item_label = item->name + "##" + std::to_string(static_cast<int>(category)) + "_" + std::to_string(i);
+            const std::string item_label = item->get_name() + "##" + std::to_string(static_cast<int>(category)) + "_" + std::to_string(i);
             char label[GUI_MAX_HISTORY_ITEM_LENGTH];
             copy_string_to_buffer(item_label.c_str(), label, sizeof(label));
 

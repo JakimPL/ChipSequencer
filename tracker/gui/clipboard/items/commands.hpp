@@ -10,8 +10,9 @@ typedef std::pair<std::string, std::string> CommandValue;
 typedef std::vector<std::vector<CommandValue>> PatternCommands;
 
 struct ClipboardCommands : public ClipboardItem {
-    ClipboardCommands(const std::string &nm, const PatternCommands &commands);
+    ClipboardCommands(const PatternCommands &commands);
     PatternCommands pattern_commands;
 
     void generate_hash() override;
+    void generate_name() override;
 };

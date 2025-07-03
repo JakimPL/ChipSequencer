@@ -222,7 +222,7 @@ void GUICommandsSequencesPanel::copy_selection() {
 
     pattern_commands.push_back(commands_values);
     clipboard.add_item(
-        std::make_unique<ClipboardCommands>("Sequence commands", pattern_commands)
+        std::make_unique<ClipboardCommands>(pattern_commands)
     );
 }
 

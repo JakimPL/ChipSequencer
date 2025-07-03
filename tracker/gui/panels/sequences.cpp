@@ -235,7 +235,7 @@ void GUISequencesPanel::copy_selection() {
 
     pattern_notes.push_back(notes);
     clipboard.add_item(
-        std::make_unique<ClipboardNotes>("Sequence notes", pattern_notes)
+        std::make_unique<ClipboardNotes>(pattern_notes)
     );
 }
 
