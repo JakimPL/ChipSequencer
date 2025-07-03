@@ -347,7 +347,7 @@ CommandValue CommandsPattern::get_command(const int row) const {
         return {commands[row], values[row]};
     }
 
-    return {"", ""};
+    return {"?", ""};
 }
 
 void CommandsPattern::set_command(const int row, const std::string &command, const std::string &value) {

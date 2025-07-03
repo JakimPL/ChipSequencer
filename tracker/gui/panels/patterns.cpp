@@ -772,13 +772,13 @@ void GUIPatternsPanel::check_keyboard_input() {
         if (old_note != NOTES) {
             const uint8_t new_note = pattern->get_note(old_row);
             const PatternRow pattern_row = {current_channel.index, pattern_id, old_row};
-            perform_note_action(current_row, old_note, new_note, pattern_row, pattern->sequence_index, index);
+            perform_note_action(old_note, new_note, pattern_row, pattern->sequence_index, index);
         }
     } else if (commands_pattern != nullptr) {
         const int old_row = commands_pattern->current_row;
-        const CommandValue old_command = commands_pattern->get_command(commands_index);
+        const CommandValue old_command = commands_pattern->get_command(old_row);
         handle_commands_pattern_input(commands_pattern, commands_index);
-        const CommandValue new_command = commands_pattern->get_command(commands_index);
+        const CommandValue new_command = commands_pattern->get_command(old_row);
         const PatternRow pattern_row = {current_channel.index, commands_pattern_id, old_row};
         perform_command_action(old_command, new_command, pattern_row, commands_pattern->sequence_index, commands_index);
     }
@@ -1119,8 +1119,8 @@ void GUIPatternsPanel::perform_commands_action(const std::string &action_name, c
     perform_action_pattern_selection<CommandValue>(this, {Target::COMMANDS_SEQUENCE}, action_name, changes, function);
 }
 
-void GUIPatternsPanel::perform_note_action(const int row, const uint8_t old_note, const uint8_t new_note, const PatternRow &pattern_row, const uint8_t sequence_index, const int index) {
-    const uint16_t offset = SEQUENCE_NOTES + sizeof(Note) * (row - index);
+void GUIPatternsPanel::perform_note_action(const uint8_t old_note, const uint8_t new_note, const PatternRow &pattern_row, const uint8_t sequence_index, const int index) {
+    const uint16_t offset = SEQUENCE_NOTES + sizeof(Note) * (pattern_row.row - index);
     const LinkKey key = {Target::SEQUENCE, sequence_index, offset};
     perform_action_note(this, key, pattern_row, old_note, new_note);
 }

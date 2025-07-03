@@ -582,12 +582,10 @@ void GUICommandsSequencesPanel::check_keyboard_input() {
     }
 
     const int old_row = current_sequence.pattern.current_row;
-    const CommandValue old_command = current_sequence.pattern.is_row_valid(current_sequence.pattern.current_row) ? current_sequence.pattern.get_command(old_row) : CommandValue{"", ""};
+    const CommandValue old_command = current_sequence.pattern.get_command(old_row);
     current_sequence.pattern.handle_input();
-    if (!old_command.first.empty() || !old_command.second.empty()) {
-        const CommandValue new_command = current_sequence.pattern.get_command(old_row);
-        perform_command_action(old_row, old_command, new_command);
-    }
+    const CommandValue new_command = current_sequence.pattern.get_command(old_row);
+    perform_command_action(old_row, old_command, new_command);
 }
 
 void GUICommandsSequencesPanel::set_commands(const std::map<PatternRow, CommandValue> &commands_values) {
