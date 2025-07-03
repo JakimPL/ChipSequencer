@@ -203,19 +203,21 @@ void GUICommandsSequencesPanel::delete_selection() {
         perform_action_pattern_selection<CommandValue>(this, {Target::COMMANDS_SEQUENCE}, "Delete", changes, function);
     } else {
         const int row = current_sequence.pattern.current_row;
+        const CommandValue old_command_value = current_sequence.pattern.get_command(row);
         current_sequence.pattern.clear_row(row);
+        const CommandValue new_command_value = current_sequence.pattern.get_command(row);
+        perform_command_action(row, old_command_value, new_command_value);
     }
 }
 
 void GUICommandsSequencesPanel::copy_selection() {
-    if (!selection.is_active()) {
-        return;
-    }
+    const int start = selection.is_active() ? selection.start : current_sequence.pattern.current_row;
+    const int end = selection.is_active() ? selection.end : start;
 
     std::vector<CommandValue> commands_values;
     PatternCommands pattern_commands;
 
-    for (int row = selection.start; row <= selection.end; ++row) {
+    for (int row = start; row <= end; ++row) {
         const CommandValue command_value = current_sequence.pattern.get_command(row);
         commands_values.push_back(command_value);
     }

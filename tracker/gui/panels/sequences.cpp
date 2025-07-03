@@ -216,19 +216,21 @@ void GUISequencesPanel::delete_selection() {
         perform_notes_action("Delete", changes);
     } else {
         const int row = current_sequence.pattern.current_row;
+        const uint8_t old_note = current_sequence.pattern.get_note(row);
         current_sequence.pattern.clear_row(row);
+        const uint8_t new_note = current_sequence.pattern.get_note(row);
+        perform_note_action(row, old_note, new_note);
     }
 }
 
 void GUISequencesPanel::copy_selection() {
-    if (!selection.is_active()) {
-        return;
-    }
+    const int start = selection.is_active() ? selection.start : current_sequence.pattern.current_row;
+    const int end = selection.is_active() ? selection.end : start;
 
     std::vector<uint8_t> notes;
     PatternNotes pattern_notes;
 
-    for (int row = selection.start; row <= selection.end; ++row) {
+    for (int row = start; row <= end; ++row) {
         const uint8_t note = current_sequence.pattern.get_note(row);
         notes.push_back(note);
     }
