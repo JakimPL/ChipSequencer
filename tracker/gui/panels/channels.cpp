@@ -114,7 +114,7 @@ void GUIChannelsPanel::to() const {
         if (current_channel.sync) {
             channel->flag |= FLAG_SYNC;
             channel->fraction = (current_channel.sync_numerator & 0x0F);
-            channel->fraction |= ((current_channel.sync_denominator & 0x0F) << 4);
+            channel->fraction |= ((current_channel.sync_denominator & 0x0F) << 4U);
         }
 
         channel->pitch = static_cast<uint32_t>(std::round(current_channel.pitch * 0x10000));

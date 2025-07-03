@@ -33,6 +33,6 @@ struct std::hash<LinkKey> {
         std::size_t h1 = std::hash<int>()(static_cast<int>(key.target));
         std::size_t h2 = std::hash<int>()(key.index);
         std::size_t h3 = std::hash<uint16_t>()(key.offset);
-        return h1 ^ (h2 << 1) ^ (h3 << 2);
+        return h1 ^ (h2 << 1U) ^ (h3 << 2U);
     }
 };

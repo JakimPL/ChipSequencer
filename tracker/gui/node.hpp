@@ -29,7 +29,7 @@ struct NodeIdentifier {
 template <>
 struct std::hash<NodeIdentifier> {
     std::size_t operator()(const NodeIdentifier &k) const {
-        return (std::hash<int>()(static_cast<int>(k.type)) ^ (std::hash<size_t>()(k.id) << 1));
+        return (std::hash<int>()(static_cast<int>(k.type)) ^ (std::hash<size_t>()(k.id) << 1U));
     }
 };
 

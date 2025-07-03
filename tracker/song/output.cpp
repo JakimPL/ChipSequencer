@@ -7,8 +7,8 @@
 #include "output.hpp"
 
 uint8_t OutputType::set_output_flag(uint8_t &output_flag) const {
-    output_flag = operation << 6;
-    output_flag |= (variable_type << 4);
+    output_flag = operation << 6U;
+    output_flag |= (variable_type << 4U);
     output_flag |= shift;
     return output_flag;
 }
@@ -23,8 +23,8 @@ void OutputType::from_flags(const uint8_t output_flag, const uint8_t item_flag) 
     splitter_on = item_flag & FLAG_SPLITTER;
     bypass = item_flag & FLAG_BYPASS;
 
-    operation = (output_flag & MASK_OPERATION) >> 6;
-    variable_type = (output_flag & MASK_VARIABLE_TYPE) >> 4;
+    operation = (output_flag & MASK_OPERATION) >> 6U;
+    variable_type = (output_flag & MASK_VARIABLE_TYPE) >> 4U;
     shift = variable_type == 0 ? 0 : output_flag & MASK_SHIFT;
 }
 

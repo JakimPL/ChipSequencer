@@ -18,7 +18,6 @@ class AudioEngine {
     explicit AudioEngine(PortAudioDriver &driver);
     ~AudioEngine();
 
-    // Delete copy/move operations - this class manages threads and has reference members
     AudioEngine(const AudioEngine &) = delete;
     AudioEngine &operator=(const AudioEngine &) = delete;
     AudioEngine(AudioEngine &&) = delete;

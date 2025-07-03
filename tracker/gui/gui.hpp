@@ -40,6 +40,11 @@ class GUI {
     GUI();
     ~GUI();
 
+    GUI(const GUI &) = delete;
+    GUI &operator=(const GUI &) = delete;
+    GUI(GUI &&) = delete;
+    GUI &operator=(GUI &&) = delete;
+
     bool initialize();
     bool render();
     void set_font();
