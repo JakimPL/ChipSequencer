@@ -36,15 +36,15 @@ int main(int argc, char *argv[]) {
     }
 
     PortAudioDriver port_audio_driver = PortAudioDriver();
-    port_audio_driver.initialize();
+    PortAudioDriver::initialize();
     AudioEngine audio_engine(port_audio_driver);
     gui.set_audio_engine(&audio_engine);
 
     if (argc > 1) {
-        std::string filename = argv[1];
+        std::string filename(argv[1]);
         try {
             gui.open(filename);
-        } catch (std::runtime_error &exception) {
+        } catch (const std::runtime_error &exception) {
             std::cerr << "Failed to read data file: " << exception.what() << std::endl;
         }
     }

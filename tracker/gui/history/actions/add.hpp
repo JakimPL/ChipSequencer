@@ -16,7 +16,7 @@ class AddItemAction : public Action {
     AddItemAction(
         const std::string &nm,
         GUIPanel *own,
-        const LinkKey k,
+        LinkKey k,
         AddFunction add,
         RemoveFunction remove
     );

@@ -22,7 +22,7 @@ class RemoveItemAction : public Action {
     RemoveItemAction(
         const std::string &nm,
         GUIPanel *own,
-        const LinkKey k,
+        LinkKey k,
         const T &original_item,
         RemoveFunction remove,
         RestoreFunction<T> restore
@@ -30,7 +30,7 @@ class RemoveItemAction : public Action {
 
     void redo() override;
     void undo() override;
-    bool can_merge(const Action *other) const override { return false; }
-    void merge(const Action *other) override {}
+    bool can_merge(const Action * /* other */) const override { return false; }
+    void merge(const Action * /* other */) override {}
     std::string get_name() const override;
 };

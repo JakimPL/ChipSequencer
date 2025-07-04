@@ -11,8 +11,8 @@ class ChangeNoteAction : public Action {
     ChangeNoteAction(
         const std::string &nm,
         GUIPanel *own,
-        const LinkKey k,
-        const NoteChange &note_ch
+        LinkKey k,
+        NoteChange note_ch
     );
 
     void redo() override;

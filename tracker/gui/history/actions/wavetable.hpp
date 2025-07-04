@@ -11,8 +11,8 @@ class ChangeWavetableAction : public Action {
     ChangeWavetableAction(
         const std::string &nm,
         GUIPanel *own,
-        const LinkKey k,
-        const WavetableChange &wt_ch
+        LinkKey k,
+        WavetableChange wt_ch
     );
 
     void redo() override;

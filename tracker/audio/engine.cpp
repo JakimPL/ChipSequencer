@@ -1,12 +1,12 @@
+#include <csetjmp>
 #include <cstring>
 #include <iostream>
-#include <setjmp.h>
 
 #ifdef _WIN32
 #include <windows.h>
 #include <excpt.h>
 #else
-#include <signal.h>
+#include <csignal>
 #endif
 
 #include "../song/core.hpp"
@@ -56,7 +56,7 @@ static thread_local bool segfault_occurred = false;
 
 #define RESTORE_EXCEPTION_FILTER()
 
-static void segfault_handler(int signal) {
+static void segfault_handler(int /* signal */) {
     segfault_occurred = true;
     siglongjmp(jump_buffer, 1);
 }
@@ -96,9 +96,9 @@ bool AudioEngine::safe_frame() {
     if (sigsetjmp(jump_buffer, 1) == 0) {
         frame();
         return true;
-    } else {
-        return false;
     }
+
+    return false;
 #endif
 #else
     frame();
@@ -115,7 +115,7 @@ void AudioEngine::handle_frame_exception() {
 }
 
 void AudioEngine::play(const uint16_t from_row) {
-    if (!driver.initialize()) {
+    if (!PortAudioDriver::initialize()) {
         std::cerr << "Failed to initialize PortAudio." << std::endl;
         return;
     }

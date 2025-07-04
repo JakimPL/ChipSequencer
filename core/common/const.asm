@@ -82,7 +82,7 @@
 ; Since there are t * sample_rate frames, the equation is:
 ; C / v * sample_rate * t = dividend
 ; which simplifies to:
-    %define MAGIC_CONSTANT (0xFFFF << 14) / MAX_ENVELOPE_TIMER_LENGTH
+    %define MAGIC_CONSTANT ((0xFFFF << 14) / MAX_ENVELOPE_TIMER_LENGTH)
 
 ; Phases
     %define PHASE_ATTACK 0

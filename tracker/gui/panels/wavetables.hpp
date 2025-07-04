@@ -20,8 +20,8 @@ class GUIWavetablesPanel : public GUIPanel {
     std::optional<bool> load_status;
     std::optional<bool> render_status;
 
-    float cast_to_float(uint8_t value) const;
-    uint8_t cast_to_int(float value) const;
+    static float cast_to_float(uint8_t value);
+    static uint8_t cast_to_int(float value);
 
     bool is_index_valid() const;
     void draw_wavetable_length();
@@ -40,11 +40,11 @@ class GUIWavetablesPanel : public GUIPanel {
     void draw() override;
 
   public:
-    GUIWavetablesPanel(const bool visible = true, const bool windowed = true);
+    explicit GUIWavetablesPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 
     void update();
-    void set_index(const int index) override;
+    void set_index(int index) override;
 
     void from() override;
     void to() const override;

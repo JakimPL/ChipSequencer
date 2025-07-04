@@ -11,8 +11,8 @@ class ChangeCommandAction : public Action {
     ChangeCommandAction(
         const std::string &nm,
         GUIPanel *own,
-        const LinkKey k,
-        const CommandChange &cmd_ch
+        LinkKey k,
+        CommandChange cmd_ch
     );
 
     void redo() override;

@@ -5,4 +5,4 @@
 
 #include "../constants.hpp"
 
-typedef std::array<void *, MAX_TARGETS> Targets;
+using Targets = std::array<void *, MAX_TARGETS>;

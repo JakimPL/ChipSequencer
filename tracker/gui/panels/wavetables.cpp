@@ -32,7 +32,7 @@ void GUIWavetablesPanel::draw() {
 }
 
 bool GUIWavetablesPanel::select_item() {
-    std::vector<std::string> dependencies = song.find_wavetable_dependencies(wavetable_index);
+    std::vector<std::string> dependencies = Song::find_wavetable_dependencies(wavetable_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
     prepare_combo(this, wavetable_names, "##WavetableCombo", wavetable_index, {}, false, GUI_COMBO_MARGIN_RIGHT);
@@ -52,11 +52,11 @@ bool GUIWavetablesPanel::is_index_valid() const {
     return wavetable_index >= 0 && wavetable_index < wavetables.size();
 }
 
-float GUIWavetablesPanel::cast_to_float(uint8_t value) const {
+float GUIWavetablesPanel::cast_to_float(uint8_t value) {
     return (2.0f * value) / UINT8_MAX - 1.0f;
 }
 
-uint8_t GUIWavetablesPanel::cast_to_int(float value) const {
+uint8_t GUIWavetablesPanel::cast_to_int(float value) {
     return static_cast<uint8_t>(std::round((value + 1.0f) * UINT8_MAX / 2.0f));
 }
 
@@ -99,16 +99,10 @@ void GUIWavetablesPanel::to() const {
         wavetable->data[i] = value;
         buffers.wavetables[wavetable_index][i] = value;
     }
-
-    if (wavetable->wavetable_size > wavetable->wavetable_size) {
-        for (size_t i = wavetable->wavetable_size; i < wavetable->wavetable_size; ++i) {
-            wavetable->data[i] = buffers.wavetables[wavetable_index][i];
-        }
-    }
 }
 
 void GUIWavetablesPanel::add() {
-    Wavetable *new_wavetable = song.add_wavetable();
+    Wavetable *new_wavetable = Song::add_wavetable();
     if (new_wavetable == nullptr) {
         return;
     }
@@ -119,7 +113,7 @@ void GUIWavetablesPanel::add() {
 }
 
 void GUIWavetablesPanel::duplicate() {
-    Wavetable *new_wavetable = song.duplicate_wavetable(wavetable_index);
+    Wavetable *new_wavetable = Song::duplicate_wavetable(wavetable_index);
     if (new_wavetable == nullptr) {
         return;
     }
@@ -131,7 +125,7 @@ void GUIWavetablesPanel::duplicate() {
 void GUIWavetablesPanel::remove() {
     if (is_index_valid()) {
         perform_action_remove(this, {Target::WAVETABLE, wavetable_index, 0}, wavetables[wavetable_index]);
-        song.remove_wavetable(wavetable_index);
+        Song::remove_wavetable(wavetable_index);
         wavetable_index = std::max(0, wavetable_index - 1);
         update();
     }
@@ -140,7 +134,7 @@ void GUIWavetablesPanel::remove() {
 void GUIWavetablesPanel::draw_wavetable_length() {
     const size_t old_size = current_wavetable.size;
     const LinkKey key = {Target::WAVETABLE, wavetable_index, WAVETABLE_SIZE};
-    draw_number_of_items(this, "Points", "##WavetableLength", current_wavetable.size, 1, MAX_WAVETABLE_SIZE, key);
+    draw_number_of_items(this, "##WavetableLength", current_wavetable.size, 1, MAX_WAVETABLE_SIZE, key);
 
     if (old_size != current_wavetable.size) {
         current_wavetable.wave.resize(current_wavetable.size);
@@ -188,14 +182,48 @@ void GUIWavetablesPanel::draw_waveform() {
     const float y_center = canvas_p0.y + size.y / 2.0f;
     const int grid_lines = 4;
 
-    ImGuiIO &io = ImGui::GetIO();
-    ImVec2 mouse_pos = io.MousePos;
-    bool is_hovered = ImGui::IsItemHovered();
-    bool is_active = ImGui::IsItemActive();
+    const ImGuiIO &io = ImGui::GetIO();
+    const ImVec2 mouse_pos = io.MousePos;
+    const bool is_hovered = ImGui::IsItemHovered();
+
+    if (is_hovered) {
+        const float relative_x = mouse_pos.x - canvas_p0.x;
+        const float x_position = relative_x / x_step;
+
+        if (x_position >= 0.0f && x_position < static_cast<float>(data_size)) {
+            float value;
+            int point_index;
+
+            if (current_wavetable.interpolation) {
+                const int index_low = static_cast<int>(std::floor(x_position));
+                const int index_high = (index_low + 1) % static_cast<int>(data_size);
+                const float fraction = x_position - static_cast<float>(index_low);
+
+                const float value_low = current_wavetable.wave[index_low];
+                const float value_high = current_wavetable.wave[index_high];
+                value = value_low + fraction * (value_high - value_low);
+                point_index = -1;
+            } else {
+                point_index = static_cast<int>(std::round(x_position));
+                if (point_index >= static_cast<int>(data_size)) {
+                    point_index = static_cast<int>(data_size) - 1;
+                }
+                value = current_wavetable.wave[point_index];
+            }
+
+            ImGui::BeginTooltip();
+            if (point_index >= 0) {
+                ImGui::Text("Point %d: %.3f", point_index, value);
+            } else {
+                ImGui::Text("Position %.2f: %.3f", x_position, value);
+            }
+            ImGui::EndTooltip();
+        }
+    }
 
     if (is_hovered && ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
         const float relative_x = mouse_pos.x - canvas_p0.x;
-        int index = static_cast<int>(std::round(relative_x / x_step));
+        const int index = static_cast<int>(std::round(relative_x / x_step));
         if (index >= 0 && index < static_cast<int>(data_size)) {
             const int current_point = index;
             const float relative_y = mouse_pos.y - canvas_p0.y;
@@ -284,6 +312,7 @@ void GUIWavetablesPanel::save_wavetable_to_file() {
     nfdchar_t *target_path = nullptr;
     nfdresult_t result = NFD_SaveDialog("wav", nullptr, &target_path);
     if (result == NFD_OKAY) {
+        std::unique_ptr<nfdchar_t, void (*)(void *)> path_guard(target_path, free);
         std::filesystem::path wav_path(target_path);
         wav_path = check_and_correct_path_by_extension(wav_path, ".wav");
         std::cout << "Saving sample to: " << wav_path << std::endl;
@@ -306,8 +335,8 @@ void GUIWavetablesPanel::load_wavetable_from_file() {
     nfdchar_t *target_path = nullptr;
     nfdresult_t result = NFD_OpenDialog("wav", nullptr, &target_path);
     if (result == NFD_OKAY) {
+        std::unique_ptr<nfdchar_t, void (*)(void *)> path_guard(target_path, free);
         std::filesystem::path wav_path(target_path);
-        free(target_path);
         std::cout << "Loading sample from: " << wav_path << std::endl;
         try {
             Samples samples = load_wave(wav_path.string());

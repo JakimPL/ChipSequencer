@@ -5,14 +5,14 @@
 
 class FrequencyTable {
   public:
-    FrequencyTable(const ScaleComposer &scale_composer, const double a4_frequency, const int notes = NOTES);
+    FrequencyTable(const ScaleComposer &scale_composer, double a4_frequency, int notes = NOTES);
 
-    void calculate(const double a4_frequency = DEFAULT_A4_FREQUENCY);
+    void calculate(double a4_frequency = DEFAULT_A4_FREQUENCY);
 
     double get_note_frequency(uint8_t note_value) const;
     std::string get_note_name(uint8_t note_value) const;
     int get_note_octave(uint8_t note_value) const;
-    int get_note_value(const std::string &note_name, const int octave) const;
+    int get_note_value(const std::string &note_name, int octave) const;
 
     int get_min_octave() const;
     int get_max_octave() const;

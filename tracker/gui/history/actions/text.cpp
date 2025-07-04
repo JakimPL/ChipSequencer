@@ -1,4 +1,5 @@
 #include <sstream>
+#include <utility>
 
 #include "../../../utils/string.hpp"
 #include "../../constants.hpp"
@@ -9,19 +10,19 @@ ChangeTextAction<n>::ChangeTextAction(
     const std::string &nm,
     GUIPanel *own,
     const LinkKey k,
-    const TextChange<n> &txt_ch
+    TextChange<n> txt_ch
 )
-    : Action(nm, own, k), text_change(txt_ch) {
+    : Action(nm, own, k), text_change(std::move(txt_ch)) {
 }
 
 template <size_t n>
 void ChangeTextAction<n>::redo() {
-    copy_string_to_buffer(text_change.new_value.c_str(), text_change.buffer, n);
+    copy_string_to_buffer(text_change.new_value, text_change.buffer, n);
 }
 
 template <size_t n>
 void ChangeTextAction<n>::undo() {
-    copy_string_to_buffer(text_change.old_value.c_str(), text_change.buffer, n);
+    copy_string_to_buffer(text_change.old_value, text_change.buffer, n);
 }
 
 template <size_t n>

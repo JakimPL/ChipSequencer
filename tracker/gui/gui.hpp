@@ -40,11 +40,16 @@ class GUI {
     GUI();
     ~GUI();
 
+    GUI(const GUI &) = delete;
+    GUI &operator=(const GUI &) = delete;
+    GUI(GUI &&) = delete;
+    GUI &operator=(GUI &&) = delete;
+
     bool initialize();
     bool render();
     void set_font();
     void terminate();
-    bool is_done();
+    bool is_done() const;
     void toggle_fullscreen();
     void from();
     void to() const;
@@ -52,8 +57,8 @@ class GUI {
     void frame();
     std::pair<ValidationResult, int> pre_play() const;
     std::pair<ValidationResult, int> play() const;
-    std::pair<ValidationResult, int> play_from(const uint16_t row, const bool restart) const;
-    void stop(const bool restore_parameters = true) const;
+    std::pair<ValidationResult, int> play_from(uint16_t row, bool restart) const;
+    void stop(bool restore_parameters = true) const;
     bool is_playing() const;
     bool is_paused() const;
     bool is_fullscreen() const;
@@ -66,10 +71,10 @@ class GUI {
     void save(const std::string &filename);
     void open(const std::string &filename);
 
-    void set_index(const GUIElement element, const int index);
+    void set_index(GUIElement element, int index);
     void change_window_title(const std::string &title = "");
-    void set_visibility(const GUIElement element, const bool visible);
-    bool get_visibility(const GUIElement element) const;
+    void set_visibility(GUIElement element, bool visible);
+    bool get_visibility(GUIElement element) const;
 
     void set_audio_engine(AudioEngine *engine);
     bool check_audio_error() const;
@@ -81,7 +86,7 @@ class GUI {
     int get_page_size() const;
     int get_current_page() const;
     int get_current_row() const;
-    std::pair<int, int> get_page_start_end(const int page) const;
+    std::pair<int, int> get_page_start_end(int page) const;
 
     int get_current_channel_index() const;
     int get_current_dsp_index() const;
@@ -93,19 +98,19 @@ class GUI {
     int get_current_wavetable_index() const;
     int get_current_commands_sequence_index() const;
 
-    void set_current_octave(const int octave = GUI_DEFAULT_CURRENT_OCTAVE);
-    void set_jump_step(const int step = GUI_DEFAULT_JUMP_STEP);
-    void set_page_size(const int size = GUI_DEFAULT_PAGE_SIZE);
+    void set_current_octave(int octave = GUI_DEFAULT_CURRENT_OCTAVE);
+    void set_jump_step(int step = GUI_DEFAULT_JUMP_STEP);
+    void set_page_size(int size = GUI_DEFAULT_PAGE_SIZE);
 
-    void set_current_channel_index(const int index);
-    void set_current_dsp_index(const int index);
-    void set_current_commands_channel_index(const int index);
-    void set_current_oscillator_index(const int index);
-    void set_current_envelope_index(const int index);
-    void set_current_sequence_index(const int index);
-    void set_current_order_index(const int index);
-    void set_current_wavetable_index(const int index);
-    void set_current_commands_sequence_index(const int index);
+    void set_current_channel_index(int index);
+    void set_current_dsp_index(int index);
+    void set_current_commands_channel_index(int index);
+    void set_current_oscillator_index(int index);
+    void set_current_envelope_index(int index);
+    void set_current_sequence_index(int index);
+    void set_current_order_index(int index);
+    void set_current_wavetable_index(int index);
+    void set_current_commands_sequence_index(int index);
 
     void clear_routing_nodes();
     std::vector<std::pair<NodeIdentifier, ImVec2>> get_routing_nodes_positions() const;
@@ -146,12 +151,12 @@ class GUI {
     std::unique_ptr<GUISummaryPanel> summary_panel;
     std::unique_ptr<GUIWaveformPanel> waveform_panel;
 
-    RenderingBackend rendering_backend;
-    SDL_Window *window;
+    RenderingBackend rendering_backend = RenderingBackend::OpenGL;
+    SDL_Window *window = nullptr;
     SDL_GLContext gl_context;
-    SDL_Renderer *renderer;
-    ImGuiIO *io;
-    ImFont *font;
+    SDL_Renderer *renderer = nullptr;
+    ImGuiIO *io = nullptr;
+    ImFont *font = nullptr;
     bool done = false;
     bool fullscreen = false;
 
@@ -170,6 +175,6 @@ class GUI {
     void initialize_all();
     void update_all();
     void frame_all();
-    void set_visibility_all(const bool visible);
+    void set_visibility_all(bool visible);
     void clear_input_buffers();
 };

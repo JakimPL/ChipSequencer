@@ -10,7 +10,7 @@ ChangeNoteAction::ChangeNoteAction(
     const std::string &nm,
     GUIPanel *own,
     const LinkKey k,
-    const NoteChange &note_ch
+    NoteChange note_ch
 )
     : Action(nm, own, k), note_change(note_ch) {
 }
@@ -18,10 +18,10 @@ ChangeNoteAction::ChangeNoteAction(
 void ChangeNoteAction::redo() {
     GUIElement element = owner->get_element();
     if (element == GUIElement::Patterns) {
-        GUIPatternsPanel *panel = static_cast<GUIPatternsPanel *>(owner);
+        GUIPatternsPanel *panel = dynamic_cast<GUIPatternsPanel *>(owner);
         panel->set_note(note_change.pattern_row, note_change.new_note);
     } else if (element == GUIElement::Sequences) {
-        GUISequencesPanel *panel = static_cast<GUISequencesPanel *>(owner);
+        GUISequencesPanel *panel = dynamic_cast<GUISequencesPanel *>(owner);
         panel->set_note(note_change.pattern_row, note_change.new_note);
     } else {
         throw std::runtime_error("Invalid GUIElement for ChangeNoteAction");
@@ -31,10 +31,10 @@ void ChangeNoteAction::redo() {
 void ChangeNoteAction::undo() {
     GUIElement element = owner->get_element();
     if (element == GUIElement::Patterns) {
-        GUIPatternsPanel *panel = static_cast<GUIPatternsPanel *>(owner);
+        GUIPatternsPanel *panel = dynamic_cast<GUIPatternsPanel *>(owner);
         panel->set_note(note_change.pattern_row, note_change.old_note);
     } else if (element == GUIElement::Sequences) {
-        GUISequencesPanel *panel = static_cast<GUISequencesPanel *>(owner);
+        GUISequencesPanel *panel = dynamic_cast<GUISequencesPanel *>(owner);
         panel->set_note(note_change.pattern_row, note_change.old_note);
     } else {
         throw std::runtime_error("Invalid GUIElement for ChangeNoteAction");
@@ -52,7 +52,7 @@ bool ChangeNoteAction::can_merge(const Action *other) const {
 
 void ChangeNoteAction::merge(const Action *other) {
     const auto *other_change = dynamic_cast<const ChangeNoteAction *>(other);
-    if (other_change) {
+    if (other_change != nullptr) {
         note_change.new_note = other_change->note_change.new_note;
     }
 }

@@ -22,7 +22,7 @@ int clamp_index(int index, const int size) {
     return clamp(index, 0, size - 1);
 }
 
-void draw_number_of_items(GUIPanel *owner, const std::string &label, const char *label_id, int &value, int min, int max, const LinkKey key, float label_length) {
+void draw_number_of_items(GUIPanel *owner, const char *label_id, int &value, int min, int max, const LinkKey key, float label_length) {
     const int old_value = value;
 
     ImGui::PushID(label_id);
@@ -235,6 +235,46 @@ void draw_link_tooltip(const LinkKey &key) {
     }
 }
 
+GUIAction draw_dialog_box_bottom() {
+    GUIAction action = GUIAction::None;
+
+    const float button_width = 75.0f;
+    const float total_button_width = (button_width * 2) + ImGui::GetStyle().ItemSpacing.x;
+    const float available_width = ImGui::GetContentRegionAvail().x;
+    const float offset_x = (available_width - total_button_width) * 0.5f;
+
+    if (offset_x > 0.0f) {
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset_x);
+    }
+
+    if (ImGui::Button("OK", ImVec2(button_width, 0))) {
+        action = GUIAction::OK;
+    }
+
+    ImGui::SameLine();
+    if (ImGui::Button("Cancel", ImVec2(button_width, 0))) {
+        action = GUIAction::Cancel;
+    }
+
+    if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+        if (ImGui::IsKeyPressed(ImGuiKey_Enter)) {
+            action = GUIAction::OK;
+        } else if (ImGui::IsKeyPressed(ImGuiKey_Escape)) {
+            action = GUIAction::Cancel;
+        }
+    }
+
+    return action;
+}
+
+bool draw_button(const char *label, const float button_padding) {
+    const float text_width = ImGui::CalcTextSize(label).x;
+    const float button_width = text_width + button_padding;
+    const float full_width = ImGui::GetWindowContentRegionMax().x;
+    ImGui::SetCursorPosX((full_width - button_width) * 0.5f);
+    return ImGui::Button(label, ImVec2(button_width, 0));
+}
+
 void draw_popup(const std::string &message) {
     ImGui::Text("%s", message.c_str());
     const float button_width = GUI_BUTTON_WIDTH;
@@ -248,8 +288,8 @@ void draw_popup(const std::string &message) {
 
 void draw_confirmation_popup(
     const std::string &message,
-    std::function<void()> ok_action,
-    std::function<void()> save_action
+    const std::function<void()> ok_action,
+    const std::function<void()> save_action
 ) {
     ImGui::Text("%s", message.c_str());
     ImGui::Text("\n");
@@ -291,19 +331,12 @@ void draw_confirmation_popup(
     ImGui::EndPopup();
 }
 
-bool draw_button(const char *label, const float button_padding) {
-    const float text_width = ImGui::CalcTextSize(label).x;
-    const float button_width = text_width + button_padding;
-    const float full_width = ImGui::GetWindowContentRegionMax().x;
-    ImGui::SetCursorPosX((full_width - button_width) * 0.5f);
-    return ImGui::Button(label, ImVec2(button_width, 0));
-}
-
 std::pair<size_t, bool> draw_pattern(
     Pattern &pattern,
     PatternSelection &selection,
     SequenceRows &selected_rows,
     const bool pattern_view,
+    const int edited_row,
     const size_t channel_index,
     const bool header,
     const size_t index,
@@ -344,6 +377,8 @@ std::pair<size_t, bool> draw_pattern(
 
             if (playing_row == j) {
                 ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_PLAYING);
+            } else if (edited_row == j) {
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_EDITED);
             } else if (is_selected) {
                 ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_SELECTED);
             } else if (is_secondary_selected) {
@@ -412,6 +447,7 @@ std::pair<size_t, bool> draw_commands_pattern(
     PatternSelection &selection,
     SequenceRows &selected_rows,
     const bool pattern_view,
+    const int edited_row,
     const size_t channel_index,
     const bool header,
     const size_t index,
@@ -452,6 +488,8 @@ std::pair<size_t, bool> draw_commands_pattern(
             ImGui::TableNextRow();
             if (playing_row == j) {
                 ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_PLAYING);
+            } else if (edited_row == j) {
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_EDITED);
             } else if (is_selected) {
                 ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_SELECTED);
             } else if (is_secondary_selected) {
@@ -580,7 +618,7 @@ void draw_output_direct_output(GUIPanel *owner, OutputType &output_type, const L
     draw_int_slider(owner, "Channel", output_type.output_channel, {Target::SPECIAL, key.index, SPECIAL_CHANNEL_INDEX}, 0, output_channels - 1);
 }
 
-void draw_output_direct_dsp(GUIPanel *owner, OutputType &output_type, const int dsp_index, const LinkKey key) {
+void draw_output_direct_dsp(GUIPanel *owner, OutputType &output_type, const int dsp_index) {
     if (dsps.empty() || dsp_index >= static_cast<int>(dsps.size()) - 1) {
         ImGui::Text("No DSP available.");
         return;
@@ -589,7 +627,7 @@ void draw_output_direct_dsp(GUIPanel *owner, OutputType &output_type, const int 
     draw_int_slider(owner, "DSP", output_type.dsp_channel, {Target::SPECIAL, dsp_index, SPECIAL_DSP_INDEX}, dsp_index + 1, dsps.size() - 1);
 }
 
-bool draw_output_parameter(GUIPanel *owner, OutputType &output_type, const LinkKey key) {
+bool draw_output_parameter(GUIPanel *owner, OutputType &output_type) {
     ImGui::Separator();
     bool value_changed = prepare_combo(owner, parameter_types, "##OutputParameterCombo", output_type.parameter_type).value_changed;
     output_type.target = output_type.parameter_type + static_cast<int>(OutputTarget::Parameter);
@@ -632,7 +670,7 @@ bool draw_output_parameter(GUIPanel *owner, OutputType &output_type, const LinkK
     return value_changed;
 }
 
-void draw_output_parameter_generic(GUIPanel *owner, OutputType &output_type, const std::vector<std::string> &names, const std::string label) {
+void draw_output_parameter_generic(GUIPanel *owner, OutputType &output_type, const std::vector<std::string> &names, const std::string &label) {
     if (names.empty()) {
         const std::string text = "No " + to_lower(label) + "s available.";
         ImGui::Text("%s", text.c_str());
@@ -756,7 +794,7 @@ bool draw_output(GUIPanel *owner, OutputType &output_type, const LinkKey key) {
         break;
     }
     case OutputTarget::DirectDSP: {
-        draw_output_direct_dsp(owner, output_type, dsp_index, key);
+        draw_output_direct_dsp(owner, output_type, dsp_index);
 
         if (value_changed) {
             output_type.operation = static_cast<int>(OutputOperation::Add);
@@ -765,7 +803,7 @@ bool draw_output(GUIPanel *owner, OutputType &output_type, const LinkKey key) {
         break;
     }
     case OutputTarget::Parameter: {
-        value_changed |= draw_output_parameter(owner, output_type, key);
+        value_changed |= draw_output_parameter(owner, output_type);
 
         if (value_changed) {
             output_type.operation = static_cast<int>(OutputOperation::Set);
@@ -819,8 +857,8 @@ void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t 
         case Instruction::PortamentoDown: {
             uint8_t channel;
             uint16_t value_portamento;
-            pattern.split_portamento_value(command_value, channel, value_portamento);
-            const double portamento = pattern.cast_portamento_to_double(value_portamento);
+            CommandsPattern::split_portamento_value(command_value, channel, value_portamento);
+            const double portamento = CommandsPattern::cast_portamento_to_double(value_portamento);
             ImGui::SetTooltip("Portamento %s: channel %d, %.3f semitones", command_char == command_letters.at(Instruction::PortamentoUp) ? "up" : "down", channel, portamento);
             break;
         }
@@ -850,7 +888,7 @@ void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t 
             uint8_t index;
             uint16_t offset;
             uint32_t value;
-            pattern.split_change_value_parts(
+            CommandsPattern::split_change_value_parts(
                 command_value,
                 target_variable_type,
                 target,
@@ -859,8 +897,8 @@ void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t 
                 value
             );
 
-            const std::string target_name = target_names.at(target);
-            const std::string variable_type_name = variable_types.at(static_cast<size_t>(target_variable_type));
+            const std::string &target_name = target_names.at(target);
+            const std::string &variable_type_name = variable_types.at(static_cast<size_t>(target_variable_type));
             ImGui::SetTooltip("%s %s: %s %d, offset %d, value %u", add ? "Add" : "Set", variable_type_name.c_str(), target_name.c_str(), index, offset, value);
             break;
         }
@@ -887,8 +925,9 @@ bool get_menu_item(const std::string &name, const std::optional<ShortcutAction> 
     return ImGui::MenuItem(name.c_str(), nullptr, checked);
 }
 
-GUIState prepare_combo(GUIPanel *owner, const std::vector<std::string> &names, std::string label, int &index, const LinkKey key, const bool error_if_empty, const float margin_right) {
+GUIState prepare_combo(GUIPanel *owner, const std::vector<std::string> &names, const std::string &label, int &index, const LinkKey key, const bool error_if_empty, const float margin_right) {
     std::vector<const char *> names_cstr;
+    names_cstr.reserve(names.size());
     for (const auto &name : names) {
         names_cstr.push_back(name.c_str());
     }
@@ -914,7 +953,7 @@ GUIState prepare_combo(GUIPanel *owner, const std::vector<std::string> &names, s
     return {value_changed, right_clicked};
 }
 
-void update_items(std::vector<std::string> &names, size_t size, std::string label, int &index) {
+void update_items(std::vector<std::string> &names, size_t size, const std::string &label, int &index) {
     names.clear();
     for (size_t i = 0; i < size; ++i) {
         names.emplace_back(label + std::to_string(i));

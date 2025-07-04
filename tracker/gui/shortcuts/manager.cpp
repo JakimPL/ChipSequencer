@@ -1,5 +1,5 @@
 #include "../../general.hpp"
-#include "shortcuts.hpp"
+#include "manager.hpp"
 
 std::string Shortcut::get_display_string() const {
     std::string display_string;
@@ -60,7 +60,7 @@ void ShortcutManager::execute_action(const ShortcutAction id) const {
     }
 }
 
-bool ShortcutManager::is_shortcut_pressed(const Shortcut &shortcut) const {
+bool ShortcutManager::is_shortcut_pressed(const Shortcut &shortcut) {
     return ImGui::IsKeyPressed(shortcut.key) &&
            ImGui::GetIO().KeyCtrl == shortcut.ctrl &&
            ImGui::GetIO().KeyShift == shortcut.shift &&

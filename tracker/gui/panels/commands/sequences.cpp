@@ -10,6 +10,8 @@
 #include "../../names.hpp"
 #include "../../undo.hpp"
 #include "../../utils.hpp"
+#include "../../clipboard/clipboard.hpp"
+#include "../../clipboard/items/commands.hpp"
 #include "sequences.hpp"
 
 GUICommandsSequencesPanel::GUICommandsSequencesPanel(const bool visible, const bool windowed)
@@ -31,7 +33,7 @@ bool GUICommandsSequencesPanel::is_disabled() const {
 }
 
 bool GUICommandsSequencesPanel::select_item() {
-    std::vector<std::string> dependencies = song.find_commands_sequence_dependencies(sequence_index);
+    std::vector<std::string> dependencies = Song::find_commands_sequence_dependencies(sequence_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
     if (prepare_combo(this, commands_sequence_names, "##CommandsSequenceCombo", sequence_index, {}, false, GUI_COMBO_MARGIN_RIGHT).value_changed) {
@@ -80,11 +82,11 @@ void GUICommandsSequencesPanel::to() const {
     current_sequence.pattern.to_buffer(sequence_index);
     const std::vector<Command> command_vector = current_sequence.pattern.to_command_vector();
     sequence->from_command_vector(command_vector);
-    current_sequence.pattern.save_links(sequence_index);
+    CommandsPattern::save_links(sequence_index);
 }
 
 void GUICommandsSequencesPanel::add() {
-    CommandsSequence *new_sequence = song.add_commands_sequence();
+    CommandsSequence *new_sequence = Song::add_commands_sequence();
     if (new_sequence == nullptr) {
         return;
     }
@@ -97,7 +99,7 @@ void GUICommandsSequencesPanel::add() {
 }
 
 void GUICommandsSequencesPanel::duplicate() {
-    CommandsSequence *new_sequence = song.duplicate_commands_sequence(sequence_index);
+    CommandsSequence *new_sequence = Song::duplicate_commands_sequence(sequence_index);
     if (new_sequence == nullptr) {
         return;
     }
@@ -112,7 +114,7 @@ void GUICommandsSequencesPanel::remove() {
     const size_t previous_index = sequence_index;
     if (is_index_valid()) {
         perform_action_remove(this, {Target::COMMANDS_SEQUENCE, sequence_index, 0}, commands_sequences[sequence_index]);
-        song.remove_commands_sequence(sequence_index);
+        Song::remove_commands_sequence(sequence_index);
         sequence_index = std::max(0, sequence_index - 1);
         update();
     }
@@ -146,6 +148,19 @@ void GUICommandsSequencesPanel::shortcut_actions() {
     }
     case PatternSelectionAction::Delete: {
         delete_selection();
+        break;
+    }
+    case PatternSelectionAction::Cut: {
+        copy_selection();
+        delete_selection();
+        break;
+    }
+    case PatternSelectionAction::Copy: {
+        copy_selection();
+        break;
+    }
+    case PatternSelectionAction::Paste: {
+        paste_selection();
         break;
     }
     case PatternSelectionAction::SetNoteRest:
@@ -188,14 +203,83 @@ void GUICommandsSequencesPanel::delete_selection() {
         perform_action_pattern_selection<CommandValue>(this, {Target::COMMANDS_SEQUENCE}, "Delete", changes, function);
     } else {
         const int row = current_sequence.pattern.current_row;
+        const CommandValue old_command_value = current_sequence.pattern.get_command(row);
         current_sequence.pattern.clear_row(row);
+        const CommandValue new_command_value = current_sequence.pattern.get_command(row);
+        perform_command_action(row, old_command_value, new_command_value);
     }
+}
+
+void GUICommandsSequencesPanel::copy_selection() {
+    const int start = selection.is_active() ? selection.start : current_sequence.pattern.current_row;
+    const int end = selection.is_active() ? selection.end : start;
+
+    std::vector<CommandValue> commands_values;
+    PatternCommands pattern_commands;
+
+    for (int row = start; row <= end; ++row) {
+        const CommandValue command_value = current_sequence.pattern.get_command(row);
+        commands_values.push_back(command_value);
+    }
+
+    pattern_commands.push_back(commands_values);
+    clipboard.add_item(
+        std::make_unique<ClipboardCommands>(pattern_commands)
+    );
+}
+
+void GUICommandsSequencesPanel::paste_selection() {
+    ClipboardItem *item = clipboard.get_recent_item(ClipboardCategory::Commands);
+    ClipboardCommands *commands = dynamic_cast<ClipboardCommands *>(item);
+    if (commands == nullptr) {
+        return;
+    }
+
+    const PatternCommands &pattern_commands = commands->pattern_commands;
+    if (pattern_commands.empty()) {
+        return;
+    }
+
+    PatternSelectionChange<CommandValue> changes;
+    const int current_row = current_sequence.pattern.current_row;
+    for (size_t i = 0; i < pattern_commands[0].size(); ++i) {
+        const int row = current_row + i;
+        if (row >= current_sequence.pattern.commands.size()) {
+            break;
+        }
+
+        const PatternRow pattern_row = {0, 0, row};
+        const std::string old_command = current_sequence.pattern.commands[row];
+        const std::string old_value = current_sequence.pattern.values[row];
+        const CommandValue old_command_value = {old_command, old_value};
+        const CommandValue command_value = pattern_commands[0][i];
+
+        set_command(row, command_value);
+        changes[pattern_row] = {old_command_value, command_value};
+    }
+
+    perform_commands_action("Paste", changes);
+}
+
+void GUICommandsSequencesPanel::perform_commands_action(const std::string &action_name, const PatternSelectionChange<CommandValue> &changes) {
+    const SetItemsFunction<CommandValue> function = [this](const std::map<PatternRow, CommandValue> &commands_changes) {
+        return this->set_commands(commands_changes);
+    };
+
+    perform_action_pattern_selection<CommandValue>(this, {Target::COMMANDS_SEQUENCE}, action_name, changes, function);
+}
+
+void GUICommandsSequencesPanel::perform_command_action(const int row, const CommandValue &old_command, const CommandValue &new_command) {
+    const PatternRow pattern_row = {0, 0, row};
+    const uint16_t offset = COMMANDS_SEQUENCE_DATA + sizeof(Command) * row;
+    const LinkKey key = {Target::COMMANDS_SEQUENCE, sequence_index, offset};
+    perform_action_command(this, key, pattern_row, old_command, new_command);
 }
 
 void GUICommandsSequencesPanel::draw_sequence_length() {
     const size_t old_size = current_sequence.pattern.steps;
     const LinkKey key = {Target::SPECIAL, sequence_index, SPECIAL_COMMANDS_SEQUENCE_LENGTH};
-    draw_number_of_items(this, "Steps", "##SequenceLength", current_sequence.pattern.steps, 1, MAX_STEPS, key);
+    draw_number_of_items(this, "##SequenceLength", current_sequence.pattern.steps, 1, MAX_STEPS, key);
 
     if (old_size != current_sequence.pattern.steps) {
         current_sequence.pattern.commands.resize(current_sequence.pattern.steps);
@@ -225,7 +309,8 @@ void GUICommandsSequencesPanel::draw_sequence() {
     }
 
     SequenceRows secondary_sequence_rows;
-    draw_commands_pattern(current_sequence.pattern, selection, secondary_sequence_rows, false);
+    const int edited_row = edit_dialog_box.visible ? edit_dialog_box.item : -1;
+    draw_commands_pattern(current_sequence.pattern, selection, secondary_sequence_rows, false, edited_row);
 }
 
 void GUICommandsSequencesPanel::open_edit_dialog_box(const int item) {
@@ -247,7 +332,7 @@ void GUICommandsSequencesPanel::open_edit_dialog_box(const int item) {
     case Instruction::PortamentoDown: {
         uint8_t channel;
         uint16_t value;
-        current_sequence.pattern.split_portamento_value(current_sequence.pattern.values[item], channel, value);
+        CommandsPattern::split_portamento_value(current_sequence.pattern.values[item], channel, value);
         edit_dialog_box.portamento_channel = channel;
         edit_dialog_box.portamento_value = CommandsPattern::cast_portamento_to_double(value);
         break;
@@ -285,7 +370,7 @@ void GUICommandsSequencesPanel::open_edit_dialog_box(const int item) {
         uint8_t index;
         uint16_t offset;
         uint32_t value;
-        current_sequence.pattern.split_change_value_parts(
+        CommandsPattern::split_change_value_parts(
             current_sequence.pattern.values[item],
             target_variable_type,
             target,
@@ -324,7 +409,7 @@ void GUICommandsSequencesPanel::draw_output_section() {
     push_secondary_style();
     ImGui::Text("Output:");
 
-    draw_output_parameter(this, edit_dialog_box.output_type, {});
+    draw_output_parameter(this, edit_dialog_box.output_type);
     ImGui::Text("Operation:");
     prepare_combo(this, simple_operation_names, "##OutputTypeOperation", edit_dialog_box.output_type.operation);
     ImGui::Text("Variable:");
@@ -358,18 +443,17 @@ void GUICommandsSequencesPanel::draw_dialog_box() {
         return;
     }
 
-    ImGui::SetNextWindowSize(ImVec2(450.0f, 250.0f), ImGuiCond_FirstUseEver);
-    if (ImGui::Begin("Edit command", &edit_dialog_box.visible, ImGuiWindowFlags_NoCollapse)) {
-        std::vector<std::string> names;
-        for (const auto &[key, value] : simple_instruction_names) {
-            names.push_back(value);
-        }
+    if (!ImGui::IsPopupOpen("Edit command")) {
+        ImGui::OpenPopup("Edit command");
+    }
 
-        edit_dialog_box.instruction = clamp_index(edit_dialog_box.instruction, names.size());
+    ImGui::SetNextWindowSize(ImVec2(450.0f, 250.0f), ImGuiCond_FirstUseEver);
+    if (ImGui::BeginPopupModal("Edit command", &edit_dialog_box.visible, ImGuiWindowFlags_NoCollapse)) {
+        edit_dialog_box.instruction = clamp_index(edit_dialog_box.instruction, simple_instruction_names.size());
 
         ImGui::Text("Command:");
         push_tertiary_style();
-        prepare_combo(this, names, "##EditCommand", edit_dialog_box.instruction);
+        prepare_combo(this, simple_instruction_names, "##EditCommand", edit_dialog_box.instruction);
         pop_tertiary_style();
         ImGui::Separator();
 
@@ -415,28 +499,28 @@ void GUICommandsSequencesPanel::draw_dialog_box() {
         }
 
         pop_secondary_style();
+
         ImGui::Separator();
 
-        const float button_width = 75.0f;
-        const float total_button_width = (button_width * 2) + ImGui::GetStyle().ItemSpacing.x;
-        const float available_width = ImGui::GetContentRegionAvail().x;
-        const float offset_x = (available_width - total_button_width) * 0.5f;
-
-        if (offset_x > 0.0f) {
-            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset_x);
-        }
-
-        if (ImGui::Button("OK", ImVec2(button_width, 0))) {
+        GUIAction action = draw_dialog_box_bottom();
+        switch (action) {
+        case GUIAction::OK: {
+            const CommandValue old_command = current_sequence.pattern.get_command(edit_dialog_box.item);
             set_current_command();
+            const CommandValue new_command = current_sequence.pattern.get_command(edit_dialog_box.item);
+            perform_command_action(edit_dialog_box.item, old_command, new_command);
+        }
+        case GUIAction::Cancel: {
             edit_dialog_box.visible = false;
+            break;
+        }
+        case GUIAction::None: {
+        default:
+            break;
+        }
         }
 
-        ImGui::SameLine();
-        if (ImGui::Button("Cancel", ImVec2(button_width, 0))) {
-            edit_dialog_box.visible = false;
-        }
-
-        ImGui::End();
+        ImGui::EndPopup();
     }
 }
 
@@ -499,7 +583,11 @@ void GUICommandsSequencesPanel::check_keyboard_input() {
         return;
     }
 
+    const int old_row = current_sequence.pattern.current_row;
+    const CommandValue old_command = current_sequence.pattern.get_command(old_row);
     current_sequence.pattern.handle_input();
+    const CommandValue new_command = current_sequence.pattern.get_command(old_row);
+    perform_command_action(old_row, old_command, new_command);
 }
 
 void GUICommandsSequencesPanel::set_commands(const std::map<PatternRow, CommandValue> &commands_values) {
@@ -514,6 +602,10 @@ void GUICommandsSequencesPanel::set_command(const PatternRow &pattern_row, const
 
 void GUICommandsSequencesPanel::set_command(const PatternRow &pattern_row, const CommandValue &command_value) {
     set_command(pattern_row, command_value.first, command_value.second);
+}
+
+void GUICommandsSequencesPanel::set_command(const int row, const CommandValue &command_value) {
+    set_command(row, command_value.first, command_value.second);
 }
 
 void GUICommandsSequencesPanel::set_command(const int row, const std::string &command, const std::string &value) {
@@ -558,6 +650,27 @@ void GUICommandsSequencesPanel::register_shortcuts() {
         ShortcutAction::EditDelete,
         [this]() {
             selection_action = PatternSelectionAction::Delete;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::EditCut,
+        [this]() {
+            selection_action = PatternSelectionAction::Cut;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::EditCopy,
+        [this]() {
+            selection_action = PatternSelectionAction::Copy;
+        }
+    );
+
+    shortcut_manager.register_shortcut(
+        ShortcutAction::EditPaste,
+        [this]() {
+            selection_action = PatternSelectionAction::Paste;
         }
     );
 }

@@ -5,6 +5,10 @@ set(TRACKER_SOURCES
     tracker/driver/file.cpp
     tracker/driver/port.cpp
     tracker/general.cpp
+    tracker/gui/clipboard/clipboard.cpp
+    tracker/gui/clipboard/items/commands.cpp
+    tracker/gui/clipboard/items/item.cpp
+    tracker/gui/clipboard/items/notes.cpp
     tracker/gui/gui.cpp
     tracker/gui/history/actions/action.cpp
     tracker/gui/history/actions/add.cpp
@@ -19,7 +23,6 @@ set(TRACKER_SOURCES
     tracker/gui/history/actions/value.cpp
     tracker/gui/history/actions/wavetable.cpp
     tracker/gui/history/manager.cpp
-    tracker/gui/history/shortcuts.cpp
     tracker/gui/inputs/input.cpp
     tracker/gui/inputs/numeric.cpp
     tracker/gui/inputs/string.cpp
@@ -46,6 +49,7 @@ set(TRACKER_SOURCES
     tracker/gui/patterns/commands.cpp
     tracker/gui/patterns/pattern.cpp
     tracker/gui/patterns/selection.cpp
+    tracker/gui/shortcuts/manager.cpp
     tracker/gui/undo.cpp
     tracker/gui/utils.cpp
     tracker/main.cpp
@@ -61,8 +65,8 @@ set(TRACKER_SOURCES
     tracker/structures/channel.cpp
     tracker/structures/commands/command.cpp
     tracker/structures/commands/sequence.cpp
-    tracker/structures/resources/manager.cpp
     tracker/structures/order.cpp
+    tracker/structures/resources/manager.cpp
     tracker/structures/sequence.cpp
     tracker/structures/wavetable.cpp
     tracker/tuning/frequencies.cpp

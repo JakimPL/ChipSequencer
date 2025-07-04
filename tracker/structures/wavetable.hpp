@@ -8,7 +8,7 @@
 
 #include "../constants.hpp"
 
-typedef std::array<uint8_t, MAX_WAVETABLE_SIZE> WavetableData;
+using WavetableData = std::array<uint8_t, MAX_WAVETABLE_SIZE>;
 
 struct Wavetable {
     uint16_t wavetable_size;
@@ -18,7 +18,7 @@ struct Wavetable {
     static Wavetable *deserialize(std::ifstream &file);
 } __attribute__((packed));
 
-typedef std::vector<Wavetable *> Wavetables;
+using Wavetables = std::vector<Wavetable *>;
 
 constexpr size_t WAVETABLE_SIZE = offsetof(Wavetable, wavetable_size);
 constexpr size_t WAVETABLE_DATA = offsetof(Wavetable, data);

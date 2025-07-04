@@ -178,7 +178,6 @@ void GUIGeneralPanel::draw_play_from_page_button() {
     const float sz = 20.0f;
     const ImVec2 center = ImVec2(p.x + sz * 0.5f, p.y + sz * 0.5f);
 
-    const float line_x = center.x - sz * 0.3f;
     const float line_height = 0.8f * sz;
     const float bar_width = sz * 0.20f;
     const float padding = sz * 0.15f;
@@ -234,7 +233,7 @@ void GUIGeneralPanel::draw_pause_rectangles() {
     }
 }
 
-void GUIGeneralPanel::draw_stop_square() const {
+void GUIGeneralPanel::draw_stop_square() {
     ImVec2 p = ImGui::GetCursorScreenPos();
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
 
@@ -267,7 +266,7 @@ void GUIGeneralPanel::draw_tempo() {
     ImGui::BeginDisabled(gui.is_playing());
     draw_int_slider(this, "BPM", current_song.bpm, {Target::SPECIAL, 0, SPECIAL_BPM}, GUI_MIN_BPM, GUI_MAX_BPM);
     if (ImGui::IsItemHovered()) {
-        ImGui::SetTooltip("Real BPM: %s", std::to_string(song.calculate_real_bpm()).c_str());
+        ImGui::SetTooltip("Real BPM: %s", std::to_string(Song::calculate_real_bpm()).c_str());
     }
     draw_int_slider(this, "Division", current_song.division, {Target::SPECIAL, 0, SPECIAL_DIVISION}, GUI_MIN_DIVISION, GUI_MAX_DIVISION);
     ImGui::EndDisabled();
@@ -294,7 +293,7 @@ void GUIGeneralPanel::draw_tuning_settings() {
     }
 }
 
-std::string GUIGeneralPanel::get_error_message(const ValidationResult result, const int index) const {
+std::string GUIGeneralPanel::get_error_message(const ValidationResult result, const int index) {
     std::ostringstream stream;
     switch (result) {
     case ValidationResult::OK:

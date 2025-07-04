@@ -178,7 +178,7 @@ void LinkManager::save_targets() {
 
     std::map<void *, size_t> index_map;
     const LinkKey output_key = {Target::DIRECT_OUTPUT, 0, 0};
-    pointers_map.push_back({output_pointer, output_key});
+    pointers_map.emplace_back(output_pointer, output_key);
     index_map[output_pointer] = 0;
 
     size_t size = 1;
@@ -193,7 +193,7 @@ void LinkManager::save_targets() {
                 targets[size] = link.pointer;
                 link.table_id = size;
                 index_map[link.pointer] = link.table_id;
-                pointers_map.push_back({link.pointer, link.key});
+                pointers_map.emplace_back(link.pointer, link.key);
                 size++;
             } else {
                 link.table_id = it->second;
@@ -249,7 +249,7 @@ std::vector<Link *> LinkManager::get_links(const LinkKey key) const {
     return {};
 }
 
-std::string LinkManager::get_link_reference(const LinkKey key) const {
+std::string LinkManager::get_link_reference(const LinkKey key) {
     std::string reference;
     switch (key.target) {
     case Target::SPLITTER_OUTPUT:
@@ -312,7 +312,7 @@ std::string LinkManager::get_link_reference(const LinkKey key) const {
     return "CDECL(" + reference + ")";
 }
 
-std::string LinkManager::get_link_reference(const ItemType type, const size_t index) const {
+std::string LinkManager::get_link_reference(const ItemType type, const size_t index) {
     std::string reference;
     const Link &link = links[static_cast<size_t>(type)][index];
     return get_link_reference(link.key);
@@ -338,7 +338,7 @@ size_t LinkManager::find_pointer_id_by_key(const LinkKey key) const {
     return 0;
 }
 
-std::vector<std::pair<ItemType, uint8_t>> LinkManager::find_dependencies(const Target target, const size_t index) const {
+std::vector<std::pair<ItemType, uint8_t>> LinkManager::find_dependencies(const Target target, const size_t index) {
     std::set<std::pair<ItemType, uint8_t>> dependencies;
     for (const auto &array : links) {
         for (const Link &link : array) {
@@ -403,7 +403,7 @@ void LinkManager::assign_key(Link &link) {
     map[key].push_back(&link);
 }
 
-void LinkManager::validate_key_and_link(const LinkKey key, const Link *link) const {
+void LinkManager::validate_key_and_link(const LinkKey key, const Link *link) {
     if (key.target == Target::COUNT) {
         return;
     }
@@ -421,7 +421,7 @@ void LinkManager::validate_key_and_link(const LinkKey key, const Link *link) con
     }
 }
 
-TargetVariableType LinkManager::get_type(const LinkKey key) const {
+TargetVariableType LinkManager::get_type(const LinkKey key) {
     switch (key.target) {
     case Target::SPLITTER_OUTPUT:
     case Target::SPLITTER_DSP:

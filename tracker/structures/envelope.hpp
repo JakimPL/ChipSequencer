@@ -16,7 +16,7 @@ struct Envelope {
     uint16_t release;
 } __attribute__((packed));
 
-typedef std::vector<Envelope *> Envelopes;
+using Envelopes = std::vector<Envelope *>;
 
 constexpr size_t ENVELOPE_BASE_VOLUME = offsetof(Envelope, base_volume);
 constexpr size_t ENVELOPE_SUSTAIN_LEVEL = offsetof(Envelope, sustain_level);

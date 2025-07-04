@@ -31,7 +31,7 @@ bool GUIChannelsPanel::is_disabled() const {
 }
 
 bool GUIChannelsPanel::select_item() {
-    std::vector<std::pair<ItemType, uint8_t>> link_dependencies = link_manager.find_dependencies(Target::CHANNEL, channel_index);
+    std::vector<std::pair<ItemType, uint8_t>> link_dependencies = LinkManager::find_dependencies(Target::CHANNEL, channel_index);
     push_tertiary_style();
     draw_add_or_remove({}, link_dependencies);
     prepare_combo(this, channel_names, "##ChannelCombo", channel_index, {}, false, GUI_COMBO_MARGIN_RIGHT);
@@ -70,7 +70,7 @@ void GUIChannelsPanel::from() {
             current_channel.sync_denominator = (channel->fraction >> 4) & 0x0F;
 
             const float fraction = static_cast<float>(current_channel.sync_denominator) / current_channel.sync_numerator;
-            current_channel.pitch = song.calculate_real_bpm() / unit * fraction;
+            current_channel.pitch = Song::calculate_real_bpm() / unit * fraction;
         } else {
             current_channel.pitch = static_cast<float>(channel->pitch) / 0x10000;
         }
@@ -114,7 +114,7 @@ void GUIChannelsPanel::to() const {
         if (current_channel.sync) {
             channel->flag |= FLAG_SYNC;
             channel->fraction = (current_channel.sync_numerator & 0x0F);
-            channel->fraction |= ((current_channel.sync_denominator & 0x0F) << 4);
+            channel->fraction |= ((current_channel.sync_denominator & 0x0F) << 4U);
         }
 
         channel->pitch = static_cast<uint32_t>(std::round(current_channel.pitch * 0x10000));
@@ -134,7 +134,7 @@ void GUIChannelsPanel::to() const {
 }
 
 void GUIChannelsPanel::add() {
-    Channel *new_channel = song.add_channel();
+    Channel *new_channel = Song::add_channel();
     if (new_channel == nullptr) {
         return;
     }
@@ -145,7 +145,7 @@ void GUIChannelsPanel::add() {
 }
 
 void GUIChannelsPanel::duplicate() {
-    Channel *new_channel = song.duplicate_channel(channel_index);
+    Channel *new_channel = Song::duplicate_channel(channel_index);
     if (new_channel == nullptr) {
         return;
     }
@@ -157,7 +157,7 @@ void GUIChannelsPanel::duplicate() {
 void GUIChannelsPanel::remove() {
     if (is_index_valid()) {
         perform_action_remove(this, {Target::CHANNEL, channel_index, 0}, channels[channel_index]);
-        song.remove_channel(channel_index);
+        Song::remove_channel(channel_index);
         channel_index = std::max(0, channel_index - 1);
         update();
     }

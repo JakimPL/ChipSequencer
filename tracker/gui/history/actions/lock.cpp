@@ -9,7 +9,8 @@ ChangeLockAction::ChangeLockAction(
     GUIPanel *owner,
     const LinkKey key,
     const bool value
-) : Action(name, owner, key), new_value(value) {
+)
+    : Action(name, owner, key), new_value(value) {
 }
 
 void ChangeLockAction::redo() {
@@ -28,12 +29,11 @@ void ChangeLockAction::undo() {
     }
 }
 
-bool ChangeLockAction::can_merge(const Action *other) const {
+bool ChangeLockAction::can_merge(const Action * /* other */) const {
     return false;
 }
 
-void ChangeLockAction::merge(const Action *other) {
-    return;
+void ChangeLockAction::merge(const Action * /* other */) {
 }
 
 std::string ChangeLockAction::get_name() const {

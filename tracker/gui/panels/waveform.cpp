@@ -84,7 +84,7 @@ void GUIWaveformPanel::draw_waveform() {
     }
 }
 
-void GUIWaveformPanel::draw_channel_waveform(const int output_channel_index, const ImVec2 &size, const ImVec2 &position) {
+void GUIWaveformPanel::draw_channel_waveform(const int output_channel_index, const ImVec2 &size, const ImVec2 &position) const {
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
 
     draw_list->AddRectFilled(
@@ -102,6 +102,7 @@ void GUIWaveformPanel::draw_channel_waveform(const int output_channel_index, con
     ImU32 waveform_color;
     switch (output_channel_index) {
     case 0:
+    default:
         waveform_color = GUI_WAVEFORM_COLOR_1;
         break;
     case 1:
@@ -170,10 +171,15 @@ void GUIWaveformPanel::draw_channel_waveform(const int output_channel_index, con
                 break;
             }
 
+            float y1_raw = history[idx1];
+            float y2_raw = history[idx2];
+            y1_raw = clamp(y1_raw, -1.0f, 1.0f);
+            y2_raw = clamp(y2_raw, -1.0f, 1.0f);
+
             const float x1 = position.x + i * scale_x;
-            const float y1 = zero_y - (history[idx1] * scale_y);
+            const float y1 = zero_y - (y1_raw * scale_y);
             const float x2 = position.x + (i + 1) * scale_x;
-            const float y2 = zero_y - (history[idx2] * scale_y);
+            const float y2 = zero_y - (y2_raw * scale_y);
 
             draw_list->AddLine(
                 ImVec2(x1, y1),
@@ -291,21 +297,14 @@ void GUIWaveformPanel::draw_channel_spectrogram(const int output_channel_index, 
         const float log_frequency = std::log10(frequency);
         const float x_pos = position.x + ((log_frequency - log_min) / log_range) * size.x;
 
-        const float next_frequency = (i + 1) * sample_rate / (2.0f * num_bins);
-        const float next_log_frequency = std::log10(next_frequency);
-        const float next_x_pos = position.x + ((next_log_frequency - log_min) / log_range) * size.x;
-
         float bin_width;
-        float bin_x_pos;
         if (!fft_parameters.wide_bins) {
             bin_width = fixed_bin_width;
-            bin_x_pos = x_pos - (bin_width / 2);
         } else {
             const float next_frequency = (i + 1) * sample_rate / (2.0f * num_bins);
             const float next_log_frequency = std::log10(next_frequency);
             const float next_x_pos = position.x + ((next_log_frequency - log_min) / log_range) * size.x;
             bin_width = std::max(1.0f, next_x_pos - x_pos);
-            bin_x_pos = x_pos;
         }
 
         const float magnitude = magnitudes[i];
@@ -371,7 +370,7 @@ void GUIWaveformPanel::draw_channel_spectrogram(const int output_channel_index, 
     }
 }
 
-std::string GUIWaveformPanel::get_frequency_name(const int frequency) const {
+std::string GUIWaveformPanel::get_frequency_name(const int frequency) {
     char label[16];
     if (frequency >= 1000) {
         snprintf(label, sizeof(label), "%dk", frequency / 1000);

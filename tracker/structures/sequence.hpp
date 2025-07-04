@@ -11,7 +11,7 @@ struct Note {
     uint8_t duration;
 } __attribute__((packed));
 
-typedef std::array<Note, UINT8_MAX> Notes;
+using Notes = std::array<Note, UINT8_MAX>;
 
 struct Sequence {
     uint8_t size;
@@ -22,7 +22,7 @@ struct Sequence {
     static Sequence *deserialize(std::ifstream &file);
 } __attribute__((packed));
 
-typedef std::vector<Sequence *> Sequences;
+using Sequences = std::vector<Sequence *>;
 
 constexpr size_t SEQUENCE_SIZE = offsetof(Sequence, size);
 constexpr size_t SEQUENCE_NOTES = offsetof(Sequence, notes);

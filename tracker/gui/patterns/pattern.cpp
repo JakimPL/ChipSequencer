@@ -9,11 +9,8 @@
 #include "../../tuning/scale.hpp"
 #include "../../utils/math.hpp"
 #include "../gui.hpp"
-#include "../history/shortcuts.hpp"
+#include "../shortcuts/manager.hpp"
 #include "pattern.hpp"
-
-Pattern::Pattern() {
-}
 
 Pattern::Pattern(const uint8_t sequence_index) {
     from_sequence(sequence_index);

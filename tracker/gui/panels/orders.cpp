@@ -24,7 +24,7 @@ void GUIOrdersPanel::draw() {
 }
 
 bool GUIOrdersPanel::select_item() {
-    std::vector<std::string> dependencies = song.find_order_dependencies(order_index);
+    std::vector<std::string> dependencies = Song::find_order_dependencies(order_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
     if (prepare_combo(this, order_names, "##OrderCombo", order_index, {}, false, GUI_COMBO_MARGIN_RIGHT).value_changed) {
@@ -84,7 +84,7 @@ void GUIOrdersPanel::to() const {
 }
 
 void GUIOrdersPanel::add() {
-    Order *new_order = song.add_order();
+    Order *new_order = Song::add_order();
     if (new_order == nullptr) {
         return;
     }
@@ -96,7 +96,7 @@ void GUIOrdersPanel::add() {
 }
 
 void GUIOrdersPanel::duplicate() {
-    Order *new_order = song.duplicate_order(order_index);
+    Order *new_order = Song::duplicate_order(order_index);
     if (new_order == nullptr) {
         return;
     }
@@ -110,7 +110,7 @@ void GUIOrdersPanel::remove() {
     const size_t previous_index = order_index;
     if (is_index_valid()) {
         perform_action_remove(this, {Target::ORDER, order_index, 0}, orders[order_index]);
-        song.remove_order(order_index);
+        Song::remove_order(order_index);
         order_index = std::max(0, order_index - 1);
         update();
     }
@@ -129,7 +129,7 @@ void GUIOrdersPanel::update() {
 void GUIOrdersPanel::draw_order_length() {
     const size_t old_size = current_order.length;
     const LinkKey key = {Target::ORDER, order_index, ORDER_LENGTH};
-    draw_number_of_items(this, "Sequences", "##SequenceLength", current_order.length, 1, MAX_ORDER_ITEMS, key);
+    draw_number_of_items(this, "##SequenceLength", current_order.length, 1, MAX_ORDER_ITEMS, key);
 
     if (old_size != current_order.length) {
         current_order.sequences.resize(current_order.length);
@@ -147,7 +147,7 @@ void GUIOrdersPanel::draw_order() {
     draw_order_length();
 
     const float height = std::max(5.0f, ImGui::GetContentRegionAvail().y - 5.0f);
-    ImGui::BeginChild("OrderScroll", ImVec2(0, height), true);
+    ImGui::BeginChild("OrderScroll", ImVec2(0, height), 1);
     ImGui::Columns(1, "order_columns");
     ImGui::Text("Sequence");
     ImGui::Separator();

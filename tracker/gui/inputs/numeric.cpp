@@ -1,5 +1,5 @@
 #include "../../general.hpp"
-#include "../history/shortcuts.hpp"
+#include "../shortcuts/manager.hpp"
 #include "numeric.hpp"
 
 bool NumericInputHandler::handle_input(std::vector<int> &vector, int &index) {

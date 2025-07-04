@@ -10,8 +10,8 @@ class ChangeLockAction : public Action {
     ChangeLockAction(
         const std::string &name,
         GUIPanel *owner,
-        const LinkKey key,
-        const bool value
+        LinkKey key,
+        bool value
     );
 
     void redo() override;

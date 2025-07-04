@@ -79,7 +79,7 @@ void GUICommandsChannelsPanel::to() const {
 }
 
 void GUICommandsChannelsPanel::add() {
-    CommandsChannel *new_channel = song.add_commands_channel();
+    CommandsChannel *new_channel = Song::add_commands_channel();
     if (new_channel == nullptr) {
         return;
     }
@@ -90,7 +90,7 @@ void GUICommandsChannelsPanel::add() {
 }
 
 void GUICommandsChannelsPanel::duplicate() {
-    CommandsChannel *new_channel = song.duplicate_commands_channel(channel_index);
+    CommandsChannel *new_channel = Song::duplicate_commands_channel(channel_index);
     if (new_channel == nullptr) {
         return;
     }
@@ -102,7 +102,7 @@ void GUICommandsChannelsPanel::duplicate() {
 void GUICommandsChannelsPanel::remove() {
     if (is_index_valid()) {
         perform_action_remove(this, {Target::COMMANDS_CHANNEL, channel_index, 0}, commands_channels[channel_index]);
-        song.remove_commands_channel(channel_index);
+        Song::remove_commands_channel(channel_index);
         channel_index = std::max(0, channel_index - 1);
         update();
     }

@@ -1,4 +1,5 @@
 #include <sstream>
+#include <utility>
 
 #include "wavetable.hpp"
 
@@ -6,9 +7,9 @@ ChangeWavetableAction::ChangeWavetableAction(
     const std::string &nm,
     GUIPanel *own,
     const LinkKey k,
-    const WavetableChange &wt_ch
+    WavetableChange wt_ch
 )
-    : Action(nm, own, k), wavetable_change(wt_ch) {
+    : Action(nm, own, k), wavetable_change(std::move(wt_ch)) {
 }
 
 void ChangeWavetableAction::redo() {
@@ -30,7 +31,7 @@ bool ChangeWavetableAction::can_merge(const Action *other) const {
 
 void ChangeWavetableAction::merge(const Action *other) {
     const auto *other_change = dynamic_cast<const ChangeWavetableAction *>(other);
-    if (other_change) {
+    if (other_change != nullptr) {
         wavetable_change.new_wave = other_change->wavetable_change.new_wave;
         wavetable_change.wavetable_size = other_change->wavetable_change.new_wave.size();
     }

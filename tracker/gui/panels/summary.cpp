@@ -90,7 +90,7 @@ size_t GUISummaryPanel::draw_summary_components() {
             for (size_t i = 0; i < effect_names.size(); ++i) {
                 const Effect effect = static_cast<Effect>(i);
                 const std::string &name = effect_names[i];
-                if (song.calculate_dsps(effect) > 0) {
+                if (Song::calculate_dsps(effect) > 0) {
                     const size_t component_size = component_sizes.at("DSPs").at(name);
                     player_size += component_size;
                     draw_table_row(false, name.c_str(), component_size);
@@ -101,7 +101,7 @@ size_t GUISummaryPanel::draw_summary_components() {
         for (size_t i = 0; i < generator_names.size(); ++i) {
             const Generator generator = static_cast<Generator>(i);
             const std::string &name = generator_names[i];
-            if (song.calculate_oscillators(generator) > 0) {
+            if (Song::calculate_oscillators(generator) > 0) {
                 const size_t component_size = component_sizes.at("Oscillators").at(name);
                 player_size += component_size;
                 draw_table_row(false, name.c_str(), component_size);
@@ -124,7 +124,7 @@ size_t GUISummaryPanel::draw_summary_components() {
                 }
 
                 const std::string &name = instruction_names.at(instruction);
-                if (song.calculate_commands(instruction) > 0) {
+                if (Song::calculate_commands(instruction) > 0) {
                     /* dependencies */
                     if (!portamento && (instruction == Instruction::PortamentoUp || instruction == Instruction::PortamentoDown)) {
                         portamento = true;
@@ -275,7 +275,7 @@ void GUISummaryPanel::draw_optimizations() {
         for (size_t i = 0; i < effect_names.size(); ++i) {
             const Effect effect = static_cast<Effect>(i);
             const std::string &name = effect_names[i];
-            if (song.calculate_dsps(effect) == 0) {
+            if (Song::calculate_dsps(effect) == 0) {
                 ImGui::BulletText("Disabled effect: %s", name.c_str());
             }
         }
@@ -284,7 +284,7 @@ void GUISummaryPanel::draw_optimizations() {
     for (size_t i = 0; generator_names.size() > i; ++i) {
         const Generator generator = static_cast<Generator>(i);
         const std::string &name = generator_names[i];
-        if (song.calculate_oscillators(generator) == 0) {
+        if (Song::calculate_oscillators(generator) == 0) {
             ImGui::BulletText("Disabled generator: %s", generator_names[i].c_str());
         }
     }
@@ -297,7 +297,7 @@ void GUISummaryPanel::draw_optimizations() {
                 continue;
             }
 
-            if (song.calculate_commands(instruction) == 0) {
+            if (Song::calculate_commands(instruction) == 0) {
                 ImGui::BulletText("Disabled command: %s", name);
             }
         }

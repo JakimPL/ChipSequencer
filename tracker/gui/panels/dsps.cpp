@@ -30,8 +30,8 @@ bool GUIDSPsPanel::is_disabled() const {
 }
 
 bool GUIDSPsPanel::select_item() {
-    std::vector<std::string> dependencies = song.find_dsp_dependencies(dsp_index);
-    std::vector<std::pair<ItemType, uint8_t>> link_dependencies = link_manager.find_dependencies(Target::DSP, dsp_index);
+    std::vector<std::string> dependencies = Song::find_dsp_dependencies(dsp_index);
+    std::vector<std::pair<ItemType, uint8_t>> link_dependencies = LinkManager::find_dependencies(Target::DSP, dsp_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies, link_dependencies);
     prepare_combo(this, dsp_names, "##DSPCombo", dsp_index, {}, false, GUI_COMBO_MARGIN_RIGHT);
@@ -115,30 +115,26 @@ void GUIDSPsPanel::to() const {
     void *buffer = dsps[dsp_index];
     switch (static_cast<Effect>(current_dsp.effect_index)) {
     case Effect::Gainer: {
-        static_cast<DSP *>(buffer)->~DSP();
-        DSPGainer *dsp = new (buffer) DSPGainer();
+        DSPGainer *dsp = reinterpret_cast<DSPGainer *>(buffer);
         dsp->effect_index = EFFECT_GAINER;
         dsp->volume = static_cast<uint16_t>(std::round(current_dsp.gainer_gain * UINT16_MAX));
         break;
     }
     case Effect::Distortion: {
-        static_cast<DSP *>(buffer)->~DSP();
-        DSPDistortion *dsp = new (buffer) DSPDistortion();
+        DSPDistortion *dsp = reinterpret_cast<DSPDistortion *>(buffer);
         dsp->effect_index = EFFECT_DISTORTION;
         dsp->level = static_cast<uint16_t>(std::round(current_dsp.distortion_level * UINT16_MAX / 2.0f));
         break;
     }
     case Effect::Filter: {
-        static_cast<DSP *>(buffer)->~DSP();
-        DSPFilter *dsp = new (buffer) DSPFilter();
+        DSPFilter *dsp = reinterpret_cast<DSPFilter *>(buffer);
         dsp->effect_index = EFFECT_FILTER;
         dsp->frequency = static_cast<uint16_t>(std::round(current_dsp.filter_cutoff * UINT16_MAX));
         dsp->mode = current_dsp.filter_mode ? 0xFF : 0x00;
         break;
     }
     case Effect::Delay: {
-        static_cast<DSP *>(buffer)->~DSP();
-        DSPDelay *dsp = new (buffer) DSPDelay();
+        DSPDelay *dsp = reinterpret_cast<DSPDelay *>(buffer);
         dsp->effect_index = EFFECT_DELAY;
         dsp->dry = static_cast<uint8_t>(std::round(current_dsp.delay_dry * UINT8_MAX));
         dsp->wet = static_cast<uint8_t>(std::round(current_dsp.delay_wet * UINT8_MAX));
@@ -162,7 +158,7 @@ void GUIDSPsPanel::to() const {
 }
 
 void GUIDSPsPanel::add() {
-    void *new_dsp = song.add_dsp();
+    void *new_dsp = Song::add_dsp();
     if (new_dsp == nullptr) {
         return;
     }
@@ -173,7 +169,7 @@ void GUIDSPsPanel::add() {
 }
 
 void GUIDSPsPanel::duplicate() {
-    void *new_dsp = song.duplicate_dsp(dsp_index);
+    void *new_dsp = Song::duplicate_dsp(dsp_index);
     if (new_dsp == nullptr) {
         return;
     }
@@ -185,7 +181,7 @@ void GUIDSPsPanel::duplicate() {
 void GUIDSPsPanel::remove() {
     if (is_index_valid()) {
         perform_action_remove(this, {Target::DSP, dsp_index, 0}, static_cast<DSP *>(dsps[dsp_index]));
-        song.remove_dsp(dsp_index);
+        Song::remove_dsp(dsp_index);
         dsp_index = std::max(0, dsp_index - 1);
         update();
     }
@@ -209,7 +205,7 @@ void GUIDSPsPanel::update_dsp_names() {
     }
 }
 
-void GUIDSPsPanel::update_dsp_name(const int index, const int effect_index) const {
+void GUIDSPsPanel::update_dsp_name(const int index, const int effect_index) {
     if (index < 0 || index >= static_cast<int>(dsp_names.size())) {
         return;
     }

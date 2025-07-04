@@ -12,8 +12,8 @@ class ChangeTextAction : public Action {
     ChangeTextAction(
         const std::string &nm,
         GUIPanel *own,
-        const LinkKey k,
-        const TextChange<n> &txt_ch
+        LinkKey k,
+        TextChange<n> txt_ch
     );
 
     void redo() override;

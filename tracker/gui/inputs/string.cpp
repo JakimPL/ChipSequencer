@@ -1,9 +1,11 @@
+#include <utility>
+
 #include "../../general.hpp"
-#include "../history/shortcuts.hpp"
+#include "../shortcuts/manager.hpp"
 #include "string.hpp"
 
-StringInputHandler::StringInputHandler(const std::vector<ImGuiKey> keys, const bool synchronize)
-    : keys(keys), synchronize(synchronize) {
+StringInputHandler::StringInputHandler(std::vector<ImGuiKey> keys, const bool synchronize)
+    : keys(std::move(keys)), synchronize(synchronize) {
 }
 
 bool StringInputHandler::handle_input(std::vector<std::string> &strings, int &index) {
@@ -36,9 +38,9 @@ bool StringInputHandler::handle_input(std::vector<std::string> &strings, int &in
             if (ImGui::IsKeyPressed(static_cast<ImGuiKey>(key))) {
                 char input_character = 0;
                 if (key >= ImGuiKey_A && key <= ImGuiKey_Z) {
-                    input_character = 'A' + (key - ImGuiKey_A);
+                    input_character = 'A' + static_cast<char>(key - ImGuiKey_A);
                 } else if (key >= ImGuiKey_0 && key <= ImGuiKey_9) {
-                    input_character = '0' + (key - ImGuiKey_0);
+                    input_character = '0' + static_cast<char>(key - ImGuiKey_0);
                 } else if (key == ImGuiKey_Period) {
                     input_character = '.';
                 } else if (key == ImGuiKey_Comma) {

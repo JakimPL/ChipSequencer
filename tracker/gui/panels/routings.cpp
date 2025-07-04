@@ -88,7 +88,7 @@ void GUIRoutingsPanel::to_links() const {
 
         const size_t type_index = static_cast<size_t>(type);
         if (id >= links[type_index].size()) {
-            const std::string name = item_types_names.at(type);
+            const std::string &name = item_types_names.at(type);
             std::cerr << "Error: " << name << " " << id
                       << " is not available" << std::endl;
             continue;
@@ -141,7 +141,7 @@ void GUIRoutingsPanel::from_nodes() {
     column_next_y[output_x] = initial_y_offset;
 
     for (const auto &node : nodes) {
-        if (column_next_y.count(node.position.x)) {
+        if (column_next_y.count(node.position.x) != 0u) {
             float node_height = node.size.y > 0 ? node.size.y : (node.lines * ImGui::GetTextLineHeight());
             column_next_y[node.position.x] = std::max(column_next_y[node.position.x], node.position.y + node_height + vertical_padding);
         }
@@ -206,8 +206,8 @@ void GUIRoutingsPanel::update_channel_node(size_t index, RoutingNode &channel_no
     const Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][index];
     const auto &channel_routing = routing_variables.at(Target::CHANNEL);
     const auto filtered_items = channel_routing.filter_items(-1);
-    const auto labels = std::get<1>(filtered_items);
-    const auto offsets = std::get<2>(filtered_items);
+    const auto &labels = std::get<1>(filtered_items);
+    const auto &offsets = std::get<2>(filtered_items);
     channel_node.bypass = channel->flag & FLAG_BYPASS;
     channel_solo |= channel_node.solo;
 
@@ -220,7 +220,7 @@ void GUIRoutingsPanel::update_channel_node(size_t index, RoutingNode &channel_no
         }
 
         const OutputKey key = {Target::CHANNEL, static_cast<int>(index), offsets[j]};
-        channel_node.parameters.push_back({key, labels[j]});
+        channel_node.parameters.emplace_back(key, labels[j]);
         channel_node.lines += 1;
     }
 }
@@ -251,8 +251,8 @@ void GUIRoutingsPanel::update_dsp_node(size_t index, RoutingNode &dsp_node) {
     const Link &link = links[static_cast<size_t>(ItemType::DSP)][index];
     const auto &dsp_routing = routing_variables.at(Target::DSP);
     const auto filtered_items = dsp_routing.filter_items(dsp->effect_index);
-    const auto labels = std::get<1>(filtered_items);
-    const auto offsets = std::get<2>(filtered_items);
+    const auto &labels = std::get<1>(filtered_items);
+    const auto &offsets = std::get<2>(filtered_items);
     dsp_node.bypass = dsp->flag & FLAG_BYPASS;
     dsp_solo |= dsp_node.solo;
 
@@ -265,7 +265,7 @@ void GUIRoutingsPanel::update_dsp_node(size_t index, RoutingNode &dsp_node) {
         }
 
         const OutputKey key = {Target::DSP, static_cast<int>(index), offsets[j]};
-        dsp_node.parameters.push_back({key, labels[j]});
+        dsp_node.parameters.emplace_back(key, labels[j]);
         dsp_node.lines += 1;
     }
 }
@@ -335,7 +335,7 @@ void GUIRoutingsPanel::draw_nodes() {
     ImVec2 content_size = calculate_content_size();
 
     ImGui::SetNextWindowContentSize(content_size);
-    ImGui::BeginChild("RoutingCanvas", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+    ImGui::BeginChild("RoutingCanvas", ImVec2(0, 0), 0, ImGuiWindowFlags_HorizontalScrollbar);
 
     const ImVec2 canvas_origin = ImGui::GetCursorScreenPos();
     const ImVec2 canvas_sz = ImGui::GetContentRegionAvail();
@@ -372,7 +372,8 @@ void GUIRoutingsPanel::draw_link(const InputKey &source_key, const OutputKey &ta
 
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
     if (source_pin_it != output_pins.end() && dest_pin_it != input_pins.end()) {
-        ImVec2 p1, p4;
+        ImVec2 p1;
+        ImVec2 p4;
         ImU32 color;
         if (dragging) {
             const ImVec2 mouse_pos = ImGui::GetMousePos();
@@ -396,7 +397,7 @@ void GUIRoutingsPanel::draw_link(const InputKey &source_key, const OutputKey &ta
     }
 }
 
-Splitter GUIRoutingsPanel::get_splitter_from_input_key(const InputKey &source) const {
+Splitter GUIRoutingsPanel::get_splitter_from_input_key(const InputKey &source) {
     Splitter splitter;
     switch (source.first) {
     case ItemType::CHANNEL: {
@@ -426,7 +427,6 @@ Splitter GUIRoutingsPanel::get_splitter_from_input_key(const InputKey &source) c
 }
 
 void GUIRoutingsPanel::draw_all_links() {
-    ImDrawList *draw_list = ImGui::GetWindowDrawList();
     for (const auto &[source, target] : nodes_links) {
         const Splitter splitter = get_splitter_from_input_key(source);
         if (target.target == Target::SPLITTER_OUTPUT) {
@@ -603,7 +603,6 @@ void GUIRoutingsPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_re
         const InputKey key = routing_node.key.value();
         output_pins[key] = pin_position;
 
-        const bool is_pin_hovered = ImGui::IsMouseHoveringRect(pin_position - ImVec2(GUI_ROUTING_PIN_RADIUS, GUI_ROUTING_PIN_RADIUS), pin_position + ImVec2(GUI_ROUTING_PIN_RADIUS, GUI_ROUTING_PIN_RADIUS));
         if (!locked) {
             set_source_key(pin_position, key);
         }
@@ -716,7 +715,7 @@ void GUIRoutingsPanel::reset_linking() {
     link_dragging_source_key = std::nullopt;
 }
 
-bool GUIRoutingsPanel::is_linking_possible(const InputKey &source_key, const OutputKey &target_key) const {
+bool GUIRoutingsPanel::is_linking_possible(const InputKey &source_key, const OutputKey &target_key) {
     const ItemType type = source_key.first;
     const size_t id = source_key.second;
     const size_t item = target_key.index;
@@ -739,13 +738,16 @@ bool GUIRoutingsPanel::get_bypass_state(const RoutingNode &node) const {
 bool GUIRoutingsPanel::get_bypass_state(const ItemType type, const bool bypass, const bool solo) const {
     if (type == ItemType::CHANNEL) {
         return channel_solo ? bypass & solo : bypass;
-    } else if (type == ItemType::DSP) {
+    }
+
+    if (type == ItemType::DSP) {
         return dsp_solo ? bypass & solo : bypass;
     }
+
     return bypass;
 }
 
-bool GUIRoutingsPanel::get_splitter_bounds(const size_t j, size_t index, const Link &link) const {
+bool GUIRoutingsPanel::get_splitter_bounds(const size_t j, size_t index, const Link &link) {
     if (!is_target_splitter(link.target)) {
         return true;
     }
@@ -819,7 +821,7 @@ ImVec2 GUIRoutingsPanel::calculate_content_size() const {
     return content_size;
 }
 
-bool GUIRoutingsPanel::is_node_locked(const RoutingNode &node) const {
+bool GUIRoutingsPanel::is_node_locked(const RoutingNode &node) {
     if (!node.key.has_value()) {
         return false;
     }
@@ -827,13 +829,15 @@ bool GUIRoutingsPanel::is_node_locked(const RoutingNode &node) const {
     return is_node_locked(node.key.value());
 }
 
-bool GUIRoutingsPanel::is_node_locked(const InputKey input_key) const {
+bool GUIRoutingsPanel::is_node_locked(const InputKey input_key) {
     const ItemType type = input_key.first;
     const size_t id = input_key.second;
 
     if (type == ItemType::CHANNEL) {
         return lock_registry.is_locked(Target::CHANNEL, id);
-    } else if (type == ItemType::DSP) {
+    }
+
+    if (type == ItemType::DSP) {
         return lock_registry.is_locked(Target::DSP, id);
     }
 

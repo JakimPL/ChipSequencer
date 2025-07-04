@@ -11,16 +11,16 @@
 #include "../song/links/type.hpp"
 #include "../song/links/target.hpp"
 
-typedef std::pair<ItemType, int> InputKey;
-typedef LinkKey OutputKey;
+using InputKey = std::pair<ItemType, int>;
+using OutputKey = LinkKey;
 
 struct NodeIdentifier {
-    Target type;
-    size_t id;
+    Target type = Target::COUNT;
+    size_t id = -1;
 
-    NodeIdentifier();
+    NodeIdentifier() = default;
     NodeIdentifier(Target type, size_t id);
-    NodeIdentifier(const std::string &string);
+    explicit NodeIdentifier(const std::string &string);
     bool operator==(const NodeIdentifier &other) const;
     bool operator<(const NodeIdentifier &other) const;
     std::string to_string() const;
@@ -29,7 +29,7 @@ struct NodeIdentifier {
 template <>
 struct std::hash<NodeIdentifier> {
     std::size_t operator()(const NodeIdentifier &k) const {
-        return (std::hash<int>()(static_cast<int>(k.type)) ^ (std::hash<size_t>()(k.id) << 1));
+        return (std::hash<int>()(static_cast<int>(k.type)) ^ (std::hash<size_t>()(k.id) << 1U));
     }
 };
 

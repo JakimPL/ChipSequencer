@@ -1,4 +1,5 @@
 #include <sstream>
+#include <utility>
 
 #include "../../patterns/commands.hpp"
 #include "selection.hpp"
@@ -8,10 +9,10 @@ ChangePatternSelectionAction<T>::ChangePatternSelectionAction(
     const std::string &nm,
     GUIPanel *own,
     const LinkKey k,
-    const PatternSelectionChange<T> &s_ch,
+    PatternSelectionChange<T> s_ch,
     SetItemsFunction<T> set_items_function
 )
-    : Action(nm, own, k), selection_changes(s_ch), set_items(set_items_function) {
+    : Action(nm, own, k), selection_changes(std::move(s_ch)), set_items(std::move(set_items_function)) {
 }
 
 template <typename T>
@@ -35,13 +36,12 @@ void ChangePatternSelectionAction<T>::undo() {
 }
 
 template <typename T>
-bool ChangePatternSelectionAction<T>::can_merge(const Action *other) const {
+bool ChangePatternSelectionAction<T>::can_merge(const Action * /* other */) const {
     return false;
 }
 
 template <typename T>
-void ChangePatternSelectionAction<T>::merge(const Action *other) {
-    return;
+void ChangePatternSelectionAction<T>::merge(const Action * /* other */) {
 }
 
 template <typename T>

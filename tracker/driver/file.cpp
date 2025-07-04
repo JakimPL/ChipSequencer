@@ -7,7 +7,6 @@
 #include "file.hpp"
 
 void FileDriver::terminate() {
-    return;
 }
 
 void FileDriver::play() {

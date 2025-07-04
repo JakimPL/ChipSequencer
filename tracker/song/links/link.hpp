@@ -22,10 +22,10 @@ struct Link {
     uint8_t table_id = -1;
     LinkKey key;
 
-    void assign_output();
+    void assign_output() const;
     void serialize(std::ofstream &file) const;
     void deserialize(std::ifstream &file);
 };
 
-typedef std::array<std::vector<Link>, static_cast<size_t>(ItemType::COUNT)> Links;
-typedef std::map<uint8_t, std::map<uint8_t, Link>> CommandsLinks;
+using Links = std::array<std::vector<Link>, static_cast<size_t>(ItemType::COUNT)>;
+using CommandsLinks = std::map<uint8_t, std::map<uint8_t, Link>>;

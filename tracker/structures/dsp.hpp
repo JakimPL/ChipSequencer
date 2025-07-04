@@ -79,7 +79,7 @@ struct DSPDelay {
     uint32_t alignment[0];
 } __attribute__((packed));
 
-typedef std::vector<void *> DSPs;
+using DSPs = std::vector<void *>;
 
 constexpr size_t DSP_SIZE = offsetof(DSP, dsp_size);
 constexpr size_t DSP_EFFECT_INDEX = offsetof(DSP, effect_index);

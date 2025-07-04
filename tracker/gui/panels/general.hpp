@@ -5,6 +5,8 @@
 #include <string>
 #include <thread>
 
+#include "../../constants.hpp"
+#include "../../song/validation.hpp"
 #include "../constants.hpp"
 #include "panel.hpp"
 
@@ -32,7 +34,7 @@ class GUIGeneralPanel : public GUIPanel {
     void draw_pause_rectangles();
     void draw_play_triangle();
     void draw_play_from_page_button();
-    void draw_stop_square() const;
+    static void draw_stop_square();
     void draw_song_info();
     void draw_tabs();
     void draw_tempo();
@@ -41,15 +43,15 @@ class GUIGeneralPanel : public GUIPanel {
     void play();
     void play_from_current_page();
     void play_from_current_position();
-    void validate_playback(const ValidationResult result, const int index);
-    std::string get_error_message(const ValidationResult result, const int index) const;
+    void validate_playback(const ValidationResult result, int index);
+    static std::string get_error_message(const ValidationResult result, int index);
 
     void register_shortcuts() override;
     void draw() override;
     void draw_dialog_box() override;
 
   public:
-    GUIGeneralPanel(const bool visible = true, const bool windowed = true);
+    explicit GUIGeneralPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 
     void update() override;

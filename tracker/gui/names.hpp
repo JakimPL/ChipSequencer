@@ -86,18 +86,20 @@ const std::map<Instruction, const char *> instruction_names = {
     {Instruction::AddDwordValue, "Add dword value"},
     {Instruction::AddFloatValue, "Add float value"},
 };
-const std::map<Instruction, const char *> simple_instruction_names = {
-    {Instruction::Empty, "Empty"},
-    {Instruction::PortamentoUp, "Portamento up"},
-    {Instruction::PortamentoDown, "Portamento down"},
-    {Instruction::SetMasterGainer, "Set master gainer"},
-    {Instruction::SetBPM, "Set BPM"},
-    {Instruction::SetDivision, "Set division"},
-    {Instruction::ChangeByteValue, "Change value"},
+const std::vector<std::string> simple_instruction_names = {
+    "Empty",
+    "Portamento up",
+    "Portamento down",
+    "Set master gainer",
+    "Set BPM",
+    "Set division",
+    "Change value",
 };
 
-std::string get_note_name(const uint8_t note_value);
-std::string get_note_octave(const uint8_t note_value);
-uint8_t get_note_value(const std::string &note_name, const int octave);
-std::string get_full_note_name(const uint8_t note_value);
+std::string get_note_name(uint8_t note_value);
+std::string get_note_octave(uint8_t note_value);
+uint8_t get_note_value(const std::string &note_name, int octave);
+std::string get_full_note_name(uint8_t note_value);
 std::string get_command_name(const CommandValue &command_value);
+
+std::vector<std::string> get_note_names();

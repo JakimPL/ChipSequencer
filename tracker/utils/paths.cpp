@@ -5,23 +5,23 @@
 #ifdef _WIN32
 #include <windows.h>
 #else
+#include <climits>
 #include <unistd.h>
-#include <limits.h>
 #endif
 
-std::pair<std::filesystem::path, std::filesystem::path> prepare_temp_directory(const bool clear_temp) {
+std::pair<std::filesystem::path, std::filesystem::path> prepare_temp_directory(const bool clean_temp) {
     const std::filesystem::path temp_base = std::filesystem::temp_directory_path() / "chipsequencer";
     const std::filesystem::path song_path = temp_base / "song";
 
-    remove_temp_directory(temp_base, clear_temp);
+    remove_temp_directory(temp_base, clean_temp);
     remove_temp_directory(song_path, true);
     std::filesystem::create_directories(song_path);
 
     return {temp_base, song_path};
 }
 
-void remove_temp_directory(const std::filesystem::path &directory, const bool clear_temp) {
-    if (clear_temp && std::filesystem::exists(directory)) {
+void remove_temp_directory(const std::filesystem::path &directory, const bool clean_temp) {
+    if (clean_temp && std::filesystem::exists(directory)) {
         std::filesystem::remove_all(directory);
     }
 }
@@ -53,13 +53,13 @@ std::filesystem::path get_base_path() {
 
 std::filesystem::path get_resource_path(const std::string &resource) {
     const std::filesystem::path base_path = get_base_path();
-    const std::filesystem::path resource_path = base_path / resource;
+    std::filesystem::path resource_path = base_path / resource;
 
     if (std::filesystem::exists(resource_path)) {
         return resource_path;
     }
 
-    const std::filesystem::path fallback_path = std::filesystem::current_path() / resource;
+    std::filesystem::path fallback_path = std::filesystem::current_path() / resource;
     if (std::filesystem::exists(fallback_path)) {
         return fallback_path;
     }

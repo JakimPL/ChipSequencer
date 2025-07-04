@@ -11,22 +11,27 @@
 constexpr int BUFFER_SIZE = 128;
 constexpr int HISTORY_SIZE = 65536;
 
-typedef std::array<std::deque<_Float32>, MAX_OUTPUT_CHANNELS> AudioHistory;
+using AudioHistory = std::array<std::deque<_Float32>, MAX_OUTPUT_CHANNELS>;
 
 class AudioEngine {
   public:
-    AudioEngine(PortAudioDriver &driver);
+    explicit AudioEngine(PortAudioDriver &driver);
     ~AudioEngine();
 
-    void play(const uint16_t from_row = 0);
+    AudioEngine(const AudioEngine &) = delete;
+    AudioEngine &operator=(const AudioEngine &) = delete;
+    AudioEngine(AudioEngine &&) = delete;
+    AudioEngine &operator=(AudioEngine &&) = delete;
+
+    void play(uint16_t from_row = 0);
     void pause();
     void stop();
     bool is_error();
     bool is_playing() const;
     bool is_paused() const;
 
-    void skip_rows(const uint16_t from_row = 0);
-    void set_output_channels(const int channels);
+    void skip_rows(uint16_t from_row = 0);
+    void set_output_channels(int channels);
 
     const AudioHistory &get_history() const;
     void clear_history();
@@ -35,7 +40,7 @@ class AudioEngine {
 
   private:
     void playback_function();
-    bool safe_frame();
+    static bool safe_frame();
     void handle_frame_exception();
 
     PortAudioDriver &driver;

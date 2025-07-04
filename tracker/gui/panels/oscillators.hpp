@@ -26,7 +26,7 @@ class GUIOscillatorsPanel : public GUIPanel {
     void draw_oscillator_type();
     void draw_oscillator();
     void update_wavetables();
-    void update_oscillator_name(const int index, const int generator_index = -1);
+    static void update_oscillator_name(int index, int generator_index = -1);
     void update_oscillator_names();
 
     bool select_item() override;
@@ -37,11 +37,11 @@ class GUIOscillatorsPanel : public GUIPanel {
     void draw() override;
 
   public:
-    GUIOscillatorsPanel(const bool visible = true, const bool windowed = true);
+    explicit GUIOscillatorsPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 
     void update() override;
-    void set_index(const int index) override;
+    void set_index(int index) override;
 
     void from() override;
     void to() const override;

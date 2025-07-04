@@ -30,8 +30,7 @@
 #include "panels/commands/channels.hpp"
 #include "panels/commands/sequences.hpp"
 
-GUI::GUI()
-    : window(nullptr), gl_context(nullptr), renderer(nullptr), rendering_backend(RenderingBackend::OpenGL), fullscreen(false) {
+GUI::GUI() {
     menu = std::make_unique<GUIMenu>(true, false);
     editor = std::make_unique<GUIEditorPanel>();
     general_panel = std::make_unique<GUIGeneralPanel>();
@@ -83,7 +82,7 @@ void GUI::change_window_title(const std::string &title) {
         window_title += " - " + title;
     }
 
-    if (window) {
+    if (window != nullptr) {
         SDL_SetWindowTitle(gui.window, window_title.c_str());
     }
 }
@@ -154,12 +153,13 @@ bool GUI::try_opengl_core() {
     window = SDL_CreateWindow(
         APPLICATION_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, GUI_WINDOW_WIDTH, GUI_WINDOW_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED
     );
-    if (!window) {
+
+    if (window == nullptr) {
         return false;
     }
 
     gl_context = SDL_GL_CreateContext(window);
-    if (!gl_context) {
+    if (gl_context == nullptr) {
         SDL_DestroyWindow(window);
         window = nullptr;
         return false;
@@ -172,7 +172,7 @@ bool GUI::try_opengl_core() {
 }
 
 bool GUI::try_opengl_es() {
-    if (window) {
+    if (window != nullptr) {
         SDL_DestroyWindow(window);
         window = nullptr;
     }
@@ -185,12 +185,12 @@ bool GUI::try_opengl_es() {
     window = SDL_CreateWindow(
         APPLICATION_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, GUI_WINDOW_WIDTH, GUI_WINDOW_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED
     );
-    if (!window) {
+    if (window == nullptr) {
         return false;
     }
 
     gl_context = SDL_GL_CreateContext(window);
-    if (!gl_context) {
+    if (gl_context == nullptr) {
         SDL_DestroyWindow(window);
         window = nullptr;
         return false;
@@ -273,9 +273,11 @@ bool GUI::initialize_imgui_common() {
 
 bool GUI::render() {
     SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_QUIT)
+    while (SDL_PollEvent(&event) != 0) {
+        if (event.type == SDL_QUIT) {
             done = true;
+        }
+
         ImGui_ImplSDL2_ProcessEvent(&event);
     }
 
@@ -303,7 +305,7 @@ bool GUI::render_opengl() {
     frame();
 
     ImGui::Render();
-    glViewport(0, 0, (int) io->DisplaySize.x, (int) io->DisplaySize.y);
+    glViewport(0, 0, static_cast<int>(io->DisplaySize.x), static_cast<int>(io->DisplaySize.y));
     glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
     glClear(GL_COLOR_BUFFER_BIT);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -338,7 +340,7 @@ void GUI::set_font() {
 void GUI::terminate() {
     switch (rendering_backend) {
     case RenderingBackend::OpenGL:
-        if (gl_context) {
+        if (gl_context != nullptr) {
             ImGui_ImplOpenGL3_Shutdown();
             ImGui_ImplSDL2_Shutdown();
             ImGui::DestroyContext();
@@ -361,7 +363,7 @@ void GUI::terminate() {
         break;
     }
 
-    if (window) {
+    if (window != nullptr) {
         SDL_DestroyWindow(window);
         window = nullptr;
     }
@@ -369,7 +371,7 @@ void GUI::terminate() {
     SDL_Quit();
 }
 
-bool GUI::is_done() {
+bool GUI::is_done() const {
     return done;
 }
 
@@ -378,7 +380,7 @@ void GUI::set_audio_engine(AudioEngine *engine) {
 }
 
 bool GUI::check_audio_error() const {
-    if (audio_engine) {
+    if (audio_engine != nullptr) {
         return audio_engine->is_error();
     }
 
@@ -659,7 +661,7 @@ std::pair<ValidationResult, int> GUI::play_from(const uint16_t row, const bool r
 }
 
 void GUI::stop(const bool restore_parameters) const {
-    if (audio_engine) {
+    if (audio_engine != nullptr) {
         audio_engine->stop();
         audio_engine->clear_history();
     }
@@ -670,7 +672,7 @@ void GUI::stop(const bool restore_parameters) const {
 }
 
 bool GUI::is_playing() const {
-    if (audio_engine) {
+    if (audio_engine != nullptr) {
         return audio_engine->is_playing();
     }
 
@@ -678,7 +680,7 @@ bool GUI::is_playing() const {
 }
 
 bool GUI::is_paused() const {
-    if (audio_engine) {
+    if (audio_engine != nullptr) {
         return audio_engine->is_paused();
     }
 
@@ -690,7 +692,7 @@ bool GUI::is_fullscreen() const {
 }
 
 const AudioHistory &GUI::get_audio_history() const {
-    if (audio_engine) {
+    if (audio_engine != nullptr) {
         return audio_engine->get_history();
     }
 
@@ -698,13 +700,13 @@ const AudioHistory &GUI::get_audio_history() const {
 }
 
 void GUI::lock_audio_history() const {
-    if (audio_engine) {
+    if (audio_engine != nullptr) {
         audio_engine->lock_history();
     }
 }
 
 void GUI::unlock_audio_history() const {
-    if (audio_engine) {
+    if (audio_engine != nullptr) {
         audio_engine->unlock_history();
     }
 }
@@ -923,7 +925,7 @@ bool GUI::is_commands_pattern_view_active() const {
 }
 
 void GUI::toggle_fullscreen() {
-    if (!window) {
+    if (window == nullptr) {
         return;
     }
 

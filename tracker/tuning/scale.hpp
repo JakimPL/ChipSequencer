@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <cstddef>
 #include <string>
 #include <vector>
 #include <map>
@@ -9,7 +10,7 @@
 
 class ScaleComposer {
   public:
-    void compose(const int new_edo);
+    void compose(int new_edo);
 
     int get_edo() const;
     size_t get_a_index() const;
@@ -20,6 +21,6 @@ class ScaleComposer {
     int a_index = -1;
     std::array<std::string, MAX_EDO> scale;
 
-    ptrdiff_t get_ordered_index(const std::string &note_name);
+    static ptrdiff_t get_ordered_index(const std::string &note_name);
     std::string render(const std::string &name, int offset) const;
 };

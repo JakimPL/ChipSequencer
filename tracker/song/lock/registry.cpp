@@ -26,10 +26,10 @@ bool LockRegistry::toggle_lock(const Target target, const size_t index) {
     if (is_locked(target, index)) {
         unlock_item(target, index);
         return false;
-    } else {
-        lock_item(target, index);
-        return true;
     }
+
+    lock_item(target, index);
+    return true;
 }
 
 void LockRegistry::clear() {

@@ -15,7 +15,7 @@ void save_wave(const std::string &filename, const std::vector<std::vector<float>
     sfinfo.seekable = 0;
 
     SNDFILE *sndfile = sf_open(filename.c_str(), SFM_WRITE, &sfinfo);
-    if (!sndfile) {
+    if (sndfile == nullptr) {
         throw std::runtime_error("Failed to open file for writing: " + filename);
     }
 
@@ -36,7 +36,7 @@ void save_wave(const std::string &filename, const Samples &samples) {
 Samples load_wave(const std::string &filename) {
     SF_INFO sfinfo;
     SNDFILE *sndfile = sf_open(filename.c_str(), SFM_READ, &sfinfo);
-    if (!sndfile) {
+    if (sndfile == nullptr) {
         throw std::runtime_error("Failed to open file for reading: " + filename);
     }
 

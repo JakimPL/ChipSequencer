@@ -5,6 +5,9 @@
 .PHONY: onekpaq
 .PHONY: pre-commit
 .PHONY: venv
+.PHONY: clang-tidy
+.PHONY: clang-tidy-fix
+.PHONY: clang-tidy-check
 
 GO_CHECK := $(shell which go 2> /dev/null)
 INSTALL_NASM_FMT := GO111MODULE=on go install github.com/yamnikov-oleg/nasmfmt@latest
@@ -153,3 +156,15 @@ else
 		echo "FFTW directory already exists"; \
 	fi
 endif
+
+clang-tidy:
+	@echo "Running clang-tidy..."
+	@cmake --build build --target clang-tidy
+
+clang-tidy-fix:
+	@echo "Running clang-tidy with --fix..."
+	@cmake --build build --target clang-tidy-fix
+
+clang-tidy-check:
+	@echo "Listing clang-tidy checks..."
+	@cmake --build build --target clang-tidy-check

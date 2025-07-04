@@ -13,8 +13,7 @@ enum RoutingConstraints {
     ROUTING_NO_CONSTRAINTS = -1,
 };
 
-typedef std::tuple<std::vector<size_t>, std::vector<std::string>, std::vector<uint16_t>, std::vector<TargetVariableType>>
-    RoutingTuple;
+using RoutingTuple = std::tuple<std::vector<size_t>, std::vector<std::string>, std::vector<uint16_t>, std::vector<TargetVariableType>>;
 
 struct RoutingItem {
     std::string label;
@@ -25,7 +24,7 @@ struct RoutingItem {
 };
 
 struct RoutingItems {
-    RoutingItems(std::vector<RoutingItem> items);
+    explicit RoutingItems(std::vector<RoutingItem> items);
 
     std::vector<std::string> labels;
     std::vector<uint16_t> offsets;
@@ -33,10 +32,10 @@ struct RoutingItems {
     std::vector<int> constraints;
     std::map<std::pair<int, uint16_t>, size_t> offset_to_index;
 
-    RoutingTuple filter_items(const int constraint, const bool allow_hidden = false) const;
-    size_t get_index_from_offset(const LinkKey key, const bool allow_hidden = false) const;
+    RoutingTuple filter_items(int constraint, bool allow_hidden = false) const;
+    size_t get_index_from_offset(LinkKey key, bool allow_hidden = false) const;
 };
 
-std::string get_key_name(const LinkKey key);
+std::string get_key_name(LinkKey key);
 
 extern const std::map<Target, RoutingItems> routing_variables;

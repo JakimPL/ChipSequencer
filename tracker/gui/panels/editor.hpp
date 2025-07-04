@@ -8,12 +8,13 @@ class GUIEditorPanel : public GUIPanel {
   private:
     void draw_tabs();
     void draw_options();
-    void draw_history();
+    static void draw_history();
+    static void draw_clipboard();
 
     void draw() override;
     void check_keyboard_input() override;
 
   public:
-    GUIEditorPanel(const bool visible = true, const bool windowed = true);
+    explicit GUIEditorPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 };

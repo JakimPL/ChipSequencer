@@ -25,17 +25,17 @@ class GUIWaveformPanel : public GUIPanel {
     void update_fft_sizes();
     void draw_waveform();
     void draw_spectrogram();
-    void draw_channel_waveform(const int output_channel_index, const ImVec2 &size, const ImVec2 &position);
-    void draw_channel_spectrogram(const int output_channel_index, const ImVec2 &size, const ImVec2 &position);
+    void draw_channel_waveform(int output_channel_index, const ImVec2 &size, const ImVec2 &position) const;
+    void draw_channel_spectrogram(int output_channel_index, const ImVec2 &size, const ImVec2 &position);
 
-    std::string get_frequency_name(const int frequency) const;
+    static std::string get_frequency_name(int frequency);
     static std::string find_nearest_note(double frequency);
-    void draw_frequency_tooltip(const ImVec2 &position, const ImVec2 &size, const float log_min, const float log_range);
+    static void draw_frequency_tooltip(const ImVec2 &position, const ImVec2 &size, float log_min, float log_range);
 
     void draw() override;
 
   public:
-    GUIWaveformPanel(const bool visible = true, const bool windowed = true);
+    explicit GUIWaveformPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 
     void update() override;

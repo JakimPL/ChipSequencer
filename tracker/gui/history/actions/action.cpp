@@ -1,12 +1,13 @@
 
 #include <iomanip>
 #include <sstream>
+#include <utility>
 
 #include "../../panels/panel.hpp"
 #include "action.hpp"
 
-Action::Action(const std::string &nm, GUIPanel *own, const LinkKey k)
-    : name(nm), owner(own), key(k) {
+Action::Action(std::string nm, GUIPanel *own, const LinkKey k)
+    : name(std::move(nm)), owner(own), key(k) {
 }
 
 void Action::execute() {
