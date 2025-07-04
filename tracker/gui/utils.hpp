@@ -34,7 +34,7 @@ extern std::unordered_map<LinkKey, bool> slider_states;
 extern std::unordered_map<LinkKey, float> slider_float_values;
 
 int clamp_index(int index, int size);
-void draw_number_of_items(GUIPanel *owner, const std::string &label, const char *label_id, int &value, int min, int max, LinkKey key = {}, float label_length = 50.0f);
+void draw_number_of_items(GUIPanel *owner, const char *label_id, int &value, int min, int max, LinkKey key = {}, float label_length = 50.0f);
 
 template <size_t n>
 void draw_text(GUIPanel *owner, const char *label, char (&text)[n], LinkKey key);
@@ -56,7 +56,7 @@ void draw_confirmation_popup(
 void draw_output_output_splitter(GUIPanel *owner, OutputType &output_type, LinkKey key);
 void draw_output_dsp_splitter(GUIPanel *owner, OutputType &output_type, int dsp_index, LinkKey key);
 void draw_output_direct_output(GUIPanel *owner, OutputType &output_type, LinkKey key);
-void draw_output_direct_dsp(GUIPanel *owner, OutputType &output_type, int dsp_index, LinkKey key);
+void draw_output_direct_dsp(GUIPanel *owner, OutputType &output_type, int dsp_index);
 bool draw_output_parameter(GUIPanel *owner, OutputType &output_type);
 void draw_output_parameter_generic(GUIPanel *owner, OutputType &output_type, const std::vector<std::string> &names, const std::string &label);
 void draw_output_parameter_oscillator(GUIPanel *owner, OutputType &output_type);

@@ -129,7 +129,7 @@ void GUIOrdersPanel::update() {
 void GUIOrdersPanel::draw_order_length() {
     const size_t old_size = current_order.length;
     const LinkKey key = {Target::ORDER, order_index, ORDER_LENGTH};
-    draw_number_of_items(this, "Sequences", "##SequenceLength", current_order.length, 1, MAX_ORDER_ITEMS, key);
+    draw_number_of_items(this, "##SequenceLength", current_order.length, 1, MAX_ORDER_ITEMS, key);
 
     if (old_size != current_order.length) {
         current_order.sequences.resize(current_order.length);

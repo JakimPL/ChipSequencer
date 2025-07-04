@@ -33,9 +33,6 @@ Song::Song() {
     new_song();
 }
 
-Song::~Song() {
-}
-
 void Song::new_song() {
     clear_data();
     bpm = DEFAULT_BPM;

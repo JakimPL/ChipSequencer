@@ -12,9 +12,6 @@
 #include "../shortcuts/manager.hpp"
 #include "pattern.hpp"
 
-Pattern::Pattern() {
-}
-
 Pattern::Pattern(const uint8_t sequence_index) {
     from_sequence(sequence_index);
 }

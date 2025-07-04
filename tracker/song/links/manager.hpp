@@ -22,8 +22,8 @@ class LinkManager {
 
     void capture_parameter(LinkKey key, const Link *link);
     void restore_parameter(LinkKey key, const Link *link) const;
-    void validate_key_and_link(LinkKey key, const Link *link) const;
-    TargetVariableType get_type(LinkKey key) const;
+    static void validate_key_and_link(LinkKey key, const Link *link);
+    static TargetVariableType get_type(LinkKey key);
 
     void remove_key(Link &link);
     void assign_key(Link &link);
@@ -37,20 +37,20 @@ class LinkManager {
     LinkManager(LinkManager &&) = delete;
     LinkManager &operator=(LinkManager &&) = delete;
 
-    void reset();
+    static void reset();
     void set_link(Link &link, void *item, uint8_t i);
     void set_links();
     void save_targets();
 
     bool is_linked(LinkKey key) const;
     std::vector<Link *> get_links(LinkKey key) const;
-    std::string get_link_reference(LinkKey key) const;
+    static std::string get_link_reference(LinkKey key);
     std::string get_link_reference(ItemType type, size_t index) const;
     std::vector<std::pair<void *, LinkKey>> get_pointers_map() const;
     std::pair<void *, LinkKey> get_pointer_and_key(size_t index) const;
     size_t find_pointer_id_by_key(LinkKey key) const;
 
-    std::vector<std::pair<ItemType, uint8_t>> find_dependencies(Target target, size_t index) const;
+    static std::vector<std::pair<ItemType, uint8_t>> find_dependencies(Target target, size_t index);
     void remove_dependencies(Target target, size_t index);
     void realign_links(Target target, size_t index, bool removal, ItemType type);
     void realign_links(Target target, size_t index, bool removal);

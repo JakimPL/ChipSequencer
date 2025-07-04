@@ -23,8 +23,8 @@ class ShortcutManager {
     std::string get_shortcut_display(ShortcutAction id) const;
     void process_shortcuts() const;
     void execute_action(ShortcutAction id) const;
+    static bool is_shortcut_pressed(const Shortcut &shortcut);
     bool is_shortcut_pressed(const ShortcutAction &id) const;
-    bool is_shortcut_pressed(const Shortcut &shortcut) const;
 
   private:
     std::unordered_map<ShortcutAction, std::vector<std::function<void()>>> actions;

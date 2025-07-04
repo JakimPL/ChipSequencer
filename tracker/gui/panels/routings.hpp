@@ -41,7 +41,7 @@ class GUIRoutingsPanel : public GUIPanel {
 
     void reset_dragging();
     void reset_linking();
-    bool is_linking_possible(const InputKey &source_key, const OutputKey &target_key) const;
+    static bool is_linking_possible(const InputKey &source_key, const OutputKey &target_key);
     RoutingNode *handle_node_dragging(const ImVec2 &canvas_origin);
     void set_source_key(ImVec2 pin_position, const InputKey &source_key);
     void set_target_key(ImVec2 pin_position, const OutputKey &target_key);
@@ -51,14 +51,14 @@ class GUIRoutingsPanel : public GUIPanel {
     static void update_output_node(size_t index, RoutingNode &output_node);
     void add_channel_node(size_t index, std::vector<RoutingNode> &nodes, std::map<float, float> &column_next_y);
     void add_dsp_node(size_t index, std::vector<RoutingNode> &nodes, std::map<float, float> &column_next_y);
-    void add_output_node(size_t index, std::vector<RoutingNode> &nodes, std::map<float, float> &column_next_y);
+    static void add_output_node(size_t index, std::vector<RoutingNode> &nodes, std::map<float, float> &column_next_y);
 
     bool get_bypass_state(const RoutingNode &node) const;
     bool get_bypass_state(ItemType type, bool bypass, bool solo) const;
-    bool get_splitter_bounds(size_t j, size_t index, const Link &link) const;
+    static bool get_splitter_bounds(size_t j, size_t index, const Link &link);
     static Splitter get_splitter_from_input_key(const InputKey &source);
-    bool is_node_locked(const RoutingNode &node) const;
-    bool is_node_locked(InputKey input_key) const;
+    static bool is_node_locked(const RoutingNode &node);
+    static bool is_node_locked(InputKey input_key);
 
     bool is_disabled() const override;
     void draw() override;

@@ -178,7 +178,6 @@ void GUIGeneralPanel::draw_play_from_page_button() {
     const float sz = 20.0f;
     const ImVec2 center = ImVec2(p.x + sz * 0.5f, p.y + sz * 0.5f);
 
-    const float line_x = center.x - sz * 0.3f;
     const float line_height = 0.8f * sz;
     const float bar_width = sz * 0.20f;
     const float padding = sz * 0.15f;

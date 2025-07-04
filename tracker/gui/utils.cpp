@@ -22,7 +22,7 @@ int clamp_index(int index, const int size) {
     return clamp(index, 0, size - 1);
 }
 
-void draw_number_of_items(GUIPanel *owner, const std::string &label, const char *label_id, int &value, int min, int max, const LinkKey key, float label_length) {
+void draw_number_of_items(GUIPanel *owner, const char *label_id, int &value, int min, int max, const LinkKey key, float label_length) {
     const int old_value = value;
 
     ImGui::PushID(label_id);
@@ -288,8 +288,8 @@ void draw_popup(const std::string &message) {
 
 void draw_confirmation_popup(
     const std::string &message,
-    std::function<void()> ok_action,
-    std::function<void()> save_action
+    const std::function<void()> ok_action,
+    const std::function<void()> save_action
 ) {
     ImGui::Text("%s", message.c_str());
     ImGui::Text("\n");
@@ -618,7 +618,7 @@ void draw_output_direct_output(GUIPanel *owner, OutputType &output_type, const L
     draw_int_slider(owner, "Channel", output_type.output_channel, {Target::SPECIAL, key.index, SPECIAL_CHANNEL_INDEX}, 0, output_channels - 1);
 }
 
-void draw_output_direct_dsp(GUIPanel *owner, OutputType &output_type, const int dsp_index, const LinkKey key) {
+void draw_output_direct_dsp(GUIPanel *owner, OutputType &output_type, const int dsp_index) {
     if (dsps.empty() || dsp_index >= static_cast<int>(dsps.size()) - 1) {
         ImGui::Text("No DSP available.");
         return;
@@ -794,7 +794,7 @@ bool draw_output(GUIPanel *owner, OutputType &output_type, const LinkKey key) {
         break;
     }
     case OutputTarget::DirectDSP: {
-        draw_output_direct_dsp(owner, output_type, dsp_index, key);
+        draw_output_direct_dsp(owner, output_type, dsp_index);
 
         if (value_changed) {
             output_type.operation = static_cast<int>(OutputOperation::Add);
@@ -857,8 +857,8 @@ void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t 
         case Instruction::PortamentoDown: {
             uint8_t channel;
             uint16_t value_portamento;
-            pattern.split_portamento_value(command_value, channel, value_portamento);
-            const double portamento = pattern.cast_portamento_to_double(value_portamento);
+            CommandsPattern::split_portamento_value(command_value, channel, value_portamento);
+            const double portamento = CommandsPattern::cast_portamento_to_double(value_portamento);
             ImGui::SetTooltip("Portamento %s: channel %d, %.3f semitones", command_char == command_letters.at(Instruction::PortamentoUp) ? "up" : "down", channel, portamento);
             break;
         }
@@ -888,7 +888,7 @@ void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t 
             uint8_t index;
             uint16_t offset;
             uint32_t value;
-            pattern.split_change_value_parts(
+            CommandsPattern::split_change_value_parts(
                 command_value,
                 target_variable_type,
                 target,

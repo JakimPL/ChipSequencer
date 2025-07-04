@@ -66,7 +66,7 @@ struct CommandsPattern {
     CommandValue get_command(int row) const;
     void set_command(int row, const std::string &command, const std::string &value);
     void set_command(int row, const CommandValue &command_value);
-    void handle_input(int min_row = 0, int max_row = -1);
+    void handle_input();
     void set_selection(int row, CommandSelection item);
     void add_command(const std::string &command = "", const std::string &value = "");
 };

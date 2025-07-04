@@ -226,9 +226,9 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
             const bool add = command[0] == command_letters.at(Instruction::AddByteValue);
             TargetVariableType target_variable_type;
             Target target;
-            uint8_t index;
-            uint16_t offset;
-            uint32_t generic_value;
+            uint8_t index = 0;
+            uint16_t offset = 0;
+            uint32_t generic_value = 0;
             split_change_value_parts(value, target_variable_type, target, index, offset, generic_value);
             const LinkKey key = {target, index, offset};
 
@@ -623,7 +623,7 @@ bool CommandsPattern::is_row_valid(const int row) const {
     return row >= 0 && row < static_cast<int>(commands.size());
 }
 
-void CommandsPattern::handle_input(const int min_row, const int max_row) {
+void CommandsPattern::handle_input() {
     const bool valid = current_row >= 0 && current_row < commands.size();
     if (!valid) {
         return;

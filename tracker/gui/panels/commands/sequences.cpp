@@ -279,7 +279,7 @@ void GUICommandsSequencesPanel::perform_command_action(const int row, const Comm
 void GUICommandsSequencesPanel::draw_sequence_length() {
     const size_t old_size = current_sequence.pattern.steps;
     const LinkKey key = {Target::SPECIAL, sequence_index, SPECIAL_COMMANDS_SEQUENCE_LENGTH};
-    draw_number_of_items(this, "Steps", "##SequenceLength", current_sequence.pattern.steps, 1, MAX_STEPS, key);
+    draw_number_of_items(this, "##SequenceLength", current_sequence.pattern.steps, 1, MAX_STEPS, key);
 
     if (old_size != current_sequence.pattern.steps) {
         current_sequence.pattern.commands.resize(current_sequence.pattern.steps);

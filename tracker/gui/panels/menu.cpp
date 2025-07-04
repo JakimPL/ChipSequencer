@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 
 #include "nfd.h"
@@ -133,8 +134,8 @@ void GUIMenu::file_save_as() {
     nfdchar_t *target_path = nullptr;
     nfdresult_t result = NFD_SaveDialog("seq", nullptr, &target_path);
     if (result == NFD_OKAY) {
+        std::unique_ptr<nfdchar_t, void (*)(void *)> path_guard(target_path, free);
         std::filesystem::path new_path(target_path);
-        free(target_path);
         new_path = check_and_correct_path_by_extension(new_path, ".seq");
         gui.stop();
         gui.save(new_path.string());
@@ -147,8 +148,8 @@ void GUIMenu::file_open() {
     nfdchar_t *target_path = nullptr;
     nfdresult_t result = NFD_OpenDialog("seq", nullptr, &target_path);
     if (result == NFD_OKAY) {
+        std::unique_ptr<nfdchar_t, void (*)(void *)> path_guard(target_path, free);
         std::filesystem::path file_path(target_path);
-        free(target_path);
 
         gui.stop();
         try {
@@ -171,8 +172,8 @@ void GUIMenu::file_render() {
     nfdchar_t *target_path = nullptr;
     nfdresult_t result = NFD_SaveDialog("wav", nullptr, &target_path);
     if (result == NFD_OKAY) {
+        std::unique_ptr<nfdchar_t, void (*)(void *)> path_guard(target_path, free);
         std::filesystem::path wav_path(target_path);
-        free(target_path);
         wav_path = check_and_correct_path_by_extension(wav_path, ".wav");
 
         gui.stop();
@@ -194,6 +195,8 @@ void GUIMenu::file_compile(const CompilationScheme scheme, const CompilationTarg
     const std::string platform = compilation_target == CompilationTarget::Linux ? "linux" : "windows";
     nfdresult_t result = NFD_SaveDialog(platform == "linux" ? "" : "exe", nullptr, &target_path);
     if (result == NFD_OKAY) {
+        // Use RAII to manage the memory allocated by NFD
+        std::unique_ptr<nfdchar_t, void (*)(void *)> path_guard(target_path, free);
         std::filesystem::path new_path(target_path);
         new_path = check_and_correct_path_by_extension(new_path, platform == "linux" ? "" : ".exe");
 

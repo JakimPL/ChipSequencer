@@ -837,7 +837,6 @@ void GUIPatternsPanel::handle_pattern_input(Pattern *pattern, uint16_t index) {
         }
         if (ImGui::IsKeyPressed(ImGuiKey_Home)) {
             const int start = page * gui.get_page_size();
-            index = start;
             current_row = start;
             const auto &[first_pattern, _, new_index] = find_pattern_by_current_row();
             first_pattern->current_row = new_index;
@@ -848,7 +847,6 @@ void GUIPatternsPanel::handle_pattern_input(Pattern *pattern, uint16_t index) {
                 (page + 1) * gui.get_page_size() - 1,
                 current_patterns.patterns_max_rows[current_channel.index] - 1
             );
-            index = end_row;
             current_row = end_row;
             const auto &[last_pattern, _, new_index] = find_pattern_by_current_row();
             last_pattern->current_row = current_row - new_index;
@@ -938,9 +936,7 @@ void GUIPatternsPanel::handle_commands_pattern_input(CommandsPattern *pattern, u
         }
     }
 
-    const int start = page * gui.get_page_size() - index;
-    const int end = start + gui.get_page_size();
-    pattern->handle_input(start, end);
+    pattern->handle_input();
     current_row = pattern->current_row + index;
 }
 

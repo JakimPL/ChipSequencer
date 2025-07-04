@@ -114,7 +114,6 @@ class Song {
 
   public:
     Song();
-    ~Song();
 
     void new_song();
     void load_from_file(const std::string &filename);
@@ -146,15 +145,15 @@ class Song {
     CommandsSequence *add_commands_sequence(size_t index = -1);
     CommandsChannel *add_commands_channel(size_t index = -1);
 
-    Envelope *insert_envelope(Envelope *envelope, size_t index = -1);
-    Sequence *insert_sequence(Sequence *sequence, size_t index = -1);
-    Order *insert_order(Order *order, size_t index = -1);
-    Wavetable *insert_wavetable(Wavetable *wavetable, size_t index = -1);
-    void *insert_oscillator(void *oscillator, size_t index = -1);
-    Channel *insert_channel(Channel *channel, size_t index = -1);
-    void *insert_dsp(void *dsp, size_t index = -1);
-    CommandsSequence *insert_commands_sequence(CommandsSequence *sequence, size_t index = -1);
-    CommandsChannel *insert_commands_channel(CommandsChannel *channel, size_t index = -1);
+    static Envelope *insert_envelope(Envelope *envelope, size_t index = -1);
+    static Sequence *insert_sequence(Sequence *sequence, size_t index = -1);
+    static Order *insert_order(Order *order, size_t index = -1);
+    static Wavetable *insert_wavetable(Wavetable *wavetable, size_t index = -1);
+    static void *insert_oscillator(void *oscillator, size_t index = -1);
+    static Channel *insert_channel(Channel *channel, size_t index = -1);
+    static void *insert_dsp(void *dsp, size_t index = -1);
+    static CommandsSequence *insert_commands_sequence(CommandsSequence *sequence, size_t index = -1);
+    static CommandsChannel *insert_commands_channel(CommandsChannel *channel, size_t index = -1);
 
     Envelope *duplicate_envelope(size_t index);
     Sequence *duplicate_sequence(size_t index);

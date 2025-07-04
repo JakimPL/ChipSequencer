@@ -6,7 +6,7 @@
 #include "../output.hpp"
 #include "link.hpp"
 
-void Link::assign_output() {
+void Link::assign_output() const {
     switch (type) {
     case ItemType::CHANNEL: {
         Channel *channel = reinterpret_cast<Channel *>(item);
@@ -29,7 +29,6 @@ void Link::assign_output() {
 }
 
 void Link::serialize(std::ofstream &file) const {
-    const size_t group = static_cast<size_t>(target);
     write_data(file, &type, sizeof(type));
     write_data(file, &id, sizeof(id));
     write_data(file, &target, sizeof(target));

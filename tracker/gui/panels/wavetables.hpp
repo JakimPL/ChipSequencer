@@ -20,8 +20,8 @@ class GUIWavetablesPanel : public GUIPanel {
     std::optional<bool> load_status;
     std::optional<bool> render_status;
 
-    float cast_to_float(uint8_t value) const;
-    uint8_t cast_to_int(float value) const;
+    static float cast_to_float(uint8_t value);
+    static uint8_t cast_to_int(float value);
 
     bool is_index_valid() const;
     void draw_wavetable_length();

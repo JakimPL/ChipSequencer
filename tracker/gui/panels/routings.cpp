@@ -427,7 +427,6 @@ Splitter GUIRoutingsPanel::get_splitter_from_input_key(const InputKey &source) {
 }
 
 void GUIRoutingsPanel::draw_all_links() {
-    ImDrawList *draw_list = ImGui::GetWindowDrawList();
     for (const auto &[source, target] : nodes_links) {
         const Splitter splitter = get_splitter_from_input_key(source);
         if (target.target == Target::SPLITTER_OUTPUT) {
@@ -604,7 +603,6 @@ void GUIRoutingsPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_re
         const InputKey key = routing_node.key.value();
         output_pins[key] = pin_position;
 
-        const bool is_pin_hovered = ImGui::IsMouseHoveringRect(pin_position - ImVec2(GUI_ROUTING_PIN_RADIUS, GUI_ROUTING_PIN_RADIUS), pin_position + ImVec2(GUI_ROUTING_PIN_RADIUS, GUI_ROUTING_PIN_RADIUS));
         if (!locked) {
             set_source_key(pin_position, key);
         }
@@ -717,7 +715,7 @@ void GUIRoutingsPanel::reset_linking() {
     link_dragging_source_key = std::nullopt;
 }
 
-bool GUIRoutingsPanel::is_linking_possible(const InputKey &source_key, const OutputKey &target_key) const {
+bool GUIRoutingsPanel::is_linking_possible(const InputKey &source_key, const OutputKey &target_key) {
     const ItemType type = source_key.first;
     const size_t id = source_key.second;
     const size_t item = target_key.index;
@@ -740,13 +738,16 @@ bool GUIRoutingsPanel::get_bypass_state(const RoutingNode &node) const {
 bool GUIRoutingsPanel::get_bypass_state(const ItemType type, const bool bypass, const bool solo) const {
     if (type == ItemType::CHANNEL) {
         return channel_solo ? bypass & solo : bypass;
-    } else if (type == ItemType::DSP) {
+    }
+
+    if (type == ItemType::DSP) {
         return dsp_solo ? bypass & solo : bypass;
     }
+
     return bypass;
 }
 
-bool GUIRoutingsPanel::get_splitter_bounds(const size_t j, size_t index, const Link &link) const {
+bool GUIRoutingsPanel::get_splitter_bounds(const size_t j, size_t index, const Link &link) {
     if (!is_target_splitter(link.target)) {
         return true;
     }
@@ -820,7 +821,7 @@ ImVec2 GUIRoutingsPanel::calculate_content_size() const {
     return content_size;
 }
 
-bool GUIRoutingsPanel::is_node_locked(const RoutingNode &node) const {
+bool GUIRoutingsPanel::is_node_locked(const RoutingNode &node) {
     if (!node.key.has_value()) {
         return false;
     }
@@ -828,7 +829,7 @@ bool GUIRoutingsPanel::is_node_locked(const RoutingNode &node) const {
     return is_node_locked(node.key.value());
 }
 
-bool GUIRoutingsPanel::is_node_locked(const InputKey input_key) const {
+bool GUIRoutingsPanel::is_node_locked(const InputKey input_key) {
     const ItemType type = input_key.first;
     const size_t id = input_key.second;
 

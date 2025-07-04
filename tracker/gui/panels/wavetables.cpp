@@ -32,7 +32,7 @@ void GUIWavetablesPanel::draw() {
 }
 
 bool GUIWavetablesPanel::select_item() {
-    std::vector<std::string> dependencies = song.find_wavetable_dependencies(wavetable_index);
+    std::vector<std::string> dependencies = Song::find_wavetable_dependencies(wavetable_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
     prepare_combo(this, wavetable_names, "##WavetableCombo", wavetable_index, {}, false, GUI_COMBO_MARGIN_RIGHT);
@@ -52,11 +52,11 @@ bool GUIWavetablesPanel::is_index_valid() const {
     return wavetable_index >= 0 && wavetable_index < wavetables.size();
 }
 
-float GUIWavetablesPanel::cast_to_float(uint8_t value) const {
+float GUIWavetablesPanel::cast_to_float(uint8_t value) {
     return (2.0f * value) / UINT8_MAX - 1.0f;
 }
 
-uint8_t GUIWavetablesPanel::cast_to_int(float value) const {
+uint8_t GUIWavetablesPanel::cast_to_int(float value) {
     return static_cast<uint8_t>(std::round((value + 1.0f) * UINT8_MAX / 2.0f));
 }
 
@@ -99,12 +99,6 @@ void GUIWavetablesPanel::to() const {
         wavetable->data[i] = value;
         buffers.wavetables[wavetable_index][i] = value;
     }
-
-    if (wavetable->wavetable_size > wavetable->wavetable_size) {
-        for (size_t i = wavetable->wavetable_size; i < wavetable->wavetable_size; ++i) {
-            wavetable->data[i] = buffers.wavetables[wavetable_index][i];
-        }
-    }
 }
 
 void GUIWavetablesPanel::add() {
@@ -140,7 +134,7 @@ void GUIWavetablesPanel::remove() {
 void GUIWavetablesPanel::draw_wavetable_length() {
     const size_t old_size = current_wavetable.size;
     const LinkKey key = {Target::WAVETABLE, wavetable_index, WAVETABLE_SIZE};
-    draw_number_of_items(this, "Points", "##WavetableLength", current_wavetable.size, 1, MAX_WAVETABLE_SIZE, key);
+    draw_number_of_items(this, "##WavetableLength", current_wavetable.size, 1, MAX_WAVETABLE_SIZE, key);
 
     if (old_size != current_wavetable.size) {
         current_wavetable.wave.resize(current_wavetable.size);
@@ -191,7 +185,6 @@ void GUIWavetablesPanel::draw_waveform() {
     const ImGuiIO &io = ImGui::GetIO();
     const ImVec2 mouse_pos = io.MousePos;
     const bool is_hovered = ImGui::IsItemHovered();
-    const bool is_active = ImGui::IsItemActive();
 
     if (is_hovered) {
         const float relative_x = mouse_pos.x - canvas_p0.x;

@@ -22,7 +22,7 @@ struct Link {
     uint8_t table_id = -1;
     LinkKey key;
 
-    void assign_output();
+    void assign_output() const;
     void serialize(std::ofstream &file) const;
     void deserialize(std::ifstream &file);
 };
