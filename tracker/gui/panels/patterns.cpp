@@ -1,4 +1,5 @@
 #include <optional>
+#include <type_traits>
 
 #include "../../general.hpp"
 #include "../../song/song.hpp"
@@ -1041,17 +1042,35 @@ void GUIPatternsPanel::prepare_secondary_selection() {
     }
 }
 
-PatternIndex GUIPatternsPanel::find_pattern_by_current_row() const {
+ConstPatternIndex GUIPatternsPanel::find_pattern_by_current_row() const {
+    return find_pattern_by_current_row_implementation(current_patterns.patterns);
+}
+
+PatternIndex GUIPatternsPanel::find_pattern_by_current_row() {
+    return find_pattern_by_current_row_implementation(current_patterns.patterns);
+}
+
+ConstCommandsPatternIndex GUIPatternsPanel::find_commands_pattern_by_current_row() const {
+    return find_commands_pattern_by_current_row_implementation(current_patterns.commands_patterns);
+}
+
+CommandsPatternIndex GUIPatternsPanel::find_commands_pattern_by_current_row() {
+    return find_commands_pattern_by_current_row_implementation(current_patterns.commands_patterns);
+}
+
+template <typename PatternsMapType>
+auto GUIPatternsPanel::find_pattern_by_current_row_implementation(PatternsMapType &patterns_map) const
+    -> std::conditional_t<std::is_const_v<PatternsMapType>, ConstPatternIndex, PatternIndex> {
     if (current_channel.command) {
         return {nullptr, 0};
     }
 
-    const auto it = current_patterns.patterns.find(current_channel.index);
-    if (it == current_patterns.patterns.end()) {
+    const auto it = patterns_map.find(current_channel.index);
+    if (it == patterns_map.end()) {
         return {nullptr, 0};
     }
 
-    const auto &patterns = current_patterns.patterns.at(current_channel.index);
+    auto &patterns = patterns_map.at(current_channel.index);
     uint16_t rows = 0;
     size_t pattern_id;
     for (pattern_id = 0; pattern_id < patterns.size(); ++pattern_id) {
@@ -1066,21 +1085,23 @@ PatternIndex GUIPatternsPanel::find_pattern_by_current_row() const {
         return {nullptr, 0};
     }
 
-    Pattern *pattern = const_cast<Pattern *>(&patterns.at(pattern_id));
+    auto *pattern = &patterns.at(pattern_id);
     return {pattern, pattern_id, rows};
 }
 
-CommandsPatternIndex GUIPatternsPanel::find_commands_pattern_by_current_row() const {
+template <typename CommandsPatternsMapType>
+auto GUIPatternsPanel::find_commands_pattern_by_current_row_implementation(CommandsPatternsMapType &commands_patterns_map) const
+    -> std::conditional_t<std::is_const_v<CommandsPatternsMapType>, ConstCommandsPatternIndex, CommandsPatternIndex> {
     if (!current_channel.command) {
         return {nullptr, 0};
     }
 
-    const auto it = current_patterns.commands_patterns.find(current_channel.index);
-    if (it == current_patterns.commands_patterns.end()) {
+    const auto it = commands_patterns_map.find(current_channel.index);
+    if (it == commands_patterns_map.end()) {
         return {nullptr, 0};
     }
 
-    const auto &patterns = current_patterns.commands_patterns.at(current_channel.index);
+    auto &patterns = commands_patterns_map.at(current_channel.index);
     uint16_t rows = 0;
     size_t pattern_id;
     for (pattern_id = 0; pattern_id < patterns.size(); ++pattern_id) {
@@ -1095,7 +1116,7 @@ CommandsPatternIndex GUIPatternsPanel::find_commands_pattern_by_current_row() co
         return {nullptr, 0};
     }
 
-    CommandsPattern *pattern = const_cast<CommandsPattern *>(&patterns.at(pattern_id));
+    auto *pattern = &patterns.at(pattern_id);
     return {pattern, pattern_id, rows};
 }
 

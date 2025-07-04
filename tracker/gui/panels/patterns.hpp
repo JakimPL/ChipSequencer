@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <type_traits>
 #include <vector>
 
 #include "../constants.hpp"
@@ -61,8 +62,18 @@ class GUIPatternsPanel : public GUIPanel {
     void mark_selected_pattern_rows(size_t channel_index, size_t pattern_id, int row);
     void mark_selected_commands_pattern_rows(size_t channel_index, size_t pattern_id, int row);
 
-    PatternIndex find_pattern_by_current_row() const;
-    CommandsPatternIndex find_commands_pattern_by_current_row() const;
+    template <typename PatternsMapType>
+    auto find_pattern_by_current_row_implementation(PatternsMapType &patterns_map) const
+        -> std::conditional_t<std::is_const_v<PatternsMapType>, ConstPatternIndex, PatternIndex>;
+
+    template <typename CommandsPatternsMapType>
+    auto find_commands_pattern_by_current_row_implementation(CommandsPatternsMapType &commands_patterns_map) const
+        -> std::conditional_t<std::is_const_v<CommandsPatternsMapType>, ConstCommandsPatternIndex, CommandsPatternIndex>;
+
+    PatternIndex find_pattern_by_current_row();
+    ConstPatternIndex find_pattern_by_current_row() const;
+    CommandsPatternIndex find_commands_pattern_by_current_row();
+    ConstCommandsPatternIndex find_commands_pattern_by_current_row() const;
 
     void perform_notes_action(const std::string &action_name, const PatternSelectionChange<uint8_t> &changes);
     void perform_commands_action(const std::string &action_name, const PatternSelectionChange<CommandValue> &changes);
