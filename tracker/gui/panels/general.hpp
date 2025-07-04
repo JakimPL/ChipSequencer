@@ -41,15 +41,15 @@ class GUIGeneralPanel : public GUIPanel {
     void play();
     void play_from_current_page();
     void play_from_current_position();
-    void validate_playback(const ValidationResult result, const int index);
-    std::string get_error_message(const ValidationResult result, const int index) const;
+    void validate_playback(const ValidationResult result, int index);
+    std::string get_error_message(const ValidationResult result, int index) const;
 
     void register_shortcuts() override;
     void draw() override;
     void draw_dialog_box() override;
 
   public:
-    GUIGeneralPanel(const bool visible = true, const bool windowed = true);
+    GUIGeneralPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 
     void update() override;

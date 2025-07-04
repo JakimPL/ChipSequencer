@@ -31,7 +31,7 @@ class GUIDSPsPanel : public GUIPanel {
     void draw_dsp_type();
     void draw_effect();
     void update_dsp_names();
-    void update_dsp_name(const int index, const int effect_index = -1) const;
+    void update_dsp_name(int index, int effect_index = -1) const;
 
     bool is_disabled() const override;
     bool select_item() override;
@@ -42,11 +42,11 @@ class GUIDSPsPanel : public GUIPanel {
     void draw() override;
 
   public:
-    GUIDSPsPanel(const bool visible = true, const bool windowed = true);
+    GUIDSPsPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 
     void update() override;
-    void set_index(const int index) override;
+    void set_index(int index) override;
 
     void from() override;
     void to() const override;

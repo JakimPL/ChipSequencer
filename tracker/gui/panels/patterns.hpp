@@ -46,40 +46,40 @@ class GUIPatternsPanel : public GUIPanel {
     void select_channel();
     void select_all();
     void deselect_all();
-    void set_selection_note(const uint8_t note);
+    void set_selection_note(uint8_t note);
     void copy_selection();
     void paste_selection();
     void delete_selection();
-    void transpose_selected_rows(const int value);
+    void transpose_selected_rows(int value);
     void prepare_secondary_selection();
 
     void paste_pattern_selection(ClipboardNotes *notes);
     void paste_commands_pattern_selection(ClipboardCommands *commands);
 
-    void mark_selected_rows(const bool command, const PatternRow &pattern_row);
-    void mark_selected_rows(const bool command, const size_t channel_index, const size_t pattern_id, const int row);
-    void mark_selected_pattern_rows(const size_t channel_index, const size_t pattern_id, const int row);
-    void mark_selected_commands_pattern_rows(const size_t channel_index, const size_t pattern_id, const int row);
+    void mark_selected_rows(bool command, const PatternRow &pattern_row);
+    void mark_selected_rows(bool command, size_t channel_index, size_t pattern_id, int row);
+    void mark_selected_pattern_rows(size_t channel_index, size_t pattern_id, int row);
+    void mark_selected_commands_pattern_rows(size_t channel_index, size_t pattern_id, int row);
 
     PatternIndex find_pattern_by_current_row() const;
     CommandsPatternIndex find_commands_pattern_by_current_row() const;
 
     void perform_notes_action(const std::string &action_name, const PatternSelectionChange<uint8_t> &changes);
     void perform_commands_action(const std::string &action_name, const PatternSelectionChange<CommandValue> &changes);
-    void perform_note_action(const uint8_t old_note, const uint8_t new_note, const PatternRow &pattern_row, const uint8_t sequence_index, const int index);
-    void perform_command_action(const CommandValue &old_command, const CommandValue &new_command, const PatternRow &pattern_row, const uint8_t sequence_index, const int index);
+    void perform_note_action(const uint8_t old_note, uint8_t new_note, const PatternRow &pattern_row, uint8_t sequence_index, int index);
+    void perform_command_action(const CommandValue &old_command, const CommandValue &new_command, const PatternRow &pattern_row, uint8_t sequence_index, int index);
 
     void process_sequence(
-        const size_t channel_index,
-        const size_t j,
-        const uint8_t sequence_index,
+        size_t channel_index,
+        size_t j,
+        uint8_t sequence_index,
         uint16_t &row
     );
 
     void process_commands_sequence(
-        const size_t channel_index,
-        const size_t j,
-        const uint8_t sequence_index,
+        size_t channel_index,
+        size_t j,
+        uint8_t sequence_index,
         uint16_t &row
     );
 
@@ -105,18 +105,18 @@ class GUIPatternsPanel : public GUIPanel {
     void post_actions() override;
 
   public:
-    GUIPatternsPanel(const bool visible = true, const bool windowed = true);
+    GUIPatternsPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 
     void set_notes(const std::map<PatternRow, uint8_t> &notes);
-    void set_note(const PatternRow &pattern_row, const uint8_t note);
-    void set_note(const size_t channel_index, const size_t pattern_id, const int row, const uint8_t note);
+    void set_note(const PatternRow &pattern_row, uint8_t note);
+    void set_note(size_t channel_index, size_t pattern_id, int row, uint8_t note);
 
     void set_commands(const std::map<PatternRow, CommandValue> &commands_values);
     void set_command(const PatternRow &pattern_row, const std::string &command, const std::string &value);
     void set_command(const PatternRow &pattern_row, const CommandValue &command_value);
-    void set_command(const size_t channel_index, const size_t pattern_id, const int row, const std::string &command, const std::string &value);
-    void set_command(const size_t channel_index, const size_t pattern_id, const int row, const CommandValue &command_value);
+    void set_command(size_t channel_index, size_t pattern_id, int row, const std::string &command, const std::string &value);
+    void set_command(size_t channel_index, size_t pattern_id, int row, const CommandValue &command_value);
 
     void from() override;
     void to() const override;

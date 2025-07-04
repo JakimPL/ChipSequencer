@@ -22,7 +22,7 @@ class GUIPanel {
 
     virtual GUIElement get_element() const = 0;
     virtual void update() {};
-    virtual void set_index(const int) {};
+    virtual void set_index(int index) {};
     virtual void from() {};
     virtual void to() const {};
     void initialize();
@@ -31,7 +31,7 @@ class GUIPanel {
     const bool windowed;
 
     void frame();
-    void add_action(Action *action, const bool undo);
+    void add_action(Action *action, bool undo);
 
   protected:
     bool save = false;
@@ -53,7 +53,7 @@ class GUIPanel {
     virtual void post_actions() { save = false; };
 
     void history_actions();
-    void lock_item(const Target target, const size_t index);
+    void lock_item(Target target, size_t index);
     void draw_add_or_remove(
         const std::vector<std::string> &dependencies = {},
         const std::vector<std::pair<ItemType, uint8_t>> &link_dependencies = {}

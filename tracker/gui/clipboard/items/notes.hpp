@@ -9,7 +9,7 @@
 using PatternNotes = std::vector<std::vector<uint8_t>>;
 
 struct ClipboardNotes : public ClipboardItem {
-    ClipboardNotes(const PatternNotes &notes);
+    explicit ClipboardNotes(const PatternNotes &notes);
     PatternNotes pattern_notes;
 
     void generate_hash() override;

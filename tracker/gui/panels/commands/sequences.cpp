@@ -409,7 +409,7 @@ void GUICommandsSequencesPanel::draw_output_section() {
     push_secondary_style();
     ImGui::Text("Output:");
 
-    draw_output_parameter(this, edit_dialog_box.output_type, {});
+    draw_output_parameter(this, edit_dialog_box.output_type);
     ImGui::Text("Operation:");
     prepare_combo(this, simple_operation_names, "##OutputTypeOperation", edit_dialog_box.output_type.operation);
     ImGui::Text("Variable:");

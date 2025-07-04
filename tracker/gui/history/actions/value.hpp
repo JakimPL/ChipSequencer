@@ -12,7 +12,7 @@ class ChangeValueAction : public Action {
     ChangeValueAction(
         const std::string &nm,
         GUIPanel *own,
-        const LinkKey k,
+        LinkKey k,
         const ValueChange<T> &val_ch
     );
 

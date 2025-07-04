@@ -32,12 +32,12 @@ class GUIOrdersPanel : public GUIPanel {
     void check_keyboard_input() override;
 
   public:
-    GUIOrdersPanel(const bool visible = true, const bool windowed = true);
+    GUIOrdersPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 
     void update() override;
-    void set_index(const int index) override;
-    void set_sequence(const size_t sequence_index, const size_t new_sequence);
+    void set_index(int index) override;
+    void set_sequence(size_t sequence_index, size_t new_sequence);
 
     void from() override;
     void to() const override;

@@ -11,7 +11,7 @@ class ChangeNoteAction : public Action {
     ChangeNoteAction(
         const std::string &nm,
         GUIPanel *own,
-        const LinkKey k,
+        LinkKey k,
         const NoteChange &note_ch
     );
 

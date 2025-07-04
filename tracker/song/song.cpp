@@ -901,7 +901,7 @@ std::pair<ValidationResult, int> Song::validate() {
     return {ValidationResult::OK, -1};
 }
 
-std::vector<std::string> Song::find_envelope_dependencies(const size_t envelope_index) const {
+std::vector<std::string> Song::find_envelope_dependencies(const size_t envelope_index) {
     std::set<std::string> dependencies;
     for (size_t i = 0; i < channels.size(); i++) {
         if (channels[i]->envelope_index == envelope_index) {
@@ -912,7 +912,7 @@ std::vector<std::string> Song::find_envelope_dependencies(const size_t envelope_
     return std::vector<std::string>(dependencies.begin(), dependencies.end());
 }
 
-std::vector<std::string> Song::find_sequence_dependencies(const size_t sequence_index) const {
+std::vector<std::string> Song::find_sequence_dependencies(const size_t sequence_index) {
     std::set<std::string> dependencies;
     std::set<size_t> channel_orders = get_channel_orders();
     for (const size_t order_index : channel_orders) {
@@ -927,7 +927,7 @@ std::vector<std::string> Song::find_sequence_dependencies(const size_t sequence_
     return std::vector<std::string>(dependencies.begin(), dependencies.end());
 }
 
-std::vector<std::string> Song::find_order_dependencies(const size_t order_index) const {
+std::vector<std::string> Song::find_order_dependencies(const size_t order_index) {
     std::set<std::string> dependencies;
     for (size_t i = 0; i < channels.size(); i++) {
         if (channels[i]->order_index == order_index) {
@@ -938,7 +938,7 @@ std::vector<std::string> Song::find_order_dependencies(const size_t order_index)
     return std::vector<std::string>(dependencies.begin(), dependencies.end());
 }
 
-std::vector<std::string> Song::find_wavetable_dependencies(const size_t wavetable_index) const {
+std::vector<std::string> Song::find_wavetable_dependencies(const size_t wavetable_index) {
     std::set<std::string> dependencies;
     for (size_t i = 0; i < oscillators.size(); i++) {
         const Oscillator *oscillator = static_cast<const Oscillator *>(oscillators[i]);
@@ -953,7 +953,7 @@ std::vector<std::string> Song::find_wavetable_dependencies(const size_t wavetabl
     return std::vector<std::string>(dependencies.begin(), dependencies.end());
 }
 
-std::vector<std::string> Song::find_oscillator_dependencies(const size_t oscillator_index) const {
+std::vector<std::string> Song::find_oscillator_dependencies(const size_t oscillator_index) {
     std::set<std::string> dependencies;
     for (size_t i = 0; i < channels.size(); i++) {
         if (channels[i]->oscillator_index == oscillator_index) {
@@ -964,7 +964,7 @@ std::vector<std::string> Song::find_oscillator_dependencies(const size_t oscilla
     return std::vector<std::string>(dependencies.begin(), dependencies.end());
 }
 
-std::vector<std::string> Song::find_commands_sequence_dependencies(const size_t sequence_index) const {
+std::vector<std::string> Song::find_commands_sequence_dependencies(const size_t sequence_index) {
     std::set<std::string> dependencies;
     std::set<size_t> channel_orders = get_commands_channel_orders();
     for (const size_t order_index : channel_orders) {
@@ -984,7 +984,7 @@ void Song::add_dsp_dependencies(
     std::vector<std::string> &names,
     const std::vector<Link> &links,
     const size_t dsp_index
-) const {
+) {
     for (size_t i = 0; i < links.size(); i++) {
         const Link &link = links[i];
         if (link.target == Target::DIRECT_DSP) {
@@ -999,7 +999,7 @@ void Song::add_dsp_dependencies(
     }
 }
 
-std::vector<std::string> Song::find_dsp_dependencies(const size_t dsp_index) const {
+std::vector<std::string> Song::find_dsp_dependencies(const size_t dsp_index) {
     std::set<std::string> dependencies;
     const auto &channel_links = links[static_cast<size_t>(ItemType::CHANNEL)];
     add_dsp_dependencies(dependencies, channel_names, channel_links, dsp_index);
@@ -1010,12 +1010,12 @@ std::vector<std::string> Song::find_dsp_dependencies(const size_t dsp_index) con
     return std::vector<std::string>(dependencies.begin(), dependencies.end());
 }
 
-float Song::calculate_real_bpm() const {
+float Song::calculate_real_bpm() {
     return unit * static_cast<float>(sample_rate) / static_cast<float>(ticks_per_beat);
 }
 
-float Song::get_row_duration() const {
-    return static_cast<double>(ticks_per_beat) / static_cast<double>(sample_rate);
+float Song::get_row_duration() {
+    return static_cast<float>(ticks_per_beat) / static_cast<float>(sample_rate);
 }
 
 void Song::generate_header_vector(
@@ -1034,7 +1034,7 @@ void Song::generate_header_vector(
     }
 }
 
-void Song::set_used_flags(std::stringstream &asm_content) const {
+void Song::set_used_flags(std::stringstream &asm_content) {
     if (!dsps.empty()) {
         asm_content << "    \%define USED_DSP\n";
         for (size_t i = 0; i < static_cast<size_t>(Effect::Count); i++) {
@@ -1093,11 +1093,7 @@ std::string Song::generate_header_asm_file() const {
     return asm_content.str();
 }
 
-void Song::generate_targets_asm(
-    std::stringstream &asm_content,
-    const CompilationTarget compilation_target,
-    const char separator
-) {
+void Song::generate_targets_asm(std::stringstream &asm_content) {
     asm_content << "\n\n"
                 << "align 4\n"
                 << "CDECL(targets):\n";
@@ -1109,7 +1105,7 @@ void Song::generate_targets_asm(
     }
 }
 
-std::string Song::generate_data_asm_file(const CompilationTarget compilation_target, const char separator) const {
+std::string Song::generate_data_asm_file(const CompilationTarget compilation_target, const char separator) {
     std::stringstream asm_content;
     asm_content << "SEGMENT_DATA\n";
     asm_content << "CDECL(bpm):\n";
@@ -1140,7 +1136,7 @@ std::string Song::generate_data_asm_file(const CompilationTarget compilation_tar
     generate_header_vector(asm_content, "dsp", "dsp", dsps.size(), separator);
     generate_header_vector(asm_content, "commands_sequence", "c_seq", commands_sequences.size(), separator);
     generate_header_vector(asm_content, "commands_channel", "c_chan", commands_channels.size(), separator);
-    generate_targets_asm(asm_content, compilation_target, separator);
+    generate_targets_asm(asm_content);
 
     return asm_content.str();
 }
@@ -1244,8 +1240,7 @@ nlohmann::json Song::save_gui_state() {
 
 void Song::calculate_song_length() {
     max_rows = 0;
-    for (size_t channel_index = 0; channel_index < channels.size(); channel_index++) {
-        Channel *channel = channels[channel_index];
+    for (const auto &channel : channels) {
         if (channel->order_index >= orders.size()) {
             continue;
         }
@@ -1478,7 +1473,8 @@ void *Song::deserialize_dsp(std::ifstream &file) {
 }
 
 void *Song::deserialize_oscillator(std::ifstream &file) {
-    uint8_t size, oscillator_type;
+    uint8_t size;
+    uint8_t oscillator_type;
     read_data(file, &size, sizeof(size));
     read_data(file, &oscillator_type, sizeof(oscillator_type));
 

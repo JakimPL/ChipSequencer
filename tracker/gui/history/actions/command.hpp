@@ -11,7 +11,7 @@ class ChangeCommandAction : public Action {
     ChangeCommandAction(
         const std::string &nm,
         GUIPanel *own,
-        const LinkKey k,
+        LinkKey k,
         const CommandChange &cmd_ch
     );
 

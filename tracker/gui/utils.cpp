@@ -627,7 +627,7 @@ void draw_output_direct_dsp(GUIPanel *owner, OutputType &output_type, const int 
     draw_int_slider(owner, "DSP", output_type.dsp_channel, {Target::SPECIAL, dsp_index, SPECIAL_DSP_INDEX}, dsp_index + 1, dsps.size() - 1);
 }
 
-bool draw_output_parameter(GUIPanel *owner, OutputType &output_type, const LinkKey key) {
+bool draw_output_parameter(GUIPanel *owner, OutputType &output_type) {
     ImGui::Separator();
     bool value_changed = prepare_combo(owner, parameter_types, "##OutputParameterCombo", output_type.parameter_type).value_changed;
     output_type.target = output_type.parameter_type + static_cast<int>(OutputTarget::Parameter);
@@ -803,7 +803,7 @@ bool draw_output(GUIPanel *owner, OutputType &output_type, const LinkKey key) {
         break;
     }
     case OutputTarget::Parameter: {
-        value_changed |= draw_output_parameter(owner, output_type, key);
+        value_changed |= draw_output_parameter(owner, output_type);
 
         if (value_changed) {
             output_type.operation = static_cast<int>(OutputOperation::Set);
@@ -897,8 +897,8 @@ void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t 
                 value
             );
 
-            const std::string target_name = target_names.at(target);
-            const std::string variable_type_name = variable_types.at(static_cast<size_t>(target_variable_type));
+            const std::string &target_name = target_names.at(target);
+            const std::string &variable_type_name = variable_types.at(static_cast<size_t>(target_variable_type));
             ImGui::SetTooltip("%s %s: %s %d, offset %d, value %u", add ? "Add" : "Set", variable_type_name.c_str(), target_name.c_str(), index, offset, value);
             break;
         }
@@ -925,8 +925,9 @@ bool get_menu_item(const std::string &name, const std::optional<ShortcutAction> 
     return ImGui::MenuItem(name.c_str(), nullptr, checked);
 }
 
-GUIState prepare_combo(GUIPanel *owner, const std::vector<std::string> &names, std::string label, int &index, const LinkKey key, const bool error_if_empty, const float margin_right) {
+GUIState prepare_combo(GUIPanel *owner, const std::vector<std::string> &names, const std::string &label, int &index, const LinkKey key, const bool error_if_empty, const float margin_right) {
     std::vector<const char *> names_cstr;
+    names_cstr.reserve(names.size());
     for (const auto &name : names) {
         names_cstr.push_back(name.c_str());
     }
@@ -952,7 +953,7 @@ GUIState prepare_combo(GUIPanel *owner, const std::vector<std::string> &names, s
     return {value_changed, right_clicked};
 }
 
-void update_items(std::vector<std::string> &names, size_t size, std::string label, int &index) {
+void update_items(std::vector<std::string> &names, size_t size, const std::string &label, int &index) {
     names.clear();
     for (size_t i = 0; i < size; ++i) {
         names.emplace_back(label + std::to_string(i));

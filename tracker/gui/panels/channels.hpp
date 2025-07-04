@@ -27,7 +27,7 @@ class GUIChannelsPanel : public GUIPanel {
 
     bool is_index_valid() const;
     void draw_channel();
-    void update_channel_name(const int index, const int target_id = -1);
+    void update_channel_name(int index, int target_id = -1);
     void update_channel_names();
 
     bool is_disabled() const override;
@@ -39,11 +39,11 @@ class GUIChannelsPanel : public GUIPanel {
     void draw() override;
 
   public:
-    GUIChannelsPanel(const bool visible = true, const bool windowed = true);
+    GUIChannelsPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 
     void update() override;
-    void set_index(const int index) override;
+    void set_index(int index) override;
 
     void from() override;
     void to() const override;

@@ -11,7 +11,7 @@ class ChangeRoutingAction : public Action {
     ChangeRoutingAction(
         const std::string &nm,
         GUIPanel *own,
-        const LinkKey k,
+        LinkKey k,
         const RoutingChange &rout_ch
     );
 

@@ -22,7 +22,7 @@ class RemoveItemAction : public Action {
     RemoveItemAction(
         const std::string &nm,
         GUIPanel *own,
-        const LinkKey k,
+        LinkKey k,
         const T &original_item,
         RemoveFunction remove,
         RestoreFunction<T> restore

@@ -11,7 +11,7 @@ class ChangeWavetableAction : public Action {
     ChangeWavetableAction(
         const std::string &nm,
         GUIPanel *own,
-        const LinkKey k,
+        LinkKey k,
         const WavetableChange &wt_ch
     );
 

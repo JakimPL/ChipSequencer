@@ -40,11 +40,11 @@ class GUIEnvelopesPanel : public GUIPanel {
     void draw() override;
 
   public:
-    GUIEnvelopesPanel(const bool visible = true, const bool windowed = true);
+    GUIEnvelopesPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 
     void update() override;
-    void set_index(const int index) override;
+    void set_index(int index) override;
 
     void from() override;
     void to() const override;

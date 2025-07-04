@@ -24,7 +24,7 @@ class GUIMenu : public GUIPanel {
     void file_save_as();
     void file_open();
     void file_render();
-    void file_compile(const CompilationScheme scheme, const CompilationTarget compilation_target);
+    void file_compile(CompilationScheme scheme, CompilationTarget compilation_target);
     void file_exit();
 
     void file_new_confirm();
@@ -36,6 +36,6 @@ class GUIMenu : public GUIPanel {
     void draw_dialog_box() override;
 
   public:
-    GUIMenu(const bool visible = true, const bool windowed = false);
+    GUIMenu(bool visible = true, bool windowed = false);
     GUIElement get_element() const override;
 };

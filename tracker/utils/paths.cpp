@@ -53,13 +53,13 @@ std::filesystem::path get_base_path() {
 
 std::filesystem::path get_resource_path(const std::string &resource) {
     const std::filesystem::path base_path = get_base_path();
-    const std::filesystem::path resource_path = base_path / resource;
+    std::filesystem::path resource_path = base_path / resource;
 
     if (std::filesystem::exists(resource_path)) {
         return resource_path;
     }
 
-    const std::filesystem::path fallback_path = std::filesystem::current_path() / resource;
+    std::filesystem::path fallback_path = std::filesystem::current_path() / resource;
     if (std::filesystem::exists(fallback_path)) {
         return fallback_path;
     }

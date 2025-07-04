@@ -11,7 +11,7 @@ class ChangeOrderSequenceAction : public Action {
     ChangeOrderSequenceAction(
         const std::string &nm,
         GUIPanel *own,
-        const LinkKey k,
+        LinkKey k,
         const OrderSequenceChange &seq_ch
     );
 

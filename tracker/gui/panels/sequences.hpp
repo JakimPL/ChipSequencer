@@ -25,16 +25,16 @@ class GUISequencesPanel : public GUIPanel {
     PatternSelectionAction selection_action = PatternSelectionAction::None;
 
     bool is_index_valid() const;
-    void transpose_selected_rows(const int value);
+    void transpose_selected_rows(int value);
     void select_all();
     void deselect_all();
-    void set_selection_note(const uint8_t note);
+    void set_selection_note(uint8_t note);
     void delete_selection();
     void copy_selection();
     void paste_selection();
 
     void perform_notes_action(const std::string &action_name, const PatternSelectionChange<uint8_t> &changes);
-    void perform_note_action(const int row, const uint8_t old_note, const uint8_t new_note);
+    void perform_note_action(int row, uint8_t old_note, uint8_t new_note);
 
     void draw_sequence_length();
     void draw_sequence();

@@ -12,7 +12,7 @@ class ChangeTextAction : public Action {
     ChangeTextAction(
         const std::string &nm,
         GUIPanel *own,
-        const LinkKey k,
+        LinkKey k,
         const TextChange<n> &txt_ch
     );
 

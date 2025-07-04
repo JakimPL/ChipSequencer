@@ -37,11 +37,7 @@ class Song {
 
     bool clear_temp = false;
 
-    static void generate_targets_asm(
-        std::stringstream &asm_content,
-        CompilationTarget compilation_target,
-        char separator = '/'
-    );
+    static void generate_targets_asm(std::stringstream &asm_content);
     static void generate_header_vector(
         std::stringstream &asm_content,
         const std::string &name,
@@ -50,9 +46,9 @@ class Song {
         char separator = '/'
     );
     std::string generate_header_asm_file() const;
-    std::string generate_data_asm_file(CompilationTarget compilation_target, char separator = '/') const;
+    static std::string generate_data_asm_file(CompilationTarget compilation_target, char separator = '/');
 
-    void set_used_flags(std::stringstream &asm_content) const;
+    static void set_used_flags(std::stringstream &asm_content);
     nlohmann::json create_header_json() const;
     nlohmann::json import_header(const std::string &directory);
     static nlohmann::json save_gui_state();
@@ -101,7 +97,7 @@ class Song {
 
     static void compile_sources(const std::string &directory, const std::string &filename, CompilationScheme scheme, const std::string &platform = "linux");
     static void compress_directory(const std::string &directory, const std::string &output_file);
-    void decompress_archive(const std::string &output_file, const std::string &directory);
+    static void decompress_archive(const std::string &output_file, const std::string &directory);
 
     static void update_sizes();
     void clear_data();
@@ -109,12 +105,12 @@ class Song {
     static std::set<size_t> get_channel_orders();
     static std::set<size_t> get_commands_channel_orders();
 
-    void add_dsp_dependencies(
+    static void add_dsp_dependencies(
         std::set<std::string> &dependencies,
         std::vector<std::string> &names,
         const std::vector<Link> &links,
         size_t dsp_index
-    ) const;
+    );
 
   public:
     Song();
@@ -181,17 +177,17 @@ class Song {
     void remove_commands_sequence(const size_t index);
 
     std::pair<ValidationResult, int> validate();
-    std::vector<std::string> find_envelope_dependencies(const size_t envelope_index) const;
-    std::vector<std::string> find_sequence_dependencies(const size_t sequence_index) const;
-    std::vector<std::string> find_order_dependencies(const size_t order_index) const;
-    std::vector<std::string> find_wavetable_dependencies(const size_t wavetable_index) const;
-    std::vector<std::string> find_oscillator_dependencies(const size_t oscillator_index) const;
-    std::vector<std::string> find_commands_sequence_dependencies(const size_t sequence_index) const;
-    std::vector<std::string> find_dsp_dependencies(const size_t dsp_index) const;
+    static std::vector<std::string> find_envelope_dependencies(const size_t envelope_index);
+    static std::vector<std::string> find_sequence_dependencies(const size_t sequence_index);
+    static std::vector<std::string> find_order_dependencies(const size_t order_index);
+    static std::vector<std::string> find_wavetable_dependencies(const size_t wavetable_index);
+    static std::vector<std::string> find_oscillator_dependencies(const size_t oscillator_index);
+    static std::vector<std::string> find_commands_sequence_dependencies(const size_t sequence_index);
+    static std::vector<std::string> find_dsp_dependencies(const size_t dsp_index);
 
     static size_t calculate_dsps(const Effect effect);
     static size_t calculate_oscillators(const Generator generator);
     static size_t calculate_commands(const Instruction instruction);
-    float calculate_real_bpm() const;
-    float get_row_duration() const;
+    static float calculate_real_bpm();
+    static float get_row_duration();
 };

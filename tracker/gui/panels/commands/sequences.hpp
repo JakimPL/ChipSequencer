@@ -41,12 +41,12 @@ class GUICommandsSequencesPanel : public GUIPanel {
     void set_current_command();
 
     void perform_commands_action(const std::string &action_name, const PatternSelectionChange<CommandValue> &changes);
-    void perform_command_action(const int row, const CommandValue &old_command, const CommandValue &new_command);
+    void perform_command_action(int row, const CommandValue &old_command, const CommandValue &new_command);
 
     void draw_sequence();
     void draw_sequence_length();
 
-    void open_edit_dialog_box(const int item);
+    void open_edit_dialog_box(int item);
     void draw_output_section();
 
     void register_shortcuts() override;
@@ -63,7 +63,7 @@ class GUICommandsSequencesPanel : public GUIPanel {
     void post_actions() override;
 
   public:
-    GUICommandsSequencesPanel(const bool visible = true, const bool windowed = true);
+    GUICommandsSequencesPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 
     void update() override;
@@ -71,9 +71,9 @@ class GUICommandsSequencesPanel : public GUIPanel {
     void set_commands(const std::map<PatternRow, CommandValue> &commands_values);
     void set_command(const PatternRow &pattern_row, const CommandValue &command_value);
     void set_command(const PatternRow &pattern_row, const std::string &command, const std::string &value);
-    void set_command(const int row, const CommandValue &command_value);
-    void set_command(const int row, const std::string &command, const std::string &value);
-    void set_index(const int index) override;
+    void set_command(int row, const CommandValue &command_value);
+    void set_command(int row, const std::string &command, const std::string &value);
+    void set_index(int index) override;
 
     void from() override;
     void to() const override;

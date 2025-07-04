@@ -10,7 +10,7 @@ using CommandValue = std::pair<std::string, std::string>;
 using PatternCommands = std::vector<std::vector<CommandValue>>;
 
 struct ClipboardCommands : public ClipboardItem {
-    ClipboardCommands(const PatternCommands &commands);
+    explicit ClipboardCommands(const PatternCommands &commands);
     PatternCommands pattern_commands;
 
     void generate_hash() override;

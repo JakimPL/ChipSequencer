@@ -12,10 +12,10 @@ class InputHandler {
     int limit = 0;
 
   public:
-    void clear(const bool capture = true);
+    void clear(bool capture = true);
     std::string get_buffer() const;
     void set_buffer(const std::string &value);
-    void set_limit(const int max);
+    void set_limit(int max);
 
     bool capture_input = false;
 };
