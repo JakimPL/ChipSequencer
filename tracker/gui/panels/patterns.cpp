@@ -701,8 +701,9 @@ void GUIPatternsPanel::transpose_selected_rows(const int value) {
 }
 
 void GUIPatternsPanel::to_sequences() const {
+    const bool command = is_commands_view();
     std::set<const Pattern *> unique_patterns;
-    if (!selection.command && selection_action != PatternSelectionAction::None && !selection.selecting) {
+    if (!command && selection_action != PatternSelectionAction::None && !selection.selecting) {
         for (const auto &[channel_index, pattern_id, row] : secondary_pattern_rows) {
             const Pattern &selected_pattern = current_patterns.patterns.at(channel_index).at(pattern_id);
             if (!lock_registry.is_locked(Target::SEQUENCE, selected_pattern.sequence_index)) {
@@ -725,8 +726,9 @@ void GUIPatternsPanel::to_sequences() const {
 }
 
 void GUIPatternsPanel::to_commands_sequences() const {
+    const bool command = is_commands_view();
     std::set<const CommandsPattern *> unique_patterns;
-    if (selection.command && selection_action != PatternSelectionAction::None && !selection.selecting) {
+    if (command && selection_action != PatternSelectionAction::None && !selection.selecting) {
         for (const auto &[channel_index, pattern_id, row] : secondary_pattern_rows) {
             const CommandsPattern &selected_pattern = current_patterns.commands_patterns.at(channel_index).at(pattern_id);
             if (!lock_registry.is_locked(Target::COMMANDS_SEQUENCE, selected_pattern.sequence_index)) {
