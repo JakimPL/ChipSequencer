@@ -1,5 +1,6 @@
 #include <sstream>
 #include <stdexcept>
+#include <utility>
 
 #include "../../names.hpp"
 #include "../../panels/patterns.hpp"
@@ -10,18 +11,18 @@ ChangeCommandAction::ChangeCommandAction(
     const std::string &nm,
     GUIPanel *own,
     const LinkKey k,
-    const CommandChange &cmd_ch
+    CommandChange cmd_ch
 )
-    : Action(nm, own, k), command_change(cmd_ch) {
+    : Action(nm, own, k), command_change(std::move(cmd_ch)) {
 }
 
 void ChangeCommandAction::redo() {
     GUIElement element = owner->get_element();
     if (element == GUIElement::Patterns) {
-        GUIPatternsPanel *panel = static_cast<GUIPatternsPanel *>(owner);
+        GUIPatternsPanel *panel = dynamic_cast<GUIPatternsPanel *>(owner);
         panel->set_command(command_change.pattern_row, command_change.new_command);
     } else if (element == GUIElement::CommandsSequences) {
-        GUICommandsSequencesPanel *panel = static_cast<GUICommandsSequencesPanel *>(owner);
+        GUICommandsSequencesPanel *panel = dynamic_cast<GUICommandsSequencesPanel *>(owner);
         panel->set_command(command_change.pattern_row, command_change.new_command);
     } else {
         throw std::runtime_error("Invalid GUIElement for ChangeCommandAction");
@@ -31,10 +32,10 @@ void ChangeCommandAction::redo() {
 void ChangeCommandAction::undo() {
     GUIElement element = owner->get_element();
     if (element == GUIElement::Patterns) {
-        GUIPatternsPanel *panel = static_cast<GUIPatternsPanel *>(owner);
+        GUIPatternsPanel *panel = dynamic_cast<GUIPatternsPanel *>(owner);
         panel->set_command(command_change.pattern_row, command_change.old_command);
     } else if (element == GUIElement::CommandsSequences) {
-        GUICommandsSequencesPanel *panel = static_cast<GUICommandsSequencesPanel *>(owner);
+        GUICommandsSequencesPanel *panel = dynamic_cast<GUICommandsSequencesPanel *>(owner);
         panel->set_command(command_change.pattern_row, command_change.old_command);
     } else {
         throw std::runtime_error("Invalid GUIElement for ChangeCommandAction");
@@ -52,7 +53,7 @@ bool ChangeCommandAction::can_merge(const Action *other) const {
 
 void ChangeCommandAction::merge(const Action *other) {
     const auto *other_change = dynamic_cast<const ChangeCommandAction *>(other);
-    if (other_change) {
+    if (other_change != nullptr) {
         command_change.new_command = other_change->command_change.new_command;
     }
 }

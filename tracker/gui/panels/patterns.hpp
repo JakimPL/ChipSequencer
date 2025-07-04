@@ -86,7 +86,7 @@ class GUIPatternsPanel : public GUIPanel {
     void handle_pattern_input(Pattern *pattern, uint16_t index);
     void handle_commands_pattern_input(CommandsPattern *pattern, uint16_t index);
     int get_pages() const;
-    bool is_playing() const;
+    static bool is_playing();
     bool is_commands_view() const;
 
     void clear();

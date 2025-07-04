@@ -27,7 +27,7 @@ void GUIOscillatorsPanel::draw() {
 }
 
 bool GUIOscillatorsPanel::select_item() {
-    std::vector<std::string> dependencies = song.find_oscillator_dependencies(oscillator_index);
+    std::vector<std::string> dependencies = Song::find_oscillator_dependencies(oscillator_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
     prepare_combo(this, oscillator_names, "##OscillatorCombo", oscillator_index, {}, false, GUI_COMBO_MARGIN_RIGHT);
@@ -65,7 +65,7 @@ void GUIOscillatorsPanel::from() {
     case Generator::Saw: {
         current_oscillator.type = "Saw";
         const OscillatorSaw *saw = static_cast<OscillatorSaw *>(oscillator);
-        current_oscillator.saw_reverse = saw->reverse;
+        current_oscillator.saw_reverse = saw->reverse != 0u;
         break;
     }
     case Generator::Sine: {
@@ -112,7 +112,7 @@ void GUIOscillatorsPanel::to() const {
         OscillatorSaw *saw = reinterpret_cast<OscillatorSaw *>(buffer);
         saw->generator_index = GENERATOR_SAW;
         saw->oscillator_size = SIZE_OSCILLATOR_SAW;
-        saw->reverse = current_oscillator.saw_reverse;
+        saw->reverse = current_oscillator.saw_reverse ? 0xFF : 0x00;
         break;
     }
     case Generator::Sine: {

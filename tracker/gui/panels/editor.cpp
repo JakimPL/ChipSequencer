@@ -116,7 +116,7 @@ void GUIEditorPanel::draw_history() {
 
         const std::string action_label = action_name + "##" + std::to_string(i + 1);
         char label[GUI_MAX_HISTORY_ITEM_LENGTH];
-        copy_string_to_buffer(action_label.c_str(), label, sizeof(label));
+        copy_string_to_buffer(action_label, label, sizeof(label));
 
         if (ImGui::Selectable(label, i == static_cast<int>(current_index) - 1, ImGuiSelectableFlags_SpanAllColumns)) {
             history_manager.go_to_index(i + 1);
@@ -162,7 +162,7 @@ void GUIEditorPanel::draw_clipboard() {
         }
     };
 
-    ImGui::BeginChild("ClipboardPanel", ImVec2(0, 0), false);
+    ImGui::BeginChild("ClipboardPanel", ImVec2(0, 0), 0);
     ImGui::BeginDisabled(gui.is_playing());
     ImGui::Separator();
 
@@ -170,7 +170,7 @@ void GUIEditorPanel::draw_clipboard() {
 
     for (auto category : {ClipboardCategory::Notes, ClipboardCategory::Commands}) {
         const auto *items = clipboard.get_items(category);
-        if (items && !items->empty()) {
+        if (items != nullptr && !items->empty()) {
             has_any_items = true;
             break;
         }
@@ -198,7 +198,7 @@ void GUIEditorPanel::draw_clipboard() {
 
     for (auto category : {ClipboardCategory::Notes, ClipboardCategory::Commands}) {
         const auto *items = clipboard.get_items(category);
-        if (!items || items->empty()) {
+        if (items == nullptr || items->empty()) {
             continue;
         }
 
@@ -215,7 +215,7 @@ void GUIEditorPanel::draw_clipboard() {
 
             const std::string item_label = item->get_name() + "##" + std::to_string(static_cast<int>(category)) + "_" + std::to_string(i);
             char label[GUI_MAX_HISTORY_ITEM_LENGTH];
-            copy_string_to_buffer(item_label.c_str(), label, sizeof(label));
+            copy_string_to_buffer(item_label, label, sizeof(label));
 
             if (i == 0) {
                 ImGui::PushStyleColor(ImGuiCol_Text, GUI_CLIPBOARD_TEXT_COLOR_RECENT);

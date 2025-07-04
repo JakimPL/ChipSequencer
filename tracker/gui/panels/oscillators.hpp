@@ -26,7 +26,7 @@ class GUIOscillatorsPanel : public GUIPanel {
     void draw_oscillator_type();
     void draw_oscillator();
     void update_wavetables();
-    void update_oscillator_name(int index, int generator_index = -1);
+    static void update_oscillator_name(int index, int generator_index = -1);
     void update_oscillator_names();
 
     bool select_item() override;

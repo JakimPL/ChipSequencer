@@ -84,7 +84,7 @@ void GUIWaveformPanel::draw_waveform() {
     }
 }
 
-void GUIWaveformPanel::draw_channel_waveform(const int output_channel_index, const ImVec2 &size, const ImVec2 &position) {
+void GUIWaveformPanel::draw_channel_waveform(const int output_channel_index, const ImVec2 &size, const ImVec2 &position) const {
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
 
     draw_list->AddRectFilled(

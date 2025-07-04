@@ -8,7 +8,7 @@ class GUIEditorPanel : public GUIPanel {
   private:
     void draw_tabs();
     void draw_options();
-    void draw_history();
+    static void draw_history();
     void draw_clipboard();
 
     void draw() override;

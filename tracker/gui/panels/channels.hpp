@@ -27,7 +27,7 @@ class GUIChannelsPanel : public GUIPanel {
 
     bool is_index_valid() const;
     void draw_channel();
-    void update_channel_name(int index, int target_id = -1);
+    static void update_channel_name(int index, int target_id = -1);
     void update_channel_names();
 
     bool is_disabled() const override;

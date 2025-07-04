@@ -70,7 +70,7 @@ void GUIChannelsPanel::from() {
             current_channel.sync_denominator = (channel->fraction >> 4) & 0x0F;
 
             const float fraction = static_cast<float>(current_channel.sync_denominator) / current_channel.sync_numerator;
-            current_channel.pitch = song.calculate_real_bpm() / unit * fraction;
+            current_channel.pitch = Song::calculate_real_bpm() / unit * fraction;
         } else {
             current_channel.pitch = static_cast<float>(channel->pitch) / 0x10000;
         }

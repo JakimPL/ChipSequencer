@@ -88,7 +88,7 @@ void GUIRoutingsPanel::to_links() const {
 
         const size_t type_index = static_cast<size_t>(type);
         if (id >= links[type_index].size()) {
-            const std::string name = item_types_names.at(type);
+            const std::string &name = item_types_names.at(type);
             std::cerr << "Error: " << name << " " << id
                       << " is not available" << std::endl;
             continue;
@@ -141,7 +141,7 @@ void GUIRoutingsPanel::from_nodes() {
     column_next_y[output_x] = initial_y_offset;
 
     for (const auto &node : nodes) {
-        if (column_next_y.count(node.position.x)) {
+        if (column_next_y.count(node.position.x) != 0u) {
             float node_height = node.size.y > 0 ? node.size.y : (node.lines * ImGui::GetTextLineHeight());
             column_next_y[node.position.x] = std::max(column_next_y[node.position.x], node.position.y + node_height + vertical_padding);
         }
@@ -206,8 +206,8 @@ void GUIRoutingsPanel::update_channel_node(size_t index, RoutingNode &channel_no
     const Link &link = links[static_cast<size_t>(ItemType::CHANNEL)][index];
     const auto &channel_routing = routing_variables.at(Target::CHANNEL);
     const auto filtered_items = channel_routing.filter_items(-1);
-    const auto labels = std::get<1>(filtered_items);
-    const auto offsets = std::get<2>(filtered_items);
+    const auto &labels = std::get<1>(filtered_items);
+    const auto &offsets = std::get<2>(filtered_items);
     channel_node.bypass = channel->flag & FLAG_BYPASS;
     channel_solo |= channel_node.solo;
 
@@ -220,7 +220,7 @@ void GUIRoutingsPanel::update_channel_node(size_t index, RoutingNode &channel_no
         }
 
         const OutputKey key = {Target::CHANNEL, static_cast<int>(index), offsets[j]};
-        channel_node.parameters.push_back({key, labels[j]});
+        channel_node.parameters.emplace_back(key, labels[j]);
         channel_node.lines += 1;
     }
 }
@@ -251,8 +251,8 @@ void GUIRoutingsPanel::update_dsp_node(size_t index, RoutingNode &dsp_node) {
     const Link &link = links[static_cast<size_t>(ItemType::DSP)][index];
     const auto &dsp_routing = routing_variables.at(Target::DSP);
     const auto filtered_items = dsp_routing.filter_items(dsp->effect_index);
-    const auto labels = std::get<1>(filtered_items);
-    const auto offsets = std::get<2>(filtered_items);
+    const auto &labels = std::get<1>(filtered_items);
+    const auto &offsets = std::get<2>(filtered_items);
     dsp_node.bypass = dsp->flag & FLAG_BYPASS;
     dsp_solo |= dsp_node.solo;
 
@@ -265,7 +265,7 @@ void GUIRoutingsPanel::update_dsp_node(size_t index, RoutingNode &dsp_node) {
         }
 
         const OutputKey key = {Target::DSP, static_cast<int>(index), offsets[j]};
-        dsp_node.parameters.push_back({key, labels[j]});
+        dsp_node.parameters.emplace_back(key, labels[j]);
         dsp_node.lines += 1;
     }
 }
@@ -335,7 +335,7 @@ void GUIRoutingsPanel::draw_nodes() {
     ImVec2 content_size = calculate_content_size();
 
     ImGui::SetNextWindowContentSize(content_size);
-    ImGui::BeginChild("RoutingCanvas", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+    ImGui::BeginChild("RoutingCanvas", ImVec2(0, 0), 0, ImGuiWindowFlags_HorizontalScrollbar);
 
     const ImVec2 canvas_origin = ImGui::GetCursorScreenPos();
     const ImVec2 canvas_sz = ImGui::GetContentRegionAvail();
@@ -372,7 +372,8 @@ void GUIRoutingsPanel::draw_link(const InputKey &source_key, const OutputKey &ta
 
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
     if (source_pin_it != output_pins.end() && dest_pin_it != input_pins.end()) {
-        ImVec2 p1, p4;
+        ImVec2 p1;
+        ImVec2 p4;
         ImU32 color;
         if (dragging) {
             const ImVec2 mouse_pos = ImGui::GetMousePos();
@@ -396,7 +397,7 @@ void GUIRoutingsPanel::draw_link(const InputKey &source_key, const OutputKey &ta
     }
 }
 
-Splitter GUIRoutingsPanel::get_splitter_from_input_key(const InputKey &source) const {
+Splitter GUIRoutingsPanel::get_splitter_from_input_key(const InputKey &source) {
     Splitter splitter;
     switch (source.first) {
     case ItemType::CHANNEL: {
@@ -833,7 +834,9 @@ bool GUIRoutingsPanel::is_node_locked(const InputKey input_key) const {
 
     if (type == ItemType::CHANNEL) {
         return lock_registry.is_locked(Target::CHANNEL, id);
-    } else if (type == ItemType::DSP) {
+    }
+
+    if (type == ItemType::DSP) {
         return lock_registry.is_locked(Target::DSP, id);
     }
 

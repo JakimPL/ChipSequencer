@@ -25,7 +25,7 @@ class GUIWaveformPanel : public GUIPanel {
     void update_fft_sizes();
     void draw_waveform();
     void draw_spectrogram();
-    void draw_channel_waveform(int output_channel_index, const ImVec2 &size, const ImVec2 &position);
+    void draw_channel_waveform(int output_channel_index, const ImVec2 &size, const ImVec2 &position) const;
     void draw_channel_spectrogram(int output_channel_index, const ImVec2 &size, const ImVec2 &position);
 
     std::string get_frequency_name(int frequency) const;

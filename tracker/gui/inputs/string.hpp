@@ -8,6 +8,6 @@ class StringInputHandler : public InputHandler {
     std::vector<ImGuiKey> keys;
 
   public:
-    explicit StringInputHandler(const std::vector<ImGuiKey> keys, bool synchronize = true);
+    explicit StringInputHandler(std::vector<ImGuiKey> keys, bool synchronize = true);
     bool handle_input(std::vector<std::string> &strings, int &index);
 };

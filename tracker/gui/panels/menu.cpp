@@ -267,13 +267,13 @@ void GUIMenu::draw_dialog_box() {
         draw_popup("Song render failed!");
     } else if (ImGui::BeginPopupModal("Load error", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         draw_popup("Failed to load file!");
-    } else if (ImGui::BeginPopupModal("Confirm new song", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+    } else if (ImGui::BeginPopupModal("Confirm new song", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         const std::string message = "Do you want to create a new song?\nAny unsaved changes will be lost.";
         draw_confirmation_popup(message, [this]() { file_new(); }, [this]() { file_save(); });
-    } else if (ImGui::BeginPopupModal("Confirm open song", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+    } else if (ImGui::BeginPopupModal("Confirm open song", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         const std::string message = "Do you want to open a new song?\nAny unsaved changes will be lost.";
         draw_confirmation_popup(message, [this]() { file_open(); }, [this]() { file_save(); });
-    } else if (ImGui::BeginPopupModal("Confirm exit", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+    } else if (ImGui::BeginPopupModal("Confirm exit", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         const std::string message = "Do you want to exit the program?\nAny unsaved changes will be lost.";
         draw_confirmation_popup(message, [this]() { file_exit(); }, [this]() { file_save(); });
     }

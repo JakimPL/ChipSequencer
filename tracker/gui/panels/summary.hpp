@@ -11,7 +11,7 @@ class GUISummaryPanel : public GUIPanel {
     void draw_table_row(bool highlight, const char *label, std::optional<size_t> count, size_t size);
     size_t draw_summary_components();
     size_t draw_summary_song_data();
-    void draw_optimizations();
+    static void draw_optimizations();
 
     void draw() override;
 

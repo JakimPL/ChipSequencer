@@ -25,7 +25,7 @@ void GUIEnvelopesPanel::draw() {
 }
 
 bool GUIEnvelopesPanel::select_item() {
-    std::vector<std::string> dependencies = song.find_envelope_dependencies(envelope_index);
+    std::vector<std::string> dependencies = Song::find_envelope_dependencies(envelope_index);
     std::vector<std::pair<ItemType, uint8_t>> link_dependencies = link_manager.find_dependencies(Target::ENVELOPE, envelope_index);
     push_tertiary_style();
 
@@ -194,7 +194,7 @@ void GUIEnvelopesPanel::draw_envelope_graph() {
     draw_list->AddRectFilled(canvas_p0, canvas_p1, IM_COL32(50, 50, 50, 255));
     draw_list->AddRect(canvas_p0, canvas_p1, IM_COL32(200, 200, 200, 255));
 
-    const float tick_duration_base = song.get_row_duration();
+    const float tick_duration_base = Song::get_row_duration();
     float total_time = current_envelope.attack + current_envelope.decay + current_envelope.hold + current_envelope.release;
     total_time = std::max(total_time, 0.001f);
 

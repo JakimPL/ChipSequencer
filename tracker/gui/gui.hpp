@@ -49,7 +49,7 @@ class GUI {
     bool render();
     void set_font();
     void terminate();
-    bool is_done();
+    bool is_done() const;
     void toggle_fullscreen();
     void from();
     void to() const;

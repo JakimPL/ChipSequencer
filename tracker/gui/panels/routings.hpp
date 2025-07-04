@@ -48,7 +48,7 @@ class GUIRoutingsPanel : public GUIPanel {
 
     void update_channel_node(size_t index, RoutingNode &channel_node);
     void update_dsp_node(size_t index, RoutingNode &dsp_nodes);
-    void update_output_node(size_t index, RoutingNode &output_node);
+    static void update_output_node(size_t index, RoutingNode &output_node);
     void add_channel_node(size_t index, std::vector<RoutingNode> &nodes, std::map<float, float> &column_next_y);
     void add_dsp_node(size_t index, std::vector<RoutingNode> &nodes, std::map<float, float> &column_next_y);
     void add_output_node(size_t index, std::vector<RoutingNode> &nodes, std::map<float, float> &column_next_y);
@@ -56,7 +56,7 @@ class GUIRoutingsPanel : public GUIPanel {
     bool get_bypass_state(const RoutingNode &node) const;
     bool get_bypass_state(ItemType type, bool bypass, bool solo) const;
     bool get_splitter_bounds(size_t j, size_t index, const Link &link) const;
-    Splitter get_splitter_from_input_key(const InputKey &source) const;
+    static Splitter get_splitter_from_input_key(const InputKey &source);
     bool is_node_locked(const RoutingNode &node) const;
     bool is_node_locked(InputKey input_key) const;
 

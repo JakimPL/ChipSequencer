@@ -1,4 +1,5 @@
 #include <sstream>
+#include <utility>
 
 #include "../../../structures.hpp"
 #include "../../../structures/resources/manager.hpp"
@@ -15,8 +16,8 @@ RemoveItemAction<T>::RemoveItemAction(
     RestoreFunction<T> restore
 )
     : Action(nm, own, k),
-      remove_function(remove),
-      restore_function(restore) {
+      remove_function(std::move(remove)),
+      restore_function(std::move(restore)) {
     item_copy = original_item;
 }
 

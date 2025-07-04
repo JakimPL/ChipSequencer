@@ -18,7 +18,7 @@ struct NodeIdentifier {
     Target type = Target::COUNT;
     size_t id = -1;
 
-    NodeIdentifier();
+    NodeIdentifier() = default;
     NodeIdentifier(Target type, size_t id);
     explicit NodeIdentifier(const std::string &string);
     bool operator==(const NodeIdentifier &other) const;

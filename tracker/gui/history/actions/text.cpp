@@ -17,12 +17,12 @@ ChangeTextAction<n>::ChangeTextAction(
 
 template <size_t n>
 void ChangeTextAction<n>::redo() {
-    copy_string_to_buffer(text_change.new_value.c_str(), text_change.buffer, n);
+    copy_string_to_buffer(text_change.new_value, text_change.buffer, n);
 }
 
 template <size_t n>
 void ChangeTextAction<n>::undo() {
-    copy_string_to_buffer(text_change.old_value.c_str(), text_change.buffer, n);
+    copy_string_to_buffer(text_change.old_value, text_change.buffer, n);
 }
 
 template <size_t n>

@@ -8,10 +8,6 @@
 #include "names.hpp"
 #include "node.hpp"
 
-NodeIdentifier::NodeIdentifier()
-    : type(Target::COUNT), id(0) {
-}
-
 NodeIdentifier::NodeIdentifier(Target type, size_t id)
     : type(type), id(id) {
 }

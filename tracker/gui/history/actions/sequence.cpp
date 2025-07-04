@@ -7,7 +7,7 @@ ChangeOrderSequenceAction::ChangeOrderSequenceAction(
     const std::string &nm,
     GUIPanel *own,
     const LinkKey k,
-    const OrderSequenceChange &seq_ch
+    OrderSequenceChange seq_ch
 )
     : Action(nm, own, k), sequence_change(seq_ch) {
 }
@@ -31,7 +31,7 @@ bool ChangeOrderSequenceAction::can_merge(const Action *other) const {
 
 void ChangeOrderSequenceAction::merge(const Action *other) {
     const auto *other_change = dynamic_cast<const ChangeOrderSequenceAction *>(other);
-    if (other_change) {
+    if (other_change != nullptr) {
         sequence_change.new_sequence = other_change->sequence_change.new_sequence;
     }
 }

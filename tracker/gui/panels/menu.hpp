@@ -18,14 +18,14 @@ class GUIMenu : public GUIPanel {
     bool open_open_song_confirmation_popup = false;
     bool open_exit_confirmation_popup = false;
 
-    void draw_menu();
-    void file_new();
-    void file_save();
-    void file_save_as();
+    static void draw_menu();
+    static void file_new();
+    static void file_save();
+    static void file_save_as();
     void file_open();
     void file_render();
     void file_compile(CompilationScheme scheme, CompilationTarget compilation_target);
-    void file_exit();
+    static void file_exit();
 
     void file_new_confirm();
     void file_open_confirm();

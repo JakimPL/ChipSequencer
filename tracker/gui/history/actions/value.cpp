@@ -1,5 +1,6 @@
 #include <iomanip>
 #include <sstream>
+#include <utility>
 
 #include "value.hpp"
 
@@ -8,9 +9,9 @@ ChangeValueAction<T>::ChangeValueAction(
     const std::string &nm,
     GUIPanel *own,
     const LinkKey k,
-    const ValueChange<T> &val_ch
+    ValueChange<T> val_ch
 )
-    : Action(nm, own, k), value_change(val_ch) {
+    : Action(nm, own, k), value_change(std::move(val_ch)) {
 }
 
 template <typename T>

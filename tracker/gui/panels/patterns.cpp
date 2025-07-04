@@ -56,7 +56,7 @@ void GUIPatternsPanel::draw_channels() {
     const float content_size = std::max(available, total_min);
 
     ImGui::SetNextWindowContentSize(ImVec2(content_size, 0));
-    ImGui::BeginChild("##PatternChannels", ImVec2(available, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+    ImGui::BeginChild("##PatternChannels", ImVec2(available, 0), 0, ImGuiWindowFlags_HorizontalScrollbar);
 
     if (ImGui::BeginTable("ChannelsTable", columns, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersOuter)) {
         for (const auto &[index, pattern] : current_patterns.patterns) {
@@ -519,13 +519,13 @@ void GUIPatternsPanel::paste_selection() {
     if (current_channel.command) {
         ClipboardItem *item = clipboard.get_recent_item(ClipboardCategory::Commands);
         ClipboardCommands *commands = dynamic_cast<ClipboardCommands *>(item);
-        if (commands) {
+        if (commands != nullptr) {
             paste_commands_pattern_selection(commands);
         }
     } else {
         ClipboardItem *item = clipboard.get_recent_item(ClipboardCategory::Notes);
         ClipboardNotes *notes = dynamic_cast<ClipboardNotes *>(item);
-        if (notes) {
+        if (notes != nullptr) {
             paste_pattern_selection(notes);
         }
     }
@@ -919,7 +919,6 @@ void GUIPatternsPanel::handle_commands_pattern_input(CommandsPattern *pattern, u
         }
         if (ImGui::IsKeyPressed(ImGuiKey_Home)) {
             const int start = page * gui.get_page_size();
-            index = start;
             current_row = start;
             const auto &[first_pattern, _, new_index] = find_commands_pattern_by_current_row();
             first_pattern->current_row = new_index;
@@ -931,7 +930,6 @@ void GUIPatternsPanel::handle_commands_pattern_input(CommandsPattern *pattern, u
                 (page + 1) * gui.get_page_size() - 1,
                 current_patterns.commands_patterns_max_rows[current_channel.index] - 1
             );
-            index = end_row;
             current_row = end_row;
             const auto &[last_pattern, _, new_index] = find_commands_pattern_by_current_row();
             last_pattern->current_row = current_row - new_index;
@@ -1205,7 +1203,7 @@ int GUIPatternsPanel::get_current_row() const {
     return current_row;
 }
 
-bool GUIPatternsPanel::is_playing() const {
+bool GUIPatternsPanel::is_playing() {
     return gui.is_playing() && ticks_per_beat > 0;
 }
 

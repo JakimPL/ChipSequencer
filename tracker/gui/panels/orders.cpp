@@ -24,7 +24,7 @@ void GUIOrdersPanel::draw() {
 }
 
 bool GUIOrdersPanel::select_item() {
-    std::vector<std::string> dependencies = song.find_order_dependencies(order_index);
+    std::vector<std::string> dependencies = Song::find_order_dependencies(order_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
     if (prepare_combo(this, order_names, "##OrderCombo", order_index, {}, false, GUI_COMBO_MARGIN_RIGHT).value_changed) {
@@ -147,7 +147,7 @@ void GUIOrdersPanel::draw_order() {
     draw_order_length();
 
     const float height = std::max(5.0f, ImGui::GetContentRegionAvail().y - 5.0f);
-    ImGui::BeginChild("OrderScroll", ImVec2(0, height), true);
+    ImGui::BeginChild("OrderScroll", ImVec2(0, height), 1);
     ImGui::Columns(1, "order_columns");
     ImGui::Text("Sequence");
     ImGui::Separator();

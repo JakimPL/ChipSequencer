@@ -32,7 +32,7 @@ void GUISequencesPanel::draw() {
 }
 
 bool GUISequencesPanel::select_item() {
-    std::vector<std::string> dependencies = song.find_sequence_dependencies(sequence_index);
+    std::vector<std::string> dependencies = Song::find_sequence_dependencies(sequence_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
     prepare_combo(this, sequence_names, "##SequenceCombo", sequence_index, {}, false, GUI_COMBO_MARGIN_RIGHT);
@@ -244,7 +244,7 @@ void GUISequencesPanel::copy_selection() {
 void GUISequencesPanel::paste_selection() {
     ClipboardItem *item = clipboard.get_recent_item(ClipboardCategory::Notes);
     ClipboardNotes *notes = dynamic_cast<ClipboardNotes *>(item);
-    if (!notes) {
+    if (notes == nullptr) {
         return;
     }
 

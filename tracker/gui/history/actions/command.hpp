@@ -12,7 +12,7 @@ class ChangeCommandAction : public Action {
         const std::string &nm,
         GUIPanel *own,
         LinkKey k,
-        const CommandChange &cmd_ch
+        CommandChange cmd_ch
     );
 
     void redo() override;

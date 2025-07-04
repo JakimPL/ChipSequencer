@@ -13,7 +13,7 @@ class ChangeValueAction : public Action {
         const std::string &nm,
         GUIPanel *own,
         LinkKey k,
-        const ValueChange<T> &val_ch
+        ValueChange<T> val_ch
     );
 
     void redo() override;

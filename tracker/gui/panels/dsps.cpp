@@ -30,7 +30,7 @@ bool GUIDSPsPanel::is_disabled() const {
 }
 
 bool GUIDSPsPanel::select_item() {
-    std::vector<std::string> dependencies = song.find_dsp_dependencies(dsp_index);
+    std::vector<std::string> dependencies = Song::find_dsp_dependencies(dsp_index);
     std::vector<std::pair<ItemType, uint8_t>> link_dependencies = link_manager.find_dependencies(Target::DSP, dsp_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies, link_dependencies);
@@ -209,7 +209,7 @@ void GUIDSPsPanel::update_dsp_names() {
     }
 }
 
-void GUIDSPsPanel::update_dsp_name(const int index, const int effect_index) const {
+void GUIDSPsPanel::update_dsp_name(const int index, const int effect_index) {
     if (index < 0 || index >= static_cast<int>(dsp_names.size())) {
         return;
     }

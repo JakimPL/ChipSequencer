@@ -12,7 +12,7 @@ class ChangeOrderSequenceAction : public Action {
         const std::string &nm,
         GUIPanel *own,
         LinkKey k,
-        const OrderSequenceChange &seq_ch
+        OrderSequenceChange seq_ch
     );
 
     void redo() override;

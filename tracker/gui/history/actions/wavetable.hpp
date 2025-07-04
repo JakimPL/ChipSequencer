@@ -12,7 +12,7 @@ class ChangeWavetableAction : public Action {
         const std::string &nm,
         GUIPanel *own,
         LinkKey k,
-        const WavetableChange &wt_ch
+        WavetableChange wt_ch
     );
 
     void redo() override;

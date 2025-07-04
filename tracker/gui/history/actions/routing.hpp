@@ -12,7 +12,7 @@ class ChangeRoutingAction : public Action {
         const std::string &nm,
         GUIPanel *own,
         LinkKey k,
-        const RoutingChange &rout_ch
+        RoutingChange rout_ch
     );
 
     void redo() override;

@@ -33,7 +33,7 @@ bool GUICommandsSequencesPanel::is_disabled() const {
 }
 
 bool GUICommandsSequencesPanel::select_item() {
-    std::vector<std::string> dependencies = song.find_commands_sequence_dependencies(sequence_index);
+    std::vector<std::string> dependencies = Song::find_commands_sequence_dependencies(sequence_index);
     push_tertiary_style();
     draw_add_or_remove(dependencies);
     if (prepare_combo(this, commands_sequence_names, "##CommandsSequenceCombo", sequence_index, {}, false, GUI_COMBO_MARGIN_RIGHT).value_changed) {
@@ -231,7 +231,7 @@ void GUICommandsSequencesPanel::copy_selection() {
 void GUICommandsSequencesPanel::paste_selection() {
     ClipboardItem *item = clipboard.get_recent_item(ClipboardCategory::Commands);
     ClipboardCommands *commands = dynamic_cast<ClipboardCommands *>(item);
-    if (!commands) {
+    if (commands == nullptr) {
         return;
     }
 
@@ -332,7 +332,7 @@ void GUICommandsSequencesPanel::open_edit_dialog_box(const int item) {
     case Instruction::PortamentoDown: {
         uint8_t channel;
         uint16_t value;
-        current_sequence.pattern.split_portamento_value(current_sequence.pattern.values[item], channel, value);
+        CommandsPattern::split_portamento_value(current_sequence.pattern.values[item], channel, value);
         edit_dialog_box.portamento_channel = channel;
         edit_dialog_box.portamento_value = CommandsPattern::cast_portamento_to_double(value);
         break;
@@ -370,7 +370,7 @@ void GUICommandsSequencesPanel::open_edit_dialog_box(const int item) {
         uint8_t index;
         uint16_t offset;
         uint32_t value;
-        current_sequence.pattern.split_change_value_parts(
+        CommandsPattern::split_change_value_parts(
             current_sequence.pattern.values[item],
             target_variable_type,
             target,

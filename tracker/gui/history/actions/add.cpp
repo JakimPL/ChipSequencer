@@ -1,4 +1,5 @@
 #include <sstream>
+#include <utility>
 
 #include "../../../general.hpp"
 #include "../../names.hpp"
@@ -12,8 +13,8 @@ AddItemAction::AddItemAction(
     RemoveFunction remove
 )
     : Action(nm, own, k),
-      add_function(add),
-      remove_function(remove) {
+      add_function(std::move(add)),
+      remove_function(std::move(remove)) {
 }
 
 void AddItemAction::redo() {
@@ -28,12 +29,11 @@ void AddItemAction::undo() {
     }
 }
 
-bool AddItemAction::can_merge(const Action *other) const {
+bool AddItemAction::can_merge(const Action * /*other */) const {
     return false;
 }
 
-void AddItemAction::merge(const Action *other) {
-    return;
+void AddItemAction::merge(const Action * /* other */) {
 }
 
 std::string AddItemAction::get_name() const {

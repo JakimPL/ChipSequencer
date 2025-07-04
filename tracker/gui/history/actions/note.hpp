@@ -12,7 +12,7 @@ class ChangeNoteAction : public Action {
         const std::string &nm,
         GUIPanel *own,
         LinkKey k,
-        const NoteChange &note_ch
+        NoteChange note_ch
     );
 
     void redo() override;

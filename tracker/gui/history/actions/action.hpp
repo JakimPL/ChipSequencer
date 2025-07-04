@@ -7,7 +7,7 @@
 class GUIPanel;
 
 struct Action {
-    Action(const std::string &nm, GUIPanel *own, LinkKey k);
+    Action(std::string nm, GUIPanel *own, LinkKey k);
     virtual ~Action() = default;
 
     virtual void undo() = 0;
