@@ -31,7 +31,7 @@ bool GUIChannelsPanel::is_disabled() const {
 }
 
 bool GUIChannelsPanel::select_item() {
-    std::vector<std::pair<ItemType, uint8_t>> link_dependencies = link_manager.find_dependencies(Target::CHANNEL, channel_index);
+    std::vector<std::pair<ItemType, uint8_t>> link_dependencies = LinkManager::find_dependencies(Target::CHANNEL, channel_index);
     push_tertiary_style();
     draw_add_or_remove({}, link_dependencies);
     prepare_combo(this, channel_names, "##ChannelCombo", channel_index, {}, false, GUI_COMBO_MARGIN_RIGHT);

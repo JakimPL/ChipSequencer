@@ -367,7 +367,7 @@ void CommandsPattern::split_portamento_value(const std::string &command_value, u
     std::vector<std::string> value_parts = split(command_value, ',');
     channel = 0;
     value = 0;
-    if (value_parts.size() >= 1 && !channels.empty()) {
+    if (!value_parts.empty() && !channels.empty()) {
         channel = static_cast<uint8_t>(string_to_integer(value_parts[0], 0, 0, channels.size() - 1));
     }
 
@@ -568,7 +568,7 @@ std::string CommandsPattern::from_output_type(const OutputType &output_type, con
     return stream.str();
 }
 
-void CommandsPattern::save_links(size_t sequence_index) const {
+void CommandsPattern::save_links(size_t sequence_index) {
     if (sequence_index == -1) {
         return;
     }
@@ -585,7 +585,7 @@ void CommandsPattern::save_links(size_t sequence_index) const {
             const LinkKey key = {static_cast<Target>(change_value.target), change_value.index, change_value.offset};
             const Link link = {ItemType::COMMANDS, id, key.target, static_cast<uint8_t>(key.index), key.offset};
             commands_links[sequence_index][i] = link;
-            commands_to_update.push_back({i, key});
+            commands_to_update.emplace_back(i, key);
         }
     }
 
@@ -602,7 +602,7 @@ void CommandsPattern::save_links(size_t sequence_index) const {
     }
 }
 
-LinkKey CommandsPattern::get_command_key(const CommandChangeValue *command) const {
+LinkKey CommandsPattern::get_command_key(const CommandChangeValue *command) {
     if (command->target == static_cast<uint8_t>(Target::COUNT)) {
         return link_manager.get_pointer_and_key(command->pointer).second;
     }

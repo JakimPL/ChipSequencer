@@ -45,7 +45,7 @@ class LinkManager {
     bool is_linked(LinkKey key) const;
     std::vector<Link *> get_links(LinkKey key) const;
     static std::string get_link_reference(LinkKey key);
-    std::string get_link_reference(ItemType type, size_t index) const;
+    static std::string get_link_reference(ItemType type, size_t index);
     std::vector<std::pair<void *, LinkKey>> get_pointers_map() const;
     std::pair<void *, LinkKey> get_pointer_and_key(size_t index) const;
     size_t find_pointer_id_by_key(LinkKey key) const;

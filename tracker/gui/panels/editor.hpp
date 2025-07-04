@@ -9,7 +9,7 @@ class GUIEditorPanel : public GUIPanel {
     void draw_tabs();
     void draw_options();
     static void draw_history();
-    void draw_clipboard();
+    static void draw_clipboard();
 
     void draw() override;
     void check_keyboard_input() override;

@@ -312,6 +312,7 @@ void GUIWavetablesPanel::save_wavetable_to_file() {
     nfdchar_t *target_path = nullptr;
     nfdresult_t result = NFD_SaveDialog("wav", nullptr, &target_path);
     if (result == NFD_OKAY) {
+        std::unique_ptr<nfdchar_t, void (*)(void *)> path_guard(target_path, free);
         std::filesystem::path wav_path(target_path);
         wav_path = check_and_correct_path_by_extension(wav_path, ".wav");
         std::cout << "Saving sample to: " << wav_path << std::endl;
@@ -334,8 +335,8 @@ void GUIWavetablesPanel::load_wavetable_from_file() {
     nfdchar_t *target_path = nullptr;
     nfdresult_t result = NFD_OpenDialog("wav", nullptr, &target_path);
     if (result == NFD_OKAY) {
+        std::unique_ptr<nfdchar_t, void (*)(void *)> path_guard(target_path, free);
         std::filesystem::path wav_path(target_path);
-        free(target_path);
         std::cout << "Loading sample from: " << wav_path << std::endl;
         try {
             Samples samples = load_wave(wav_path.string());

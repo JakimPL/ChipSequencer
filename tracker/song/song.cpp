@@ -1098,11 +1098,11 @@ void Song::generate_targets_asm(std::stringstream &asm_content) {
     for (const auto &pair : pointers) {
         const LinkKey key = pair.second;
         asm_content << "    dd ";
-        asm_content << link_manager.get_link_reference(key) << "\n";
+        asm_content << LinkManager::get_link_reference(key) << "\n";
     }
 }
 
-std::string Song::generate_data_asm_file(const CompilationTarget compilation_target, const char separator) {
+std::string Song::generate_data_asm_file(const char separator) {
     std::stringstream asm_content;
     asm_content << "SEGMENT_DATA\n";
     asm_content << "CDECL(bpm):\n";
@@ -1514,8 +1514,8 @@ void Song::export_header_asm_file(const std::filesystem::path &directory) const 
     asm_file.close();
 }
 
-void Song::export_data_asm_file(const std::filesystem::path &directory, const CompilationTarget compilation_target) const {
-    std::string asm_content = generate_data_asm_file(compilation_target);
+void Song::export_data_asm_file(const std::filesystem::path &directory, const CompilationTarget compilation_target) {
+    std::string asm_content = generate_data_asm_file();
     std::ofstream asm_file(directory / "data.asm");
     asm_file << asm_content;
     asm_file.close();
@@ -1809,7 +1809,7 @@ void Song::clear_data() {
     channels.clear();
     commands_channels.clear();
     commands_sequences.clear();
-    link_manager.reset();
+    LinkManager::reset();
     update_sizes();
     buffers.clear();
     resource_manager.clear();

@@ -67,8 +67,8 @@ void perform_action_command(
     GUIPanel *owner,
     LinkKey key,
     PatternRow pattern_row,
-    CommandValue old_command,
-    CommandValue new_command
+    const CommandValue &old_command,
+    const CommandValue &new_command
 );
 
 void perform_action_add(

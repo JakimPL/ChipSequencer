@@ -132,8 +132,8 @@ void perform_action_command(
     GUIPanel *owner,
     LinkKey key,
     PatternRow pattern_row,
-    CommandValue old_command,
-    CommandValue new_command
+    const CommandValue &old_command,
+    const CommandValue &new_command
 ) {
     if (old_command != new_command) {
         const std::string label = "Sequence " + std::to_string(key.index);

@@ -5,8 +5,8 @@
 #ifdef _WIN32
 #include <windows.h>
 #else
+#include <climits>
 #include <unistd.h>
-#include <limits.h>
 #endif
 
 std::pair<std::filesystem::path, std::filesystem::path> prepare_temp_directory(const bool clean_temp) {

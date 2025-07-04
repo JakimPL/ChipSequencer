@@ -53,12 +53,12 @@ struct CommandsPattern {
     static std::string from_gainer(double value);
     static std::string from_change_value(TargetVariableType type, LinkKey key, uint32_t value);
     static std::string from_output_type(const OutputType &output_type, const int &value_integer, const float &value_float);
-    LinkKey get_command_key(const CommandChangeValue *command) const;
+    static LinkKey get_command_key(const CommandChangeValue *command);
 
     void from_sequence(uint8_t sequence_index);
     std::vector<Command> to_command_vector() const;
     void to_buffer(size_t sequence_index) const;
-    void save_links(size_t sequence_index) const;
+    static void save_links(size_t sequence_index);
     int calculate_playing_row(size_t channel_index);
 
     void clear_row(int row);

@@ -312,7 +312,7 @@ std::string LinkManager::get_link_reference(const LinkKey key) {
     return "CDECL(" + reference + ")";
 }
 
-std::string LinkManager::get_link_reference(const ItemType type, const size_t index) const {
+std::string LinkManager::get_link_reference(const ItemType type, const size_t index) {
     std::string reference;
     const Link &link = links[static_cast<size_t>(type)][index];
     return get_link_reference(link.key);

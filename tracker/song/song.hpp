@@ -2,11 +2,12 @@
 
 #include <filesystem>
 #include <fstream>
-#include <nlohmann/json.hpp>
 #include <set>
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include <nlohmann/json.hpp>
 
 #include "../constants.hpp"
 #include "../structures.hpp"
@@ -16,6 +17,12 @@
 #include "compilation.hpp"
 #include "validation.hpp"
 #include "links/link.hpp"
+
+#ifdef _WIN32
+#define PATH_SEPARATOR '\\'
+#else
+#define PATH_SEPARATOR '/'
+#endif
 
 class Song {
   private:
@@ -43,10 +50,10 @@ class Song {
         const std::string &name,
         const std::string &short_name,
         size_t size,
-        char separator = '/'
+        char separator = PATH_SEPARATOR
     );
     std::string generate_header_asm_file() const;
-    static std::string generate_data_asm_file(CompilationTarget compilation_target, char separator = '/');
+    static std::string generate_data_asm_file(char separator = PATH_SEPARATOR);
 
     static void set_used_flags(std::stringstream &asm_content);
     nlohmann::json create_header_json() const;
@@ -65,7 +72,7 @@ class Song {
     static void import_all(const std::filesystem::path &directory, const nlohmann::json &json);
 
     void export_header_asm_file(const std::filesystem::path &directory) const;
-    void export_data_asm_file(const std::filesystem::path &directory, CompilationTarget compilation_target) const;
+    static void export_data_asm_file(const std::filesystem::path &directory, CompilationTarget compilation_target);
     void export_header(const std::filesystem::path &directory) const;
     static void export_gui_state(const std::filesystem::path &directory);
     static void export_lock_registry(const std::filesystem::path &directory);
@@ -100,7 +107,7 @@ class Song {
     static void decompress_archive(const std::string &output_file, const std::string &directory);
 
     static void update_sizes();
-    void clear_data();
+    static void clear_data();
 
     static std::set<size_t> get_channel_orders();
     static std::set<size_t> get_commands_channel_orders();
@@ -135,15 +142,15 @@ class Song {
     uint8_t get_output_channels() const;
     void set_output_channels(uint8_t channels);
 
-    Envelope *add_envelope(size_t index = -1);
-    Sequence *add_sequence(size_t index = -1);
-    Order *add_order(size_t index = -1);
-    Wavetable *add_wavetable(size_t index = -1);
-    void *add_oscillator(size_t index = -1);
-    Channel *add_channel(size_t index = -1);
-    void *add_dsp(size_t index = -1);
-    CommandsSequence *add_commands_sequence(size_t index = -1);
-    CommandsChannel *add_commands_channel(size_t index = -1);
+    static Envelope *add_envelope(size_t index = -1);
+    static Sequence *add_sequence(size_t index = -1);
+    static Order *add_order(size_t index = -1);
+    static Wavetable *add_wavetable(size_t index = -1);
+    static void *add_oscillator(size_t index = -1);
+    static Channel *add_channel(size_t index = -1);
+    static void *add_dsp(size_t index = -1);
+    static CommandsSequence *add_commands_sequence(size_t index = -1);
+    static CommandsChannel *add_commands_channel(size_t index = -1);
 
     static Envelope *insert_envelope(Envelope *envelope, size_t index = -1);
     static Sequence *insert_sequence(Sequence *sequence, size_t index = -1);
@@ -165,15 +172,15 @@ class Song {
     CommandsChannel *duplicate_commands_channel(size_t index);
     CommandsSequence *duplicate_commands_sequence(size_t index);
 
-    void remove_envelope(size_t index);
-    void remove_sequence(size_t index);
-    void remove_order(size_t index);
-    void remove_wavetable(size_t index);
-    void remove_oscillator(size_t index);
-    void remove_channel(size_t index);
-    void remove_dsp(size_t index);
-    void remove_commands_channel(size_t index);
-    void remove_commands_sequence(size_t index);
+    static void remove_envelope(size_t index);
+    static void remove_sequence(size_t index);
+    static void remove_order(size_t index);
+    static void remove_wavetable(size_t index);
+    static void remove_oscillator(size_t index);
+    static void remove_channel(size_t index);
+    static void remove_dsp(size_t index);
+    static void remove_commands_channel(size_t index);
+    static void remove_commands_sequence(size_t index);
 
     std::pair<ValidationResult, int> validate();
     static std::vector<std::string> find_envelope_dependencies(size_t envelope_index);
