@@ -7,7 +7,7 @@
 constexpr int MAX_CLIPBOARD_ENUMERATION = 10;
 
 struct ClipboardItem {
-    ClipboardItem(ClipboardCategory cat);
+    explicit ClipboardItem(ClipboardCategory category);
     virtual ~ClipboardItem() = default;
 
     const ClipboardCategory category;

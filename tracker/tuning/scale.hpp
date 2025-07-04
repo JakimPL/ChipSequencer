@@ -1,7 +1,7 @@
 #pragma once
 
 #include <array>
-#include <stddef.h>
+#include <cstddef>
 #include <string>
 #include <vector>
 #include <map>

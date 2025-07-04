@@ -40,7 +40,7 @@ template <size_t n>
 void draw_text(GUIPanel *owner, const char *label, char (&text)[n], LinkKey key);
 bool draw_checkbox(GUIPanel *owner, const char *label, bool &reference, LinkKey key);
 bool draw_int_slider(GUIPanel *owner, const char *label, int &reference, LinkKey key, int min = 0, int max = 1);
-bool draw_float_slider(GUIPanel *owner, const char *label, float &reference, LinkKey, float min = 0.0f, float max = 1.0f, GUIScale scale = GUIScale::Linear, const char *format = "%.4f");
+bool draw_float_slider(GUIPanel *owner, const char *label, float &reference, LinkKey key, float min = 0.0f, float max = 1.0f, GUIScale scale = GUIScale::Linear, const char *format = "%.4f");
 bool draw_knob(GUIPanel *owner, const char *label, float &reference, LinkKey key, float min = 0.0f, float max = 1.0f);
 void draw_link_tooltip(const LinkKey &key);
 

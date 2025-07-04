@@ -18,7 +18,7 @@ class PortAudioDriver : public Driver {
     void play() override;
     void terminate() override;
 
-    bool initialize();
+    static bool initialize();
     bool open_stream();
     bool close_stream();
     bool start_stream();
@@ -39,8 +39,8 @@ class PortAudioDriver : public Driver {
 
   private:
     uint16_t rate;
-    PaStream *stream;
-    uint8_t current_index;
+    PaStream *stream = nullptr;
+    uint8_t current_index = 0U;
     unsigned long frames_per_buffer;
     int output_channels = DEFAULT_OUTPUT_CHANNELS;
 

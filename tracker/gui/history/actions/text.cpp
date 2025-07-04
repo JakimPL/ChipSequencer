@@ -1,4 +1,5 @@
 #include <sstream>
+#include <utility>
 
 #include "../../../utils/string.hpp"
 #include "../../constants.hpp"
@@ -11,7 +12,7 @@ ChangeTextAction<n>::ChangeTextAction(
     const LinkKey k,
     TextChange<n> txt_ch
 )
-    : Action(nm, own, k), text_change(txt_ch) {
+    : Action(nm, own, k), text_change(std::move(txt_ch)) {
 }
 
 template <size_t n>

@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <utility>
 
 #include "../../constants.hpp"
 
@@ -12,5 +13,5 @@ struct WavetableChange {
     std::vector<float> new_wave;
 
     WavetableChange(int &size, std::vector<float> &wt, std::vector<float> old)
-        : wavetable_size(size), wavetable(wt), old_wave(old), new_wave(wt) {}
+        : wavetable_size(size), wavetable(wt), old_wave(std::move(old)), new_wave(wt) {}
 };

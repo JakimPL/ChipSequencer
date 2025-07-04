@@ -151,12 +151,12 @@ class GUI {
     std::unique_ptr<GUISummaryPanel> summary_panel;
     std::unique_ptr<GUIWaveformPanel> waveform_panel;
 
-    RenderingBackend rendering_backend;
-    SDL_Window *window;
+    RenderingBackend rendering_backend = RenderingBackend::OpenGL;
+    SDL_Window *window = nullptr;
     SDL_GLContext gl_context;
-    SDL_Renderer *renderer;
-    ImGuiIO *io;
-    ImFont *font;
+    SDL_Renderer *renderer = nullptr;
+    ImGuiIO *io = nullptr;
+    ImFont *font = nullptr;
     bool done = false;
     bool fullscreen = false;
 

@@ -20,7 +20,7 @@ if(CLANG_TIDY_EXE)
         COMMAND ${CLANG_TIDY_EXE}
         -p ${CMAKE_BINARY_DIR}
         --system-headers=false
-        --header-filter=.*tracker.*
+        --header-filter='^${CMAKE_SOURCE_DIR}/tracker/.*'
         --extra-arg=-std=c++17
         --extra-arg=-stdlib=libstdc++
         ${PROJECT_SOURCES}

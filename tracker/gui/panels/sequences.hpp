@@ -39,7 +39,7 @@ class GUISequencesPanel : public GUIPanel {
     void draw_sequence_length();
     void draw_sequence();
 
-    void open_edit_dialog_box(const int item);
+    void open_edit_dialog_box(int item);
 
     void register_shortcuts() override;
     bool select_item() override;

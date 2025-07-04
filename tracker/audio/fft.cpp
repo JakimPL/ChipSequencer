@@ -21,7 +21,7 @@ FFT::FFT(size_t fft_size)
 }
 
 FFT::~FFT() {
-    if (fft_plan) {
+    if (fft_plan != nullptr) {
         fftwf_destroy_plan(fft_plan);
         fft_plan = nullptr;
     }

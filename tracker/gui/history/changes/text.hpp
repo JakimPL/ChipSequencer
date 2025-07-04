@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <utility>
 
 template <size_t n>
 struct TextChange {
@@ -9,5 +10,5 @@ struct TextChange {
     std::string new_value;
 
     TextChange(char (&buf)[n], std::string old_v, std::string new_v)
-        : buffer(buf), old_value(old_v), new_value(new_v) {}
+        : buffer(buf), old_value(std::move(old_v)), new_value(std::move(new_v)) {}
 };

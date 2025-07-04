@@ -1,4 +1,3 @@
-
 #include "driver/file.hpp"
 #include "gui/gui.hpp"
 #include "gui/clipboard/clipboard.hpp"

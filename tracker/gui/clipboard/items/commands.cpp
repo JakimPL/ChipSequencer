@@ -1,12 +1,13 @@
 #include <sstream>
+#include <utility>
 
 #include "../../../utils/math.hpp"
 #include "commands.hpp"
 
-ClipboardCommands::ClipboardCommands(const PatternCommands &commands)
-    : ClipboardItem(ClipboardCategory::Commands), pattern_commands(commands) {
-    generate_hash();
-    generate_name();
+ClipboardCommands::ClipboardCommands(PatternCommands commands)
+    : ClipboardItem(ClipboardCategory::Commands), pattern_commands(std::move(commands)) {
+    ClipboardCommands::generate_hash();
+    ClipboardCommands::generate_name();
 }
 
 void ClipboardCommands::generate_hash() {

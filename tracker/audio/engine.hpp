@@ -40,7 +40,7 @@ class AudioEngine {
 
   private:
     void playback_function();
-    bool safe_frame();
+    static bool safe_frame();
     void handle_frame_exception();
 
     PortAudioDriver &driver;

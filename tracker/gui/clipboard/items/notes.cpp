@@ -1,13 +1,14 @@
 #include <sstream>
+#include <utility>
 
 #include "../../../utils/math.hpp"
 #include "../../names.hpp"
 #include "notes.hpp"
 
-ClipboardNotes::ClipboardNotes(const PatternNotes &notes)
-    : ClipboardItem(ClipboardCategory::Notes), pattern_notes(notes) {
-    generate_hash();
-    generate_name();
+ClipboardNotes::ClipboardNotes(PatternNotes notes)
+    : ClipboardItem(ClipboardCategory::Notes), pattern_notes(std::move(notes)) {
+    ClipboardNotes::generate_hash();
+    ClipboardNotes::generate_name();
 }
 
 void ClipboardNotes::generate_hash() {

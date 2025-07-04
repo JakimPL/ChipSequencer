@@ -15,8 +15,8 @@ using InputKey = std::pair<ItemType, int>;
 using OutputKey = LinkKey;
 
 struct NodeIdentifier {
-    Target type;
-    size_t id;
+    Target type = Target::COUNT;
+    size_t id = -1;
 
     NodeIdentifier();
     NodeIdentifier(Target type, size_t id);

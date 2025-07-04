@@ -66,7 +66,7 @@ class GUIPatternsPanel : public GUIPanel {
 
     void perform_notes_action(const std::string &action_name, const PatternSelectionChange<uint8_t> &changes);
     void perform_commands_action(const std::string &action_name, const PatternSelectionChange<CommandValue> &changes);
-    void perform_note_action(const uint8_t old_note, uint8_t new_note, const PatternRow &pattern_row, uint8_t sequence_index, int index);
+    void perform_note_action(uint8_t old_note, uint8_t new_note, const PatternRow &pattern_row, uint8_t sequence_index, int index);
     void perform_command_action(const CommandValue &old_command, const CommandValue &new_command, const PatternRow &pattern_row, uint8_t sequence_index, int index);
 
     void process_sequence(

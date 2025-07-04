@@ -14,9 +14,9 @@ class Action;
 class GUIPanel {
   public:
     explicit GUIPanel(
-        const std::string label,
-        const bool visible = true,
-        const bool windowed = true
+        std::string label,
+        bool visible = true,
+        bool windowed = true
     );
     virtual ~GUIPanel() = default;
 

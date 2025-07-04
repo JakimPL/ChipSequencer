@@ -8,10 +8,7 @@
 PortAudioDriver::PortAudioDriver(
     unsigned long frames_per_buffer
 )
-    : Driver(),
-      stream(nullptr),
-      current_index(0),
-      frames_per_buffer(frames_per_buffer) {
+    : frames_per_buffer(frames_per_buffer) {
     pingpong_buffer.resize(2 * frames_per_buffer * output_channels, 0);
     half_consumed[0].store(true);
     half_consumed[1].store(true);
@@ -82,7 +79,7 @@ bool PortAudioDriver::open_stream() {
 }
 
 bool PortAudioDriver::close_stream() {
-    if (!stream) {
+    if (stream == nullptr) {
         return true;
     }
 
@@ -96,7 +93,7 @@ bool PortAudioDriver::close_stream() {
 }
 
 bool PortAudioDriver::start_stream() {
-    if (!stream) {
+    if (stream == nullptr) {
         return false;
     }
 
@@ -110,7 +107,7 @@ bool PortAudioDriver::start_stream() {
 }
 
 bool PortAudioDriver::stop_stream() {
-    if (!stream) {
+    if (stream == nullptr) {
         return false;
     }
 
@@ -125,11 +122,11 @@ bool PortAudioDriver::stop_stream() {
 }
 
 int PortAudioDriver::audio_callback(
-    const void *input_buffer,
+    const void * /* input_buffer */,
     void *output_buffer,
-    unsigned long frames_per_buffer,
-    const PaStreamCallbackTimeInfo *time_info,
-    PaStreamCallbackFlags status_flags,
+    unsigned long /* frames_per_buffer */,
+    const PaStreamCallbackTimeInfo * /* time_info */,
+    PaStreamCallbackFlags /* status_flags */,
     void *user_data
 ) {
     auto *driver = static_cast<PortAudioDriver *>(user_data);

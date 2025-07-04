@@ -50,7 +50,7 @@ class Song {
 
     static void set_used_flags(std::stringstream &asm_content);
     nlohmann::json create_header_json() const;
-    nlohmann::json import_header(const std::string &directory);
+    nlohmann::json import_header(const std::string &filename);
     static nlohmann::json save_gui_state();
 
     static std::string get_element_path(const std::string &directory, const std::string &prefix, size_t i, char separator);
