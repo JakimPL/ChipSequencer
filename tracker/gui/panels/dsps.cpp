@@ -115,30 +115,26 @@ void GUIDSPsPanel::to() const {
     void *buffer = dsps[dsp_index];
     switch (static_cast<Effect>(current_dsp.effect_index)) {
     case Effect::Gainer: {
-        static_cast<DSP *>(buffer)->~DSP();
-        DSPGainer *dsp = new (buffer) DSPGainer();
+        DSPGainer *dsp = reinterpret_cast<DSPGainer *>(buffer);
         dsp->effect_index = EFFECT_GAINER;
         dsp->volume = static_cast<uint16_t>(std::round(current_dsp.gainer_gain * UINT16_MAX));
         break;
     }
     case Effect::Distortion: {
-        static_cast<DSP *>(buffer)->~DSP();
-        DSPDistortion *dsp = new (buffer) DSPDistortion();
+        DSPDistortion *dsp = reinterpret_cast<DSPDistortion *>(buffer);
         dsp->effect_index = EFFECT_DISTORTION;
         dsp->level = static_cast<uint16_t>(std::round(current_dsp.distortion_level * UINT16_MAX / 2.0f));
         break;
     }
     case Effect::Filter: {
-        static_cast<DSP *>(buffer)->~DSP();
-        DSPFilter *dsp = new (buffer) DSPFilter();
+        DSPFilter *dsp = reinterpret_cast<DSPFilter *>(buffer);
         dsp->effect_index = EFFECT_FILTER;
         dsp->frequency = static_cast<uint16_t>(std::round(current_dsp.filter_cutoff * UINT16_MAX));
         dsp->mode = current_dsp.filter_mode ? 0xFF : 0x00;
         break;
     }
     case Effect::Delay: {
-        static_cast<DSP *>(buffer)->~DSP();
-        DSPDelay *dsp = new (buffer) DSPDelay();
+        DSPDelay *dsp = reinterpret_cast<DSPDelay *>(buffer);
         dsp->effect_index = EFFECT_DELAY;
         dsp->dry = static_cast<uint8_t>(std::round(current_dsp.delay_dry * UINT8_MAX));
         dsp->wet = static_cast<uint8_t>(std::round(current_dsp.delay_wet * UINT8_MAX));
