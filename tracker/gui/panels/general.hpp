@@ -5,6 +5,8 @@
 #include <string>
 #include <thread>
 
+#include "../../constants.hpp"
+#include "../../song/validation.hpp"
 #include "../constants.hpp"
 #include "panel.hpp"
 
@@ -49,7 +51,7 @@ class GUIGeneralPanel : public GUIPanel {
     void draw_dialog_box() override;
 
   public:
-    GUIGeneralPanel(bool visible = true, bool windowed = true);
+    explicit GUIGeneralPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 
     void update() override;

@@ -1,10 +1,11 @@
 #pragma once
 
 #include <functional>
+#include <memory>
 #include <unordered_map>
 
 class ResourceManager {
-    std::unordered_map<void *, std::function<void(void *)>> deleters;
+    std::unordered_map<void *, std::unique_ptr<void, std::function<void(void *)>>> resources;
 
   public:
     ResourceManager() = default;

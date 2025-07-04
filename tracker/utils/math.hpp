@@ -5,7 +5,7 @@
 #include <string>
 
 int mod(int a, int b);
-void set_flag(uint8_t &flag, const uint8_t bit, const bool value);
+void set_flag(uint8_t &flag, uint8_t bit, bool value);
 
 template <typename T>
 constexpr T clamp(const T &value, const T &min, const T &max) {

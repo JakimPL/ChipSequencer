@@ -22,7 +22,7 @@ class GUICommandsChannelsPanel : public GUIPanel {
     void draw() override;
 
   public:
-    GUICommandsChannelsPanel(bool visible = true, bool windowed = true);
+    explicit GUICommandsChannelsPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 
     void update() override;

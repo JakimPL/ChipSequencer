@@ -33,7 +33,7 @@ enum class GUIAction : uint8_t {
 extern std::unordered_map<LinkKey, bool> slider_states;
 extern std::unordered_map<LinkKey, float> slider_float_values;
 
-int clamp_index(int index, const int size);
+int clamp_index(int index, int size);
 void draw_number_of_items(GUIPanel *owner, const std::string &label, const char *label_id, int &value, int min, int max, LinkKey key = {}, float label_length = 50.0f);
 
 template <size_t n>
@@ -45,7 +45,7 @@ bool draw_knob(GUIPanel *owner, const char *label, float &reference, LinkKey key
 void draw_link_tooltip(const LinkKey &key);
 
 GUIAction draw_dialog_box_bottom();
-bool draw_button(const char *label, const float button_padding = 0.0f);
+bool draw_button(const char *label, float button_padding = 0.0f);
 void draw_popup(const std::string &message);
 void draw_confirmation_popup(
     const std::string &message,
@@ -66,8 +66,8 @@ bool draw_output(GUIPanel *owner, OutputType &output_type, LinkKey key);
 void show_dependency_tooltip(std::vector<std::string> &dependencies);
 void show_commands_pattern_tooltip(const CommandsPattern &pattern, size_t index);
 
-void draw_menu_item(const std::string &name, const std::optional<ShortcutAction> action = std::nullopt, bool checked = false);
-bool get_menu_item(const std::string &name, const std::optional<ShortcutAction> action = std::nullopt, bool checked = false);
+void draw_menu_item(const std::string &name, std::optional<ShortcutAction> action = std::nullopt, bool checked = false);
+bool get_menu_item(const std::string &name, std::optional<ShortcutAction> action = std::nullopt, bool checked = false);
 
 std::pair<size_t, bool> draw_pattern(
     Pattern &pattern,
@@ -103,7 +103,7 @@ GUIState prepare_combo(
     const std::vector<std::string> &names,
     const std::string &label,
     int &index,
-    LinkKey = {},
+    LinkKey key = {},
     bool error_if_empty = false,
     float margin_right = 0.0f
 );

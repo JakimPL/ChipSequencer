@@ -36,6 +36,6 @@ class GUIMenu : public GUIPanel {
     void draw_dialog_box() override;
 
   public:
-    GUIMenu(bool visible = true, bool windowed = false);
+    explicit GUIMenu(bool visible = true, bool windowed = false);
     GUIElement get_element() const override;
 };

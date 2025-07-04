@@ -16,7 +16,7 @@ class ShortcutManager {
     ShortcutManager &operator=(ShortcutManager &&) = delete;
 
     void register_shortcut(
-        const ShortcutAction id,
+        ShortcutAction id,
         const std::function<void()> &action
     );
     const Shortcut &get_shortcut(ShortcutAction id) const;

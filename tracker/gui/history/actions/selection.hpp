@@ -20,7 +20,7 @@ class ChangePatternSelectionAction : public Action {
         const std::string &nm,
         GUIPanel *own,
         LinkKey k,
-        const PatternSelectionChange<T> &s_ch,
+        PatternSelectionChange<T> s_ch,
         SetItemsFunction<T> set_items_function
     );
 

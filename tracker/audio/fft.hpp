@@ -10,7 +10,7 @@
 
 class FFT {
   public:
-    FFT(size_t fft_size = 1024);
+    explicit FFT(size_t fft_size = 1024);
     ~FFT();
 
     void compute(const std::deque<_Float32> &samples);

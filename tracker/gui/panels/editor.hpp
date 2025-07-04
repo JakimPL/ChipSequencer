@@ -15,6 +15,6 @@ class GUIEditorPanel : public GUIPanel {
     void check_keyboard_input() override;
 
   public:
-    GUIEditorPanel(bool visible = true, bool windowed = true);
+    explicit GUIEditorPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 };

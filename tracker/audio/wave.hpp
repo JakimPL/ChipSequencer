@@ -19,8 +19,8 @@ void save_wave(
 void save_wave(
     const std::string &filename,
     const std::vector<std::vector<float>> &samples,
-    const int sample_rate,
-    const int output_channels
+    int sample_rate,
+    int output_channels
 );
 
 Samples load_wave(const std::string &filename);

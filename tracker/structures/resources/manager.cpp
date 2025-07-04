@@ -10,7 +10,12 @@ T *ResourceManager::allocate(Args &&...args) {
     T *resource = nullptr;
     try {
         resource = new T(std::forward<Args>(args)...);
-        deleters[resource] = [](void *ptr) { delete static_cast<T *>(ptr); };
+        auto deleter = [](void *ptr) { delete static_cast<T *>(ptr); };
+        auto unique_ptr = std::unique_ptr<void, std::function<void(void *)>>(resource, deleter);
+
+        void *raw_ptr = resource;
+        resources[raw_ptr] = std::move(unique_ptr);
+
         return resource;
     } catch (...) {
         delete resource;
@@ -19,17 +24,13 @@ T *ResourceManager::allocate(Args &&...args) {
 }
 
 void ResourceManager::deallocate(void *ptr) {
-    if (deleters.count(ptr) != 0u) {
-        deleters[ptr](ptr);
-        deleters.erase(ptr);
+    if (resources.count(ptr) != 0u) {
+        resources.erase(ptr);
     }
 }
 
 void ResourceManager::clear() {
-    for (auto &[ptr, deleter] : deleters) {
-        deleter(ptr);
-    }
-    deleters.clear();
+    resources.clear();
 }
 
 template Envelope *ResourceManager::allocate<Envelope>();

@@ -8,7 +8,7 @@ ChangePatternSelectionAction<T>::ChangePatternSelectionAction(
     const std::string &nm,
     GUIPanel *own,
     const LinkKey k,
-    const PatternSelectionChange<T> &s_ch,
+    PatternSelectionChange<T> s_ch,
     SetItemsFunction<T> set_items_function
 )
     : Action(nm, own, k), selection_changes(s_ch), set_items(set_items_function) {

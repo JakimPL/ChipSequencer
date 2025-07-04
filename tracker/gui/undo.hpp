@@ -25,7 +25,7 @@ void perform_action_lock(
 
 void perform_action_float(
     GUIPanel *owner,
-    const LinkKey key,
+    LinkKey key,
     float &reference,
     float old_value,
     const char *format = "%.4f"

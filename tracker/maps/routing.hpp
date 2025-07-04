@@ -24,7 +24,7 @@ struct RoutingItem {
 };
 
 struct RoutingItems {
-    RoutingItems(std::vector<RoutingItem> items);
+    explicit RoutingItems(std::vector<RoutingItem> items);
 
     std::vector<std::string> labels;
     std::vector<uint16_t> offsets;
@@ -36,6 +36,6 @@ struct RoutingItems {
     size_t get_index_from_offset(LinkKey key, bool allow_hidden = false) const;
 };
 
-std::string get_key_name(const LinkKey key);
+std::string get_key_name(LinkKey key);
 
 extern const std::map<Target, RoutingItems> routing_variables;

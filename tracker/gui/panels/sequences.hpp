@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "../constants.hpp"
+#include "../../constants.hpp"
 #include "../patterns/pattern.hpp"
 #include "../patterns/selection.hpp"
 #include "panel.hpp"
@@ -54,15 +54,15 @@ class GUISequencesPanel : public GUIPanel {
     void post_actions() override;
 
   public:
-    GUISequencesPanel(const bool visible = true, const bool windowed = true);
+    explicit GUISequencesPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 
     void update() override;
 
     void set_notes(const std::map<PatternRow, uint8_t> &notes);
-    void set_note(const PatternRow &pattern_row, const uint8_t note);
-    void set_note(const int row, const uint8_t note);
-    void set_index(const int index) override;
+    void set_note(const PatternRow &pattern_row, uint8_t note);
+    void set_note(int row, uint8_t note);
+    void set_index(int index) override;
 
     void from() override;
     void to() const override;

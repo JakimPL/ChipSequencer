@@ -9,7 +9,7 @@ ChangeTextAction<n>::ChangeTextAction(
     const std::string &nm,
     GUIPanel *own,
     const LinkKey k,
-    const TextChange<n> &txt_ch
+    TextChange<n> txt_ch
 )
     : Action(nm, own, k), text_change(txt_ch) {
 }

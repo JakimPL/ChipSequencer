@@ -35,7 +35,7 @@ class GUIWaveformPanel : public GUIPanel {
     void draw() override;
 
   public:
-    GUIWaveformPanel(bool visible = true, bool windowed = true);
+    explicit GUIWaveformPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 
     void update() override;

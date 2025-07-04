@@ -16,6 +16,6 @@ class GUISummaryPanel : public GUIPanel {
     void draw() override;
 
   public:
-    GUISummaryPanel(bool visible = true, bool windowed = true);
+    explicit GUISummaryPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 };

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <stddef.h>
 #include <string>
 #include <vector>
 #include <map>
@@ -9,7 +10,7 @@
 
 class ScaleComposer {
   public:
-    void compose(const int new_edo);
+    void compose(int new_edo);
 
     int get_edo() const;
     size_t get_a_index() const;

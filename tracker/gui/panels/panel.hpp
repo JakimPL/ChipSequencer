@@ -13,7 +13,7 @@ class Action;
 
 class GUIPanel {
   public:
-    GUIPanel(
+    explicit GUIPanel(
         const std::string label,
         const bool visible = true,
         const bool windowed = true

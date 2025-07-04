@@ -63,7 +63,7 @@ class GUICommandsSequencesPanel : public GUIPanel {
     void post_actions() override;
 
   public:
-    GUICommandsSequencesPanel(bool visible = true, bool windowed = true);
+    explicit GUICommandsSequencesPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 
     void update() override;

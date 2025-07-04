@@ -32,7 +32,7 @@ class GUIOrdersPanel : public GUIPanel {
     void check_keyboard_input() override;
 
   public:
-    GUIOrdersPanel(bool visible = true, bool windowed = true);
+    explicit GUIOrdersPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 
     void update() override;

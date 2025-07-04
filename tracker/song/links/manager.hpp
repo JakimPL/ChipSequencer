@@ -58,5 +58,5 @@ class LinkManager {
     void capture_parameters();
     void restore_parameters() const;
 
-    static std::pair<uint8_t, uint8_t> unpack_command_id(const uint16_t id);
+    static std::pair<uint8_t, uint8_t> unpack_command_id(uint16_t id);
 };

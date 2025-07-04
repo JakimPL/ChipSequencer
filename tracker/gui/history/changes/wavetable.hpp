@@ -11,6 +11,6 @@ struct WavetableChange {
     std::vector<float> old_wave;
     std::vector<float> new_wave;
 
-    WavetableChange(int &size, std::vector<float> &wt, const std::vector<float> &old_w)
-        : wavetable_size(size), wavetable(wt), old_wave(old_w), new_wave(wt) {}
+    WavetableChange(int &size, std::vector<float> &wt, std::vector<float> old)
+        : wavetable_size(size), wavetable(wt), old_wave(old), new_wave(wt) {}
 };

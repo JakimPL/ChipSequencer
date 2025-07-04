@@ -105,7 +105,7 @@ class GUIPatternsPanel : public GUIPanel {
     void post_actions() override;
 
   public:
-    GUIPatternsPanel(bool visible = true, bool windowed = true);
+    explicit GUIPatternsPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 
     void set_notes(const std::map<PatternRow, uint8_t> &notes);

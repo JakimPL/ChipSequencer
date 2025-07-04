@@ -39,7 +39,7 @@ class GUIChannelsPanel : public GUIPanel {
     void draw() override;
 
   public:
-    GUIChannelsPanel(bool visible = true, bool windowed = true);
+    explicit GUIChannelsPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 
     void update() override;

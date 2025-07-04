@@ -37,7 +37,7 @@ class GUIOscillatorsPanel : public GUIPanel {
     void draw() override;
 
   public:
-    GUIOscillatorsPanel(bool visible = true, bool windowed = true);
+    explicit GUIOscillatorsPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 
     void update() override;
