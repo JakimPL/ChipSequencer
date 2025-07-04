@@ -68,11 +68,11 @@ class Song {
     static void *deserialize_dsp(std::ifstream &file);
     static void *deserialize_oscillator(std::ifstream &file);
 
-    void export_all(const std::filesystem::path &directory, CompilationTarget compilation_target) const;
+    void export_all(const std::filesystem::path &directory) const;
     static void import_all(const std::filesystem::path &directory, const nlohmann::json &json);
 
     void export_header_asm_file(const std::filesystem::path &directory) const;
-    static void export_data_asm_file(const std::filesystem::path &directory, CompilationTarget compilation_target);
+    static void export_data_asm_file(const std::filesystem::path &directory);
     void export_header(const std::filesystem::path &directory) const;
     static void export_gui_state(const std::filesystem::path &directory);
     static void export_lock_registry(const std::filesystem::path &directory);
@@ -162,15 +162,15 @@ class Song {
     static CommandsSequence *insert_commands_sequence(CommandsSequence *sequence, size_t index = -1);
     static CommandsChannel *insert_commands_channel(CommandsChannel *channel, size_t index = -1);
 
-    Envelope *duplicate_envelope(size_t index);
-    Sequence *duplicate_sequence(size_t index);
-    Order *duplicate_order(size_t index);
-    Wavetable *duplicate_wavetable(size_t index);
-    void *duplicate_oscillator(size_t index);
-    Channel *duplicate_channel(size_t index);
-    void *duplicate_dsp(size_t index);
-    CommandsChannel *duplicate_commands_channel(size_t index);
-    CommandsSequence *duplicate_commands_sequence(size_t index);
+    static Envelope *duplicate_envelope(size_t index);
+    static Sequence *duplicate_sequence(size_t index);
+    static Order *duplicate_order(size_t index);
+    static Wavetable *duplicate_wavetable(size_t index);
+    static void *duplicate_oscillator(size_t index);
+    static Channel *duplicate_channel(size_t index);
+    static void *duplicate_dsp(size_t index);
+    static CommandsChannel *duplicate_commands_channel(size_t index);
+    static CommandsSequence *duplicate_commands_sequence(size_t index);
 
     static void remove_envelope(size_t index);
     static void remove_sequence(size_t index);

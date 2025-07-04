@@ -134,7 +134,7 @@ void GUIChannelsPanel::to() const {
 }
 
 void GUIChannelsPanel::add() {
-    Channel *new_channel = song.add_channel();
+    Channel *new_channel = Song::add_channel();
     if (new_channel == nullptr) {
         return;
     }
@@ -145,7 +145,7 @@ void GUIChannelsPanel::add() {
 }
 
 void GUIChannelsPanel::duplicate() {
-    Channel *new_channel = song.duplicate_channel(channel_index);
+    Channel *new_channel = Song::duplicate_channel(channel_index);
     if (new_channel == nullptr) {
         return;
     }
@@ -157,7 +157,7 @@ void GUIChannelsPanel::duplicate() {
 void GUIChannelsPanel::remove() {
     if (is_index_valid()) {
         perform_action_remove(this, {Target::CHANNEL, channel_index, 0}, channels[channel_index]);
-        song.remove_channel(channel_index);
+        Song::remove_channel(channel_index);
         channel_index = std::max(0, channel_index - 1);
         update();
     }

@@ -143,7 +143,7 @@ void GUIOscillatorsPanel::to() const {
 }
 
 void GUIOscillatorsPanel::add() {
-    void *new_oscillator = song.add_oscillator();
+    void *new_oscillator = Song::add_oscillator();
     if (new_oscillator == nullptr) {
         return;
     }
@@ -154,7 +154,7 @@ void GUIOscillatorsPanel::add() {
 }
 
 void GUIOscillatorsPanel::duplicate() {
-    void *new_oscillator = song.duplicate_oscillator(oscillator_index);
+    void *new_oscillator = Song::duplicate_oscillator(oscillator_index);
     if (new_oscillator == nullptr) {
         return;
     }
@@ -166,7 +166,7 @@ void GUIOscillatorsPanel::duplicate() {
 void GUIOscillatorsPanel::remove() {
     if (is_index_valid()) {
         perform_action_remove(this, {Target::OSCILLATOR, oscillator_index, 0}, static_cast<Oscillator *>(oscillators[oscillator_index]));
-        song.remove_oscillator(oscillator_index);
+        Song::remove_oscillator(oscillator_index);
         oscillator_index = std::max(0, oscillator_index - 1);
         update();
     }
@@ -213,7 +213,7 @@ void GUIOscillatorsPanel::draw_oscillator_type() {
     if (prepare_combo(this, generator_names, "##GeneratorCombo", current_oscillator.generator_index, {Target::OSCILLATOR, oscillator_index, OSCILLATOR_GENERATOR_INDEX}).value_changed) {
         update_oscillator_name(oscillator_index, current_oscillator.generator_index);
         if (current_oscillator.generator_index == GENERATOR_WAVETABLE && wavetables.empty()) {
-            song.add_wavetable();
+            Song::add_wavetable();
             gui.update(GUIElement::Wavetables);
             current_oscillator.wavetable_index = wavetable_names.size() - 1;
             perform_action_add(this, {Target::WAVETABLE, current_oscillator.wavetable_index, 0});

@@ -77,7 +77,7 @@ void GUISequencesPanel::to() const {
 }
 
 void GUISequencesPanel::add() {
-    Sequence *new_sequence = song.add_sequence();
+    Sequence *new_sequence = Song::add_sequence();
     if (new_sequence == nullptr) {
         return;
     }
@@ -88,7 +88,7 @@ void GUISequencesPanel::add() {
 }
 
 void GUISequencesPanel::duplicate() {
-    Sequence *new_sequence = song.duplicate_sequence(sequence_index);
+    Sequence *new_sequence = Song::duplicate_sequence(sequence_index);
     if (new_sequence == nullptr) {
         return;
     }
@@ -100,7 +100,7 @@ void GUISequencesPanel::duplicate() {
 void GUISequencesPanel::remove() {
     if (is_index_valid()) {
         perform_action_remove(this, {Target::SEQUENCE, sequence_index, 0}, sequences[sequence_index]);
-        song.remove_sequence(sequence_index);
+        Song::remove_sequence(sequence_index);
         sequence_index = std::max(0, sequence_index - 1);
         update();
     }

@@ -102,7 +102,7 @@ void GUIWavetablesPanel::to() const {
 }
 
 void GUIWavetablesPanel::add() {
-    Wavetable *new_wavetable = song.add_wavetable();
+    Wavetable *new_wavetable = Song::add_wavetable();
     if (new_wavetable == nullptr) {
         return;
     }
@@ -113,7 +113,7 @@ void GUIWavetablesPanel::add() {
 }
 
 void GUIWavetablesPanel::duplicate() {
-    Wavetable *new_wavetable = song.duplicate_wavetable(wavetable_index);
+    Wavetable *new_wavetable = Song::duplicate_wavetable(wavetable_index);
     if (new_wavetable == nullptr) {
         return;
     }
@@ -125,7 +125,7 @@ void GUIWavetablesPanel::duplicate() {
 void GUIWavetablesPanel::remove() {
     if (is_index_valid()) {
         perform_action_remove(this, {Target::WAVETABLE, wavetable_index, 0}, wavetables[wavetable_index]);
-        song.remove_wavetable(wavetable_index);
+        Song::remove_wavetable(wavetable_index);
         wavetable_index = std::max(0, wavetable_index - 1);
         update();
     }

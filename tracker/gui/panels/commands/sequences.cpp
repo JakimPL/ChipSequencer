@@ -82,11 +82,11 @@ void GUICommandsSequencesPanel::to() const {
     current_sequence.pattern.to_buffer(sequence_index);
     const std::vector<Command> command_vector = current_sequence.pattern.to_command_vector();
     sequence->from_command_vector(command_vector);
-    current_sequence.pattern.save_links(sequence_index);
+    CommandsPattern::save_links(sequence_index);
 }
 
 void GUICommandsSequencesPanel::add() {
-    CommandsSequence *new_sequence = song.add_commands_sequence();
+    CommandsSequence *new_sequence = Song::add_commands_sequence();
     if (new_sequence == nullptr) {
         return;
     }
@@ -99,7 +99,7 @@ void GUICommandsSequencesPanel::add() {
 }
 
 void GUICommandsSequencesPanel::duplicate() {
-    CommandsSequence *new_sequence = song.duplicate_commands_sequence(sequence_index);
+    CommandsSequence *new_sequence = Song::duplicate_commands_sequence(sequence_index);
     if (new_sequence == nullptr) {
         return;
     }
@@ -114,7 +114,7 @@ void GUICommandsSequencesPanel::remove() {
     const size_t previous_index = sequence_index;
     if (is_index_valid()) {
         perform_action_remove(this, {Target::COMMANDS_SEQUENCE, sequence_index, 0}, commands_sequences[sequence_index]);
-        song.remove_commands_sequence(sequence_index);
+        Song::remove_commands_sequence(sequence_index);
         sequence_index = std::max(0, sequence_index - 1);
         update();
     }

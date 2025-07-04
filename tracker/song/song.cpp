@@ -74,7 +74,7 @@ void Song::save_to_file(const std::string &filename) {
         calculate_song_length();
         link_manager.set_links();
 
-        export_all(directory, DefaultCompilationTarget);
+        export_all(directory);
         compress_directory(directory, filename);
         remove_temp_directory(temp_base, clear_temp);
     } catch (const std::exception &exception) {
@@ -113,7 +113,7 @@ void Song::compile(const std::string &filename, const CompilationScheme scheme, 
     const std::string directory = song_path.string();
 
     try {
-        export_all(directory, compilation_target);
+        export_all(directory);
         compile_sources(temp_base.string(), filename, scheme, platform);
         remove_temp_directory(temp_base, clear_temp);
     } catch (const std::exception &exception) {
@@ -193,9 +193,9 @@ void Song::set_output_channels(const uint8_t channels) {
     output_channels = clamp(static_cast<int>(channels), 1, MAX_OUTPUT_CHANNELS);
 }
 
-void Song::export_all(const std::filesystem::path &directory, const CompilationTarget compilation_target) const {
+void Song::export_all(const std::filesystem::path &directory) const {
     export_header_asm_file(directory);
-    export_data_asm_file(directory, compilation_target);
+    export_data_asm_file(directory);
     export_header(directory);
     export_series(directory, "envel", envelopes, {sizeof(Envelope)});
     export_channels(directory);
@@ -1514,7 +1514,7 @@ void Song::export_header_asm_file(const std::filesystem::path &directory) const 
     asm_file.close();
 }
 
-void Song::export_data_asm_file(const std::filesystem::path &directory, const CompilationTarget compilation_target) {
+void Song::export_data_asm_file(const std::filesystem::path &directory) {
     std::string asm_content = generate_data_asm_file();
     std::ofstream asm_file(directory / "data.asm");
     asm_file << asm_content;

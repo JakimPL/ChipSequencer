@@ -84,7 +84,7 @@ void GUIOrdersPanel::to() const {
 }
 
 void GUIOrdersPanel::add() {
-    Order *new_order = song.add_order();
+    Order *new_order = Song::add_order();
     if (new_order == nullptr) {
         return;
     }
@@ -96,7 +96,7 @@ void GUIOrdersPanel::add() {
 }
 
 void GUIOrdersPanel::duplicate() {
-    Order *new_order = song.duplicate_order(order_index);
+    Order *new_order = Song::duplicate_order(order_index);
     if (new_order == nullptr) {
         return;
     }
@@ -110,7 +110,7 @@ void GUIOrdersPanel::remove() {
     const size_t previous_index = order_index;
     if (is_index_valid()) {
         perform_action_remove(this, {Target::ORDER, order_index, 0}, orders[order_index]);
-        song.remove_order(order_index);
+        Song::remove_order(order_index);
         order_index = std::max(0, order_index - 1);
         update();
     }

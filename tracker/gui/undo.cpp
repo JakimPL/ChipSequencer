@@ -153,39 +153,39 @@ void perform_action_add(
         void *result;
         switch (key.target) {
         case Target::ENVELOPE: {
-            result = song.add_envelope();
+            result = Song::add_envelope();
             break;
         }
         case Target::SEQUENCE: {
-            result = song.add_sequence();
+            result = Song::add_sequence();
             break;
         }
         case Target::COMMANDS_SEQUENCE: {
-            result = song.add_commands_sequence();
+            result = Song::add_commands_sequence();
             break;
         }
         case Target::ORDER: {
-            result = song.add_order();
+            result = Song::add_order();
             break;
         }
         case Target::OSCILLATOR: {
-            result = song.add_oscillator();
+            result = Song::add_oscillator();
             break;
         }
         case Target::WAVETABLE: {
-            result = song.add_wavetable();
+            result = Song::add_wavetable();
             break;
         }
         case Target::DSP: {
-            result = song.add_dsp();
+            result = Song::add_dsp();
             break;
         }
         case Target::CHANNEL: {
-            result = song.add_channel();
+            result = Song::add_channel();
             break;
         }
         case Target::COMMANDS_CHANNEL: {
-            result = song.add_commands_channel();
+            result = Song::add_commands_channel();
             break;
         }
         case Target::DIRECT_OUTPUT:
@@ -206,39 +206,39 @@ void perform_action_add(
     RemoveFunction remove = [owner, key](size_t index) -> void {
         switch (key.target) {
         case Target::ENVELOPE: {
-            song.remove_envelope(index);
+            Song::remove_envelope(index);
             break;
         }
         case Target::SEQUENCE: {
-            song.remove_sequence(index);
+            Song::remove_sequence(index);
             break;
         }
         case Target::COMMANDS_SEQUENCE: {
-            song.remove_commands_sequence(index);
+            Song::remove_commands_sequence(index);
             break;
         }
         case Target::ORDER: {
-            song.remove_order(index);
+            Song::remove_order(index);
             break;
         }
         case Target::OSCILLATOR: {
-            song.remove_oscillator(index);
+            Song::remove_oscillator(index);
             break;
         }
         case Target::WAVETABLE: {
-            song.remove_wavetable(index);
+            Song::remove_wavetable(index);
             break;
         }
         case Target::DSP: {
-            song.remove_dsp(index);
+            Song::remove_dsp(index);
             break;
         }
         case Target::CHANNEL: {
-            song.remove_channel(index);
+            Song::remove_channel(index);
             break;
         }
         case Target::COMMANDS_CHANNEL: {
-            song.remove_commands_channel(index);
+            Song::remove_commands_channel(index);
             break;
         }
         case Target::DIRECT_OUTPUT:
@@ -270,39 +270,39 @@ void perform_action_remove(
     RemoveFunction remove = [owner, key](size_t index) -> void {
         switch (key.target) {
         case Target::ENVELOPE: {
-            song.remove_envelope(index);
+            Song::remove_envelope(index);
             break;
         }
         case Target::SEQUENCE: {
-            song.remove_sequence(index);
+            Song::remove_sequence(index);
             break;
         }
         case Target::COMMANDS_SEQUENCE: {
-            song.remove_commands_sequence(index);
+            Song::remove_commands_sequence(index);
             break;
         }
         case Target::ORDER: {
-            song.remove_order(index);
+            Song::remove_order(index);
             break;
         }
         case Target::OSCILLATOR: {
-            song.remove_oscillator(index);
+            Song::remove_oscillator(index);
             break;
         }
         case Target::WAVETABLE: {
-            song.remove_wavetable(index);
+            Song::remove_wavetable(index);
             break;
         }
         case Target::DSP: {
-            song.remove_dsp(index);
+            Song::remove_dsp(index);
             break;
         }
         case Target::CHANNEL: {
-            song.remove_channel(index);
+            Song::remove_channel(index);
             break;
         }
         case Target::COMMANDS_CHANNEL: {
-            song.remove_commands_channel(index);
+            Song::remove_commands_channel(index);
             break;
         }
         case Target::DIRECT_OUTPUT:

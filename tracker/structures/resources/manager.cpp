@@ -7,20 +7,13 @@ ResourceManager::~ResourceManager() {
 
 template <typename T, typename... Args>
 T *ResourceManager::allocate(Args &&...args) {
-    T *resource = nullptr;
-    try {
-        resource = new T(std::forward<Args>(args)...);
-        auto deleter = [](void *ptr) { delete static_cast<T *>(ptr); };
-        auto unique_ptr = std::unique_ptr<void, std::function<void(void *)>>(resource, deleter);
+    auto unique_ptr = std::make_unique<T>(std::forward<Args>(args)...);
+    T *raw_ptr = unique_ptr.get();
 
-        void *raw_ptr = resource;
-        resources[raw_ptr] = std::move(unique_ptr);
+    auto resource = std::make_unique<Resource<T>>(std::move(unique_ptr));
+    resources[raw_ptr] = std::move(resource);
 
-        return resource;
-    } catch (...) {
-        delete resource;
-        throw;
-    }
+    return raw_ptr;
 }
 
 void ResourceManager::deallocate(void *ptr) {

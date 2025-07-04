@@ -296,7 +296,6 @@ void GUIWaveformPanel::draw_channel_spectrogram(const int output_channel_index, 
 
         const float log_frequency = std::log10(frequency);
         const float x_pos = position.x + ((log_frequency - log_min) / log_range) * size.x;
-        const float next_frequency = (i + 1) * sample_rate / (2.0f * num_bins);
 
         float bin_width;
         if (!fft_parameters.wide_bins) {

@@ -120,7 +120,7 @@ void GUIEnvelopesPanel::to() const {
 }
 
 void GUIEnvelopesPanel::add() {
-    Envelope *new_envelope = song.add_envelope();
+    Envelope *new_envelope = Song::add_envelope();
     if (new_envelope == nullptr) {
         return;
     }
@@ -131,7 +131,7 @@ void GUIEnvelopesPanel::add() {
 }
 
 void GUIEnvelopesPanel::duplicate() {
-    Envelope *new_envelope = song.duplicate_envelope(envelope_index);
+    Envelope *new_envelope = Song::duplicate_envelope(envelope_index);
     if (new_envelope == nullptr) {
         return;
     }
@@ -143,7 +143,7 @@ void GUIEnvelopesPanel::duplicate() {
 void GUIEnvelopesPanel::remove() {
     if (is_index_valid()) {
         perform_action_remove(this, {Target::ENVELOPE, envelope_index, 0}, envelopes[envelope_index]);
-        song.remove_envelope(envelope_index);
+        Song::remove_envelope(envelope_index);
         envelope_index = std::max(0, envelope_index - 1);
         update();
     }
