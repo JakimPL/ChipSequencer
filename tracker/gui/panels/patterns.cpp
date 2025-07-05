@@ -1124,6 +1124,11 @@ auto GUIPatternsPanel::find_commands_pattern_by_current_row_implementation(Comma
 
 void GUIPatternsPanel::perform_notes_action(const std::string &action_name, const PatternSelectionChange<uint8_t> &changes) {
     const SetItemsFunction<uint8_t> function = [this](const std::map<PatternRow, uint8_t> &notes) {
+        selection_action = PatternSelectionAction::Paste;
+        secondary_pattern_rows.clear();
+        for (const auto &[pattern_row, _] : notes) {
+            secondary_pattern_rows.insert(pattern_row);
+        }
         return this->set_notes(notes);
     };
 
@@ -1131,8 +1136,13 @@ void GUIPatternsPanel::perform_notes_action(const std::string &action_name, cons
 }
 
 void GUIPatternsPanel::perform_commands_action(const std::string &action_name, const PatternSelectionChange<CommandValue> &changes) {
-    const SetItemsFunction<CommandValue> function = [this](const std::map<PatternRow, CommandValue> &commands_changes) {
-        return this->set_commands(commands_changes);
+    const SetItemsFunction<CommandValue> function = [this](const std::map<PatternRow, CommandValue> &commands) {
+        selection_action = PatternSelectionAction::Paste;
+        secondary_pattern_rows.clear();
+        for (const auto &[pattern_row, _] : commands) {
+            secondary_pattern_rows.insert(pattern_row);
+        }
+        return this->set_commands(commands);
     };
 
     perform_action_pattern_selection<CommandValue>(this, {Target::COMMANDS_SEQUENCE}, action_name, changes, function);
