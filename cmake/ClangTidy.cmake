@@ -16,13 +16,17 @@ if(CLANG_TIDY_EXE)
         "tracker/**/*.cpp"
     )
 
-    add_custom_target(clang-tidy
-        COMMAND ${CLANG_TIDY_EXE}
+    set(CLANG_TIDY_ARGS
         -p ${CMAKE_BINARY_DIR}
         --system-headers=false
         --header-filter='^${CMAKE_SOURCE_DIR}/tracker/.*'
         --extra-arg=-std=c++17
         --extra-arg=-stdlib=libstdc++
+    )
+
+    add_custom_target(clang-tidy
+        COMMAND ${CLANG_TIDY_EXE}
+        ${CLANG_TIDY_ARGS}
         ${PROJECT_SOURCES}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Running clang-tidy"
@@ -31,23 +35,11 @@ if(CLANG_TIDY_EXE)
 
     add_custom_target(clang-tidy-fix
         COMMAND ${CLANG_TIDY_EXE}
-        -p ${CMAKE_BINARY_DIR}
-        --system-headers=false
-        --header-filter=.*tracker.*
-        --extra-arg=-std=c++17
-        --extra-arg=-stdlib=libstdc++
+        ${CLANG_TIDY_ARGS}
         --fix
         ${PROJECT_SOURCES}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Running clang-tidy --fix"
-        VERBATIM
-    )
-
-    add_custom_target(clang-tidy-check
-        COMMAND ${CLANG_TIDY_EXE}
-        --list-checks
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Listing available clang-tidy checks"
         VERBATIM
     )
 endif()
