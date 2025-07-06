@@ -34,6 +34,9 @@ class GUIPanel {
     void frame();
     void add_action(Action *action, bool undo);
 
+    bool is_focused() const;
+    void set_focus(bool focus = true);
+
   protected:
     bool save = false;
     const std::string label;

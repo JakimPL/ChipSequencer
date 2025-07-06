@@ -27,6 +27,11 @@ void GUIMenu::draw() {
 }
 
 void GUIMenu::draw_menu() {
+    const GUIElement current_window = gui.get_active_pattern_window();
+    if (current_window != GUIElement::Count) {
+        active_window = current_window;
+    }
+
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("File")) {
             draw_menu_item("New", ShortcutAction::FileNew);
@@ -60,27 +65,32 @@ void GUIMenu::draw_menu() {
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Edit")) {
+            bool clicked = false;
             draw_menu_item("Undo", ShortcutAction::EditUndo, false, history_manager.can_undo());
             draw_menu_item("Redo", ShortcutAction::EditRedo, false, history_manager.can_redo());
             ImGui::Separator();
-            draw_menu_item("Delete", ShortcutAction::EditDelete);
-            draw_menu_item("Cut", ShortcutAction::EditCut);
-            draw_menu_item("Copy", ShortcutAction::EditCopy);
-            draw_menu_item("Paste", ShortcutAction::EditPaste);
-            if (gui.is_pattern_view_active()) {
+            clicked |= draw_menu_item("Delete", ShortcutAction::EditDelete);
+            clicked |= draw_menu_item("Cut", ShortcutAction::EditCut);
+            clicked |= draw_menu_item("Copy", ShortcutAction::EditCopy);
+            clicked |= draw_menu_item("Paste", ShortcutAction::EditPaste);
+            if (active_window != GUIElement::Count) {
                 ImGui::Separator();
-                draw_menu_item("Select all", ShortcutAction::PatternSelectAll);
-                draw_menu_item("Select channel", ShortcutAction::PatternSelectChannel);
-                draw_menu_item("Deselect all", ShortcutAction::PatternSelectNone);
+                clicked |= draw_menu_item("Select all", ShortcutAction::PatternSelectAll);
+                clicked |= draw_menu_item("Select channel", ShortcutAction::PatternSelectChannel);
+                clicked |= draw_menu_item("Deselect all", ShortcutAction::PatternSelectNone);
                 if (!gui.is_commands_pattern_view_active()) {
                     ImGui::Separator();
-                    draw_menu_item("Transpose up", ShortcutAction::PatternTransposeUp);
-                    draw_menu_item("Transpose down", ShortcutAction::PatternTransposeDown);
-                    draw_menu_item("Transpose octave up", ShortcutAction::PatternTransposeOctaveUp);
-                    draw_menu_item("Transpose octave down", ShortcutAction::PatternTransposeOctaveDown);
+                    clicked |= draw_menu_item("Transpose up", ShortcutAction::PatternTransposeUp);
+                    clicked |= draw_menu_item("Transpose down", ShortcutAction::PatternTransposeDown);
+                    clicked |= draw_menu_item("Transpose octave up", ShortcutAction::PatternTransposeOctaveUp);
+                    clicked |= draw_menu_item("Transpose octave down", ShortcutAction::PatternTransposeOctaveDown);
                 }
             }
             ImGui::EndMenu();
+
+            if (clicked) {
+                gui.set_focus(active_window);
+            }
         }
         if (ImGui::BeginMenu("View")) {
             draw_menu_item("Fullscreen", ShortcutAction::ApplicationFullscreen, gui.is_fullscreen());

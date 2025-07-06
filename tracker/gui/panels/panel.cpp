@@ -164,6 +164,17 @@ void GUIPanel::add_action(Action *action, const bool undo) {
     pending_actions.emplace_back(action, undo);
 }
 
+bool GUIPanel::is_focused() const {
+    return focus;
+}
+
+void GUIPanel::set_focus(const bool focus) {
+    this->focus = focus;
+    if (focus) {
+        ImGui::SetWindowFocus(label.c_str());
+    }
+}
+
 void GUIPanel::initialize() {
     from();
     update();

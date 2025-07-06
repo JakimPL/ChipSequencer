@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include <utility>
 
 #include <SDL2/SDL.h>
@@ -18,6 +19,8 @@
 
 class ImGuiIO;
 struct ImFont;
+
+class GUIPanel;
 class GUIMenu;
 class GUIEditorPanel;
 class GUIGeneralPanel;
@@ -118,7 +121,9 @@ class GUI {
 
     void deselect_all_rows();
 
-    bool is_pattern_view_active() const;
+    GUIElement get_focused_element() const;
+    void set_focus(GUIElement element);
+    GUIElement get_active_pattern_window() const;
     bool is_commands_pattern_view_active() const;
 
     bool follow_playback = true;
@@ -150,6 +155,7 @@ class GUI {
     std::unique_ptr<GUIRoutingsPanel> routing_panel;
     std::unique_ptr<GUISummaryPanel> summary_panel;
     std::unique_ptr<GUIWaveformPanel> waveform_panel;
+    std::unordered_map<GUIElement, GUIPanel *> panels;
 
     RenderingBackend rendering_backend = RenderingBackend::OpenGL;
     SDL_Window *window = nullptr;

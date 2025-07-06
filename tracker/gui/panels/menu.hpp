@@ -18,7 +18,9 @@ class GUIMenu : public GUIPanel {
     bool open_open_song_confirmation_popup = false;
     bool open_exit_confirmation_popup = false;
 
-    static void draw_menu();
+    GUIElement active_window = GUIElement::Count;
+
+    void draw_menu();
     static void file_new();
     static void file_save();
     static void file_save_as();
