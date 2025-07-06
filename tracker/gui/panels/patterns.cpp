@@ -163,8 +163,9 @@ void GUIPatternsPanel::from_sequences() {
 
         uint16_t row = 0;
         current_patterns.playing_rows[{false, channel_index}] = -1;
+        const bool bypass = channel->flag & FLAG_BYPASS;
         for (size_t j = 0; j < order->order_length; ++j) {
-            process_sequence(channel_index, j, order_sequences[j], row);
+            process_sequence(channel_index, j, order_sequences[j], row, bypass);
         }
 
         current_patterns.patterns_max_rows[channel_index] = row;
@@ -176,7 +177,8 @@ void GUIPatternsPanel::process_sequence(
     const size_t channel_index,
     const size_t j,
     const uint8_t sequence_index,
-    uint16_t &row
+    uint16_t &row,
+    const bool bypass
 ) {
     if (sequence_index >= sequences.size()) {
         return;
@@ -191,6 +193,7 @@ void GUIPatternsPanel::process_sequence(
     pattern.id = j;
     pattern.starting_row = row;
     pattern.current_row = !current_channel.command && channel_index == current_channel.index ? current_row - row : -1;
+    pattern.bypass = bypass;
 
     if (playing) {
         if (gui.repeat_patterns) {
@@ -222,9 +225,10 @@ void GUIPatternsPanel::from_commands_sequences() {
         std::vector<uint8_t> order_sequences = std::vector<uint8_t>(order->sequences.begin(), order->sequences.begin() + order->order_length);
 
         uint16_t row = 0;
+        const bool bypass = channel->flag & FLAG_BYPASS;
         current_patterns.playing_rows[{true, channel_index}] = -1;
         for (size_t j = 0; j < order->order_length; ++j) {
-            process_commands_sequence(channel_index, j, order_sequences[j], row);
+            process_commands_sequence(channel_index, j, order_sequences[j], row, bypass);
         }
 
         current_patterns.commands_patterns_max_rows[channel_index] = row;
@@ -247,7 +251,8 @@ void GUIPatternsPanel::process_commands_sequence(
     const size_t channel_index,
     const size_t j,
     const uint8_t sequence_index,
-    uint16_t &row
+    uint16_t &row,
+    const bool bypass
 ) {
     if (sequence_index >= commands_sequences.size()) {
         return;
@@ -266,6 +271,7 @@ void GUIPatternsPanel::process_commands_sequence(
     pattern.id = j;
     pattern.starting_row = row;
     pattern.current_row = current_channel.command && channel_index == current_channel.index ? current_row - row : -1;
+    pattern.bypass = bypass;
 
     if (playing) {
         if (gui.repeat_patterns) {
@@ -296,11 +302,12 @@ void GUIPatternsPanel::add_repeated_patterns() {
         const Order *order = orders[order_index];
         std::vector<uint8_t> order_sequences = std::vector<uint8_t>(order->sequences.begin(), order->sequences.begin() + order->order_length);
 
+        const bool bypass = channel->flag & FLAG_BYPASS;
         size_t k = current_patterns.patterns.size();
         while (row < current_patterns.total_rows) {
             bool limit_exceeded = false;
             for (size_t j = 0; j < order->order_length; ++j) {
-                process_sequence(channel_index, k, order_sequences[j], row);
+                process_sequence(channel_index, k, order_sequences[j], row, bypass);
                 if (row >= current_patterns.total_rows) {
                     limit_exceeded = true;
                     break;
@@ -332,11 +339,12 @@ void GUIPatternsPanel::add_repeated_commands_patterns() {
         const Order *order = orders[order_index];
         std::vector<uint8_t> order_sequences = std::vector<uint8_t>(order->sequences.begin(), order->sequences.begin() + order->order_length);
 
+        const bool bypass = channel->flag & FLAG_BYPASS;
         size_t k = current_patterns.commands_patterns.size();
         while (row < current_patterns.total_rows) {
             bool limit_exceeded = false;
             for (size_t j = 0; j < order->order_length; ++j) {
-                process_commands_sequence(channel_index, k, order_sequences[j], row);
+                process_commands_sequence(channel_index, k, order_sequences[j], row, bypass);
                 if (row >= current_patterns.total_rows) {
                     limit_exceeded = true;
                     break;

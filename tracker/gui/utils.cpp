@@ -348,6 +348,7 @@ std::pair<size_t, bool> draw_pattern(
     const bool locked
 ) {
     bool current = false;
+    const bool bypass = pattern.bypass;
     const int min_row_to_draw = std::max(static_cast<int>(start) - static_cast<int>(index), 0);
     const int max_row_to_draw = std::min(static_cast<int>(end) - static_cast<int>(index), static_cast<int>(pattern.notes.size()));
 
@@ -356,6 +357,10 @@ std::pair<size_t, bool> draw_pattern(
     }
 
     ImGui::BeginDisabled(locked);
+    if (bypass) {
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
+    }
+
     if (ImGui::BeginTable("PatternTable", 3, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg)) {
         ImGui::TableSetupColumn("Index", ImGuiTableColumnFlags_WidthFixed, 50.0f);
         ImGui::TableSetupColumn("Note");
@@ -439,6 +444,11 @@ std::pair<size_t, bool> draw_pattern(
 
         ImGui::EndTable();
     }
+
+    if (bypass) {
+        ImGui::PopStyleVar();
+    }
+
     ImGui::EndDisabled();
 
     // realignment
@@ -463,6 +473,7 @@ std::pair<size_t, bool> draw_commands_pattern(
     const bool locked
 ) {
     bool current = false;
+    const bool bypass = pattern.bypass;
     const int min = std::max(static_cast<int>(start) - static_cast<int>(index), 0);
     const int max = std::min(static_cast<int>(end) - static_cast<int>(index), static_cast<int>(pattern.commands.size()));
     if (max <= 0 || min >= pattern.commands.size()) {
@@ -470,6 +481,10 @@ std::pair<size_t, bool> draw_commands_pattern(
     }
 
     ImGui::BeginDisabled(locked);
+    if (bypass) {
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
+    }
+
     if (ImGui::BeginTable("CommandsPatternTable", 3, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg)) {
         ImGui::BeginDisabled(gui.is_playing());
         ImGui::TableSetupColumn("Index", ImGuiTableColumnFlags_WidthFixed, 40.0f);
@@ -586,6 +601,11 @@ std::pair<size_t, bool> draw_commands_pattern(
         ImGui::EndDisabled();
         ImGui::EndTable();
     }
+
+    if (bypass) {
+        ImGui::PopStyleVar();
+    }
+
     ImGui::EndDisabled();
 
     // realignment

@@ -85,14 +85,16 @@ class GUIPatternsPanel : public GUIPanel {
         size_t channel_index,
         size_t j,
         uint8_t sequence_index,
-        uint16_t &row
+        uint16_t &row,
+        bool bypass = false
     );
 
     void process_commands_sequence(
         size_t channel_index,
         size_t j,
         uint8_t sequence_index,
-        uint16_t &row
+        uint16_t &row,
+        bool bypass
     );
 
     void handle_pattern_input(Pattern *pattern, uint16_t index);

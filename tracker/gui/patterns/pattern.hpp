@@ -10,6 +10,7 @@ struct Pattern {
     Pattern() = default;
     explicit Pattern(uint8_t sequence_index);
 
+    bool bypass = false;
     size_t id = 0;
     int starting_row = 0;
     int current_row = -1;
