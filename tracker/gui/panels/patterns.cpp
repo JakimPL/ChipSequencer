@@ -708,15 +708,20 @@ void GUIPatternsPanel::transpose_selected_rows(const int value) {
         return;
     }
 
+    PatternSelectionChange<uint8_t> changes;
     for (const PatternRow &pattern_row : secondary_pattern_rows) {
         const size_t channel_index = pattern_row.channel_index;
         const size_t pattern_id = pattern_row.pattern_id;
         const int row = pattern_row.row;
         Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
+        const uint8_t old_note = pattern.get_note(row);
         pattern.transpose(value, row);
+        const uint8_t new_note = pattern.get_note(row);
+        changes[pattern_row] = {old_note, new_note};
     }
 
     save_selection = true;
+    perform_notes_action("Transpose notes by " + std::to_string(value), changes);
 }
 
 void GUIPatternsPanel::to_sequences() const {

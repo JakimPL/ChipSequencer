@@ -287,13 +287,25 @@ void GUISequencesPanel::transpose_selected_rows(const int value) {
         return;
     }
 
+    PatternSelectionChange<uint8_t> changes;
     if (selection.is_active()) {
-        for (size_t i = selection.start; i <= selection.end; i++) {
-            current_sequence.pattern.transpose(value, i);
+        for (int row = selection.start; row <= selection.end; row++) {
+            const uint8_t old_note = current_sequence.pattern.get_note(row);
+            current_sequence.pattern.transpose(value, row);
+            const uint8_t new_note = current_sequence.pattern.get_note(row);
+            const PatternRow pattern_row = {0, 0, row};
+            changes[pattern_row] = {old_note, new_note};
         }
     } else {
+        const int row = current_sequence.pattern.current_row;
+        const uint8_t old_note = current_sequence.pattern.get_note(row);
         current_sequence.pattern.transpose(value);
+        const uint8_t new_note = current_sequence.pattern.get_note(row);
+        const PatternRow pattern_row = {0, 0, row};
+        changes[pattern_row] = {old_note, new_note};
     }
+
+    perform_notes_action("Transpose notes by " + std::to_string(value), changes);
 }
 
 void GUISequencesPanel::perform_notes_action(const std::string &action_name, const PatternSelectionChange<uint8_t> &changes) {
