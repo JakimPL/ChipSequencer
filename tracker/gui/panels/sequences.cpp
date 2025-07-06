@@ -61,7 +61,6 @@ void GUISequencesPanel::from() {
 }
 
 void GUISequencesPanel::to() const {
-    const bool focus = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
     if (!is_index_valid()) {
         return;
     }
@@ -414,7 +413,7 @@ void GUISequencesPanel::draw_sequence() {
 }
 
 void GUISequencesPanel::check_keyboard_input() {
-    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+    if (!focus) {
         return;
     }
 
@@ -451,7 +450,7 @@ void GUISequencesPanel::set_index(const int index) {
 }
 
 bool GUISequencesPanel::is_active() const {
-    return visible && ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+    return visible && focus;
 }
 
 void GUISequencesPanel::register_shortcuts() {

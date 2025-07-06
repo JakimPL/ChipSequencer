@@ -134,10 +134,12 @@ void GUIPanel::frame() {
 
     ImGui::BeginDisabled(is_disabled());
 
+    focus = false;
     if (select_item()) {
         from();
         pre_actions();
         if (visible) {
+            focus = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
             draw();
         }
         shortcut_actions();

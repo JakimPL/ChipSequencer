@@ -27,6 +27,7 @@ class GUIPanel {
     virtual void to() const {};
     void initialize();
 
+    bool focus = false;
     bool visible = true;
     const bool windowed;
 

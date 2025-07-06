@@ -83,7 +83,7 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
 
     const bool active_command = is_commands_view();
     PatternSelection empty_selection = {active_command};
-    PatternSelection &pattern_selection = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ? selection : empty_selection;
+    PatternSelection &pattern_selection = focus ? selection : empty_selection;
 
     int row = 0;
     for (auto &pattern : current_patterns.patterns[channel_index]) {
@@ -111,7 +111,7 @@ void GUIPatternsPanel::draw_commands_channel(size_t channel_index) {
 
     const bool active_command = is_commands_view();
     PatternSelection empty_selection = {active_command};
-    PatternSelection &commands_selection = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ? selection : empty_selection;
+    PatternSelection &commands_selection = focus ? selection : empty_selection;
 
     int row = 0;
     for (auto &pattern : current_patterns.commands_patterns[channel_index]) {
@@ -361,7 +361,7 @@ void GUIPatternsPanel::add_repeated_commands_patterns() {
 }
 
 void GUIPatternsPanel::to() const {
-    if (!save && !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+    if (!save && !focus) {
         return;
     }
 
@@ -370,7 +370,7 @@ void GUIPatternsPanel::to() const {
 }
 
 void GUIPatternsPanel::shortcut_actions() {
-    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+    if (!focus) {
         return;
     }
 
@@ -712,7 +712,7 @@ void GUIPatternsPanel::delete_selection() {
 }
 
 void GUIPatternsPanel::transpose_selected_rows(const int value) {
-    if (value == 0 || !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+    if (value == 0 || !focus) {
         return;
     }
 
@@ -783,7 +783,7 @@ void GUIPatternsPanel::to_commands_sequences() const {
 }
 
 void GUIPatternsPanel::check_keyboard_input() {
-    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+    if (!focus) {
         return;
     }
 
@@ -1275,7 +1275,7 @@ bool GUIPatternsPanel::is_commands_view() const {
 }
 
 bool GUIPatternsPanel::is_active() const {
-    return visible && ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+    return visible && focus;
 }
 
 bool GUIPatternsPanel::is_commands_view_active() const {

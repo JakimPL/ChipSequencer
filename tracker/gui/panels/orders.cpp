@@ -65,7 +65,7 @@ void GUIOrdersPanel::to() const {
         return;
     }
 
-    if (!save && !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+    if (!save && !focus) {
         return;
     }
 
@@ -187,7 +187,7 @@ void GUIOrdersPanel::draw_order() {
 }
 
 void GUIOrdersPanel::check_keyboard_input() {
-    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+    if (!focus) {
         return;
     }
 
