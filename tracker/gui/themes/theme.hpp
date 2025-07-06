@@ -8,7 +8,6 @@
 class Theme {
   private:
     std::unordered_map<ThemeItem, ThemeColor> colors;
-    ThemeColor default_color = ThemeColor(1.0, 1.0, 1.0, 1.0);
 
   public:
     Theme();

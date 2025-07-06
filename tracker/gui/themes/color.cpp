@@ -9,10 +9,10 @@ ThemeColor::ThemeColor(const ImVec4 &color)
 }
 
 ThemeColor::ThemeColor(const ImU32 &color)
-    : r((color >> IM_COL32_R_SHIFT) / 255.0),
-      g((color >> IM_COL32_G_SHIFT) / 255.0),
-      b((color >> IM_COL32_B_SHIFT) / 255.0),
-      a((color >> IM_COL32_A_SHIFT) / 255.0) {
+    : r(((color >> IM_COL32_R_SHIFT) & 0xFF) / 255.0),
+      g(((color >> IM_COL32_G_SHIFT) & 0xFF) / 255.0),
+      b(((color >> IM_COL32_B_SHIFT) & 0xFF) / 255.0),
+      a(((color >> IM_COL32_A_SHIFT) & 0xFF) / 255.0) {
 }
 
 ThemeColor ThemeColor::with_alpha(double alpha) const {
