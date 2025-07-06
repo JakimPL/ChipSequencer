@@ -336,6 +336,7 @@ std::pair<size_t, bool> draw_pattern(
     PatternSelection &selection,
     SequenceRows &selected_rows,
     const bool pattern_view,
+    const bool active_command,
     const int edited_row,
     const size_t channel_index,
     const bool header,
@@ -365,8 +366,8 @@ std::pair<size_t, bool> draw_pattern(
         for (int i = min_row_to_draw; i < max_row_to_draw; i++) {
             const int j = i + index;
             const bool is_current = (pattern.current_row == i);
-            const bool is_selected = !selection.command && selection.is_row_selected(channel_index, j);
-            const bool is_secondary_selected = !selection.command && selected_rows.count({pattern.sequence_index, i}) > 0;
+            const bool is_selected = !active_command && selection.is_row_selected(channel_index, j);
+            const bool is_secondary_selected = !active_command && selected_rows.count({pattern.sequence_index, i}) > 0;
 
             ImGui::TableNextRow();
 
@@ -450,6 +451,7 @@ std::pair<size_t, bool> draw_commands_pattern(
     PatternSelection &selection,
     SequenceRows &selected_rows,
     const bool pattern_view,
+    const bool active_command,
     const int edited_row,
     const size_t channel_index,
     const bool header,
@@ -480,8 +482,8 @@ std::pair<size_t, bool> draw_commands_pattern(
             const int j = i + index;
             const bool is_command_current = (pattern.current_row == i && pattern.selection == CommandSelection::Command);
             const bool is_value_current = (pattern.current_row == i && pattern.selection == CommandSelection::Value);
-            const bool is_selected = selection.command && selection.is_row_selected(channel_index, j);
-            const bool is_secondary_selected = selection.command && selected_rows.count({pattern.sequence_index, i}) > 0;
+            const bool is_selected = active_command && selection.is_row_selected(channel_index, j);
+            const bool is_secondary_selected = active_command && selected_rows.count({pattern.sequence_index, i}) > 0;
 
             ImGui::TableNextRow();
             if (playing_row == j) {

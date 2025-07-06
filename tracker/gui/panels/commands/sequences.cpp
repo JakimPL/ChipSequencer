@@ -310,7 +310,7 @@ void GUICommandsSequencesPanel::draw_sequence() {
 
     SequenceRows secondary_sequence_rows;
     const int edited_row = edit_dialog_box.visible ? edit_dialog_box.item : -1;
-    draw_commands_pattern(current_sequence.pattern, selection, secondary_sequence_rows, false, edited_row);
+    draw_commands_pattern(current_sequence.pattern, selection, secondary_sequence_rows, false, true, edited_row);
 }
 
 void GUICommandsSequencesPanel::open_edit_dialog_box(const int item) {

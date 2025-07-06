@@ -81,7 +81,8 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
     const uint16_t start = page * gui.get_page_size();
     const uint16_t end = start + gui.get_page_size();
 
-    PatternSelection empty_selection = {selection.command};
+    const bool active_command = is_commands_view();
+    PatternSelection empty_selection = {active_command};
     PatternSelection &pattern_selection = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ? selection : empty_selection;
 
     int row = 0;
@@ -89,7 +90,7 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
         const int playing_row = current_patterns.playing_rows[{false, channel_index}];
         const bool locked = lock_registry.is_locked(Target::SEQUENCE, pattern.sequence_index);
         auto [new_row, select] = draw_pattern(
-            pattern, pattern_selection, secondary_sequence_rows, true, -1, channel_index, false, row, playing_row, start, end, locked
+            pattern, pattern_selection, secondary_sequence_rows, true, active_command, -1, channel_index, false, row, playing_row, start, end, locked
         );
         if (select) {
             current_channel = {false, channel_index};
@@ -108,7 +109,8 @@ void GUIPatternsPanel::draw_commands_channel(size_t channel_index) {
     const uint16_t start = page * gui.get_page_size();
     const uint16_t end = start + gui.get_page_size();
 
-    PatternSelection empty_selection = {selection.command};
+    const bool active_command = is_commands_view();
+    PatternSelection empty_selection = {active_command};
     PatternSelection &commands_selection = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ? selection : empty_selection;
 
     int row = 0;
@@ -116,7 +118,7 @@ void GUIPatternsPanel::draw_commands_channel(size_t channel_index) {
         const int playing_row = current_patterns.playing_rows[{true, channel_index}];
         const bool locked = lock_registry.is_locked(Target::COMMANDS_SEQUENCE, pattern.sequence_index);
         auto [new_row, select] = draw_commands_pattern(
-            pattern, commands_selection, secondary_sequence_rows, true, -1, channel_index, false, row, playing_row, start, end, locked
+            pattern, commands_selection, secondary_sequence_rows, true, active_command, -1, channel_index, false, row, playing_row, start, end, locked
         );
         if (select) {
             current_channel = {true, channel_index};
@@ -1239,7 +1241,8 @@ bool GUIPatternsPanel::is_playing() {
 }
 
 bool GUIPatternsPanel::is_commands_view() const {
-    return selection.is_active() ? selection.command : current_channel.command;
+    const bool value = selection.is_active() ? selection.command : current_channel.command;
+    return value;
 }
 
 bool GUIPatternsPanel::is_active() const {
