@@ -419,25 +419,25 @@ std::pair<size_t, bool> draw_pattern(
             }
 
             if (ImGui::BeginPopup(popup_id.c_str())) {
+                draw_menu_item("Cut", ShortcutAction::EditCut);
+                draw_menu_item("Copy", ShortcutAction::EditCopy);
+                draw_menu_item("Paste", ShortcutAction::EditPaste, false, clipboard.has_items(ClipboardCategory::Notes));
+                draw_menu_item("Delete", ShortcutAction::EditDelete);
+                ImGui::Separator();
                 draw_menu_item("Select all", ShortcutAction::PatternSelectAll);
                 if (pattern_view) {
                     draw_menu_item("Select channel", ShortcutAction::PatternSelectChannel);
                 }
                 draw_menu_item("Clear selection", ShortcutAction::PatternSelectNone);
                 ImGui::Separator();
-                draw_menu_item("Transpose +1", ShortcutAction::PatternTransposeUp);
-                draw_menu_item("Transpose -1", ShortcutAction::PatternTransposeDown);
-                draw_menu_item("Transpose octave +1", ShortcutAction::PatternTransposeOctaveUp);
-                draw_menu_item("Transpose octave -1", ShortcutAction::PatternTransposeOctaveDown);
-                ImGui::Separator();
                 draw_menu_item("Set rest", ShortcutAction::PatternSetNoteRest);
                 draw_menu_item("Set note cut", ShortcutAction::PatternSetNoteCut);
                 draw_menu_item("Set note off", ShortcutAction::PatternSetNoteOff);
                 ImGui::Separator();
-                draw_menu_item("Cut", ShortcutAction::EditCut);
-                draw_menu_item("Copy", ShortcutAction::EditCopy);
-                draw_menu_item("Paste", ShortcutAction::EditPaste, false, clipboard.has_items(ClipboardCategory::Notes));
-                draw_menu_item("Delete", ShortcutAction::EditDelete);
+                draw_menu_item("Transpose +1", ShortcutAction::PatternTransposeUp);
+                draw_menu_item("Transpose -1", ShortcutAction::PatternTransposeDown);
+                draw_menu_item("Transpose octave +1", ShortcutAction::PatternTransposeOctaveUp);
+                draw_menu_item("Transpose octave -1", ShortcutAction::PatternTransposeOctaveDown);
                 ImGui::EndPopup();
             }
         }

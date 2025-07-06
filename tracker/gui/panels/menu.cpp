@@ -84,10 +84,14 @@ void GUIMenu::draw_menu() {
                 clicked |= draw_menu_item("Deselect all", ShortcutAction::PatternSelectNone);
                 if (!commands_view_active) {
                     ImGui::Separator();
-                    clicked |= draw_menu_item("Transpose up", ShortcutAction::PatternTransposeUp);
-                    clicked |= draw_menu_item("Transpose down", ShortcutAction::PatternTransposeDown);
-                    clicked |= draw_menu_item("Transpose octave up", ShortcutAction::PatternTransposeOctaveUp);
-                    clicked |= draw_menu_item("Transpose octave down", ShortcutAction::PatternTransposeOctaveDown);
+                    clicked |= draw_menu_item("Set rest", ShortcutAction::PatternSetNoteRest);
+                    clicked |= draw_menu_item("Set note cut", ShortcutAction::PatternSetNoteCut);
+                    clicked |= draw_menu_item("Set note off", ShortcutAction::PatternSetNoteOff);
+                    ImGui::Separator();
+                    clicked |= draw_menu_item("Transpose +1", ShortcutAction::PatternTransposeUp);
+                    clicked |= draw_menu_item("Transpose -1", ShortcutAction::PatternTransposeDown);
+                    clicked |= draw_menu_item("Transpose octave +1", ShortcutAction::PatternTransposeOctaveUp);
+                    clicked |= draw_menu_item("Transpose octave -1", ShortcutAction::PatternTransposeOctaveDown);
                 }
             }
             ImGui::EndMenu();
