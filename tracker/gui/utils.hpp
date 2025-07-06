@@ -66,7 +66,7 @@ bool draw_output(GUIPanel *owner, OutputType &output_type, LinkKey key);
 void show_dependency_tooltip(std::vector<std::string> &dependencies);
 void show_commands_pattern_tooltip(const CommandsPattern &pattern, size_t index);
 
-void draw_menu_item(const std::string &name, std::optional<ShortcutAction> action = std::nullopt, bool checked = false, bool condition = true);
+bool draw_menu_item(const std::string &name, std::optional<ShortcutAction> action = std::nullopt, bool checked = false, bool condition = true);
 bool get_menu_item(const std::string &name, std::optional<ShortcutAction> action = std::nullopt, bool checked = false);
 
 std::pair<size_t, bool> draw_pattern(

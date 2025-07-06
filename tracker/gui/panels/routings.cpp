@@ -545,6 +545,7 @@ void GUIRoutingsPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_re
 
     if (
         ImGui::IsMouseClicked(ImGuiMouseButton_Right) &&
+        ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) &&
         !gui.is_playing() &&
         is_hovered &&
         routing_node.key.has_value()
@@ -570,6 +571,7 @@ void GUIRoutingsPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_re
 
     if (
         ImGui::IsMouseClicked(ImGuiMouseButton_Left) &&
+        ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) &&
         !dragging_node_id.has_value() &&
         is_hovered
     ) {
@@ -677,7 +679,7 @@ RoutingNode *GUIRoutingsPanel::handle_node_dragging(const ImVec2 &canvas_origin)
 }
 
 void GUIRoutingsPanel::set_source_key(const ImVec2 pin_position, const InputKey &source_key) {
-    if (gui.is_playing()) {
+    if (gui.is_playing() || !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
 
@@ -691,7 +693,7 @@ void GUIRoutingsPanel::set_source_key(const ImVec2 pin_position, const InputKey 
 }
 
 void GUIRoutingsPanel::set_target_key(const ImVec2 pin_position, const OutputKey &target_key) {
-    if (gui.is_playing()) {
+    if (gui.is_playing() || !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
         return;
     }
 

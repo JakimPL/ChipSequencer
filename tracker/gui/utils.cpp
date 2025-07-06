@@ -940,14 +940,18 @@ void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t 
     }
 }
 
-void draw_menu_item(const std::string &name, const std::optional<ShortcutAction> action, const bool checked, const bool condition) {
+bool draw_menu_item(const std::string &name, const std::optional<ShortcutAction> action, const bool checked, const bool condition) {
     ImGui::BeginDisabled(!condition);
+    bool clicked = false;
     if (get_menu_item(name, action, checked)) {
+        clicked = true;
         if (action.has_value()) {
             shortcut_manager.execute_action(action.value());
         }
     }
+
     ImGui::EndDisabled();
+    return clicked;
 }
 
 bool get_menu_item(const std::string &name, const std::optional<ShortcutAction> action, const bool checked) {
