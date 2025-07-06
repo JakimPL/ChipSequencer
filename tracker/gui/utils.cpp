@@ -16,6 +16,7 @@
 #include "names.hpp"
 #include "undo.hpp"
 #include "utils.hpp"
+#include "clipboard/clipboard.hpp"
 #include "patterns/selection.hpp"
 
 int clamp_index(int index, const int size) {
@@ -430,7 +431,7 @@ std::pair<size_t, bool> draw_pattern(
                 ImGui::Separator();
                 draw_menu_item("Cut", ShortcutAction::EditCut);
                 draw_menu_item("Copy", ShortcutAction::EditCopy);
-                draw_menu_item("Paste", ShortcutAction::EditPaste);
+                draw_menu_item("Paste", ShortcutAction::EditPaste, false, clipboard.has_items(ClipboardCategory::Notes));
                 draw_menu_item("Delete", ShortcutAction::EditDelete);
                 ImGui::EndPopup();
             }
@@ -576,7 +577,7 @@ std::pair<size_t, bool> draw_commands_pattern(
                 ImGui::Separator();
                 draw_menu_item("Cut", ShortcutAction::EditCut);
                 draw_menu_item("Copy", ShortcutAction::EditCopy);
-                draw_menu_item("Paste", ShortcutAction::EditPaste);
+                draw_menu_item("Paste", ShortcutAction::EditPaste, false, clipboard.has_items(ClipboardCategory::Commands));
                 draw_menu_item("Delete", ShortcutAction::EditDelete);
                 ImGui::EndPopup();
             }
