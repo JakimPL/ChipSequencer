@@ -1126,6 +1126,7 @@ void GUIPatternsPanel::perform_notes_action(const std::string &action_name, cons
     const SetItemsFunction<uint8_t> function = [this](const std::map<PatternRow, uint8_t> &notes) {
         selection_action = PatternSelectionAction::Paste;
         secondary_pattern_rows.clear();
+        current_channel = {false, 0};
         for (const auto &[pattern_row, _] : notes) {
             secondary_pattern_rows.insert(pattern_row);
         }
@@ -1139,6 +1140,7 @@ void GUIPatternsPanel::perform_commands_action(const std::string &action_name, c
     const SetItemsFunction<CommandValue> function = [this](const std::map<PatternRow, CommandValue> &commands) {
         selection_action = PatternSelectionAction::Paste;
         secondary_pattern_rows.clear();
+        current_channel = {true, 0};
         for (const auto &[pattern_row, _] : commands) {
             secondary_pattern_rows.insert(pattern_row);
         }
