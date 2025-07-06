@@ -93,7 +93,7 @@ ImVec4 Theme::get_vec4_color(const ThemeItem item) const {
     return get_color(item).to_vec4();
 }
 
-std::string get_item_name(const ThemeItem item) {
+std::string Theme::get_item_name(const ThemeItem item) {
     switch (item) {
     case ThemeItem::RowPlaying:
         return "RowPlaying";
@@ -243,7 +243,7 @@ std::string get_item_name(const ThemeItem item) {
     return "Unknown";
 }
 
-ThemeItem string_to_theme_item(const std::string &str) {
+ThemeItem Theme::get_item_from_name(const std::string &str) {
     if (str == "RowPlaying") return ThemeItem::RowPlaying;
     if (str == "RowEdited") return ThemeItem::RowEdited;
     if (str == "RowSelected") return ThemeItem::RowSelected;
@@ -318,14 +318,14 @@ ThemeItem string_to_theme_item(const std::string &str) {
     return ThemeItem::Count;
 }
 
-std::string color_to_hex(const ThemeColor &color) {
+std::string Theme::color_to_hex(const ThemeColor &color) {
     const ImU32 u32_color = color.to_u32();
     std::stringstream ss;
     ss << "#" << std::hex << std::setfill('0') << std::setw(8) << u32_color;
     return ss.str();
 }
 
-ThemeColor hex_to_color(const std::string &hex) {
+ThemeColor Theme::hex_to_color(const std::string &hex) {
     if (hex.length() != 9 || hex[0] != '#') {
         return ThemeColor(0.0, 0.0, 0.0, 1.0);
     }

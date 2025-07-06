@@ -25,9 +25,9 @@ class Theme {
 
     nlohmann::json to_json() const;
     void from_json(const nlohmann::json &json);
-};
 
-std::string get_item_name(const ThemeItem item);
-ThemeItem get_item_from_name(const std::string &str);
-std::string color_to_hex(const ThemeColor &color);
-ThemeColor hex_to_color(const std::string &hex);
+    static std::string get_item_name(const ThemeItem item);
+    static ThemeItem get_item_from_name(const std::string &str);
+    static std::string color_to_hex(const ThemeColor &color);
+    static ThemeColor hex_to_color(const std::string &hex);
+};
