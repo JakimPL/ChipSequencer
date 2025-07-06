@@ -114,6 +114,7 @@ void pop_secondary_style();
 void push_tertiary_style();
 void pop_tertiary_style();
 
+std::string get_row_id(size_t channel_index, int row);
 std::string get_displayed_row(
     int row,
     int absolute_row,

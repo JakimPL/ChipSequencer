@@ -200,7 +200,7 @@ void GUICommandsSequencesPanel::delete_selection() {
         SetItemsFunction<CommandValue> function = [this](const std::map<PatternRow, CommandValue> &commands_values) {
             this->set_commands(commands_values);
         };
-        perform_action_pattern_selection<CommandValue>(this, {Target::COMMANDS_SEQUENCE}, "Delete", changes, function);
+        perform_action_pattern_selection<CommandValue>(this, {Target::COMMANDS_SEQUENCE, sequence_index}, "Delete", changes, function);
     } else {
         const int row = current_sequence.pattern.current_row;
         const CommandValue old_command_value = current_sequence.pattern.get_command(row);
@@ -266,7 +266,7 @@ void GUICommandsSequencesPanel::perform_commands_action(const std::string &actio
         return this->set_commands(commands_changes);
     };
 
-    perform_action_pattern_selection<CommandValue>(this, {Target::COMMANDS_SEQUENCE}, action_name, changes, function);
+    perform_action_pattern_selection<CommandValue>(this, {Target::COMMANDS_SEQUENCE, sequence_index}, action_name, changes, function);
 }
 
 void GUICommandsSequencesPanel::perform_command_action(const int row, const CommandValue &old_command, const CommandValue &new_command) {

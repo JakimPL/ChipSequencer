@@ -291,7 +291,7 @@ void GUISequencesPanel::perform_notes_action(const std::string &action_name, con
         this->set_notes(notes);
     };
 
-    perform_action_pattern_selection<uint8_t>(this, {Target::SEQUENCE}, action_name, changes, function);
+    perform_action_pattern_selection<uint8_t>(this, {Target::SEQUENCE, sequence_index}, action_name, changes, function);
 }
 
 void GUISequencesPanel::perform_note_action(const int row, const uint8_t old_note, const uint8_t new_note) {
