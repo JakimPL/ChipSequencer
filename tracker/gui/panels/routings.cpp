@@ -28,6 +28,7 @@
 #include "../names.hpp"
 #include "../undo.hpp"
 #include "../utils.hpp"
+#include "../themes/theme.hpp"
 #include "routings.hpp"
 
 GUIRoutingsPanel::GUIRoutingsPanel(const bool visible, const bool windowed)
@@ -355,9 +356,12 @@ void GUIRoutingsPanel::draw_nodes() {
 
 void GUIRoutingsPanel::draw_link(const InputKey &source_key, const OutputKey &target_key, uint8_t alpha) {
     const float line_thickness = GUI_ROUTING_LINK_THICKNESS;
-    const ImU32 audio_color = IM_COL32(0, 200, 0, alpha);
-    const ImU32 parameter_color = IM_COL32(200, 150, 0, alpha);
-    const ImU32 dragging_color = IM_COL32(150, 150, 150, 255);
+    const ImU32 audio_color_base = theme.get_u32_color(ThemeItem::RoutingAudioLink);
+    const ImU32 parameter_color_base = theme.get_u32_color(ThemeItem::RoutingParameterLink);
+    const ImU32 dragging_color = theme.get_u32_color(ThemeItem::RoutingDraggingLink);
+
+    const ImU32 audio_color = theme.get_color(ThemeItem::RoutingAudioLink).with_alpha(alpha).to_u32();
+    const ImU32 parameter_color = theme.get_color(ThemeItem::RoutingParameterLink).with_alpha(alpha).to_u32();
 
     /* don't show invalid DSP links */
     if (!is_linking_possible(source_key, target_key)) {
@@ -584,14 +588,16 @@ void GUIRoutingsPanel::draw_node(RoutingNode &routing_node, const ImVec2 node_re
     }
 
     const uint8_t bg_alpha = routing_node.bypass ? 100 : 200;
-    ImU32 node_bg_color = is_hovered ? IM_COL32(70, 70, 70, bg_alpha) : IM_COL32(50, 50, 50, bg_alpha);
+    const ImU32 node_bg_color = (is_hovered ? theme.get_color(ThemeItem::RoutingNodeBackgroundHover) : theme.get_color(ThemeItem::RoutingNodeBackground)).with_alpha(bg_alpha).to_u32();
     draw_list->AddRectFilled(node_rect_min, node_rect_max, node_bg_color, 4.0f);
-    draw_list->AddRect(node_rect_min, node_rect_max, IM_COL32(100, 100, 100, node_alpha), 4.0f);
+
+    const ImU32 node_border_color = theme.get_color(ThemeItem::RoutingNodeBorder).with_alpha(node_alpha).to_u32();
+    draw_list->AddRect(node_rect_min, node_rect_max, node_border_color, 4.0f);
 
     const uint8_t alpha = link_dragging_source_key.has_value() ? 100 : 255;
-    const ImU32 pin_color_main = IM_COL32(255, 255, 255, alpha);
-    const ImU32 pin_color_parameter = IM_COL32(150, 150, 150, alpha);
-    const ImU32 pin_color_available = IM_COL32(250, 250, 150, 255);
+    const ImU32 pin_color_main = theme.get_color(ThemeItem::RoutingPinMain).with_alpha(alpha).to_u32();
+    const ImU32 pin_color_parameter = theme.get_color(ThemeItem::RoutingPinParameter).with_alpha(alpha).to_u32();
+    const ImU32 pin_color_available = theme.get_u32_color(ThemeItem::RoutingPinAvailable);
     const float pin_offset_y = line_height * 0.5f;
 
     ImVec2 current_text_pos = ImVec2(node_rect_min.x + node_padding_x, node_rect_min.y + node_padding_y);

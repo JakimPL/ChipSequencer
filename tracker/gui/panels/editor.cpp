@@ -5,9 +5,10 @@
 #include "../gui.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
+#include "../clipboard/clipboard.hpp"
 #include "../history/manager.hpp"
 #include "../shortcuts/manager.hpp"
-#include "../clipboard/clipboard.hpp"
+#include "../themes/theme.hpp"
 #include "editor.hpp"
 
 GUIEditorPanel::GUIEditorPanel(const bool visible, const bool windowed)
@@ -88,7 +89,7 @@ void GUIEditorPanel::draw_history() {
     ImGui::Separator();
 
     if (history_size == 0) {
-        ImGui::TextColored(GUI_TEXT_COLOR_UNAVAILABLE, "No actions recorded yet.");
+        ImGui::TextColored(theme.get_vec4_color(ThemeItem::TextUnavailable), "No actions recorded yet.");
         ImGui::EndDisabled();
         ImGui::EndChild();
         return;
@@ -109,9 +110,9 @@ void GUIEditorPanel::draw_history() {
         std::string action_name = history_manager.get_action_name(i);
 
         if (i == static_cast<int>(current_index) - 1) {
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.8f, 0.0f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_Text, theme.get_vec4_color(ThemeItem::HistoryCurrentAction));
         } else if (!is_applied) {
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_Text, theme.get_vec4_color(ThemeItem::HistoryUnappliedAction));
         }
 
         const std::string action_label = action_name + "##" + std::to_string(i + 1);
@@ -177,7 +178,7 @@ void GUIEditorPanel::draw_clipboard() {
     }
 
     if (!has_any_items) {
-        ImGui::TextColored(GUI_TEXT_COLOR_UNAVAILABLE, "No clipboard items yet.");
+        ImGui::TextColored(theme.get_vec4_color(ThemeItem::TextUnavailable), "No clipboard items yet.");
         ImGui::EndDisabled();
         ImGui::EndChild();
         return;
@@ -218,9 +219,9 @@ void GUIEditorPanel::draw_clipboard() {
             copy_string_to_buffer(item_label, label, sizeof(label));
 
             if (i == 0) {
-                ImGui::PushStyleColor(ImGuiCol_Text, GUI_CLIPBOARD_TEXT_COLOR_RECENT);
+                ImGui::PushStyleColor(ImGuiCol_Text, theme.get_vec4_color(ThemeItem::ClipboardRecent));
             } else {
-                ImGui::PushStyleColor(ImGuiCol_Text, GUI_CLIPBOARD_TEXT_COLOR_OLDER);
+                ImGui::PushStyleColor(ImGuiCol_Text, theme.get_vec4_color(ThemeItem::ClipboardOlder));
             }
 
             if (ImGui::Selectable(label, false, ImGuiSelectableFlags_SpanAllColumns)) {

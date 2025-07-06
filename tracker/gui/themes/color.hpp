@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "../init.hpp"
 
 struct ThemeColor {
@@ -12,8 +14,13 @@ struct ThemeColor {
     explicit ThemeColor(const ImVec4 &color);
     explicit ThemeColor(const ImU32 &color);
 
+    ThemeColor with_alpha(double alpha) const;
+    ThemeColor with_alpha(uint8_t alpha) const;
+
     ImU32 to_u32() const;
     ImVec4 to_vec4() const;
     bool operator==(const ThemeColor &other) const;
     bool operator!=(const ThemeColor &other) const;
+
+    static ThemeColor interpolate(const ThemeColor &color1, const ThemeColor &color2, float t);
 };

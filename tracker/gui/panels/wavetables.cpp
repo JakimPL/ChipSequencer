@@ -14,6 +14,7 @@
 #include "../names.hpp"
 #include "../undo.hpp"
 #include "../utils.hpp"
+#include "../themes/theme.hpp"
 #include "wavetables.hpp"
 
 GUIWavetablesPanel::GUIWavetablesPanel(const bool visible, const bool windowed)
@@ -174,8 +175,8 @@ void GUIWavetablesPanel::draw_waveform() {
     const ImVec2 canvas_p0 = p;
     const ImVec2 canvas_p1 = ImVec2(p.x + size.x, p.y + size.y);
 
-    draw_list->AddRectFilled(canvas_p0, canvas_p1, IM_COL32(50, 50, 50, 255));
-    draw_list->AddRect(canvas_p0, canvas_p1, IM_COL32(200, 200, 200, 255));
+    draw_list->AddRectFilled(canvas_p0, canvas_p1, theme.get_u32_color(ThemeItem::WavetableCanvasBackground));
+    draw_list->AddRect(canvas_p0, canvas_p1, theme.get_u32_color(ThemeItem::WavetableCanvasBorder));
 
     const size_t data_size = current_wavetable.wave.size();
     const float x_step = size.x / data_size;
@@ -246,8 +247,8 @@ void GUIWavetablesPanel::draw_waveform() {
         snprintf(label, sizeof(label), "%.1f", label_value);
 
         const ImVec2 text_size = ImGui::CalcTextSize(label);
-        draw_list->AddLine(ImVec2(canvas_p0.x, y), ImVec2(canvas_p1.x, y), IM_COL32(100, 100, 100, 255), 1.0f);
-        draw_list->AddText(ImVec2(40.0f + canvas_p1.x - text_size.x - 5, y - text_size.y / 2), IM_COL32(255, 255, 255, 255), label);
+        draw_list->AddLine(ImVec2(canvas_p0.x, y), ImVec2(canvas_p1.x, y), theme.get_u32_color(ThemeItem::WavetableGridLine), 1.0f);
+        draw_list->AddText(ImVec2(40.0f + canvas_p1.x - text_size.x - 5, y - text_size.y / 2), theme.get_u32_color(ThemeItem::WavetableGridText), label);
     }
 
     if (data_size < 2) {
@@ -262,16 +263,16 @@ void GUIWavetablesPanel::draw_waveform() {
         const float y2 = y_center - current_wavetable.wave[i + 1 == data_size ? 0 : i + 1] * (size.y / 2.0f);
 
         if (draw_points) {
-            draw_list->AddCircleFilled(ImVec2(x1, y1), 3.0f, IM_COL32(0, 255, 0, 255));
+            draw_list->AddCircleFilled(ImVec2(x1, y1), 3.0f, theme.get_u32_color(ThemeItem::WavetableWaveform));
         }
         if (current_wavetable.interpolation) {
-            draw_list->AddLine(ImVec2(x1, y1), ImVec2(x2, y2), IM_COL32(0, 255, 0, 255), 1.0f);
+            draw_list->AddLine(ImVec2(x1, y1), ImVec2(x2, y2), theme.get_u32_color(ThemeItem::WavetableWaveform), 1.0f);
         } else {
             if (draw_points) {
-                draw_list->AddCircleFilled(ImVec2(x2, y1), 3.0f, IM_COL32(0, 255, 0, 255));
+                draw_list->AddCircleFilled(ImVec2(x2, y1), 3.0f, theme.get_u32_color(ThemeItem::WavetableWaveform));
             }
-            draw_list->AddLine(ImVec2(x1, y1), ImVec2(x2, y1), IM_COL32(0, 255, 0, 255), 1.0f);
-            draw_list->AddLine(ImVec2(x2, y1), ImVec2(x2, y2), IM_COL32(0, 255, 0, 255), 1.0f);
+            draw_list->AddLine(ImVec2(x1, y1), ImVec2(x2, y1), theme.get_u32_color(ThemeItem::WavetableWaveform), 1.0f);
+            draw_list->AddLine(ImVec2(x2, y1), ImVec2(x2, y2), theme.get_u32_color(ThemeItem::WavetableWaveform), 1.0f);
         }
     }
 }

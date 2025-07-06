@@ -172,7 +172,7 @@ void GUIOrdersPanel::draw_order() {
 
         ImGui::SameLine();
         if (incorrect) {
-            ImGui::TextColored(GUI_ERROR_COLOR, "%s", order_string.c_str());
+            ImGui::TextColored(theme.get_vec4_color(ThemeItem::Error), "%s", order_string.c_str());
         } else {
             ImGui::Text("%s", order_string.c_str());
         }

@@ -6,6 +6,7 @@
 #include "../../utils/string.hpp"
 #include "../gui.hpp"
 #include "../utils.hpp"
+#include "../themes/theme.hpp"
 #include "general.hpp"
 
 GUIGeneralPanel::GUIGeneralPanel(const bool visible, const bool windowed)
@@ -159,7 +160,7 @@ void GUIGeneralPanel::draw_play_triangle() {
         ImVec2(center.x - sz * 0.3f, center.y + sz * 0.5f)
     };
 
-    draw_list->AddTriangleFilled(points[0], points[1], points[2], GUI_BUTTON_COLOR_PLAY);
+    draw_list->AddTriangleFilled(points[0], points[1], points[2], theme.get_u32_color(ThemeItem::ButtonPlay));
 
     ImGui::SetCursorScreenPos(p);
     ImGui::InvisibleButton("Play", ImVec2(sz, sz));
@@ -186,7 +187,7 @@ void GUIGeneralPanel::draw_play_from_page_button() {
     const ImVec2 left_min = ImVec2(p.x + padding - 3.0f, p.y + height);
     const ImVec2 left_max = ImVec2(p.x + padding - 3.0f + bar_width, p.y + sz - height);
 
-    draw_list->AddRectFilled(left_min, left_max, GUI_BUTTON_COLOR_PLAY_FROM_CURRENT_POSITION);
+    draw_list->AddRectFilled(left_min, left_max, theme.get_u32_color(ThemeItem::ButtonPlayFromCurrentPosition));
 
     const ImVec2 points[3] = {
         ImVec2(center.x - sz * 0.3f + 3.0f, center.y - sz * 0.5f),
@@ -194,7 +195,7 @@ void GUIGeneralPanel::draw_play_from_page_button() {
         ImVec2(center.x - sz * 0.3f + 3.0f, center.y + sz * 0.5f)
     };
 
-    draw_list->AddTriangleFilled(points[0], points[1], points[2], GUI_BUTTON_COLOR_PLAY_FROM_CURRENT_POSITION);
+    draw_list->AddTriangleFilled(points[0], points[1], points[2], theme.get_u32_color(ThemeItem::ButtonPlayFromCurrentPosition));
 
     ImGui::SetCursorScreenPos(p);
     ImGui::InvisibleButton("PlayFromPage", ImVec2(sz, sz));
@@ -220,8 +221,8 @@ void GUIGeneralPanel::draw_pause_rectangles() {
     const ImVec2 right_min = ImVec2(p.x + sz - padding - bar_width, p.y + height);
     const ImVec2 right_max = ImVec2(p.x + sz - padding, p.y + sz - height);
 
-    draw_list->AddRectFilled(left_min, left_max, GUI_BUTTON_COLOR_PLAY);
-    draw_list->AddRectFilled(right_min, right_max, GUI_BUTTON_COLOR_PLAY);
+    draw_list->AddRectFilled(left_min, left_max, theme.get_u32_color(ThemeItem::ButtonPlay));
+    draw_list->AddRectFilled(right_min, right_max, theme.get_u32_color(ThemeItem::ButtonPlay));
 
     ImGui::SetCursorScreenPos(p);
     ImGui::InvisibleButton("Pause", ImVec2(sz, sz));
@@ -242,7 +243,7 @@ void GUIGeneralPanel::draw_stop_square() {
     const ImVec2 p_min = ImVec2(p.x + sz * 0.5f - real_sz * 0.5f, p.y + sz * 0.5f - real_sz * 0.5f);
     const ImVec2 p_max = ImVec2(p.x + sz * 0.5f + real_sz * 0.5f, p.y + sz * 0.5f + real_sz * 0.5f);
 
-    draw_list->AddRectFilled(p_min, p_max, GUI_BUTTON_COLOR_STOP);
+    draw_list->AddRectFilled(p_min, p_max, theme.get_u32_color(ThemeItem::ButtonStop));
 
     ImGui::SetCursorScreenPos(p);
     ImGui::InvisibleButton("Stop", ImVec2(sz, sz));

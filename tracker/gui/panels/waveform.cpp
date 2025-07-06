@@ -10,6 +10,7 @@
 #include "../gui.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
+#include "../themes/theme.hpp"
 #include "waveform.hpp"
 
 GUIWaveformPanel::GUIWaveformPanel(const bool visible, const bool windowed)
@@ -90,29 +91,29 @@ void GUIWaveformPanel::draw_channel_waveform(const int output_channel_index, con
     draw_list->AddRectFilled(
         position,
         ImVec2(position.x + size.x, position.y + size.y),
-        IM_COL32(20, 20, 20, 255)
+        theme.get_u32_color(ThemeItem::PanelBackground)
     );
 
     draw_list->AddRect(
         position,
         ImVec2(position.x + size.x, position.y + size.y),
-        IM_COL32(60, 60, 60, 255)
+        theme.get_u32_color(ThemeItem::PanelBorder)
     );
 
     ImU32 waveform_color;
     switch (output_channel_index) {
     case 0:
     default:
-        waveform_color = GUI_WAVEFORM_COLOR_1;
+        waveform_color = theme.get_u32_color(ThemeItem::Waveform1);
         break;
     case 1:
-        waveform_color = GUI_WAVEFORM_COLOR_2;
+        waveform_color = theme.get_u32_color(ThemeItem::Waveform2);
         break;
     case 2:
-        waveform_color = GUI_WAVEFORM_COLOR_3;
+        waveform_color = theme.get_u32_color(ThemeItem::Waveform3);
         break;
     case 3:
-        waveform_color = GUI_WAVEFORM_COLOR_4;
+        waveform_color = theme.get_u32_color(ThemeItem::Waveform4);
         break;
     }
 
@@ -120,7 +121,7 @@ void GUIWaveformPanel::draw_channel_waveform(const int output_channel_index, con
     if (output_channel_index >= audio_history.size() || audio_history[output_channel_index].empty()) {
         draw_list->AddText(
             ImVec2(position.x + 5, position.y + 5),
-            IM_COL32(255, 255, 255, 255),
+            theme.get_u32_color(ThemeItem::WaveformText),
             ("Output channel " + std::to_string(output_channel_index) + " (No data)").c_str()
         );
         return;
@@ -135,18 +136,18 @@ void GUIWaveformPanel::draw_channel_waveform(const int output_channel_index, con
     draw_list->AddLine(
         ImVec2(position.x, zero_y),
         ImVec2(position.x + size.x, zero_y),
-        IM_COL32(100, 100, 100, 255)
+        theme.get_u32_color(ThemeItem::WaveformGridLine)
     );
 
     draw_list->AddLine(
         ImVec2(position.x, position.y + 2),
         ImVec2(position.x + size.x, position.y + 2),
-        IM_COL32(70, 70, 70, 255)
+        theme.get_u32_color(ThemeItem::WaveformBorderLine)
     );
     draw_list->AddLine(
         ImVec2(position.x, position.y + size.y - 2),
         ImVec2(position.x + size.x, position.y + size.y - 2),
-        IM_COL32(70, 70, 70, 255)
+        theme.get_u32_color(ThemeItem::WaveformBorderLine)
     );
 
     const float scale_y = (size.y - 4) / 2.0f;
@@ -192,7 +193,7 @@ void GUIWaveformPanel::draw_channel_waveform(const int output_channel_index, con
 
     draw_list->AddText(
         ImVec2(position.x + 5, position.y + 5),
-        IM_COL32(255, 255, 255, 255),
+        theme.get_u32_color(ThemeItem::WaveformText),
         ("Output channel " + std::to_string(output_channel_index)).c_str()
     );
 
@@ -201,7 +202,7 @@ void GUIWaveformPanel::draw_channel_waveform(const int output_channel_index, con
         snprintf(buffer, sizeof(buffer), "Value: %.2f", history.back());
         draw_list->AddText(
             ImVec2(position.x + size.x - 80, position.y + 5),
-            IM_COL32(255, 255, 255, 255),
+            theme.get_u32_color(ThemeItem::WaveformText),
             buffer
         );
     }
@@ -253,20 +254,20 @@ void GUIWaveformPanel::draw_channel_spectrogram(const int output_channel_index, 
     draw_list->AddRectFilled(
         position,
         ImVec2(position.x + size.x, position.y + size.y),
-        IM_COL32(20, 20, 20, 255)
+        theme.get_u32_color(ThemeItem::PanelBackground)
     );
 
     draw_list->AddRect(
         position,
         ImVec2(position.x + size.x, position.y + size.y),
-        IM_COL32(60, 60, 60, 255)
+        theme.get_u32_color(ThemeItem::PanelBorder)
     );
 
     const auto &audio_history = gui.get_audio_history();
     if (output_channel_index >= audio_history.size() || audio_history[output_channel_index].empty()) {
         draw_list->AddText(
             ImVec2(position.x + 5, position.y + 5),
-            IM_COL32(255, 255, 255, 255),
+            theme.get_u32_color(ThemeItem::WaveformText),
             ("Spectrogram for Output channel " + std::to_string(output_channel_index) + " (No data)").c_str()
         );
         return;
@@ -314,22 +315,21 @@ void GUIWaveformPanel::draw_channel_spectrogram(const int output_channel_index, 
         const float normalized_db = (db - fft_parameters.min_db) / -fft_parameters.min_db;
         const float height = normalized_db * size.y;
 
+        const ThemeColor low_color = theme.get_color(ThemeItem::WaveformSpectrogramLow);
+        const ThemeColor medium_color = theme.get_color(ThemeItem::WaveformSpectrogramMedium);
+        const ThemeColor high_color = theme.get_color(ThemeItem::WaveformSpectrogramHigh);
+        const ThemeColor overdrive_color = theme.get_color(ThemeItem::WaveformSpectrogramOverdrive);
+
         ImU32 color;
         if (normalized_db < 0.2f) {
             const float t = normalized_db / 0.2f;
-            color = IM_COL32(0, (int) (255 * t), 255, 255);
+            color = ThemeColor::interpolate(low_color, medium_color, t).to_u32();
         } else if (normalized_db < 0.4f) {
             const float t = (normalized_db - 0.2f) / 0.2f;
-            color = IM_COL32(0, 255, (int) (255 * (1 - t)), 255);
-        } else if (normalized_db < 0.6f) {
-            const float t = (normalized_db - 0.4f) / 0.2f;
-            color = IM_COL32((int) (255 * t), 255, 0, 255);
-        } else if (normalized_db < 0.8f) {
-            const float t = (normalized_db - 0.6f) / 0.2f;
-            color = IM_COL32(255, (int) (255 * (1 - t)), 0, 255);
+            color = ThemeColor::interpolate(medium_color, high_color, t).to_u32();
         } else {
-            const float t = (normalized_db - 0.8f) / 0.2f;
-            color = IM_COL32(255, (int) (255 * t), (int) (255 * t), 255);
+            const float t = (normalized_db - 0.4f) / 0.6f;
+            color = ThemeColor::interpolate(high_color, overdrive_color, t).to_u32();
         }
 
         draw_list->AddRectFilled(
@@ -346,20 +346,20 @@ void GUIWaveformPanel::draw_channel_spectrogram(const int output_channel_index, 
         draw_list->AddLine(
             ImVec2(x_pos, position.y),
             ImVec2(x_pos, position.y + 5),
-            IM_COL32(180, 180, 180, 100)
+            theme.get_u32_color(ThemeItem::WaveformFrequencyMark)
         );
 
         const std::string frequency_name = get_frequency_name(frequency);
         draw_list->AddText(
             ImVec2(x_pos - 10, position.y + 7),
-            IM_COL32(180, 180, 180, 150),
+            theme.get_u32_color(ThemeItem::WaveformFrequencyMarkText),
             frequency_name.c_str()
         );
     }
 
     draw_list->AddText(
         ImVec2(position.x + 5, position.y + 5),
-        IM_COL32(255, 255, 255, 255),
+        theme.get_u32_color(ThemeItem::WaveformText),
         ("Output channel " + std::to_string(output_channel_index)).c_str()
     );
 
