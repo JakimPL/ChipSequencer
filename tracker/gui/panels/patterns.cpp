@@ -139,6 +139,7 @@ void GUIPatternsPanel::from() {
 }
 
 void GUIPatternsPanel::clear() {
+    save_selection = false;
     current_patterns.total_rows = 0;
     current_patterns.playing_rows.clear();
     pattern_rows.clear();
@@ -604,6 +605,7 @@ void GUIPatternsPanel::paste_pattern_selection(ClipboardNotes *notes) {
         }
     }
 
+    save_selection = true;
     perform_notes_action("Paste", changes);
 }
 
@@ -666,6 +668,7 @@ void GUIPatternsPanel::paste_commands_pattern_selection(ClipboardCommands *comma
         }
     }
 
+    save_selection = true;
     perform_commands_action("Paste", changes);
 }
 
@@ -692,6 +695,7 @@ void GUIPatternsPanel::delete_selection() {
         }
     }
 
+    save_selection = true;
     if (command) {
         perform_commands_action("Delete", commands_changes);
     } else {
@@ -711,12 +715,14 @@ void GUIPatternsPanel::transpose_selected_rows(const int value) {
         Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
         pattern.transpose(value, row);
     }
+
+    save_selection = true;
 }
 
 void GUIPatternsPanel::to_sequences() const {
     const bool command = is_commands_view();
     std::set<const Pattern *> unique_patterns;
-    if (!command && selection_action != PatternSelectionAction::None && !selection.selecting) {
+    if (!command && save_selection && !selection.selecting) {
         for (const auto &[channel_index, pattern_id, row] : secondary_pattern_rows) {
             const Pattern &selected_pattern = current_patterns.patterns.at(channel_index).at(pattern_id);
             if (!lock_registry.is_locked(Target::SEQUENCE, selected_pattern.sequence_index)) {
@@ -1252,8 +1258,7 @@ bool GUIPatternsPanel::is_playing() {
 }
 
 bool GUIPatternsPanel::is_commands_view() const {
-    const bool value = selection.is_active() ? selection.command : current_channel.command;
-    return value;
+    return selection.is_active() ? selection.command : current_channel.command;
 }
 
 bool GUIPatternsPanel::is_active() const {

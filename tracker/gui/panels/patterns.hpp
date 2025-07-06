@@ -38,6 +38,7 @@ class GUIPatternsPanel : public GUIPanel {
     PatternRowsBySequenceRow pattern_rows_by_sequence_row;
     size_t current_index = -1;
     int current_row = -1;
+    bool save_selection = false;
 
     void draw_pages();
     void draw_channels();
