@@ -60,8 +60,8 @@ void GUIMenu::draw_menu() {
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Edit")) {
-            draw_menu_item("Undo", ShortcutAction::EditUndo);
-            draw_menu_item("Redo", ShortcutAction::EditRedo);
+            draw_menu_item("Undo", ShortcutAction::EditUndo, false, history_manager.can_undo());
+            draw_menu_item("Redo", ShortcutAction::EditRedo, false, history_manager.can_redo());
             ImGui::Separator();
             draw_menu_item("Delete", ShortcutAction::EditDelete);
             draw_menu_item("Cut", ShortcutAction::EditCut);
