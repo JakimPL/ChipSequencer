@@ -194,12 +194,22 @@ void GUISequencesPanel::deselect_all() {
 
 void GUISequencesPanel::set_selection_note(const uint8_t note) {
     if (selection.is_active()) {
-        for (size_t row = selection.start; row <= selection.end; row++) {
+        PatternSelectionChange<uint8_t> changes;
+        for (int row = selection.start; row <= selection.end; row++) {
+            const uint8_t old_note = current_sequence.pattern.get_note(row);
             const uint8_t row_note = row == selection.start ? note : NOTE_REST;
             current_sequence.pattern.set_note(row, row_note);
+            changes[{0, 0, row}] = {old_note, row_note};
         }
+
+        const std::string note_name = get_full_note_name(note);
+        perform_notes_action("Set note " + note_name, changes);
     } else {
-        current_sequence.pattern.set_note(current_sequence.pattern.current_row, note);
+        const int row = current_sequence.pattern.current_row;
+        const uint8_t old_note = current_sequence.pattern.get_note(row);
+        current_sequence.pattern.set_note(row, note);
+        const uint8_t new_note = current_sequence.pattern.get_note(row);
+        perform_note_action(row, old_note, new_note);
     }
 }
 

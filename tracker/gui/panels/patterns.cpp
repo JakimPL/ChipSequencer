@@ -454,6 +454,7 @@ void GUIPatternsPanel::deselect_all() {
 
 void GUIPatternsPanel::set_selection_note(const uint8_t note) {
     if (selection.is_active()) {
+        PatternSelectionChange<uint8_t> changes;
         for (const auto &[sequence_row, pattern_rows] : pattern_rows_by_sequence_row) {
             for (const PatternRow &pattern_row : pattern_rows) {
                 const size_t channel_index = pattern_row.channel_index;
@@ -461,13 +462,23 @@ void GUIPatternsPanel::set_selection_note(const uint8_t note) {
                 const int row = pattern_row.row;
                 Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
                 const uint8_t row_note = (selection_starts.find(sequence_row) != selection_starts.end()) ? note : NOTE_REST;
+                const uint8_t old_note = pattern.get_note(row);
                 pattern.set_note(row, row_note);
+                const uint8_t new_note = pattern.get_note(row);
+                changes[pattern_row] = {old_note, new_note};
             }
         }
+
+        const std::string note_name = get_full_note_name(note);
+        perform_notes_action("Set note " + note_name, changes);
     } else {
         auto [pattern, pattern_id, index] = find_pattern_by_current_row();
         if (pattern != nullptr) {
+            const uint8_t old_note = pattern->get_note(pattern->current_row);
             pattern->set_note(pattern->current_row, note);
+            const uint8_t new_note = pattern->get_note(pattern->current_row);
+            const PatternRow pattern_row = {current_channel.index, pattern_id, pattern->current_row};
+            perform_note_action(old_note, new_note, pattern_row, pattern->sequence_index, index);
         }
     }
 }
