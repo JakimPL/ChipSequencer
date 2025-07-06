@@ -47,7 +47,7 @@ void ChangePatternSelectionAction<T>::merge(const Action * /* other */) {
 template <typename T>
 std::string ChangePatternSelectionAction<T>::get_name() const {
     std::ostringstream stream;
-    stream << name << " selection";
+    stream << "Selection: " << name;
     return stream.str();
 }
 

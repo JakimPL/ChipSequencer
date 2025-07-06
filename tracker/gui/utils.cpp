@@ -16,6 +16,7 @@
 #include "names.hpp"
 #include "undo.hpp"
 #include "utils.hpp"
+#include "clipboard/clipboard.hpp"
 #include "patterns/selection.hpp"
 
 int clamp_index(int index, const int size) {
@@ -336,6 +337,7 @@ std::pair<size_t, bool> draw_pattern(
     PatternSelection &selection,
     SequenceRows &selected_rows,
     const bool pattern_view,
+    const bool active_command,
     const int edited_row,
     const size_t channel_index,
     const bool header,
@@ -346,6 +348,7 @@ std::pair<size_t, bool> draw_pattern(
     const bool locked
 ) {
     bool current = false;
+    const bool bypass = pattern.bypass;
     const int min_row_to_draw = std::max(static_cast<int>(start) - static_cast<int>(index), 0);
     const int max_row_to_draw = std::min(static_cast<int>(end) - static_cast<int>(index), static_cast<int>(pattern.notes.size()));
 
@@ -354,12 +357,11 @@ std::pair<size_t, bool> draw_pattern(
     }
 
     ImGui::BeginDisabled(locked);
-    if (ImGui::BeginTable("PatternTable", 3, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg)) {
-        if (ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_AllowWhenBlockedByPopup) &&
-            ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
-            ImGui::OpenPopup("PatternContext");
-        }
+    if (bypass) {
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
+    }
 
+    if (ImGui::BeginTable("PatternTable", 3, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg)) {
         ImGui::TableSetupColumn("Index", ImGuiTableColumnFlags_WidthFixed, 50.0f);
         ImGui::TableSetupColumn("Note");
         ImGui::TableSetupColumn("Octave");
@@ -370,8 +372,8 @@ std::pair<size_t, bool> draw_pattern(
         for (int i = min_row_to_draw; i < max_row_to_draw; i++) {
             const int j = i + index;
             const bool is_current = (pattern.current_row == i);
-            const bool is_selected = !selection.command && selection.is_row_selected(channel_index, j);
-            const bool is_secondary_selected = !selection.command && selected_rows.count({pattern.sequence_index, i}) > 0;
+            const bool is_selected = !active_command && selection.is_row_selected(channel_index, j);
+            const bool is_secondary_selected = !active_command && selected_rows.count({pattern.sequence_index, i}) > 0;
 
             ImGui::TableNextRow();
 
@@ -396,6 +398,14 @@ std::pair<size_t, bool> draw_pattern(
                 current = true;
             }
 
+            const std::string row_id = get_row_id(channel_index, j);
+            const std::string popup_id = "PatternContext" + row_id;
+            if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
+                pattern.current_row = i;
+                current = true;
+                ImGui::OpenPopup(popup_id.c_str());
+            }
+
             selection.form(false, channel_index, j);
 
             ImGui::TableSetColumnIndex(1);
@@ -407,33 +417,38 @@ std::pair<size_t, bool> draw_pattern(
             if (is_current) {
                 ImGui::PopStyleColor();
             }
-        }
 
-        if (ImGui::BeginPopup("PatternContext")) {
-            draw_menu_item("Select all", ShortcutAction::PatternSelectAll);
-            if (pattern_view) {
-                draw_menu_item("Select channel", ShortcutAction::PatternSelectChannel);
+            if (ImGui::BeginPopup(popup_id.c_str())) {
+                draw_menu_item("Cut", ShortcutAction::EditCut);
+                draw_menu_item("Copy", ShortcutAction::EditCopy);
+                draw_menu_item("Paste", ShortcutAction::EditPaste, false, clipboard.has_items(ClipboardCategory::Notes));
+                draw_menu_item("Delete", ShortcutAction::EditDelete);
+                ImGui::Separator();
+                draw_menu_item("Select all", ShortcutAction::PatternSelectAll);
+                if (pattern_view) {
+                    draw_menu_item("Select channel", ShortcutAction::PatternSelectChannel);
+                }
+                draw_menu_item("Clear selection", ShortcutAction::PatternSelectNone);
+                ImGui::Separator();
+                draw_menu_item("Set rest", ShortcutAction::PatternSetNoteRest);
+                draw_menu_item("Set note cut", ShortcutAction::PatternSetNoteCut);
+                draw_menu_item("Set note off", ShortcutAction::PatternSetNoteOff);
+                ImGui::Separator();
+                draw_menu_item("Transpose +1", ShortcutAction::PatternTransposeUp);
+                draw_menu_item("Transpose -1", ShortcutAction::PatternTransposeDown);
+                draw_menu_item("Transpose octave +1", ShortcutAction::PatternTransposeOctaveUp);
+                draw_menu_item("Transpose octave -1", ShortcutAction::PatternTransposeOctaveDown);
+                ImGui::EndPopup();
             }
-            draw_menu_item("Clear selection", ShortcutAction::PatternSelectNone);
-            ImGui::Separator();
-            draw_menu_item("Transpose +1", ShortcutAction::PatternTransposeUp);
-            draw_menu_item("Transpose -1", ShortcutAction::PatternTransposeDown);
-            draw_menu_item("Transpose octave +1", ShortcutAction::PatternTransposeOctaveUp);
-            draw_menu_item("Transpose octave -1", ShortcutAction::PatternTransposeOctaveDown);
-            ImGui::Separator();
-            draw_menu_item("Set rest", ShortcutAction::PatternSetNoteRest);
-            draw_menu_item("Set note cut", ShortcutAction::PatternSetNoteCut);
-            draw_menu_item("Set note off", ShortcutAction::PatternSetNoteOff);
-            ImGui::Separator();
-            draw_menu_item("Cut", ShortcutAction::EditCut);
-            draw_menu_item("Copy", ShortcutAction::EditCopy);
-            draw_menu_item("Paste", ShortcutAction::EditPaste);
-            draw_menu_item("Delete", ShortcutAction::EditDelete);
-            ImGui::EndPopup();
         }
 
         ImGui::EndTable();
     }
+
+    if (bypass) {
+        ImGui::PopStyleVar();
+    }
+
     ImGui::EndDisabled();
 
     // realignment
@@ -447,6 +462,7 @@ std::pair<size_t, bool> draw_commands_pattern(
     PatternSelection &selection,
     SequenceRows &selected_rows,
     const bool pattern_view,
+    const bool active_command,
     const int edited_row,
     const size_t channel_index,
     const bool header,
@@ -457,6 +473,7 @@ std::pair<size_t, bool> draw_commands_pattern(
     const bool locked
 ) {
     bool current = false;
+    const bool bypass = pattern.bypass;
     const int min = std::max(static_cast<int>(start) - static_cast<int>(index), 0);
     const int max = std::min(static_cast<int>(end) - static_cast<int>(index), static_cast<int>(pattern.commands.size()));
     if (max <= 0 || min >= pattern.commands.size()) {
@@ -464,12 +481,11 @@ std::pair<size_t, bool> draw_commands_pattern(
     }
 
     ImGui::BeginDisabled(locked);
-    if (ImGui::BeginTable("CommandsPatternTable", 3, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg)) {
-        if (ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_AllowWhenBlockedByPopup) &&
-            ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
-            ImGui::OpenPopup("CommandsPatternContext");
-        }
+    if (bypass) {
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
+    }
 
+    if (ImGui::BeginTable("CommandsPatternTable", 3, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg)) {
         ImGui::BeginDisabled(gui.is_playing());
         ImGui::TableSetupColumn("Index", ImGuiTableColumnFlags_WidthFixed, 40.0f);
         ImGui::TableSetupColumn("Com", ImGuiTableColumnFlags_WidthFixed, 50.0f);
@@ -482,8 +498,8 @@ std::pair<size_t, bool> draw_commands_pattern(
             const int j = i + index;
             const bool is_command_current = (pattern.current_row == i && pattern.selection == CommandSelection::Command);
             const bool is_value_current = (pattern.current_row == i && pattern.selection == CommandSelection::Value);
-            const bool is_selected = selection.command && selection.is_row_selected(channel_index, j);
-            const bool is_secondary_selected = selection.command && selected_rows.count({pattern.sequence_index, i}) > 0;
+            const bool is_selected = active_command && selection.is_row_selected(channel_index, j);
+            const bool is_secondary_selected = active_command && selected_rows.count({pattern.sequence_index, i}) > 0;
 
             ImGui::TableNextRow();
             if (playing_row == j) {
@@ -508,6 +524,16 @@ std::pair<size_t, bool> draw_commands_pattern(
             const std::string displayed_row = get_displayed_row(i, j, gui.row_display);
             if (ImGui::Selectable(displayed_row.c_str(), false, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)) {
             }
+
+            const std::string row_id = get_row_id(channel_index, j);
+            const std::string popup_id = "CommandsPatternContext" + row_id;
+            if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
+                pattern.current_row = i;
+                pattern.set_selection(i, CommandSelection::Command);
+                current = true;
+                ImGui::OpenPopup(popup_id.c_str());
+            }
+
             selection.form(true, channel_index, j);
             ImGui::SameLine(0, 0);
 
@@ -548,7 +574,6 @@ std::pair<size_t, bool> draw_commands_pattern(
             ImGui::PushID(MAX_STEPS + i);
             if (ImGui::Selectable(value.c_str(), is_value_current)) {
                 pattern.set_selection(i, CommandSelection::Value);
-                pattern.values_handler.set_buffer(pattern.values[i]);
                 current = true;
             }
             show_commands_pattern_tooltip(pattern, i);
@@ -557,25 +582,30 @@ std::pair<size_t, bool> draw_commands_pattern(
             if (is_value_current) {
                 ImGui::PopStyleColor();
             }
-        }
 
-        if (ImGui::BeginPopup("CommandsPatternContext")) {
-            draw_menu_item("Select all", ShortcutAction::PatternSelectAll);
-            if (pattern_view) {
-                draw_menu_item("Select channel", ShortcutAction::PatternSelectChannel);
+            if (ImGui::BeginPopup(popup_id.c_str())) {
+                draw_menu_item("Select all", ShortcutAction::PatternSelectAll);
+                if (pattern_view) {
+                    draw_menu_item("Select channel", ShortcutAction::PatternSelectChannel);
+                }
+                draw_menu_item("Clear selection", ShortcutAction::PatternSelectNone);
+                ImGui::Separator();
+                draw_menu_item("Cut", ShortcutAction::EditCut);
+                draw_menu_item("Copy", ShortcutAction::EditCopy);
+                draw_menu_item("Paste", ShortcutAction::EditPaste, false, clipboard.has_items(ClipboardCategory::Commands));
+                draw_menu_item("Delete", ShortcutAction::EditDelete);
+                ImGui::EndPopup();
             }
-            draw_menu_item("Clear selection", ShortcutAction::PatternSelectNone);
-            ImGui::Separator();
-            draw_menu_item("Cut", ShortcutAction::EditCut);
-            draw_menu_item("Copy", ShortcutAction::EditCopy);
-            draw_menu_item("Paste", ShortcutAction::EditPaste);
-            draw_menu_item("Delete", ShortcutAction::EditDelete);
-            ImGui::EndPopup();
         }
 
         ImGui::EndDisabled();
         ImGui::EndTable();
     }
+
+    if (bypass) {
+        ImGui::PopStyleVar();
+    }
+
     ImGui::EndDisabled();
 
     // realignment
@@ -910,12 +940,18 @@ void show_commands_pattern_tooltip(const CommandsPattern &pattern, const size_t 
     }
 }
 
-void draw_menu_item(const std::string &name, const std::optional<ShortcutAction> action, const bool checked) {
+bool draw_menu_item(const std::string &name, const std::optional<ShortcutAction> action, const bool checked, const bool condition) {
+    ImGui::BeginDisabled(!condition);
+    bool clicked = false;
     if (get_menu_item(name, action, checked)) {
+        clicked = true;
         if (action.has_value()) {
             shortcut_manager.execute_action(action.value());
         }
     }
+
+    ImGui::EndDisabled();
+    return clicked;
 }
 
 bool get_menu_item(const std::string &name, const std::optional<ShortcutAction> action, const bool checked) {
@@ -1004,6 +1040,10 @@ void push_tertiary_style() {
 
 void pop_tertiary_style() {
     ImGui::PopStyleColor(13);
+}
+
+std::string get_row_id(const size_t channel_index, const int row) {
+    return std::to_string(channel_index) + "," + std::to_string(row);
 }
 
 std::string get_displayed_row(

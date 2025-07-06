@@ -20,6 +20,7 @@ class Clipboard {
 
     void add_item(std::unique_ptr<ClipboardItem> item);
     ClipboardItem *get_recent_item(ClipboardCategory category) const;
+    bool has_items(ClipboardCategory category) const;
 
     const std::deque<std::unique_ptr<ClipboardItem>> *get_items(ClipboardCategory category) const;
     void move_item_to_front(ClipboardCategory category, size_t index);

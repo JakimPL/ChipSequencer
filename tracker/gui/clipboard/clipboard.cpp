@@ -35,6 +35,11 @@ ClipboardItem *Clipboard::get_recent_item(const ClipboardCategory category) cons
     return nullptr;
 }
 
+bool Clipboard::has_items(const ClipboardCategory category) const {
+    auto it = items.find(category);
+    return it != items.end() && !it->second.empty();
+}
+
 const std::deque<std::unique_ptr<ClipboardItem>> *Clipboard::get_items(const ClipboardCategory category) const {
     auto it = items.find(category);
     if (it != items.end()) {

@@ -65,7 +65,6 @@ void GUICommandsSequencesPanel::from() {
 }
 
 void GUICommandsSequencesPanel::to() const {
-    const bool focus = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
     if (!is_index_valid()) {
         return;
     }
@@ -132,7 +131,7 @@ void GUICommandsSequencesPanel::update() {
 }
 
 void GUICommandsSequencesPanel::shortcut_actions() {
-    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+    if (!focus) {
         return;
     }
 
@@ -200,7 +199,7 @@ void GUICommandsSequencesPanel::delete_selection() {
         SetItemsFunction<CommandValue> function = [this](const std::map<PatternRow, CommandValue> &commands_values) {
             this->set_commands(commands_values);
         };
-        perform_action_pattern_selection<CommandValue>(this, {Target::COMMANDS_SEQUENCE}, "Delete", changes, function);
+        perform_action_pattern_selection<CommandValue>(this, {Target::COMMANDS_SEQUENCE, sequence_index}, "Delete", changes, function);
     } else {
         const int row = current_sequence.pattern.current_row;
         const CommandValue old_command_value = current_sequence.pattern.get_command(row);
@@ -266,7 +265,7 @@ void GUICommandsSequencesPanel::perform_commands_action(const std::string &actio
         return this->set_commands(commands_changes);
     };
 
-    perform_action_pattern_selection<CommandValue>(this, {Target::COMMANDS_SEQUENCE}, action_name, changes, function);
+    perform_action_pattern_selection<CommandValue>(this, {Target::COMMANDS_SEQUENCE, sequence_index}, action_name, changes, function);
 }
 
 void GUICommandsSequencesPanel::perform_command_action(const int row, const CommandValue &old_command, const CommandValue &new_command) {
@@ -310,7 +309,7 @@ void GUICommandsSequencesPanel::draw_sequence() {
 
     SequenceRows secondary_sequence_rows;
     const int edited_row = edit_dialog_box.visible ? edit_dialog_box.item : -1;
-    draw_commands_pattern(current_sequence.pattern, selection, secondary_sequence_rows, false, edited_row);
+    draw_commands_pattern(current_sequence.pattern, selection, secondary_sequence_rows, false, true, edited_row);
 }
 
 void GUICommandsSequencesPanel::open_edit_dialog_box(const int item) {
@@ -575,7 +574,7 @@ void GUICommandsSequencesPanel::set_current_command() {
 }
 
 void GUICommandsSequencesPanel::check_keyboard_input() {
-    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+    if (!focus) {
         return;
     }
 
@@ -623,7 +622,7 @@ void GUICommandsSequencesPanel::clear_input_buffers() {
 }
 
 bool GUICommandsSequencesPanel::is_active() const {
-    return visible && ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+    return visible && focus;
 }
 
 void GUICommandsSequencesPanel::post_actions() {

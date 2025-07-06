@@ -61,7 +61,6 @@ void GUISequencesPanel::from() {
 }
 
 void GUISequencesPanel::to() const {
-    const bool focus = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
     if (!is_index_valid()) {
         return;
     }
@@ -194,12 +193,22 @@ void GUISequencesPanel::deselect_all() {
 
 void GUISequencesPanel::set_selection_note(const uint8_t note) {
     if (selection.is_active()) {
-        for (size_t row = selection.start; row <= selection.end; row++) {
+        PatternSelectionChange<uint8_t> changes;
+        for (int row = selection.start; row <= selection.end; row++) {
+            const uint8_t old_note = current_sequence.pattern.get_note(row);
             const uint8_t row_note = row == selection.start ? note : NOTE_REST;
             current_sequence.pattern.set_note(row, row_note);
+            changes[{0, 0, row}] = {old_note, row_note};
         }
+
+        const std::string note_name = get_full_note_name(note);
+        perform_notes_action("Set note " + note_name, changes);
     } else {
-        current_sequence.pattern.set_note(current_sequence.pattern.current_row, note);
+        const int row = current_sequence.pattern.current_row;
+        const uint8_t old_note = current_sequence.pattern.get_note(row);
+        current_sequence.pattern.set_note(row, note);
+        const uint8_t new_note = current_sequence.pattern.get_note(row);
+        perform_note_action(row, old_note, new_note);
     }
 }
 
@@ -277,13 +286,25 @@ void GUISequencesPanel::transpose_selected_rows(const int value) {
         return;
     }
 
+    PatternSelectionChange<uint8_t> changes;
     if (selection.is_active()) {
-        for (size_t i = selection.start; i <= selection.end; i++) {
-            current_sequence.pattern.transpose(value, i);
+        for (int row = selection.start; row <= selection.end; row++) {
+            const uint8_t old_note = current_sequence.pattern.get_note(row);
+            current_sequence.pattern.transpose(value, row);
+            const uint8_t new_note = current_sequence.pattern.get_note(row);
+            const PatternRow pattern_row = {0, 0, row};
+            changes[pattern_row] = {old_note, new_note};
         }
     } else {
+        const int row = current_sequence.pattern.current_row;
+        const uint8_t old_note = current_sequence.pattern.get_note(row);
         current_sequence.pattern.transpose(value);
+        const uint8_t new_note = current_sequence.pattern.get_note(row);
+        const PatternRow pattern_row = {0, 0, row};
+        changes[pattern_row] = {old_note, new_note};
     }
+
+    perform_notes_action("Transpose notes by " + std::to_string(value), changes);
 }
 
 void GUISequencesPanel::perform_notes_action(const std::string &action_name, const PatternSelectionChange<uint8_t> &changes) {
@@ -291,7 +312,7 @@ void GUISequencesPanel::perform_notes_action(const std::string &action_name, con
         this->set_notes(notes);
     };
 
-    perform_action_pattern_selection<uint8_t>(this, {Target::SEQUENCE}, action_name, changes, function);
+    perform_action_pattern_selection<uint8_t>(this, {Target::SEQUENCE, sequence_index}, action_name, changes, function);
 }
 
 void GUISequencesPanel::perform_note_action(const int row, const uint8_t old_note, const uint8_t new_note) {
@@ -388,11 +409,11 @@ void GUISequencesPanel::draw_sequence() {
 
     SequenceRows secondary_sequence_rows;
     const int edited_row = edit_dialog_box.visible ? edit_dialog_box.item : -1;
-    draw_pattern(current_sequence.pattern, sequence_selection, secondary_sequence_rows, false, edited_row);
+    draw_pattern(current_sequence.pattern, sequence_selection, secondary_sequence_rows, false, false, edited_row);
 }
 
 void GUISequencesPanel::check_keyboard_input() {
-    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+    if (!focus) {
         return;
     }
 
@@ -429,7 +450,7 @@ void GUISequencesPanel::set_index(const int index) {
 }
 
 bool GUISequencesPanel::is_active() const {
-    return visible && ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+    return visible && focus;
 }
 
 void GUISequencesPanel::register_shortcuts() {

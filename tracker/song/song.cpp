@@ -81,6 +81,8 @@ void Song::save_to_file(const std::string &filename) {
         remove_temp_directory(temp_base, clear_temp);
         throw;
     }
+
+    std::cout << "Saved song to: " << filename << std::endl;
 }
 
 void Song::load_from_file(const std::string &filename) {
@@ -105,6 +107,8 @@ void Song::load_from_file(const std::string &filename) {
         remove_temp_directory(temp_base, clear_temp);
         throw;
     }
+
+    std::cout << "Loaded song from: " << filename << std::endl;
 }
 
 void Song::compile(const std::string &filename, const CompilationScheme scheme, const CompilationTarget compilation_target) const {

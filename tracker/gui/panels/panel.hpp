@@ -27,11 +27,15 @@ class GUIPanel {
     virtual void to() const {};
     void initialize();
 
+    bool focus = false;
     bool visible = true;
     const bool windowed;
 
     void frame();
     void add_action(Action *action, bool undo);
+
+    bool is_focused() const;
+    void set_focus(bool focus = true);
 
   protected:
     bool save = false;

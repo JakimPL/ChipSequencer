@@ -108,7 +108,7 @@ void GUIDSPsPanel::to() const {
         gui.stop();
     }
 
-    if (!save && !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+    if (!save && !focus) {
         return;
     }
 

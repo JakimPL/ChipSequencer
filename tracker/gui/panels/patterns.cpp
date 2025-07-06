@@ -81,15 +81,16 @@ void GUIPatternsPanel::draw_channel(size_t channel_index) {
     const uint16_t start = page * gui.get_page_size();
     const uint16_t end = start + gui.get_page_size();
 
-    PatternSelection empty_selection = {selection.command};
-    PatternSelection &pattern_selection = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ? selection : empty_selection;
+    const bool active_command = is_commands_view();
+    PatternSelection empty_selection = {active_command};
+    PatternSelection &pattern_selection = focus ? selection : empty_selection;
 
     int row = 0;
     for (auto &pattern : current_patterns.patterns[channel_index]) {
         const int playing_row = current_patterns.playing_rows[{false, channel_index}];
         const bool locked = lock_registry.is_locked(Target::SEQUENCE, pattern.sequence_index);
         auto [new_row, select] = draw_pattern(
-            pattern, pattern_selection, secondary_sequence_rows, true, -1, channel_index, false, row, playing_row, start, end, locked
+            pattern, pattern_selection, secondary_sequence_rows, true, active_command, -1, channel_index, false, row, playing_row, start, end, locked
         );
         if (select) {
             current_channel = {false, channel_index};
@@ -108,15 +109,16 @@ void GUIPatternsPanel::draw_commands_channel(size_t channel_index) {
     const uint16_t start = page * gui.get_page_size();
     const uint16_t end = start + gui.get_page_size();
 
-    PatternSelection empty_selection = {selection.command};
-    PatternSelection &commands_selection = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) ? selection : empty_selection;
+    const bool active_command = is_commands_view();
+    PatternSelection empty_selection = {active_command};
+    PatternSelection &commands_selection = focus ? selection : empty_selection;
 
     int row = 0;
     for (auto &pattern : current_patterns.commands_patterns[channel_index]) {
         const int playing_row = current_patterns.playing_rows[{true, channel_index}];
         const bool locked = lock_registry.is_locked(Target::COMMANDS_SEQUENCE, pattern.sequence_index);
         auto [new_row, select] = draw_commands_pattern(
-            pattern, commands_selection, secondary_sequence_rows, true, -1, channel_index, false, row, playing_row, start, end, locked
+            pattern, commands_selection, secondary_sequence_rows, true, active_command, -1, channel_index, false, row, playing_row, start, end, locked
         );
         if (select) {
             current_channel = {true, channel_index};
@@ -137,6 +139,7 @@ void GUIPatternsPanel::from() {
 }
 
 void GUIPatternsPanel::clear() {
+    save_selection = false;
     current_patterns.total_rows = 0;
     current_patterns.playing_rows.clear();
     pattern_rows.clear();
@@ -160,8 +163,9 @@ void GUIPatternsPanel::from_sequences() {
 
         uint16_t row = 0;
         current_patterns.playing_rows[{false, channel_index}] = -1;
+        const bool bypass = channel->flag & FLAG_BYPASS;
         for (size_t j = 0; j < order->order_length; ++j) {
-            process_sequence(channel_index, j, order_sequences[j], row);
+            process_sequence(channel_index, j, order_sequences[j], row, bypass);
         }
 
         current_patterns.patterns_max_rows[channel_index] = row;
@@ -173,7 +177,8 @@ void GUIPatternsPanel::process_sequence(
     const size_t channel_index,
     const size_t j,
     const uint8_t sequence_index,
-    uint16_t &row
+    uint16_t &row,
+    const bool bypass
 ) {
     if (sequence_index >= sequences.size()) {
         return;
@@ -188,6 +193,7 @@ void GUIPatternsPanel::process_sequence(
     pattern.id = j;
     pattern.starting_row = row;
     pattern.current_row = !current_channel.command && channel_index == current_channel.index ? current_row - row : -1;
+    pattern.bypass = bypass;
 
     if (playing) {
         if (gui.repeat_patterns) {
@@ -219,9 +225,10 @@ void GUIPatternsPanel::from_commands_sequences() {
         std::vector<uint8_t> order_sequences = std::vector<uint8_t>(order->sequences.begin(), order->sequences.begin() + order->order_length);
 
         uint16_t row = 0;
+        const bool bypass = channel->flag & FLAG_BYPASS;
         current_patterns.playing_rows[{true, channel_index}] = -1;
         for (size_t j = 0; j < order->order_length; ++j) {
-            process_commands_sequence(channel_index, j, order_sequences[j], row);
+            process_commands_sequence(channel_index, j, order_sequences[j], row, bypass);
         }
 
         current_patterns.commands_patterns_max_rows[channel_index] = row;
@@ -244,7 +251,8 @@ void GUIPatternsPanel::process_commands_sequence(
     const size_t channel_index,
     const size_t j,
     const uint8_t sequence_index,
-    uint16_t &row
+    uint16_t &row,
+    const bool bypass
 ) {
     if (sequence_index >= commands_sequences.size()) {
         return;
@@ -263,6 +271,7 @@ void GUIPatternsPanel::process_commands_sequence(
     pattern.id = j;
     pattern.starting_row = row;
     pattern.current_row = current_channel.command && channel_index == current_channel.index ? current_row - row : -1;
+    pattern.bypass = bypass;
 
     if (playing) {
         if (gui.repeat_patterns) {
@@ -293,11 +302,12 @@ void GUIPatternsPanel::add_repeated_patterns() {
         const Order *order = orders[order_index];
         std::vector<uint8_t> order_sequences = std::vector<uint8_t>(order->sequences.begin(), order->sequences.begin() + order->order_length);
 
+        const bool bypass = channel->flag & FLAG_BYPASS;
         size_t k = current_patterns.patterns.size();
         while (row < current_patterns.total_rows) {
             bool limit_exceeded = false;
             for (size_t j = 0; j < order->order_length; ++j) {
-                process_sequence(channel_index, k, order_sequences[j], row);
+                process_sequence(channel_index, k, order_sequences[j], row, bypass);
                 if (row >= current_patterns.total_rows) {
                     limit_exceeded = true;
                     break;
@@ -329,11 +339,12 @@ void GUIPatternsPanel::add_repeated_commands_patterns() {
         const Order *order = orders[order_index];
         std::vector<uint8_t> order_sequences = std::vector<uint8_t>(order->sequences.begin(), order->sequences.begin() + order->order_length);
 
+        const bool bypass = channel->flag & FLAG_BYPASS;
         size_t k = current_patterns.commands_patterns.size();
         while (row < current_patterns.total_rows) {
             bool limit_exceeded = false;
             for (size_t j = 0; j < order->order_length; ++j) {
-                process_commands_sequence(channel_index, k, order_sequences[j], row);
+                process_commands_sequence(channel_index, k, order_sequences[j], row, bypass);
                 if (row >= current_patterns.total_rows) {
                     limit_exceeded = true;
                     break;
@@ -350,7 +361,7 @@ void GUIPatternsPanel::add_repeated_commands_patterns() {
 }
 
 void GUIPatternsPanel::to() const {
-    if (!save && !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+    if (!save && !focus) {
         return;
     }
 
@@ -359,7 +370,7 @@ void GUIPatternsPanel::to() const {
 }
 
 void GUIPatternsPanel::shortcut_actions() {
-    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+    if (!focus) {
         return;
     }
 
@@ -452,6 +463,7 @@ void GUIPatternsPanel::deselect_all() {
 
 void GUIPatternsPanel::set_selection_note(const uint8_t note) {
     if (selection.is_active()) {
+        PatternSelectionChange<uint8_t> changes;
         for (const auto &[sequence_row, pattern_rows] : pattern_rows_by_sequence_row) {
             for (const PatternRow &pattern_row : pattern_rows) {
                 const size_t channel_index = pattern_row.channel_index;
@@ -459,13 +471,23 @@ void GUIPatternsPanel::set_selection_note(const uint8_t note) {
                 const int row = pattern_row.row;
                 Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
                 const uint8_t row_note = (selection_starts.find(sequence_row) != selection_starts.end()) ? note : NOTE_REST;
+                const uint8_t old_note = pattern.get_note(row);
                 pattern.set_note(row, row_note);
+                const uint8_t new_note = pattern.get_note(row);
+                changes[pattern_row] = {old_note, new_note};
             }
         }
+
+        const std::string note_name = get_full_note_name(note);
+        perform_notes_action("Set note " + note_name, changes);
     } else {
         auto [pattern, pattern_id, index] = find_pattern_by_current_row();
         if (pattern != nullptr) {
+            const uint8_t old_note = pattern->get_note(pattern->current_row);
             pattern->set_note(pattern->current_row, note);
+            const uint8_t new_note = pattern->get_note(pattern->current_row);
+            const PatternRow pattern_row = {current_channel.index, pattern_id, pattern->current_row};
+            perform_note_action(old_note, new_note, pattern_row, pattern->sequence_index, index);
         }
     }
 }
@@ -591,6 +613,7 @@ void GUIPatternsPanel::paste_pattern_selection(ClipboardNotes *notes) {
         }
     }
 
+    save_selection = true;
     perform_notes_action("Paste", changes);
 }
 
@@ -653,6 +676,7 @@ void GUIPatternsPanel::paste_commands_pattern_selection(ClipboardCommands *comma
         }
     }
 
+    save_selection = true;
     perform_commands_action("Paste", changes);
 }
 
@@ -679,6 +703,7 @@ void GUIPatternsPanel::delete_selection() {
         }
     }
 
+    save_selection = true;
     if (command) {
         perform_commands_action("Delete", commands_changes);
     } else {
@@ -687,23 +712,30 @@ void GUIPatternsPanel::delete_selection() {
 }
 
 void GUIPatternsPanel::transpose_selected_rows(const int value) {
-    if (value == 0 || !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+    if (value == 0 || !focus) {
         return;
     }
 
+    PatternSelectionChange<uint8_t> changes;
     for (const PatternRow &pattern_row : secondary_pattern_rows) {
         const size_t channel_index = pattern_row.channel_index;
         const size_t pattern_id = pattern_row.pattern_id;
         const int row = pattern_row.row;
         Pattern &pattern = current_patterns.patterns[channel_index][pattern_id];
+        const uint8_t old_note = pattern.get_note(row);
         pattern.transpose(value, row);
+        const uint8_t new_note = pattern.get_note(row);
+        changes[pattern_row] = {old_note, new_note};
     }
+
+    save_selection = true;
+    perform_notes_action("Transpose notes by " + std::to_string(value), changes);
 }
 
 void GUIPatternsPanel::to_sequences() const {
     const bool command = is_commands_view();
     std::set<const Pattern *> unique_patterns;
-    if (!command && selection_action != PatternSelectionAction::None && !selection.selecting) {
+    if (!command && save_selection && !selection.selecting) {
         for (const auto &[channel_index, pattern_id, row] : secondary_pattern_rows) {
             const Pattern &selected_pattern = current_patterns.patterns.at(channel_index).at(pattern_id);
             if (!lock_registry.is_locked(Target::SEQUENCE, selected_pattern.sequence_index)) {
@@ -751,7 +783,7 @@ void GUIPatternsPanel::to_commands_sequences() const {
 }
 
 void GUIPatternsPanel::check_keyboard_input() {
-    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+    if (!focus) {
         return;
     }
 
@@ -1124,6 +1156,12 @@ auto GUIPatternsPanel::find_commands_pattern_by_current_row_implementation(Comma
 
 void GUIPatternsPanel::perform_notes_action(const std::string &action_name, const PatternSelectionChange<uint8_t> &changes) {
     const SetItemsFunction<uint8_t> function = [this](const std::map<PatternRow, uint8_t> &notes) {
+        selection_action = PatternSelectionAction::Paste;
+        secondary_pattern_rows.clear();
+        current_channel = {false, 0};
+        for (const auto &[pattern_row, _] : notes) {
+            secondary_pattern_rows.insert(pattern_row);
+        }
         return this->set_notes(notes);
     };
 
@@ -1131,8 +1169,14 @@ void GUIPatternsPanel::perform_notes_action(const std::string &action_name, cons
 }
 
 void GUIPatternsPanel::perform_commands_action(const std::string &action_name, const PatternSelectionChange<CommandValue> &changes) {
-    const SetItemsFunction<CommandValue> function = [this](const std::map<PatternRow, CommandValue> &commands_changes) {
-        return this->set_commands(commands_changes);
+    const SetItemsFunction<CommandValue> function = [this](const std::map<PatternRow, CommandValue> &commands) {
+        selection_action = PatternSelectionAction::Paste;
+        secondary_pattern_rows.clear();
+        current_channel = {true, 0};
+        for (const auto &[pattern_row, _] : commands) {
+            secondary_pattern_rows.insert(pattern_row);
+        }
+        return this->set_commands(commands);
     };
 
     perform_action_pattern_selection<CommandValue>(this, {Target::COMMANDS_SEQUENCE}, action_name, changes, function);
@@ -1231,7 +1275,7 @@ bool GUIPatternsPanel::is_commands_view() const {
 }
 
 bool GUIPatternsPanel::is_active() const {
-    return visible && ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+    return visible && focus;
 }
 
 bool GUIPatternsPanel::is_commands_view_active() const {
