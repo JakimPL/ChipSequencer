@@ -10,6 +10,7 @@ struct ThemeColor {
     double b = 0.0;
     double a = 1.0;
 
+    ThemeColor() = default;
     explicit ThemeColor(double r, double g, double b, double a = 1.0);
     explicit ThemeColor(const ImVec4 &color);
     explicit ThemeColor(const ImU32 &color);
