@@ -15,7 +15,7 @@ ThemeColor::ThemeColor(const ImU32 &color)
       a((color >> IM_COL32_A_SHIFT) / 255.0) {
 }
 
-ImU32 ThemeColor::to_im_u32() const {
+ImU32 ThemeColor::to_u32() const {
     return IM_COL32(
         static_cast<unsigned char>(r * 255),
         static_cast<unsigned char>(g * 255),
@@ -24,7 +24,7 @@ ImU32 ThemeColor::to_im_u32() const {
     );
 }
 
-ImVec4 ThemeColor::to_im_vec4() const {
+ImVec4 ThemeColor::to_vec4() const {
     return ImVec4(static_cast<float>(r), static_cast<float>(g), static_cast<float>(b), static_cast<float>(a));
 }
 

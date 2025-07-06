@@ -7,6 +7,7 @@
 #include "../names.hpp"
 #include "../undo.hpp"
 #include "../utils.hpp"
+#include "../themes/theme.hpp"
 #include "orders.hpp"
 
 GUIOrdersPanel::GUIOrdersPanel(const bool visible, const bool windowed)
@@ -161,7 +162,7 @@ void GUIOrdersPanel::draw_order() {
         const bool is_selected = (selected_sequence == i);
         const std::string order_string = std::to_string(item);
         if (is_selected) {
-            ImGui::PushStyleColor(ImGuiCol_Text, GUI_ROW_TEXT_CURRENT);
+            ImGui::PushStyleColor(ImGuiCol_Text, theme.get_u32_color(ThemeItem::RowTextCurrent));
         }
 
         if (ImGui::Selectable("##selectable", is_selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)) {

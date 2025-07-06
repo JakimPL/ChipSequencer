@@ -12,8 +12,8 @@ struct ThemeColor {
     explicit ThemeColor(const ImVec4 &color);
     explicit ThemeColor(const ImU32 &color);
 
-    ImU32 to_im_u32() const;
-    ImVec4 to_im_vec4() const;
+    ImU32 to_u32() const;
+    ImVec4 to_vec4() const;
     bool operator==(const ThemeColor &other) const;
     bool operator!=(const ThemeColor &other) const;
 };

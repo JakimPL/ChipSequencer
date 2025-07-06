@@ -7,12 +7,16 @@
 
 class Theme {
   private:
-    std::unordered_map<ThemeColorItem, ThemeColor> colors;
+    std::unordered_map<ThemeItem, ThemeColor> colors;
+    ThemeColor default_color = ThemeColor(1.0, 1.0, 1.0, 1.0);
 
   public:
-    Theme() = default;
+    Theme();
     Theme(const Theme &other) = default;
     Theme &operator=(const Theme &other) = default;
     Theme(Theme &&other) = default;
     Theme &operator=(Theme &&other) = default;
+
+    ImU32 get_u32_color(const ThemeItem item) const;
+    ImVec4 get_vec4_color(const ThemeItem item) const;
 };

@@ -3,6 +3,7 @@
 #include "gui/clipboard/clipboard.hpp"
 #include "gui/history/manager.hpp"
 #include "gui/shortcuts/manager.hpp"
+#include "gui/themes/theme.hpp"
 #include "song/buffers.hpp"
 #include "song/core.hpp"
 #include "song/song.hpp"
@@ -22,6 +23,7 @@ Clipboard clipboard;
 HistoryManager history_manager;
 ShortcutManager shortcut_manager;
 ResourceManager resource_manager;
+Theme theme;
 Buffers buffers;
 
 std::filesystem::path current_path;

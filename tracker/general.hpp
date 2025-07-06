@@ -12,6 +12,7 @@ class Clipboard;
 class HistoryManager;
 class ShortcutManager;
 class ResourceManager;
+class Theme;
 class Buffers;
 class Song;
 
@@ -24,6 +25,7 @@ extern Clipboard clipboard;
 extern HistoryManager history_manager;
 extern ShortcutManager shortcut_manager;
 extern ResourceManager resource_manager;
+extern Theme theme;
 extern Buffers buffers;
 
 extern std::filesystem::path current_path;

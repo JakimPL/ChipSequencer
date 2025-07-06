@@ -18,6 +18,7 @@
 #include "utils.hpp"
 #include "clipboard/clipboard.hpp"
 #include "patterns/selection.hpp"
+#include "themes/theme.hpp"
 
 int clamp_index(int index, const int size) {
     return clamp(index, 0, size - 1);
@@ -388,7 +389,7 @@ std::pair<size_t, bool> draw_pattern(
             }
 
             if (is_current) {
-                ImGui::PushStyleColor(ImGuiCol_Text, GUI_ROW_TEXT_CURRENT);
+                ImGui::PushStyleColor(ImGuiCol_Text, theme.get_u32_color(ThemeItem::RowTextCurrent));
             }
 
             ImGui::TableSetColumnIndex(0);
@@ -513,10 +514,10 @@ std::pair<size_t, bool> draw_commands_pattern(
             }
 
             if (is_command_current) {
-                ImGui::PushStyleColor(ImGuiCol_Text, GUI_ROW_TEXT_CURRENT);
+                ImGui::PushStyleColor(ImGuiCol_Text, theme.get_u32_color(ThemeItem::RowTextCurrent));
                 ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_CURRENT_COMMAND);
             } else if (is_value_current) {
-                ImGui::PushStyleColor(ImGuiCol_Text, GUI_ROW_TEXT_CURRENT);
+                ImGui::PushStyleColor(ImGuiCol_Text, theme.get_u32_color(ThemeItem::RowTextCurrent));
                 ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_CURRENT_VALUE);
             }
 
@@ -542,7 +543,7 @@ std::pair<size_t, bool> draw_commands_pattern(
             }
 
             if (is_command_current) {
-                ImGui::PushStyleColor(ImGuiCol_Text, GUI_ROW_TEXT_CURRENT);
+                ImGui::PushStyleColor(ImGuiCol_Text, theme.get_u32_color(ThemeItem::RowTextCurrent));
             }
 
             ImGui::PushID(i);
@@ -562,7 +563,7 @@ std::pair<size_t, bool> draw_commands_pattern(
 
             std::string value;
             if (is_value_current) {
-                ImGui::PushStyleColor(ImGuiCol_Text, GUI_ROW_TEXT_CURRENT);
+                ImGui::PushStyleColor(ImGuiCol_Text, theme.get_u32_color(ThemeItem::RowTextCurrent));
                 value = pattern.values_handler.get_buffer();
             } else {
                 value = pattern.values[i].empty() ? "" : pattern.values[i];
