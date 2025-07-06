@@ -27,9 +27,11 @@ void GUIMenu::draw() {
 }
 
 void GUIMenu::draw_menu() {
-    const GUIElement current_window = gui.get_active_pattern_window();
-    if (current_window != GUIElement::Count) {
+    const GUIElement current_window = gui.get_focused_element();
+    if (current_window != GUIElement::Menu &&
+        current_window != GUIElement::Count) {
         active_window = current_window;
+        commands_view_active = gui.is_commands_pattern_view_active();
     }
 
     if (ImGui::BeginMainMenuBar()) {
@@ -73,12 +75,14 @@ void GUIMenu::draw_menu() {
             clicked |= draw_menu_item("Cut", ShortcutAction::EditCut);
             clicked |= draw_menu_item("Copy", ShortcutAction::EditCopy);
             clicked |= draw_menu_item("Paste", ShortcutAction::EditPaste);
-            if (active_window != GUIElement::Count) {
+            if (active_window == GUIElement::Patterns ||
+                active_window == GUIElement::Sequences ||
+                active_window == GUIElement::CommandsSequences) {
                 ImGui::Separator();
                 clicked |= draw_menu_item("Select all", ShortcutAction::PatternSelectAll);
                 clicked |= draw_menu_item("Select channel", ShortcutAction::PatternSelectChannel);
                 clicked |= draw_menu_item("Deselect all", ShortcutAction::PatternSelectNone);
-                if (!gui.is_commands_pattern_view_active()) {
+                if (!commands_view_active) {
                     ImGui::Separator();
                     clicked |= draw_menu_item("Transpose up", ShortcutAction::PatternTransposeUp);
                     clicked |= draw_menu_item("Transpose down", ShortcutAction::PatternTransposeDown);
