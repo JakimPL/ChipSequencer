@@ -213,7 +213,6 @@ void GUIMenu::file_compile(const CompilationScheme scheme, const CompilationTarg
     const std::string platform = compilation_target == CompilationTarget::Linux ? "linux" : "windows";
     nfdresult_t result = NFD_SaveDialog(platform == "linux" ? "" : "exe", nullptr, &target_path);
     if (result == NFD_OKAY) {
-        // Use RAII to manage the memory allocated by NFD
         std::unique_ptr<nfdchar_t, void (*)(void *)> path_guard(target_path, free);
         std::filesystem::path new_path(target_path);
         new_path = check_and_correct_path_by_extension(new_path, platform == "linux" ? "" : ".exe");

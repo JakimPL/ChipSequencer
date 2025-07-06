@@ -93,6 +93,10 @@ ImVec4 Theme::get_vec4_color(const ThemeItem item) const {
     return get_color(item).to_vec4();
 }
 
+void Theme::set_color(const ThemeItem item, const ThemeColor &color) {
+    colors[item] = color;
+}
+
 std::string Theme::get_item_name(const ThemeItem item) {
     switch (item) {
     case ThemeItem::RowPlaying:

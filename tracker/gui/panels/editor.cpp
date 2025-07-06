@@ -1,6 +1,8 @@
 #include "../../general.hpp"
 #include "../../tuning/frequencies.hpp"
 #include "../../utils/string.hpp"
+#include "../../utils/file.hpp"
+#include "../../utils/paths.hpp"
 #include "../constants.hpp"
 #include "../gui.hpp"
 #include "../names.hpp"
@@ -10,6 +12,10 @@
 #include "../shortcuts/manager.hpp"
 #include "../themes/theme.hpp"
 #include "editor.hpp"
+
+#include "nfd.h"
+#include <memory>
+#include <iostream>
 
 GUIEditorPanel::GUIEditorPanel(const bool visible, const bool windowed)
     : GUIPanel("Editor", visible, windowed) {
@@ -35,6 +41,10 @@ void GUIEditorPanel::draw_tabs() {
         }
         if (ImGui::BeginTabItem("Clipboard")) {
             draw_clipboard();
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Theme")) {
+            draw_theme();
             ImGui::EndTabItem();
         }
         ImGui::EndTabBar();
@@ -249,6 +259,112 @@ void GUIEditorPanel::draw_clipboard() {
     ImGui::Columns(1);
     ImGui::EndDisabled();
     ImGui::EndChild();
+}
+
+void GUIEditorPanel::draw_theme() {
+    ImGui::BeginChild("ThemePanel", ImVec2(0, 0), false);
+    ImGui::BeginDisabled(gui.is_playing());
+
+    const float total_width = ImGui::GetContentRegionAvail().x;
+    const float button_height = ImGui::GetFrameHeight();
+    const float panel_height = ImGui::GetContentRegionAvail().y - button_height - ImGui::GetStyle().ItemSpacing.y * 2;
+
+    ImGui::BeginChild("ThemeTable", ImVec2(0, panel_height), true);
+
+    if (ImGui::BeginTable("ThemeItems", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_ScrollY)) {
+        ImGui::TableSetupColumn("Item name", ImGuiTableColumnFlags_WidthFixed, total_width * 0.4f);
+        ImGui::TableSetupColumn("Hex color", ImGuiTableColumnFlags_WidthFixed, total_width * 0.3f);
+        ImGui::TableSetupColumn("Color", ImGuiTableColumnFlags_WidthFixed, total_width * 0.3f);
+        ImGui::TableHeadersRow();
+
+        for (size_t i = 0; i < static_cast<size_t>(ThemeItem::Count); ++i) {
+            const ThemeItem item = static_cast<ThemeItem>(i);
+            const std::string item_name = Theme::get_item_name(item);
+
+            ThemeColor current_color;
+            try {
+                current_color = theme.get_color(item);
+            } catch (const std::exception &e) {
+                continue;
+            }
+
+            ImGui::TableNextRow();
+
+            ImGui::TableSetColumnIndex(0);
+            ImGui::TextUnformatted(item_name.c_str());
+
+            ImGui::TableSetColumnIndex(1);
+            const std::string hex_color = Theme::color_to_hex(current_color);
+            char hex_buffer[64];
+            copy_string_to_buffer(hex_color, hex_buffer, sizeof(hex_buffer));
+
+            ImGui::PushID(static_cast<int>(i));
+            if (ImGui::InputText("##hex", hex_buffer, sizeof(hex_buffer))) {
+                const ThemeColor new_color = Theme::hex_to_color(hex_buffer);
+                theme.set_color(item, new_color);
+            }
+            ImGui::PopID();
+
+            ImGui::TableSetColumnIndex(2);
+            ImVec4 color_vec4 = current_color.to_vec4();
+
+            ImGui::PushID(static_cast<int>(i) + 1000);
+            if (ImGui::ColorEdit4("##color", &color_vec4.x, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel)) {
+                const ThemeColor new_color(color_vec4);
+                theme.set_color(item, new_color);
+            }
+            ImGui::PopID();
+        }
+
+        ImGui::EndTable();
+    }
+
+    ImGui::EndChild();
+
+    if (ImGui::Button("Save theme", ImVec2(ImGui::GetContentRegionAvail().x * 0.5f - ImGui::GetStyle().ItemSpacing.x * 0.5f, 0))) {
+        save_theme();
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Load theme", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+        load_theme();
+    }
+
+    ImGui::EndDisabled();
+    ImGui::EndChild();
+}
+
+void GUIEditorPanel::save_theme() {
+    nfdchar_t *target_path = nullptr;
+    const nfdresult_t result = NFD_SaveDialog("json", nullptr, &target_path);
+    if (result == NFD_OKAY) {
+        const std::unique_ptr<nfdchar_t, void (*)(void *)> path_guard(target_path, free);
+        const std::filesystem::path file_path = check_and_correct_path_by_extension(target_path, ".json");
+
+        try {
+            const nlohmann::json theme_json = theme.to_json();
+            save_json(file_path, theme_json);
+        } catch (const std::exception &e) {
+            std::cerr << "Failed to save theme: " << e.what() << std::endl;
+        }
+    }
+}
+
+void GUIEditorPanel::load_theme() {
+    nfdchar_t *target_path = nullptr;
+    const nfdresult_t result = NFD_OpenDialog("json", nullptr, &target_path);
+    if (result == NFD_OKAY) {
+        const std::unique_ptr<nfdchar_t, void (*)(void *)> path_guard(target_path, free);
+        const std::filesystem::path file_path(target_path);
+
+        try {
+            const nlohmann::json theme_json = read_json(file_path);
+            theme.from_json(theme_json);
+        } catch (const std::exception &e) {
+            std::cerr << "Failed to load theme: " << e.what() << std::endl;
+        }
+    }
 }
 
 void GUIEditorPanel::check_keyboard_input() {
