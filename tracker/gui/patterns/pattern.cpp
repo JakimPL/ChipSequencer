@@ -151,7 +151,7 @@ void Pattern::transpose(const int value, std::optional<int> row) {
         return;
     }
 
-    if (notes[row.value()] == NOTE_REST || notes[row.value()] == NOTE_OFF) {
+    if (notes[row.value()] >= NOTES) {
         return;
     }
 
