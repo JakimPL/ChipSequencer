@@ -20,16 +20,16 @@ class Theme {
     Theme(Theme &&other) = default;
     Theme &operator=(Theme &&other) = default;
 
-    ThemeColor get_color(const ThemeItem item) const;
-    ImU32 get_u32_color(const ThemeItem item) const;
-    ImVec4 get_vec4_color(const ThemeItem item) const;
-    void set_color(const ThemeItem item, const ThemeColor &color);
+    ThemeColor get_color(ThemeItem item) const;
+    ImU32 get_u32_color(ThemeItem item) const;
+    ImVec4 get_vec4_color(ThemeItem item) const;
+    void set_color(ThemeItem item, const ThemeColor &color);
 
     nlohmann::json to_json() const;
     void from_json(const nlohmann::json &json);
 
-    static std::string get_item_name(const ThemeItem item);
+    static std::string get_item_name(ThemeItem item);
     static ThemeItem get_item_from_name(const std::string &str);
-    static std::string color_to_hex(const ThemeColor &color);
-    static ThemeColor hex_to_color(const std::string &hex);
+    std::string color_to_hex(const ThemeColor &color) const;
+    ThemeColor hex_to_color(const std::string &hex);
 };

@@ -9,6 +9,7 @@
 #include "../song/links/type.hpp"
 #include "../structures/commands/sequence.hpp"
 #include "enums.hpp"
+#include "clipboard/clipboard.hpp"
 #include "patterns/commands.hpp"
 #include "patterns/display.hpp"
 
@@ -94,6 +95,11 @@ const std::vector<std::string> simple_instruction_names = {
     "Set BPM",
     "Set division",
     "Change value",
+};
+const std::map<ClipboardCategory, const char *> clipboard_category_names = {
+    {ClipboardCategory::Notes, "Notes"},
+    {ClipboardCategory::Commands, "Commands"},
+    {ClipboardCategory::None, "None"},
 };
 
 std::string get_note_name(uint8_t note_value);

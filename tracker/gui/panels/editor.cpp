@@ -161,20 +161,7 @@ void GUIEditorPanel::draw_history() {
 }
 
 void GUIEditorPanel::draw_clipboard() {
-    auto get_category_name = [](ClipboardCategory category) -> const char * {
-        switch (category) {
-        case ClipboardCategory::Notes:
-            return "Notes";
-        case ClipboardCategory::Commands:
-            return "Commands";
-        case ClipboardCategory::None:
-        default:
-            return "Unknown";
-        }
-    };
-
     ImGui::BeginChild("ClipboardPanel", ImVec2(0, 0), 0);
-    ImGui::BeginDisabled(gui.is_playing());
     ImGui::Separator();
 
     bool has_any_items = false;
@@ -189,7 +176,6 @@ void GUIEditorPanel::draw_clipboard() {
 
     if (!has_any_items) {
         ImGui::TextColored(theme.get_vec4_color(ThemeItem::TextUnavailable), "No clipboard items yet.");
-        ImGui::EndDisabled();
         ImGui::EndChild();
         return;
     }
@@ -213,8 +199,7 @@ void GUIEditorPanel::draw_clipboard() {
             continue;
         }
 
-        const char *category_name = get_category_name(category);
-
+        const char *category_name = clipboard_category_names.at(category);
         for (size_t i = 0; i < items->size(); ++i) {
             const auto &item = (*items)[i];
 
@@ -257,20 +242,17 @@ void GUIEditorPanel::draw_clipboard() {
     }
 
     ImGui::Columns(1);
-    ImGui::EndDisabled();
     ImGui::EndChild();
 }
 
 void GUIEditorPanel::draw_theme() {
     ImGui::BeginChild("ThemePanel", ImVec2(0, 0), false);
-    ImGui::BeginDisabled(gui.is_playing());
 
     const float total_width = ImGui::GetContentRegionAvail().x;
     const float button_height = ImGui::GetFrameHeight();
     const float panel_height = ImGui::GetContentRegionAvail().y - button_height - ImGui::GetStyle().ItemSpacing.y * 2;
 
     ImGui::BeginChild("ThemeTable", ImVec2(0, panel_height), true);
-
     if (ImGui::BeginTable("ThemeItems", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_ScrollY)) {
         ImGui::TableSetupColumn("Item name", ImGuiTableColumnFlags_WidthFixed, total_width * 0.4f);
         ImGui::TableSetupColumn("Hex color", ImGuiTableColumnFlags_WidthFixed, total_width * 0.3f);
@@ -282,25 +264,20 @@ void GUIEditorPanel::draw_theme() {
             const std::string item_name = Theme::get_item_name(item);
 
             ThemeColor current_color;
-            try {
-                current_color = theme.get_color(item);
-            } catch (const std::exception &e) {
-                continue;
-            }
+            current_color = theme.get_color(item);
 
             ImGui::TableNextRow();
-
             ImGui::TableSetColumnIndex(0);
             ImGui::TextUnformatted(item_name.c_str());
 
             ImGui::TableSetColumnIndex(1);
-            const std::string hex_color = Theme::color_to_hex(current_color);
+            const std::string hex_color = theme.color_to_hex(current_color);
             char hex_buffer[64];
             copy_string_to_buffer(hex_color, hex_buffer, sizeof(hex_buffer));
 
             ImGui::PushID(static_cast<int>(i));
             if (ImGui::InputText("##hex", hex_buffer, sizeof(hex_buffer))) {
-                const ThemeColor new_color = Theme::hex_to_color(hex_buffer);
+                const ThemeColor new_color = theme.hex_to_color(hex_buffer);
                 theme.set_color(item, new_color);
             }
             ImGui::PopID();
@@ -331,7 +308,6 @@ void GUIEditorPanel::draw_theme() {
         load_theme();
     }
 
-    ImGui::EndDisabled();
     ImGui::EndChild();
 }
 

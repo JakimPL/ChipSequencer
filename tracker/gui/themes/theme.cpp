@@ -327,7 +327,7 @@ ThemeItem Theme::get_item_from_name(const std::string &str) {
     return ThemeItem::Count;
 }
 
-std::string Theme::color_to_hex(const ThemeColor &color) {
+std::string Theme::color_to_hex(const ThemeColor &color) const {
     const uint8_t r = static_cast<uint8_t>(color.r * 255.0 + 0.5);
     const uint8_t g = static_cast<uint8_t>(color.g * 255.0 + 0.5);
     const uint8_t b = static_cast<uint8_t>(color.b * 255.0 + 0.5);
@@ -342,7 +342,7 @@ std::string Theme::color_to_hex(const ThemeColor &color) {
 
 ThemeColor Theme::hex_to_color(const std::string &hex) {
     if (hex.length() != 9 || hex[0] != '#') {
-        return ThemeColor(0.0, 0.0, 0.0, 1.0);
+        return default_color;
     }
 
     try {
@@ -356,7 +356,7 @@ ThemeColor Theme::hex_to_color(const std::string &hex) {
 
         return ThemeColor(r / 255.0, g / 255.0, b / 255.0, a / 255.0);
     } catch (const std::exception &e) {
-        return ThemeColor(0.0, 0.0, 0.0, 1.0);
+        return default_color;
     }
 }
 
