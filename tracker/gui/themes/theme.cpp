@@ -82,7 +82,12 @@ Theme::Theme() {
 }
 
 ThemeColor Theme::get_color(const ThemeItem item) const {
-    return colors.at(item);
+    auto it = colors.find(item);
+    if (it != colors.end()) {
+        return it->second;
+    }
+
+    return default_color;
 }
 
 ImU32 Theme::get_u32_color(const ThemeItem item) const {
@@ -351,15 +356,22 @@ nlohmann::json Theme::to_json() const {
 }
 
 void Theme::from_json(const nlohmann::json &json) {
-    colors.clear();
+    std::map<ThemeItem, ThemeColor> backup_colors = colors;
 
-    for (auto it = json.begin(); it != json.end(); ++it) {
-        const std::string key = it.key();
-        const std::string hex_value = it.value();
+    try {
+        colors.clear();
 
-        const ThemeItem item = get_item_from_name(key);
-        if (item != ThemeItem::Count) {
-            colors[item] = hex_to_color(hex_value);
+        for (auto it = json.begin(); it != json.end(); ++it) {
+            const std::string key = it.key();
+            const std::string hex_value = it.value();
+
+            const ThemeItem item = get_item_from_name(key);
+            if (item != ThemeItem::Count) {
+                colors[item] = hex_to_color(hex_value);
+            }
         }
+    } catch (const std::exception &e) {
+        colors = backup_colors;
+        throw;
     }
 }

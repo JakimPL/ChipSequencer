@@ -11,6 +11,7 @@
 class Theme {
   private:
     std::map<ThemeItem, ThemeColor> colors;
+    ThemeColor default_color = ThemeColor(0.0, 0.0, 0.0, 1.0);
 
   public:
     Theme();
