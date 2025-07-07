@@ -8,6 +8,59 @@
 Theme::Theme() {
     /* default colors */
     colors = {
+        {ThemeItem::ImGuiText, ThemeColor(1.00, 1.00, 1.00, 1.00)},
+        {ThemeItem::ImGuiTextDisabled, ThemeColor(0.50, 0.50, 0.50, 1.00)},
+        {ThemeItem::ImGuiWindowBackground, ThemeColor(0.06, 0.06, 0.06, 0.94)},
+        {ThemeItem::ImGuiChildBackground, ThemeColor(0.00, 0.00, 0.00, 0.00)},
+        {ThemeItem::ImGuiPopupBackground, ThemeColor(0.08, 0.08, 0.08, 0.94)},
+        {ThemeItem::ImGuiBorder, ThemeColor(0.43, 0.43, 0.50, 0.50)},
+        {ThemeItem::ImGuiBorderShadow, ThemeColor(0.00, 0.00, 0.00, 0.00)},
+        {ThemeItem::ImGuiFrameBackground, ThemeColor(0.16, 0.29, 0.48, 0.54)},
+        {ThemeItem::ImGuiFrameBackgroundHovered, ThemeColor(0.26, 0.59, 0.98, 0.40)},
+        {ThemeItem::ImGuiFrameBackgroundActive, ThemeColor(0.26, 0.59, 0.98, 0.67)},
+        {ThemeItem::ImGuiTitleBackground, ThemeColor(0.04, 0.04, 0.04, 1.00)},
+        {ThemeItem::ImGuiTitleBackgroundActive, ThemeColor(0.16, 0.29, 0.48, 1.00)},
+        {ThemeItem::ImGuiTitleBackgroundCollapsed, ThemeColor(0.00, 0.00, 0.00, 0.51)},
+        {ThemeItem::ImGuiMenuBarBackground, ThemeColor(0.14, 0.14, 0.14, 1.00)},
+        {ThemeItem::ImGuiScrollbarBackground, ThemeColor(0.02, 0.02, 0.02, 0.53)},
+        {ThemeItem::ImGuiScrollbarGrab, ThemeColor(0.31, 0.31, 0.31, 1.00)},
+        {ThemeItem::ImGuiScrollbarGrabHovered, ThemeColor(0.41, 0.41, 0.41, 1.00)},
+        {ThemeItem::ImGuiScrollbarGrabActive, ThemeColor(0.51, 0.51, 0.51, 1.00)},
+        {ThemeItem::ImGuiCheckMark, ThemeColor(0.26, 0.59, 0.98, 1.00)},
+        {ThemeItem::ImGuiSliderGrab, ThemeColor(0.24, 0.52, 0.88, 1.00)},
+        {ThemeItem::ImGuiSliderGrabActive, ThemeColor(0.26, 0.59, 0.98, 1.00)},
+        {ThemeItem::ImGuiButton, ThemeColor(0.26, 0.59, 0.98, 0.40)},
+        {ThemeItem::ImGuiButtonHovered, ThemeColor(0.26, 0.59, 0.98, 1.00)},
+        {ThemeItem::ImGuiButtonActive, ThemeColor(0.06, 0.53, 0.98, 1.00)},
+        {ThemeItem::ImGuiHeader, ThemeColor(0.26, 0.59, 0.98, 0.31)},
+        {ThemeItem::ImGuiHeaderHovered, ThemeColor(0.26, 0.59, 0.98, 0.80)},
+        {ThemeItem::ImGuiHeaderActive, ThemeColor(0.26, 0.59, 0.98, 1.00)},
+        {ThemeItem::ImGuiSeparator, ThemeColor(0.43, 0.43, 0.50, 0.50)},
+        {ThemeItem::ImGuiSeparatorHovered, ThemeColor(0.10, 0.40, 0.75, 0.78)},
+        {ThemeItem::ImGuiSeparatorActive, ThemeColor(0.10, 0.40, 0.75, 1.00)},
+        {ThemeItem::ImGuiResizeGrip, ThemeColor(0.26, 0.59, 0.98, 0.20)},
+        {ThemeItem::ImGuiResizeGripHovered, ThemeColor(0.26, 0.59, 0.98, 0.67)},
+        {ThemeItem::ImGuiResizeGripActive, ThemeColor(0.26, 0.59, 0.98, 0.95)},
+        {ThemeItem::ImGuiTab, ThemeColor(0.18, 0.35, 0.58, 0.86)},
+        {ThemeItem::ImGuiTabHovered, ThemeColor(0.26, 0.59, 0.98, 0.80)},
+        {ThemeItem::ImGuiTabActive, ThemeColor(0.20, 0.41, 0.68, 1.00)},
+        {ThemeItem::ImGuiTabUnfocused, ThemeColor(0.07, 0.10, 0.15, 0.97)},
+        {ThemeItem::ImGuiTabUnfocusedActive, ThemeColor(0.14, 0.26, 0.42, 1.00)},
+        {ThemeItem::ImGuiPlotLines, ThemeColor(0.61, 0.61, 0.61, 1.00)},
+        {ThemeItem::ImGuiPlotLinesHovered, ThemeColor(1.00, 0.43, 0.35, 1.00)},
+        {ThemeItem::ImGuiPlotHistogram, ThemeColor(0.90, 0.70, 0.00, 1.00)},
+        {ThemeItem::ImGuiPlotHistogramHovered, ThemeColor(1.00, 0.60, 0.00, 1.00)},
+        {ThemeItem::ImGuiTableHeaderBackground, ThemeColor(0.19, 0.19, 0.20, 1.00)},
+        {ThemeItem::ImGuiTableBorderStrong, ThemeColor(0.31, 0.31, 0.35, 1.00)},
+        {ThemeItem::ImGuiTableBorderLight, ThemeColor(0.23, 0.23, 0.25, 1.00)},
+        {ThemeItem::ImGuiTableRowBackground, ThemeColor(0.00, 0.00, 0.00, 0.00)},
+        {ThemeItem::ImGuiTableRowBackgroundAlt, ThemeColor(1.00, 1.00, 1.00, 0.06)},
+        {ThemeItem::ImGuiTextSelectedBackground, ThemeColor(0.26, 0.59, 0.98, 0.35)},
+        {ThemeItem::ImGuiDragDropTarget, ThemeColor(1.00, 1.00, 0.00, 0.90)},
+        {ThemeItem::ImGuiNavHighlight, ThemeColor(0.26, 0.59, 0.98, 1.00)},
+        {ThemeItem::ImGuiNavWindowingHighlight, ThemeColor(1.00, 1.00, 1.00, 0.70)},
+        {ThemeItem::ImGuiNavWindowingDimBackground, ThemeColor(0.80, 0.80, 0.80, 0.20)},
+        {ThemeItem::ImGuiModalWindowDimBackground, ThemeColor(0.80, 0.80, 0.80, 0.35)},
         {ThemeItem::RowPlaying, ThemeColor(GUI_ROW_COLOR_PLAYING)},
         {ThemeItem::RowEdited, ThemeColor(GUI_ROW_COLOR_EDITED)},
         {ThemeItem::RowSelected, ThemeColor(GUI_ROW_COLOR_SELECTED)},
@@ -100,10 +153,120 @@ ImVec4 Theme::get_vec4_color(const ThemeItem item) const {
 
 void Theme::set_color(const ThemeItem item, const ThemeColor &color) {
     colors[item] = color;
+
+    if (static_cast<size_t>(item) < static_cast<size_t>(ThemeItem::RowPlaying)) {
+        apply_to_imgui();
+    }
 }
 
 std::string Theme::get_item_name(const ThemeItem item) {
     switch (item) {
+    case ThemeItem::ImGuiText:
+        return "Text";
+    case ThemeItem::ImGuiTextDisabled:
+        return "TextDisabled";
+    case ThemeItem::ImGuiWindowBackground:
+        return "WindowBackground";
+    case ThemeItem::ImGuiChildBackground:
+        return "ChildBackground";
+    case ThemeItem::ImGuiPopupBackground:
+        return "PopupBackground";
+    case ThemeItem::ImGuiBorder:
+        return "Border";
+    case ThemeItem::ImGuiBorderShadow:
+        return "BorderShadow";
+    case ThemeItem::ImGuiFrameBackground:
+        return "FrameBackground";
+    case ThemeItem::ImGuiFrameBackgroundHovered:
+        return "FrameBackgroundHovered";
+    case ThemeItem::ImGuiFrameBackgroundActive:
+        return "FrameBackgroundActive";
+    case ThemeItem::ImGuiTitleBackground:
+        return "TitleBackground";
+    case ThemeItem::ImGuiTitleBackgroundActive:
+        return "TitleBackgroundActive";
+    case ThemeItem::ImGuiTitleBackgroundCollapsed:
+        return "TitleBackgroundCollapsed";
+    case ThemeItem::ImGuiMenuBarBackground:
+        return "MenuBarBackground";
+    case ThemeItem::ImGuiScrollbarBackground:
+        return "ScrollbarBackground";
+    case ThemeItem::ImGuiScrollbarGrab:
+        return "ScrollbarGrab";
+    case ThemeItem::ImGuiScrollbarGrabHovered:
+        return "ScrollbarGrabHovered";
+    case ThemeItem::ImGuiScrollbarGrabActive:
+        return "ScrollbarGrabActive";
+    case ThemeItem::ImGuiCheckMark:
+        return "CheckMark";
+    case ThemeItem::ImGuiSliderGrab:
+        return "SliderGrab";
+    case ThemeItem::ImGuiSliderGrabActive:
+        return "SliderGrabActive";
+    case ThemeItem::ImGuiButton:
+        return "Button";
+    case ThemeItem::ImGuiButtonHovered:
+        return "ButtonHovered";
+    case ThemeItem::ImGuiButtonActive:
+        return "ButtonActive";
+    case ThemeItem::ImGuiHeader:
+        return "Header";
+    case ThemeItem::ImGuiHeaderHovered:
+        return "HeaderHovered";
+    case ThemeItem::ImGuiHeaderActive:
+        return "HeaderActive";
+    case ThemeItem::ImGuiSeparator:
+        return "Separator";
+    case ThemeItem::ImGuiSeparatorHovered:
+        return "SeparatorHovered";
+    case ThemeItem::ImGuiSeparatorActive:
+        return "SeparatorActive";
+    case ThemeItem::ImGuiResizeGrip:
+        return "ResizeGrip";
+    case ThemeItem::ImGuiResizeGripHovered:
+        return "ResizeGripHovered";
+    case ThemeItem::ImGuiResizeGripActive:
+        return "ResizeGripActive";
+    case ThemeItem::ImGuiTab:
+        return "Tab";
+    case ThemeItem::ImGuiTabHovered:
+        return "TabHovered";
+    case ThemeItem::ImGuiTabActive:
+        return "TabActive";
+    case ThemeItem::ImGuiTabUnfocused:
+        return "TabUnfocused";
+    case ThemeItem::ImGuiTabUnfocusedActive:
+        return "TabUnfocusedActive";
+    case ThemeItem::ImGuiPlotLines:
+        return "PlotLines";
+    case ThemeItem::ImGuiPlotLinesHovered:
+        return "PlotLinesHovered";
+    case ThemeItem::ImGuiPlotHistogram:
+        return "PlotHistogram";
+    case ThemeItem::ImGuiPlotHistogramHovered:
+        return "PlotHistogramHovered";
+    case ThemeItem::ImGuiTableHeaderBackground:
+        return "TableHeaderBackground";
+    case ThemeItem::ImGuiTableBorderStrong:
+        return "TableBorderStrong";
+    case ThemeItem::ImGuiTableBorderLight:
+        return "TableBorderLight";
+    case ThemeItem::ImGuiTableRowBackground:
+        return "TableRowBackground";
+    case ThemeItem::ImGuiTableRowBackgroundAlt:
+        return "TableRowBackgroundAlt";
+    case ThemeItem::ImGuiTextSelectedBackground:
+        return "TextSelectedBackground";
+    case ThemeItem::ImGuiDragDropTarget:
+        return "DragDropTarget";
+    case ThemeItem::ImGuiNavHighlight:
+        return "NavHighlight";
+    case ThemeItem::ImGuiNavWindowingHighlight:
+        return "NavWindowingHighlight";
+    case ThemeItem::ImGuiNavWindowingDimBackground:
+        return "NavWindowingDimBackground";
+    case ThemeItem::ImGuiModalWindowDimBackground:
+        return "ModalWindowDimBackground";
     case ThemeItem::RowPlaying:
         return "RowPlaying";
     case ThemeItem::RowEdited:
@@ -253,6 +416,61 @@ std::string Theme::get_item_name(const ThemeItem item) {
 }
 
 ThemeItem Theme::get_item_from_name(const std::string &str) {
+    if (str == "Text") return ThemeItem::ImGuiText;
+    if (str == "TextDisabled") return ThemeItem::ImGuiTextDisabled;
+    if (str == "WindowBackground") return ThemeItem::ImGuiWindowBackground;
+    if (str == "ChildBackground") return ThemeItem::ImGuiChildBackground;
+    if (str == "PopupBackground") return ThemeItem::ImGuiPopupBackground;
+    if (str == "Border") return ThemeItem::ImGuiBorder;
+    if (str == "BorderShadow") return ThemeItem::ImGuiBorderShadow;
+    if (str == "FrameBackground") return ThemeItem::ImGuiFrameBackground;
+    if (str == "FrameBackgroundHovered") return ThemeItem::ImGuiFrameBackgroundHovered;
+    if (str == "FrameBackgroundActive") return ThemeItem::ImGuiFrameBackgroundActive;
+    if (str == "TitleBackground") return ThemeItem::ImGuiTitleBackground;
+    if (str == "TitleBackgroundActive") return ThemeItem::ImGuiTitleBackgroundActive;
+    if (str == "TitleBackgroundCollapsed") return ThemeItem::ImGuiTitleBackgroundCollapsed;
+    if (str == "MenuBarBackground") return ThemeItem::ImGuiMenuBarBackground;
+    if (str == "ScrollbarBackground") return ThemeItem::ImGuiScrollbarBackground;
+    if (str == "ScrollbarGrab") return ThemeItem::ImGuiScrollbarGrab;
+    if (str == "ScrollbarGrabHovered") return ThemeItem::ImGuiScrollbarGrabHovered;
+    if (str == "ScrollbarGrabActive") return ThemeItem::ImGuiScrollbarGrabActive;
+    if (str == "CheckMark") return ThemeItem::ImGuiCheckMark;
+    if (str == "SliderGrab") return ThemeItem::ImGuiSliderGrab;
+    if (str == "SliderGrabActive") return ThemeItem::ImGuiSliderGrabActive;
+    if (str == "Button") return ThemeItem::ImGuiButton;
+    if (str == "ButtonHovered") return ThemeItem::ImGuiButtonHovered;
+    if (str == "ButtonActive") return ThemeItem::ImGuiButtonActive;
+    if (str == "Header") return ThemeItem::ImGuiHeader;
+    if (str == "HeaderHovered") return ThemeItem::ImGuiHeaderHovered;
+    if (str == "HeaderActive") return ThemeItem::ImGuiHeaderActive;
+    if (str == "Separator") return ThemeItem::ImGuiSeparator;
+    if (str == "SeparatorHovered") return ThemeItem::ImGuiSeparatorHovered;
+    if (str == "SeparatorActive") return ThemeItem::ImGuiSeparatorActive;
+    if (str == "ResizeGrip") return ThemeItem::ImGuiResizeGrip;
+    if (str == "ResizeGripHovered") return ThemeItem::ImGuiResizeGripHovered;
+    if (str == "ResizeGripActive") return ThemeItem::ImGuiResizeGripActive;
+    if (str == "Tab") return ThemeItem::ImGuiTab;
+    if (str == "TabHovered") return ThemeItem::ImGuiTabHovered;
+    if (str == "TabActive") return ThemeItem::ImGuiTabActive;
+    if (str == "TabUnfocused") return ThemeItem::ImGuiTabUnfocused;
+    if (str == "TabUnfocusedActive") return ThemeItem::ImGuiTabUnfocusedActive;
+    if (str == "PlotLines") return ThemeItem::ImGuiPlotLines;
+    if (str == "PlotLinesHovered") return ThemeItem::ImGuiPlotLinesHovered;
+    if (str == "PlotHistogram") return ThemeItem::ImGuiPlotHistogram;
+    if (str == "PlotHistogramHovered") return ThemeItem::ImGuiPlotHistogramHovered;
+    if (str == "TableHeaderBackground") return ThemeItem::ImGuiTableHeaderBackground;
+    if (str == "TableBorderStrong") return ThemeItem::ImGuiTableBorderStrong;
+    if (str == "TableBorderLight") return ThemeItem::ImGuiTableBorderLight;
+    if (str == "TableRowBackground") return ThemeItem::ImGuiTableRowBackground;
+    if (str == "TableRowBackgroundAlt") return ThemeItem::ImGuiTableRowBackgroundAlt;
+    if (str == "TextSelectedBackground") return ThemeItem::ImGuiTextSelectedBackground;
+    if (str == "DragDropTarget") return ThemeItem::ImGuiDragDropTarget;
+    if (str == "NavHighlight") return ThemeItem::ImGuiNavHighlight;
+    if (str == "NavWindowingHighlight") return ThemeItem::ImGuiNavWindowingHighlight;
+    if (str == "NavWindowingDimBackground") return ThemeItem::ImGuiNavWindowingDimBackground;
+    if (str == "ModalWindowDimBackground") return ThemeItem::ImGuiModalWindowDimBackground;
+
+    // non-ImGui colors
     if (str == "RowPlaying") return ThemeItem::RowPlaying;
     if (str == "RowEdited") return ThemeItem::RowEdited;
     if (str == "RowSelected") return ThemeItem::RowSelected;
@@ -354,7 +572,7 @@ ThemeColor Theme::hex_to_color(const std::string &hex) {
         const uint8_t b = (u32_color >> 8) & 0xFF;
         const uint8_t a = u32_color & 0xFF;
 
-        return ThemeColor(r / 255.0, g / 255.0, b / 255.0, a / 255.0);
+        return ThemeColor(r, g, b, a);
     } catch (const std::exception &e) {
         return default_color;
     }
@@ -389,5 +607,14 @@ void Theme::from_json(const nlohmann::json &json) {
     } catch (const std::exception &e) {
         colors = backup_colors;
         throw;
+    }
+
+    apply_to_imgui();
+}
+
+void Theme::apply_to_imgui() {
+    ImGuiStyle &style = ImGui::GetStyle();
+    for (const auto &mapping : imgui_mapping) {
+        style.Colors[mapping.second] = get_vec4_color(mapping.first);
     }
 }

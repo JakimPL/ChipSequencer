@@ -24,6 +24,7 @@ class Theme {
     ImU32 get_u32_color(ThemeItem item) const;
     ImVec4 get_vec4_color(ThemeItem item) const;
     void set_color(ThemeItem item, const ThemeColor &color);
+    void apply_to_imgui();
 
     nlohmann::json to_json() const;
     void from_json(const nlohmann::json &json);

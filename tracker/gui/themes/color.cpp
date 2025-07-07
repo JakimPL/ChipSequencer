@@ -4,6 +4,13 @@ ThemeColor::ThemeColor(double r, double g, double b, double a)
     : r(r), g(g), b(b), a(a) {
 }
 
+ThemeColor::ThemeColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+    : r(static_cast<double>(r) / 255.0),
+      g(static_cast<double>(g) / 255.0),
+      b(static_cast<double>(b) / 255.0),
+      a(static_cast<double>(a) / 255.0) {
+}
+
 ThemeColor::ThemeColor(const ImVec4 &color)
     : r(color.x), g(color.y), b(color.z), a(color.w) {
 }
@@ -15,11 +22,11 @@ ThemeColor::ThemeColor(const ImU32 &color)
       a(((color >> IM_COL32_A_SHIFT) & 0xFF) / 255.0) {
 }
 
-ThemeColor ThemeColor::with_alpha(double alpha) const {
+ThemeColor ThemeColor::with_alpha(const double alpha) const {
     return ThemeColor(r, g, b, alpha);
 }
 
-ThemeColor ThemeColor::with_alpha(uint8_t alpha) const {
+ThemeColor ThemeColor::with_alpha(const uint8_t alpha) const {
     return with_alpha(static_cast<double>(alpha) / 255.0);
 }
 
@@ -36,7 +43,7 @@ ImVec4 ThemeColor::to_vec4() const {
     return ImVec4(static_cast<float>(r), static_cast<float>(g), static_cast<float>(b), static_cast<float>(a));
 }
 
-ThemeColor ThemeColor::interpolate(const ThemeColor &color1, const ThemeColor &color2, float t) {
+ThemeColor ThemeColor::interpolate(const ThemeColor &color1, const ThemeColor &color2, const float t) {
     const float inv_t = 1.0f - t;
     return ThemeColor(
         inv_t * color1.r + t * color2.r,
