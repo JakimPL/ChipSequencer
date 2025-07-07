@@ -165,7 +165,6 @@ void GUIEditorPanel::draw_clipboard() {
     ImGui::Separator();
 
     bool has_any_items = false;
-
     for (auto category : {ClipboardCategory::Notes, ClipboardCategory::Commands}) {
         const auto *items = clipboard.get_items(category);
         if (items != nullptr && !items->empty()) {
@@ -321,8 +320,10 @@ void GUIEditorPanel::save_theme() {
         try {
             const nlohmann::json theme_json = theme.to_json();
             save_json(file_path, theme_json);
+            save_theme_status = true;
         } catch (const std::exception &e) {
             std::cerr << "Failed to save theme: " << e.what() << std::endl;
+            save_theme_status = false;
         }
     }
 }
@@ -345,13 +346,31 @@ void GUIEditorPanel::load_theme() {
 }
 
 void GUIEditorPanel::draw_dialog_box() {
-    if (load_theme_error.has_value()) {
+    if (load_theme_error.has_value() && load_theme_error.value()) {
         ImGui::OpenPopup("Load theme error");
         load_theme_error.reset();
     }
 
+    if (save_theme_status.has_value()) {
+        const bool success = save_theme_status.value();
+        if (success) {
+            ImGui::OpenPopup("Theme save success");
+        } else {
+            ImGui::OpenPopup("Theme save failure");
+        }
+        save_theme_status.reset();
+    }
+
     if (ImGui::BeginPopupModal("Load theme error", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         draw_popup("Failed to load the theme!");
+    }
+
+    if (ImGui::BeginPopupModal("Theme save success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Theme saved successfully!");
+    }
+
+    if (ImGui::BeginPopupModal("Theme save failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Failed to save the theme!");
     }
 }
 

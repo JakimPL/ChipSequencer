@@ -7,6 +7,7 @@
 
 class GUIEditorPanel : public GUIPanel {
   private:
+    std::optional<bool> save_theme_status;
     std::optional<bool> load_theme_error;
 
     void draw_tabs();
@@ -14,7 +15,7 @@ class GUIEditorPanel : public GUIPanel {
     static void draw_history();
     static void draw_clipboard();
     void draw_theme();
-    static void save_theme();
+    void save_theme();
     void load_theme();
 
     void draw() override;

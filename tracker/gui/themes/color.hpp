@@ -6,10 +6,10 @@
 #include "../init.hpp"
 
 struct ThemeColor {
-    double r = 0.0;
-    double g = 0.0;
-    double b = 0.0;
-    double a = 1.0;
+    double red = 0.0;
+    double green = 0.0;
+    double blue = 0.0;
+    double alpha = 1.0;
 
     ThemeColor() = default;
     explicit ThemeColor(double r, double g, double b, double a = 1.0);
