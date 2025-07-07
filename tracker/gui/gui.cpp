@@ -29,6 +29,7 @@
 #include "panels/wavetables.hpp"
 #include "panels/commands/channels.hpp"
 #include "panels/commands/sequences.hpp"
+#include "themes/theme.hpp"
 
 GUI::GUI() {
     menu = std::make_unique<GUIMenu>(true, false);
@@ -287,6 +288,7 @@ bool GUI::initialize_imgui_common() {
     io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     ImGui::StyleColorsDark();
+    theme.load_current_theme();
     return true;
 }
 

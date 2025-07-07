@@ -1,137 +1,22 @@
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 #include <stdexcept>
 
+#include "../../utils/paths.hpp"
+#include "../../utils/file.hpp"
 #include "../constants.hpp"
+#include "../names.hpp"
 #include "theme.hpp"
 
-Theme::Theme() {
-    /* default colors */
-    colors = {
-        {ThemeItem::ImGuiText, ThemeColor(1.00, 1.00, 1.00, 1.00)},
-        {ThemeItem::ImGuiTextDisabled, ThemeColor(0.50, 0.50, 0.50, 1.00)},
-        {ThemeItem::ImGuiWindowBackground, ThemeColor(0.06, 0.06, 0.06, 0.94)},
-        {ThemeItem::ImGuiChildBackground, ThemeColor(0.00, 0.00, 0.00, 0.00)},
-        {ThemeItem::ImGuiPopupBackground, ThemeColor(0.08, 0.08, 0.08, 0.94)},
-        {ThemeItem::ImGuiBorder, ThemeColor(0.43, 0.43, 0.50, 0.50)},
-        {ThemeItem::ImGuiBorderShadow, ThemeColor(0.00, 0.00, 0.00, 0.00)},
-        {ThemeItem::ImGuiFrameBackground, ThemeColor(0.16, 0.29, 0.48, 0.54)},
-        {ThemeItem::ImGuiFrameBackgroundHovered, ThemeColor(0.26, 0.59, 0.98, 0.40)},
-        {ThemeItem::ImGuiFrameBackgroundActive, ThemeColor(0.26, 0.59, 0.98, 0.67)},
-        {ThemeItem::ImGuiTitleBackground, ThemeColor(0.04, 0.04, 0.04, 1.00)},
-        {ThemeItem::ImGuiTitleBackgroundActive, ThemeColor(0.16, 0.29, 0.48, 1.00)},
-        {ThemeItem::ImGuiTitleBackgroundCollapsed, ThemeColor(0.00, 0.00, 0.00, 0.51)},
-        {ThemeItem::ImGuiMenuBarBackground, ThemeColor(0.14, 0.14, 0.14, 1.00)},
-        {ThemeItem::ImGuiScrollbarBackground, ThemeColor(0.02, 0.02, 0.02, 0.53)},
-        {ThemeItem::ImGuiScrollbarGrab, ThemeColor(0.31, 0.31, 0.31, 1.00)},
-        {ThemeItem::ImGuiScrollbarGrabHovered, ThemeColor(0.41, 0.41, 0.41, 1.00)},
-        {ThemeItem::ImGuiScrollbarGrabActive, ThemeColor(0.51, 0.51, 0.51, 1.00)},
-        {ThemeItem::ImGuiCheckMark, ThemeColor(0.26, 0.59, 0.98, 1.00)},
-        {ThemeItem::ImGuiSliderGrab, ThemeColor(0.24, 0.52, 0.88, 1.00)},
-        {ThemeItem::ImGuiSliderGrabActive, ThemeColor(0.26, 0.59, 0.98, 1.00)},
-        {ThemeItem::ImGuiButton, ThemeColor(0.26, 0.59, 0.98, 0.40)},
-        {ThemeItem::ImGuiButtonHovered, ThemeColor(0.26, 0.59, 0.98, 1.00)},
-        {ThemeItem::ImGuiButtonActive, ThemeColor(0.06, 0.53, 0.98, 1.00)},
-        {ThemeItem::ImGuiHeader, ThemeColor(0.26, 0.59, 0.98, 0.31)},
-        {ThemeItem::ImGuiHeaderHovered, ThemeColor(0.26, 0.59, 0.98, 0.80)},
-        {ThemeItem::ImGuiHeaderActive, ThemeColor(0.26, 0.59, 0.98, 1.00)},
-        {ThemeItem::ImGuiSeparator, ThemeColor(0.43, 0.43, 0.50, 0.50)},
-        {ThemeItem::ImGuiSeparatorHovered, ThemeColor(0.10, 0.40, 0.75, 0.78)},
-        {ThemeItem::ImGuiSeparatorActive, ThemeColor(0.10, 0.40, 0.75, 1.00)},
-        {ThemeItem::ImGuiResizeGrip, ThemeColor(0.26, 0.59, 0.98, 0.20)},
-        {ThemeItem::ImGuiResizeGripHovered, ThemeColor(0.26, 0.59, 0.98, 0.67)},
-        {ThemeItem::ImGuiResizeGripActive, ThemeColor(0.26, 0.59, 0.98, 0.95)},
-        {ThemeItem::ImGuiTab, ThemeColor(0.18, 0.35, 0.58, 0.86)},
-        {ThemeItem::ImGuiTabHovered, ThemeColor(0.26, 0.59, 0.98, 0.80)},
-        {ThemeItem::ImGuiTabActive, ThemeColor(0.20, 0.41, 0.68, 1.00)},
-        {ThemeItem::ImGuiTabUnfocused, ThemeColor(0.07, 0.10, 0.15, 0.97)},
-        {ThemeItem::ImGuiTabUnfocusedActive, ThemeColor(0.14, 0.26, 0.42, 1.00)},
-        {ThemeItem::ImGuiPlotLines, ThemeColor(0.61, 0.61, 0.61, 1.00)},
-        {ThemeItem::ImGuiPlotLinesHovered, ThemeColor(1.00, 0.43, 0.35, 1.00)},
-        {ThemeItem::ImGuiPlotHistogram, ThemeColor(0.90, 0.70, 0.00, 1.00)},
-        {ThemeItem::ImGuiPlotHistogramHovered, ThemeColor(1.00, 0.60, 0.00, 1.00)},
-        {ThemeItem::ImGuiTableHeaderBackground, ThemeColor(0.19, 0.19, 0.20, 1.00)},
-        {ThemeItem::ImGuiTableBorderStrong, ThemeColor(0.31, 0.31, 0.35, 1.00)},
-        {ThemeItem::ImGuiTableBorderLight, ThemeColor(0.23, 0.23, 0.25, 1.00)},
-        {ThemeItem::ImGuiTableRowBackground, ThemeColor(0.00, 0.00, 0.00, 0.00)},
-        {ThemeItem::ImGuiTableRowBackgroundAlt, ThemeColor(1.00, 1.00, 1.00, 0.06)},
-        {ThemeItem::ImGuiTextSelectedBackground, ThemeColor(0.26, 0.59, 0.98, 0.35)},
-        {ThemeItem::ImGuiDragDropTarget, ThemeColor(1.00, 1.00, 0.00, 0.90)},
-        {ThemeItem::ImGuiNavHighlight, ThemeColor(0.26, 0.59, 0.98, 1.00)},
-        {ThemeItem::ImGuiNavWindowingHighlight, ThemeColor(1.00, 1.00, 1.00, 0.70)},
-        {ThemeItem::ImGuiNavWindowingDimBackground, ThemeColor(0.80, 0.80, 0.80, 0.20)},
-        {ThemeItem::ImGuiModalWindowDimBackground, ThemeColor(0.80, 0.80, 0.80, 0.35)},
-        {ThemeItem::RowPlaying, ThemeColor(GUI_ROW_COLOR_PLAYING)},
-        {ThemeItem::RowEdited, ThemeColor(GUI_ROW_COLOR_EDITED)},
-        {ThemeItem::RowSelected, ThemeColor(GUI_ROW_COLOR_SELECTED)},
-        {ThemeItem::RowSecondarySelected, ThemeColor(GUI_ROW_COLOR_SECONDARY_SELECTED)},
-        {ThemeItem::RowCurrentCommand, ThemeColor(GUI_ROW_COLOR_CURRENT_COMMAND)},
-        {ThemeItem::RowCurrentValue, ThemeColor(GUI_ROW_COLOR_CURRENT_VALUE)},
-        {ThemeItem::RowTextCurrent, ThemeColor(GUI_ROW_COLOR_TEXT_CURRENT)},
-        {ThemeItem::LockButton, ThemeColor(GUI_LOCK_BUTTON_COLOR)},
-        {ThemeItem::LockButtonHover, ThemeColor(GUI_LOCK_BUTTON_HOVER_COLOR)},
-        {ThemeItem::LockButtonActive, ThemeColor(GUI_LOCK_BUTTON_ACTIVE_COLOR)},
-        {ThemeItem::UnlockButton, ThemeColor(GUI_UNLOCK_BUTTON_COLOR)},
-        {ThemeItem::UnlockButtonHover, ThemeColor(GUI_UNLOCK_BUTTON_HOVER_COLOR)},
-        {ThemeItem::UnlockButtonActive, ThemeColor(GUI_UNLOCK_BUTTON_ACTIVE_COLOR)},
-        {ThemeItem::EnvelopeAttack, ThemeColor(GUI_ENVELOPE_ATTACK_COLOR)},
-        {ThemeItem::EnvelopeDecay, ThemeColor(GUI_ENVELOPE_DECAY_COLOR)},
-        {ThemeItem::EnvelopeSustain, ThemeColor(GUI_ENVELOPE_SUSTAIN_COLOR)},
-        {ThemeItem::EnvelopeRelease, ThemeColor(GUI_ENVELOPE_RELEASE_COLOR)},
-        {ThemeItem::EnvelopeCanvasBackground, ThemeColor(GUI_ENVELOPE_CANVAS_BACKGROUND_COLOR)},
-        {ThemeItem::EnvelopeCanvasBorder, ThemeColor(GUI_ENVELOPE_CANVAS_BORDER_COLOR)},
-        {ThemeItem::EnvelopeGridLine, ThemeColor(GUI_ENVELOPE_GRID_LINE_COLOR)},
-        {ThemeItem::EnvelopeGridText, ThemeColor(GUI_ENVELOPE_GRID_TEXT_COLOR)},
-        {ThemeItem::EnvelopePlaybackLine, ThemeColor(GUI_ENVELOPE_PLAYBACK_LINE_COLOR)},
-        {ThemeItem::EnvelopeCurrentLine, ThemeColor(GUI_ENVELOPE_CURRENT_LINE_COLOR)},
-        {ThemeItem::Waveform1, ThemeColor(GUI_WAVEFORM_COLOR_1)},
-        {ThemeItem::Waveform2, ThemeColor(GUI_WAVEFORM_COLOR_2)},
-        {ThemeItem::Waveform3, ThemeColor(GUI_WAVEFORM_COLOR_3)},
-        {ThemeItem::Waveform4, ThemeColor(GUI_WAVEFORM_COLOR_4)},
-        {ThemeItem::WaveformGridLine, ThemeColor(GUI_WAVEFORM_GRID_LINE_COLOR)},
-        {ThemeItem::WaveformBorderLine, ThemeColor(GUI_WAVEFORM_BORDER_LINE_COLOR)},
-        {ThemeItem::WaveformText, ThemeColor(GUI_WAVEFORM_TEXT_COLOR)},
-        {ThemeItem::WaveformSpectrogramLow, ThemeColor(GUI_WAVEFORM_SPECTROGRAM_LOW_COLOR)},
-        {ThemeItem::WaveformSpectrogramMedium, ThemeColor(GUI_WAVEFORM_SPECTROGRAM_MEDIUM_COLOR)},
-        {ThemeItem::WaveformSpectrogramHigh, ThemeColor(GUI_WAVEFORM_SPECTROGRAM_HIGH_COLOR)},
-        {ThemeItem::WaveformSpectrogramOverdrive, ThemeColor(GUI_WAVEFORM_SPECTROGRAM_OVERDRIVE_COLOR)},
-        {ThemeItem::WaveformFrequencyMark, ThemeColor(GUI_WAVEFORM_FREQUENCY_MARK_COLOR)},
-        {ThemeItem::WaveformFrequencyMarkText, ThemeColor(GUI_WAVEFORM_FREQUENCY_MARK_TEXT_COLOR)},
-        {ThemeItem::RoutingAudioLink, ThemeColor(GUI_ROUTING_AUDIO_LINK_COLOR)},
-        {ThemeItem::RoutingParameterLink, ThemeColor(GUI_ROUTING_PARAMETER_LINK_COLOR)},
-        {ThemeItem::RoutingDraggingLink, ThemeColor(GUI_ROUTING_DRAGGING_LINK_COLOR)},
-        {ThemeItem::RoutingNodeBackground, ThemeColor(GUI_ROUTING_NODE_BACKGROUND_COLOR)},
-        {ThemeItem::RoutingNodeBackgroundHover, ThemeColor(GUI_ROUTING_NODE_BACKGROUND_HOVER_COLOR)},
-        {ThemeItem::RoutingNodeBorder, ThemeColor(GUI_ROUTING_NODE_BORDER_COLOR)},
-        {ThemeItem::RoutingPinMain, ThemeColor(GUI_ROUTING_PIN_MAIN_COLOR)},
-        {ThemeItem::RoutingPinParameter, ThemeColor(GUI_ROUTING_PIN_PARAMETER_COLOR)},
-        {ThemeItem::RoutingPinAvailable, ThemeColor(GUI_ROUTING_PIN_AVAILABLE_COLOR)},
-        {ThemeItem::ClipboardRecent, ThemeColor(GUI_CLIPBOARD_TEXT_COLOR_RECENT)},
-        {ThemeItem::ClipboardOlder, ThemeColor(GUI_CLIPBOARD_TEXT_COLOR_OLDER)},
-        {ThemeItem::HistoryCurrentAction, ThemeColor(GUI_HISTORY_CURRENT_ACTION_COLOR)},
-        {ThemeItem::HistoryUnappliedAction, ThemeColor(GUI_HISTORY_UNAPPLIED_ACTION_COLOR)},
-        {ThemeItem::ButtonPlay, ThemeColor(GUI_BUTTON_COLOR_PLAY)},
-        {ThemeItem::ButtonPlayFromCurrentPosition, ThemeColor(GUI_BUTTON_COLOR_PLAY_FROM_CURRENT_POSITION)},
-        {ThemeItem::ButtonStop, ThemeColor(GUI_BUTTON_COLOR_STOP)},
-        {ThemeItem::Error, ThemeColor(GUI_ERROR_COLOR)},
-        {ThemeItem::Secondary, ThemeColor(GUI_SECONDARY_COLOR)},
-        {ThemeItem::SecondaryLight, ThemeColor(GUI_SECONDARY_COLOR_LIGHT)},
-        {ThemeItem::SecondaryBright, ThemeColor(GUI_SECONDARY_COLOR_BRIGHT)},
-        {ThemeItem::SecondaryDark, ThemeColor(GUI_SECONDARY_COLOR_DARK)},
-        {ThemeItem::Tertiary, ThemeColor(GUI_TERTIARY_COLOR)},
-        {ThemeItem::TertiaryLight, ThemeColor(GUI_TERTIARY_COLOR_LIGHT)},
-        {ThemeItem::TertiaryBright, ThemeColor(GUI_TERTIARY_COLOR_BRIGHT)},
-        {ThemeItem::TertiaryDark, ThemeColor(GUI_TERTIARY_COLOR_DARK)},
-        {ThemeItem::TextUnavailable, ThemeColor(GUI_TEXT_COLOR_UNAVAILABLE)},
-        {ThemeItem::PanelBackground, ThemeColor(GUI_PANEL_BACKGROUND_COLOR)},
-        {ThemeItem::PanelBorder, ThemeColor(GUI_PANEL_BORDER_COLOR)},
-        {ThemeItem::SummaryTableHighlight, ThemeColor(GUI_SUMMARY_TABLE_HIGHLIGHT_COLOR)},
-        {ThemeItem::WavetableCanvasBackground, ThemeColor(GUI_WAVETABLE_CANVAS_BACKGROUND_COLOR)},
-        {ThemeItem::WavetableCanvasBorder, ThemeColor(GUI_WAVETABLE_CANVAS_BORDER_COLOR)},
-        {ThemeItem::WavetableGridLine, ThemeColor(GUI_WAVETABLE_GRID_LINE_COLOR)},
-        {ThemeItem::WavetableGridText, ThemeColor(GUI_WAVETABLE_GRID_TEXT_COLOR)},
-        {ThemeItem::WavetableWaveform, ThemeColor(GUI_WAVETABLE_WAVEFORM_COLOR)}
-    };
+Theme::Theme()
+    : themes_path(get_themes_path()),
+      current_theme_path(themes_path / "current.json"),
+      default_theme_path(themes_path / "default.json") {
+}
+
+Theme::~Theme() {
+    save_current_theme();
 }
 
 ThemeColor Theme::get_color(const ThemeItem item) const {
@@ -617,4 +502,37 @@ void Theme::apply_to_imgui() {
     for (const auto &mapping : imgui_mapping) {
         style.Colors[mapping.second] = get_vec4_color(mapping.first);
     }
+}
+
+void Theme::load_current_theme() {
+    try {
+        if (std::filesystem::exists(current_theme_path)) {
+            load_theme(current_theme_path);
+        } else if (std::filesystem::exists(default_theme_path)) {
+            load_theme(default_theme_path);
+        } else {
+            throw std::runtime_error("No theme files found. Expected default.json at: " + default_theme_path.string());
+        }
+    } catch (const std::exception &exception) {
+        throw std::runtime_error("Failed to load theme: " + std::string(exception.what()));
+    }
+}
+
+void Theme::load_theme(const std::filesystem::path &filepath) {
+    const nlohmann::json theme_json = read_json(filepath);
+    from_json(theme_json);
+}
+
+void Theme::save_current_theme() const {
+    try {
+        save_theme(current_theme_path);
+    } catch (const std::exception &exception) {
+        std::cerr << "Error saving theme: " << exception.what() << std::endl;
+    }
+}
+
+void Theme::save_theme(const std::filesystem::path &filepath) const {
+    std::filesystem::create_directories(filepath.parent_path());
+    const nlohmann::json theme_json = to_json();
+    save_json(filepath, theme_json);
 }

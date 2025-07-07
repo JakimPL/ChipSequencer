@@ -75,6 +75,10 @@ std::filesystem::path get_scripts_path() {
     return get_resource_path("scripts");
 }
 
+std::filesystem::path get_themes_path() {
+    return get_resource_path("themes");
+}
+
 std::string get_python_path() {
     const std::filesystem::path base_path = get_base_path();
 
