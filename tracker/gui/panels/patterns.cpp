@@ -59,7 +59,7 @@ void GUIPatternsPanel::draw_channels() {
     ImGui::SetNextWindowContentSize(ImVec2(content_size, 0));
     ImGui::BeginChild("##PatternChannels", ImVec2(available, 0), 0, ImGuiWindowFlags_HorizontalScrollbar);
 
-    if (ImGui::BeginTable("ChannelsTable", columns, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersOuter)) {
+    if (ImGui::BeginTable("ChannelsTable", columns, ImGuiTableFlags_BordersOuter)) {
         for (const auto &[index, pattern] : current_patterns.patterns) {
             ImGui::TableNextColumn();
             draw_channel(index);

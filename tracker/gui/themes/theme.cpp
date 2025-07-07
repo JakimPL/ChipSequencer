@@ -40,7 +40,7 @@ void Theme::set_color(const ThemeItem item, const ThemeColor &color) {
     colors[item] = color;
 
     if (static_cast<size_t>(item) < static_cast<size_t>(ThemeItem::RowPlaying)) {
-        apply_to_imgui();
+        to_imgui();
     }
 }
 
@@ -494,13 +494,20 @@ void Theme::from_json(const nlohmann::json &json) {
         throw;
     }
 
-    apply_to_imgui();
+    to_imgui();
 }
 
-void Theme::apply_to_imgui() {
+void Theme::to_imgui() const {
     ImGuiStyle &style = ImGui::GetStyle();
     for (const auto &mapping : imgui_mapping) {
         style.Colors[mapping.second] = get_vec4_color(mapping.first);
+    }
+}
+
+void Theme::from_imgui() {
+    ImGuiStyle &style = ImGui::GetStyle();
+    for (const auto &mapping : imgui_mapping) {
+        colors[mapping.first] = ThemeColor(style.Colors[mapping.second]);
     }
 }
 
