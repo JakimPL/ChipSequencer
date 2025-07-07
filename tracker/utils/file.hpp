@@ -25,4 +25,5 @@ std::vector<size_t> get_struct_sizes(const std::vector<T> &data);
 
 size_t get_struct_size(const void *pointer);
 
-nlohmann::json read_json(const std::string &filename);
+nlohmann::json read_json(const std::filesystem::path &filename);
+void save_json(const std::filesystem::path &filename, const nlohmann::json &json);

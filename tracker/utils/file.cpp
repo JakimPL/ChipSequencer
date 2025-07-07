@@ -1,5 +1,6 @@
 #include "../structures.hpp"
 #include "../song/links/type.hpp"
+#include "../gui/constants.hpp"
 #include "file.hpp"
 
 template <typename T>
@@ -63,14 +64,23 @@ std::vector<size_t> get_struct_sizes(const std::vector<T> &data) {
     return sizes;
 }
 
-nlohmann::json read_json(const std::string &filename) {
+nlohmann::json read_json(const std::filesystem::path &filename) {
     std::ifstream file(filename);
     if (!file) {
-        throw std::runtime_error("Failed to open file: " + filename);
+        throw std::runtime_error("Failed to open file: " + filename.string());
     }
     nlohmann::json json;
     file >> json;
     return json;
+}
+
+void save_json(const std::filesystem::path &filename, const nlohmann::json &json) {
+    std::ofstream file(filename);
+    if (!file) {
+        throw std::runtime_error("Failed to create file: " + filename.string());
+    }
+    file << json.dump(JSON_INDENTATION);
+    file.close();
 }
 
 template void write_data<uint8_t>(std::ofstream &file, const uint8_t *data, const size_t size);

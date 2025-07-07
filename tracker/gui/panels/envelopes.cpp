@@ -8,6 +8,7 @@
 #include "../names.hpp"
 #include "../undo.hpp"
 #include "../utils.hpp"
+#include "../themes/theme.hpp"
 #include "envelopes.hpp"
 
 GUIEnvelopesPanel::GUIEnvelopesPanel(const bool visible, const bool windowed)
@@ -191,8 +192,8 @@ void GUIEnvelopesPanel::draw_envelope_graph() {
     const ImVec2 canvas_p0 = ImVec2(p.x, p.y + 10.0f);
     const ImVec2 canvas_p1 = ImVec2(p.x + size.x, p.y + size.y + 10.0f);
 
-    draw_list->AddRectFilled(canvas_p0, canvas_p1, IM_COL32(50, 50, 50, 255));
-    draw_list->AddRect(canvas_p0, canvas_p1, IM_COL32(200, 200, 200, 255));
+    draw_list->AddRectFilled(canvas_p0, canvas_p1, theme.get_u32_color(ThemeItem::EnvelopeCanvasBackground));
+    draw_list->AddRect(canvas_p0, canvas_p1, theme.get_u32_color(ThemeItem::EnvelopeCanvasBorder));
 
     const float tick_duration_base = Song::get_row_duration();
     float total_time = current_envelope.attack + current_envelope.decay + current_envelope.hold + current_envelope.release;
@@ -257,22 +258,22 @@ void GUIEnvelopesPanel::draw_envelope_graph() {
         const float x = canvas_p0.x + size.x * (current_step_time / static_cast<float>(total_time));
         const std::string label = std::to_string(static_cast<int>(grid_step * i)) + "s";
         const ImVec2 text_size = ImGui::CalcTextSize(label.c_str());
-        draw_list->AddLine(ImVec2(x, canvas_p0.y), ImVec2(x, canvas_p1.y), IM_COL32(100, 100, 100, 255), 1.0f);
-        draw_list->AddText(ImVec2(x - text_size.x / 2, canvas_p1.y + 5), IM_COL32(255, 255, 255, 255), label.c_str());
+        draw_list->AddLine(ImVec2(x, canvas_p0.y), ImVec2(x, canvas_p1.y), theme.get_u32_color(ThemeItem::EnvelopeGridLine), 1.0f);
+        draw_list->AddText(ImVec2(x - text_size.x / 2, canvas_p1.y + 5), theme.get_u32_color(ThemeItem::EnvelopeGridText), label.c_str());
     }
 
-    draw_list->AddLine(p0, p1, IM_COL32(255, 0, 0, 255), 2.0f);
-    draw_list->AddLine(p1, p2, IM_COL32(255, 165, 0, 255), 2.0f);
-    draw_list->AddLine(p2, p3, IM_COL32(75, 255, 130, 255), 2.0f);
-    draw_list->AddLine(p3, p4, IM_COL32(0, 144, 255, 255), 2.0f);
-    draw_list->AddCircleFilled(p1, 3.0f, IM_COL32(255, 0, 0, 255));
-    draw_list->AddCircleFilled(p2, 3.0f, IM_COL32(255, 165, 0, 255));
-    draw_list->AddCircleFilled(p3, 3.0f, IM_COL32(75, 255, 130, 255));
-    draw_list->AddCircleFilled(p4, 3.0f, IM_COL32(0, 144, 255, 255));
+    draw_list->AddLine(p0, p1, theme.get_u32_color(ThemeItem::EnvelopeAttack), 2.0f);
+    draw_list->AddLine(p1, p2, theme.get_u32_color(ThemeItem::EnvelopeDecay), 2.0f);
+    draw_list->AddLine(p2, p3, theme.get_u32_color(ThemeItem::EnvelopeSustain), 2.0f);
+    draw_list->AddLine(p3, p4, theme.get_u32_color(ThemeItem::EnvelopeRelease), 2.0f);
+    draw_list->AddCircleFilled(p1, 3.0f, theme.get_u32_color(ThemeItem::EnvelopeAttack));
+    draw_list->AddCircleFilled(p2, 3.0f, theme.get_u32_color(ThemeItem::EnvelopeDecay));
+    draw_list->AddCircleFilled(p3, 3.0f, theme.get_u32_color(ThemeItem::EnvelopeSustain));
+    draw_list->AddCircleFilled(p4, 3.0f, theme.get_u32_color(ThemeItem::EnvelopeRelease));
 
     for (const float position : current_envelope.positions) {
         const float x = canvas_p0.x + size.x * (position / static_cast<float>(total_time));
-        draw_list->AddLine(ImVec2(x, canvas_p0.y), ImVec2(x, canvas_p1.y), IM_COL32(255, 255, 0, 128), 1.0f);
+        draw_list->AddLine(ImVec2(x, canvas_p0.y), ImVec2(x, canvas_p1.y), theme.get_u32_color(ThemeItem::EnvelopePlaybackLine), 1.0f);
     }
 
     float tick_duration_seconds = tick_duration_base;
@@ -289,22 +290,22 @@ void GUIEnvelopesPanel::draw_envelope_graph() {
         int tick_label = i * tick_label_multiplier;
         std::string tick_label_str = std::to_string(tick_label);
         ImVec2 tick_text_size = ImGui::CalcTextSize(tick_label_str.c_str());
-        draw_list->AddLine(ImVec2(x, canvas_p0.y), ImVec2(x, canvas_p1.y), IM_COL32(0, 200, 255, 128), 1.0f);
-        draw_list->AddText(ImVec2(x - tick_text_size.x / 2, canvas_p0.y - tick_text_size.y - 2), IM_COL32(0, 200, 255, 255), tick_label_str.c_str());
+        draw_list->AddLine(ImVec2(x, canvas_p0.y), ImVec2(x, canvas_p1.y), theme.get_u32_color(ThemeItem::EnvelopeCurrentLine), 1.0f);
+        draw_list->AddText(ImVec2(x - tick_text_size.x / 2, canvas_p0.y - tick_text_size.y - 2), theme.get_u32_color(ThemeItem::EnvelopeCurrentLine), tick_label_str.c_str());
     }
 
-    draw_list->AddLine(p0, p1, IM_COL32(255, 0, 0, 255), 2.0f);
-    draw_list->AddLine(p1, p2, IM_COL32(255, 165, 0, 255), 2.0f);
-    draw_list->AddLine(p2, p3, IM_COL32(75, 255, 130, 255), 2.0f);
-    draw_list->AddLine(p3, p4, IM_COL32(0, 144, 255, 255), 2.0f);
-    draw_list->AddCircleFilled(p1, 3.0f, IM_COL32(255, 0, 0, 255));
-    draw_list->AddCircleFilled(p2, 3.0f, IM_COL32(255, 165, 0, 255));
-    draw_list->AddCircleFilled(p3, 3.0f, IM_COL32(75, 255, 130, 255));
-    draw_list->AddCircleFilled(p4, 3.0f, IM_COL32(0, 144, 255, 255));
+    draw_list->AddLine(p0, p1, theme.get_u32_color(ThemeItem::EnvelopeAttack), 2.0f);
+    draw_list->AddLine(p1, p2, theme.get_u32_color(ThemeItem::EnvelopeDecay), 2.0f);
+    draw_list->AddLine(p2, p3, theme.get_u32_color(ThemeItem::EnvelopeSustain), 2.0f);
+    draw_list->AddLine(p3, p4, theme.get_u32_color(ThemeItem::EnvelopeRelease), 2.0f);
+    draw_list->AddCircleFilled(p1, 3.0f, theme.get_u32_color(ThemeItem::EnvelopeAttack));
+    draw_list->AddCircleFilled(p2, 3.0f, theme.get_u32_color(ThemeItem::EnvelopeDecay));
+    draw_list->AddCircleFilled(p3, 3.0f, theme.get_u32_color(ThemeItem::EnvelopeSustain));
+    draw_list->AddCircleFilled(p4, 3.0f, theme.get_u32_color(ThemeItem::EnvelopeRelease));
 
     for (const float position : current_envelope.positions) {
         const float x = canvas_p0.x + size.x * (position / static_cast<float>(total_time));
-        draw_list->AddLine(ImVec2(x, canvas_p0.y), ImVec2(x, canvas_p1.y), IM_COL32(255, 255, 0, 128), 1.0f);
+        draw_list->AddLine(ImVec2(x, canvas_p0.y), ImVec2(x, canvas_p1.y), theme.get_u32_color(ThemeItem::EnvelopePlaybackLine), 1.0f);
     }
 }
 

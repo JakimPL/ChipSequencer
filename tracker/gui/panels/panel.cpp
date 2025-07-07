@@ -7,6 +7,7 @@
 #include "../names.hpp"
 #include "../undo.hpp"
 #include "../history/actions/action.hpp"
+#include "../themes/theme.hpp"
 #include "panel.hpp"
 
 GUIPanel::GUIPanel(
@@ -23,13 +24,13 @@ void GUIPanel::lock_item(const Target target, const size_t index) {
     ImGui::SameLine();
     const bool is_locked = lock_registry.is_locked(target, index);
     if (is_locked) {
-        ImGui::PushStyleColor(ImGuiCol_Button, GUI_LOCK_BUTTON_COLOR);
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, GUI_LOCK_BUTTON_HOVER_COLOR);
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, GUI_LOCK_BUTTON_ACTIVE_COLOR);
+        ImGui::PushStyleColor(ImGuiCol_Button, theme.get_u32_color(ThemeItem::LockButton));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, theme.get_u32_color(ThemeItem::LockButtonHover));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, theme.get_u32_color(ThemeItem::LockButtonActive));
     } else {
-        ImGui::PushStyleColor(ImGuiCol_Button, GUI_UNLOCK_BUTTON_COLOR);
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, GUI_UNLOCK_BUTTON_HOVER_COLOR);
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, GUI_UNLOCK_BUTTON_ACTIVE_COLOR);
+        ImGui::PushStyleColor(ImGuiCol_Button, theme.get_u32_color(ThemeItem::UnlockButton));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, theme.get_u32_color(ThemeItem::UnlockButtonHover));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, theme.get_u32_color(ThemeItem::UnlockButtonActive));
     }
     if (ImGui::Button("L")) {
         if (index != -1) {

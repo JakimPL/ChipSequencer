@@ -25,6 +25,8 @@ ChipSequencer.exe
 cmake_install.cmake
 CMakeFiles/
 
+themes/current.json
+
 build/
 bin/
 temp/

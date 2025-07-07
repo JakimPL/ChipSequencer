@@ -27,8 +27,6 @@
 #include "links/manager.hpp"
 #include "lock/registry.hpp"
 
-#define JSON_INDENTATION 4
-
 Song::Song() {
     new_song();
 }
@@ -95,7 +93,7 @@ void Song::load_from_file(const std::string &filename) {
 
     try {
         decompress_archive(filename, directory);
-        nlohmann::json json = import_header((song_path / "header.json").string());
+        nlohmann::json json = import_header(song_path / "header.json");
         clear_data();
         import_all(directory, json);
         update_sizes();
@@ -1182,7 +1180,7 @@ nlohmann::json Song::create_header_json() const {
     return json;
 }
 
-nlohmann::json Song::import_header(const std::string &filename) {
+nlohmann::json Song::import_header(const std::filesystem::path &filename) {
     nlohmann::json json = read_json(filename);
     const auto &json_header = json["header"];
     header.title = json_header.value("title", DEFAULT_TITLE);
@@ -1527,24 +1525,18 @@ void Song::export_data_asm_file(const std::filesystem::path &directory) {
 
 void Song::export_header(const std::filesystem::path &directory) const {
     const nlohmann::json header = create_header_json();
-    std::ofstream header_file(directory / "header.json");
-    header_file << header.dump(JSON_INDENTATION);
-    header_file.close();
+    save_json((directory / "header.json"), header);
 }
 
 void Song::export_gui_state(const std::filesystem::path &directory) {
     nlohmann::json gui_state = Song::save_gui_state();
-    std::ofstream gui_file(directory / "gui.json");
-    gui_file << gui_state.dump(JSON_INDENTATION);
-    gui_file.close();
+    save_json((directory / "gui.json"), gui_state);
 }
 
 void Song::export_lock_registry(const std::filesystem::path &directory) {
     const std::filesystem::path lock_registry_path = directory / "lock.json";
     nlohmann::json lock_registry_json = lock_registry.to_json();
-    std::ofstream lock_file(lock_registry_path);
-    lock_file << lock_registry_json.dump(JSON_INDENTATION);
-    lock_file.close();
+    save_json(lock_registry_path, lock_registry_json);
 }
 
 template <typename T>
@@ -1754,7 +1746,7 @@ void Song::import_links(const std::filesystem::path &directory, const nlohmann::
 }
 
 void Song::import_gui_state(const std::filesystem::path &directory) {
-    const std::string gui_filename = (directory / "gui.json").string();
+    const std::filesystem::path gui_filename = directory / "gui.json";
     nlohmann::json json = read_json(gui_filename);
     const auto &json_editor = json["editor"];
     gui.set_current_octave(json_editor.value("current_octave", GUI_DEFAULT_CURRENT_OCTAVE));
@@ -1793,7 +1785,7 @@ void Song::import_lock_registry(const std::filesystem::path &directory) {
         return;
     }
 
-    nlohmann::json lock_registry_json = read_json(lock_registry_path.string());
+    nlohmann::json lock_registry_json = read_json(lock_registry_path);
     lock_registry.from_json(lock_registry_json);
 }
 

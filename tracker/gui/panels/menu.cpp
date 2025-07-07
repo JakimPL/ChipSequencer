@@ -213,7 +213,6 @@ void GUIMenu::file_compile(const CompilationScheme scheme, const CompilationTarg
     const std::string platform = compilation_target == CompilationTarget::Linux ? "linux" : "windows";
     nfdresult_t result = NFD_SaveDialog(platform == "linux" ? "" : "exe", nullptr, &target_path);
     if (result == NFD_OKAY) {
-        // Use RAII to manage the memory allocated by NFD
         std::unique_ptr<nfdchar_t, void (*)(void *)> path_guard(target_path, free);
         std::filesystem::path new_path(target_path);
         new_path = check_and_correct_path_by_extension(new_path, platform == "linux" ? "" : ".exe");
@@ -250,17 +249,17 @@ void GUIMenu::file_exit_confirm() {
 void GUIMenu::draw_dialog_box() {
     if (compilation_status.has_value()) {
         ImGui::OpenPopup(compilation_status.value() ? "Compilation success" : "Compilation failure");
-        compilation_status = std::nullopt;
+        compilation_status.reset();
     }
 
     if (render_status.has_value()) {
         ImGui::OpenPopup(render_status.value() ? "Render success" : "Render failure");
-        render_status = std::nullopt;
+        render_status.reset();
     }
 
     if (load_error.has_value()) {
         ImGui::OpenPopup("Load error");
-        load_error = std::nullopt;
+        load_error.reset();
     }
 
     if (open_new_song_confirmation_popup) {

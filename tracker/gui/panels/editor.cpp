@@ -1,14 +1,21 @@
 #include "../../general.hpp"
 #include "../../tuning/frequencies.hpp"
 #include "../../utils/string.hpp"
+#include "../../utils/file.hpp"
+#include "../../utils/paths.hpp"
 #include "../constants.hpp"
 #include "../gui.hpp"
 #include "../names.hpp"
 #include "../utils.hpp"
+#include "../clipboard/clipboard.hpp"
 #include "../history/manager.hpp"
 #include "../shortcuts/manager.hpp"
-#include "../clipboard/clipboard.hpp"
+#include "../themes/theme.hpp"
 #include "editor.hpp"
+
+#include "nfd.h"
+#include <memory>
+#include <iostream>
 
 GUIEditorPanel::GUIEditorPanel(const bool visible, const bool windowed)
     : GUIPanel("Editor", visible, windowed) {
@@ -34,6 +41,10 @@ void GUIEditorPanel::draw_tabs() {
         }
         if (ImGui::BeginTabItem("Clipboard")) {
             draw_clipboard();
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Theme")) {
+            draw_theme();
             ImGui::EndTabItem();
         }
         ImGui::EndTabBar();
@@ -88,7 +99,7 @@ void GUIEditorPanel::draw_history() {
     ImGui::Separator();
 
     if (history_size == 0) {
-        ImGui::TextColored(GUI_TEXT_COLOR_UNAVAILABLE, "No actions recorded yet.");
+        ImGui::TextColored(theme.get_vec4_color(ThemeItem::TextUnavailable), "No actions recorded yet.");
         ImGui::EndDisabled();
         ImGui::EndChild();
         return;
@@ -109,9 +120,9 @@ void GUIEditorPanel::draw_history() {
         std::string action_name = history_manager.get_action_name(i);
 
         if (i == static_cast<int>(current_index) - 1) {
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.8f, 0.0f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_Text, theme.get_vec4_color(ThemeItem::HistoryCurrentAction));
         } else if (!is_applied) {
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_Text, theme.get_vec4_color(ThemeItem::HistoryUnappliedAction));
         }
 
         const std::string action_label = action_name + "##" + std::to_string(i + 1);
@@ -150,24 +161,10 @@ void GUIEditorPanel::draw_history() {
 }
 
 void GUIEditorPanel::draw_clipboard() {
-    auto get_category_name = [](ClipboardCategory category) -> const char * {
-        switch (category) {
-        case ClipboardCategory::Notes:
-            return "Notes";
-        case ClipboardCategory::Commands:
-            return "Commands";
-        case ClipboardCategory::None:
-        default:
-            return "Unknown";
-        }
-    };
-
     ImGui::BeginChild("ClipboardPanel", ImVec2(0, 0), 0);
-    ImGui::BeginDisabled(gui.is_playing());
     ImGui::Separator();
 
     bool has_any_items = false;
-
     for (auto category : {ClipboardCategory::Notes, ClipboardCategory::Commands}) {
         const auto *items = clipboard.get_items(category);
         if (items != nullptr && !items->empty()) {
@@ -177,8 +174,7 @@ void GUIEditorPanel::draw_clipboard() {
     }
 
     if (!has_any_items) {
-        ImGui::TextColored(GUI_TEXT_COLOR_UNAVAILABLE, "No clipboard items yet.");
-        ImGui::EndDisabled();
+        ImGui::TextColored(theme.get_vec4_color(ThemeItem::TextUnavailable), "No clipboard items yet.");
         ImGui::EndChild();
         return;
     }
@@ -202,8 +198,7 @@ void GUIEditorPanel::draw_clipboard() {
             continue;
         }
 
-        const char *category_name = get_category_name(category);
-
+        const char *category_name = clipboard_category_names.at(category);
         for (size_t i = 0; i < items->size(); ++i) {
             const auto &item = (*items)[i];
 
@@ -218,9 +213,9 @@ void GUIEditorPanel::draw_clipboard() {
             copy_string_to_buffer(item_label, label, sizeof(label));
 
             if (i == 0) {
-                ImGui::PushStyleColor(ImGuiCol_Text, GUI_CLIPBOARD_TEXT_COLOR_RECENT);
+                ImGui::PushStyleColor(ImGuiCol_Text, theme.get_vec4_color(ThemeItem::ClipboardRecent));
             } else {
-                ImGui::PushStyleColor(ImGuiCol_Text, GUI_CLIPBOARD_TEXT_COLOR_OLDER);
+                ImGui::PushStyleColor(ImGuiCol_Text, theme.get_vec4_color(ThemeItem::ClipboardOlder));
             }
 
             if (ImGui::Selectable(label, false, ImGuiSelectableFlags_SpanAllColumns)) {
@@ -246,8 +241,137 @@ void GUIEditorPanel::draw_clipboard() {
     }
 
     ImGui::Columns(1);
-    ImGui::EndDisabled();
     ImGui::EndChild();
+}
+
+void GUIEditorPanel::draw_theme() {
+    ImGui::BeginChild("ThemePanel", ImVec2(0, 0), false);
+
+    const float total_width = ImGui::GetContentRegionAvail().x;
+    const float button_height = ImGui::GetFrameHeight();
+    const float panel_height = ImGui::GetContentRegionAvail().y - button_height - ImGui::GetStyle().ItemSpacing.y * 2;
+
+    ImGui::BeginChild("ThemeTable", ImVec2(0, panel_height), true);
+    if (ImGui::BeginTable("ThemeItems", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_ScrollY)) {
+        ImGui::TableSetupColumn("Item name", ImGuiTableColumnFlags_WidthFixed, total_width * 0.4f);
+        ImGui::TableSetupColumn("Hex color", ImGuiTableColumnFlags_WidthFixed, total_width * 0.3f);
+        ImGui::TableSetupColumn("Color", ImGuiTableColumnFlags_WidthFixed, total_width * 0.3f);
+        ImGui::TableHeadersRow();
+
+        for (size_t i = 0; i < static_cast<size_t>(ThemeItem::Count); ++i) {
+            const ThemeItem item = static_cast<ThemeItem>(i);
+            const std::string item_name = Theme::get_item_name(item);
+
+            ThemeColor current_color;
+            current_color = theme.get_color(item);
+
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::TextUnformatted(item_name.c_str());
+
+            ImGui::TableSetColumnIndex(1);
+            const std::string hex_color = current_color.to_hex();
+            char hex_buffer[64];
+            copy_string_to_buffer(hex_color, hex_buffer, sizeof(hex_buffer));
+
+            ImGui::PushID(static_cast<int>(i));
+            if (ImGui::InputText("##hex", hex_buffer, sizeof(hex_buffer))) {
+                const ThemeColor new_color = theme.hex_to_color(hex_buffer);
+                theme.set_color(item, new_color);
+            }
+            ImGui::PopID();
+
+            ImGui::TableSetColumnIndex(2);
+            ImVec4 color_vec4 = current_color.to_vec4();
+
+            ImGui::PushID(static_cast<int>(i) + 1000);
+            if (ImGui::ColorEdit4("##color", &color_vec4.x, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel)) {
+                const ThemeColor new_color(color_vec4);
+                theme.set_color(item, new_color);
+            }
+            ImGui::PopID();
+        }
+
+        ImGui::EndTable();
+    }
+
+    ImGui::EndChild();
+
+    if (ImGui::Button("Save theme", ImVec2(ImGui::GetContentRegionAvail().x * 0.5f - ImGui::GetStyle().ItemSpacing.x * 0.5f, 0))) {
+        save_theme();
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Load theme", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
+        load_theme();
+    }
+
+    ImGui::EndChild();
+}
+
+void GUIEditorPanel::save_theme() {
+    nfdchar_t *target_path = nullptr;
+    const nfdresult_t result = NFD_SaveDialog("json", nullptr, &target_path);
+    if (result == NFD_OKAY) {
+        const std::unique_ptr<nfdchar_t, void (*)(void *)> path_guard(target_path, free);
+        const std::filesystem::path file_path = check_and_correct_path_by_extension(target_path, ".json");
+
+        try {
+            const nlohmann::json theme_json = theme.to_json();
+            save_json(file_path, theme_json);
+            save_theme_status = true;
+        } catch (const std::exception &e) {
+            std::cerr << "Failed to save theme: " << e.what() << std::endl;
+            save_theme_status = false;
+        }
+    }
+}
+
+void GUIEditorPanel::load_theme() {
+    nfdchar_t *target_path = nullptr;
+    const nfdresult_t result = NFD_OpenDialog("json", nullptr, &target_path);
+    if (result == NFD_OKAY) {
+        const std::unique_ptr<nfdchar_t, void (*)(void *)> path_guard(target_path, free);
+        const std::filesystem::path file_path(target_path);
+
+        try {
+            const nlohmann::json theme_json = read_json(file_path);
+            theme.from_json(theme_json);
+        } catch (const std::exception &e) {
+            std::cerr << "Failed to load theme: " << e.what() << std::endl;
+            load_theme_error = true;
+        }
+    }
+}
+
+void GUIEditorPanel::draw_dialog_box() {
+    if (load_theme_error.has_value() && load_theme_error.value()) {
+        ImGui::OpenPopup("Load theme error");
+        load_theme_error.reset();
+    }
+
+    if (save_theme_status.has_value()) {
+        const bool success = save_theme_status.value();
+        if (success) {
+            ImGui::OpenPopup("Theme save success");
+        } else {
+            ImGui::OpenPopup("Theme save failure");
+        }
+        save_theme_status.reset();
+    }
+
+    if (ImGui::BeginPopupModal("Load theme error", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Failed to load the theme!");
+    }
+
+    if (ImGui::BeginPopupModal("Theme save success", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Theme saved successfully!");
+    }
+
+    if (ImGui::BeginPopupModal("Theme save failure", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Failed to save the theme!");
+    }
 }
 
 void GUIEditorPanel::check_keyboard_input() {

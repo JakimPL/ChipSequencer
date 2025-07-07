@@ -50,6 +50,8 @@ set(TRACKER_SOURCES
     tracker/gui/patterns/pattern.cpp
     tracker/gui/patterns/selection.cpp
     tracker/gui/shortcuts/manager.cpp
+    tracker/gui/themes/color.cpp
+    tracker/gui/themes/theme.cpp
     tracker/gui/undo.cpp
     tracker/gui/utils.cpp
     tracker/main.cpp

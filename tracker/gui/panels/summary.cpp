@@ -12,6 +12,7 @@
 #include "../../song/links/manager.hpp"
 #include "../init.hpp"
 #include "../names.hpp"
+#include "../themes/theme.hpp"
 #include "summary.hpp"
 
 GUISummaryPanel::GUISummaryPanel(const bool visible, const bool windowed)
@@ -30,7 +31,7 @@ void GUISummaryPanel::draw() {
 void GUISummaryPanel::draw_table_row(bool highlight, const char *label, std::optional<size_t> count, size_t size) {
     ImGui::TableNextRow();
     if (highlight) {
-        ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, IM_COL32(70, 120, 70, 128));
+        ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, theme.get_u32_color(ThemeItem::SummaryTableHighlight));
     }
     ImGui::TableSetColumnIndex(0);
     ImGui::Text("%s", label);
@@ -45,7 +46,7 @@ void GUISummaryPanel::draw_table_row(bool highlight, const char *label, std::opt
 void GUISummaryPanel::draw_table_row(bool highlight, const char *label, size_t size) {
     ImGui::TableNextRow();
     if (highlight) {
-        ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, IM_COL32(70, 120, 70, 128));
+        ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, theme.get_u32_color(ThemeItem::SummaryTableHighlight));
     }
     ImGui::TableSetColumnIndex(0);
     ImGui::Text("%s", label);

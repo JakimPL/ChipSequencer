@@ -18,6 +18,7 @@
 #include "utils.hpp"
 #include "clipboard/clipboard.hpp"
 #include "patterns/selection.hpp"
+#include "themes/theme.hpp"
 
 int clamp_index(int index, const int size) {
     return clamp(index, 0, size - 1);
@@ -378,17 +379,17 @@ std::pair<size_t, bool> draw_pattern(
             ImGui::TableNextRow();
 
             if (playing_row == j) {
-                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_PLAYING);
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, theme.get_u32_color(ThemeItem::RowPlaying));
             } else if (edited_row == j) {
-                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_EDITED);
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, theme.get_u32_color(ThemeItem::RowEdited));
             } else if (is_selected) {
-                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_SELECTED);
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, theme.get_u32_color(ThemeItem::RowSelected));
             } else if (is_secondary_selected) {
-                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_SECONDARY_SELECTED);
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, theme.get_u32_color(ThemeItem::RowSecondarySelected));
             }
 
             if (is_current) {
-                ImGui::PushStyleColor(ImGuiCol_Text, GUI_ROW_TEXT_CURRENT);
+                ImGui::PushStyleColor(ImGuiCol_Text, theme.get_u32_color(ThemeItem::RowTextCurrent));
             }
 
             ImGui::TableSetColumnIndex(0);
@@ -503,21 +504,21 @@ std::pair<size_t, bool> draw_commands_pattern(
 
             ImGui::TableNextRow();
             if (playing_row == j) {
-                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_PLAYING);
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, theme.get_u32_color(ThemeItem::RowPlaying));
             } else if (edited_row == j) {
-                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_EDITED);
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, theme.get_u32_color(ThemeItem::RowEdited));
             } else if (is_selected) {
-                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_SELECTED);
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, theme.get_u32_color(ThemeItem::RowSelected));
             } else if (is_secondary_selected) {
-                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_SECONDARY_SELECTED);
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, theme.get_u32_color(ThemeItem::RowSecondarySelected));
             }
 
             if (is_command_current) {
-                ImGui::PushStyleColor(ImGuiCol_Text, GUI_ROW_TEXT_CURRENT);
-                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_CURRENT_COMMAND);
+                ImGui::PushStyleColor(ImGuiCol_Text, theme.get_u32_color(ThemeItem::RowTextCurrent));
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, theme.get_u32_color(ThemeItem::RowCurrentCommand));
             } else if (is_value_current) {
-                ImGui::PushStyleColor(ImGuiCol_Text, GUI_ROW_TEXT_CURRENT);
-                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, GUI_ROW_COLOR_CURRENT_VALUE);
+                ImGui::PushStyleColor(ImGuiCol_Text, theme.get_u32_color(ThemeItem::RowTextCurrent));
+                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, theme.get_u32_color(ThemeItem::RowCurrentValue));
             }
 
             ImGui::TableSetColumnIndex(0);
@@ -542,7 +543,7 @@ std::pair<size_t, bool> draw_commands_pattern(
             }
 
             if (is_command_current) {
-                ImGui::PushStyleColor(ImGuiCol_Text, GUI_ROW_TEXT_CURRENT);
+                ImGui::PushStyleColor(ImGuiCol_Text, theme.get_u32_color(ThemeItem::RowTextCurrent));
             }
 
             ImGui::PushID(i);
@@ -562,7 +563,7 @@ std::pair<size_t, bool> draw_commands_pattern(
 
             std::string value;
             if (is_value_current) {
-                ImGui::PushStyleColor(ImGuiCol_Text, GUI_ROW_TEXT_CURRENT);
+                ImGui::PushStyleColor(ImGuiCol_Text, theme.get_u32_color(ThemeItem::RowTextCurrent));
                 value = pattern.values_handler.get_buffer();
             } else {
                 value = pattern.values[i].empty() ? "" : pattern.values[i];
@@ -972,7 +973,7 @@ GUIState prepare_combo(GUIPanel *owner, const std::vector<std::string> &names, c
     ImGui::SetNextItemWidth(combo_width);
 
     if (error_if_empty && names.empty()) {
-        ImGui::PushStyleColor(ImGuiCol_Border, GUI_ERROR_COLOR);
+        ImGui::PushStyleColor(ImGuiCol_Border, theme.get_vec4_color(ThemeItem::Error));
         ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.0f);
     }
 
@@ -1003,19 +1004,19 @@ void update_items(std::vector<std::string> &names, size_t size, const std::strin
 }
 
 void push_secondary_style() {
-    ImGui::PushStyleColor(ImGuiCol_CheckMark, GUI_SECONDARY_COLOR_LIGHT);
-    ImGui::PushStyleColor(ImGuiCol_SliderGrab, GUI_SECONDARY_COLOR_LIGHT);
-    ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, GUI_SECONDARY_COLOR_LIGHT);
-    ImGui::PushStyleColor(ImGuiCol_Button, GUI_SECONDARY_COLOR_LIGHT);
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, GUI_SECONDARY_COLOR_BRIGHT);
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, GUI_SECONDARY_COLOR);
-    ImGui::PushStyleColor(ImGuiCol_FrameBg, GUI_SECONDARY_COLOR_DARK);
-    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, GUI_SECONDARY_COLOR);
-    ImGui::PushStyleColor(ImGuiCol_FrameBgActive, GUI_SECONDARY_COLOR);
-    ImGui::PushStyleColor(ImGuiCol_PopupBg, GUI_SECONDARY_COLOR_DARK);
-    ImGui::PushStyleColor(ImGuiCol_Header, GUI_SECONDARY_COLOR_DARK);
-    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, GUI_SECONDARY_COLOR);
-    ImGui::PushStyleColor(ImGuiCol_HeaderActive, GUI_SECONDARY_COLOR);
+    ImGui::PushStyleColor(ImGuiCol_CheckMark, theme.get_vec4_color(ThemeItem::SecondaryLight));
+    ImGui::PushStyleColor(ImGuiCol_SliderGrab, theme.get_vec4_color(ThemeItem::SecondaryLight));
+    ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, theme.get_vec4_color(ThemeItem::SecondaryLight));
+    ImGui::PushStyleColor(ImGuiCol_Button, theme.get_vec4_color(ThemeItem::SecondaryLight));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, theme.get_vec4_color(ThemeItem::SecondaryBright));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, theme.get_vec4_color(ThemeItem::Secondary));
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, theme.get_vec4_color(ThemeItem::SecondaryDark));
+    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, theme.get_vec4_color(ThemeItem::Secondary));
+    ImGui::PushStyleColor(ImGuiCol_FrameBgActive, theme.get_vec4_color(ThemeItem::Secondary));
+    ImGui::PushStyleColor(ImGuiCol_PopupBg, theme.get_vec4_color(ThemeItem::SecondaryDark));
+    ImGui::PushStyleColor(ImGuiCol_Header, theme.get_vec4_color(ThemeItem::SecondaryDark));
+    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, theme.get_vec4_color(ThemeItem::Secondary));
+    ImGui::PushStyleColor(ImGuiCol_HeaderActive, theme.get_vec4_color(ThemeItem::Secondary));
 }
 
 void pop_secondary_style() {
@@ -1023,19 +1024,19 @@ void pop_secondary_style() {
 }
 
 void push_tertiary_style() {
-    ImGui::PushStyleColor(ImGuiCol_CheckMark, GUI_TERTIARY_COLOR_LIGHT);
-    ImGui::PushStyleColor(ImGuiCol_SliderGrab, GUI_TERTIARY_COLOR_LIGHT);
-    ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, GUI_TERTIARY_COLOR_LIGHT);
-    ImGui::PushStyleColor(ImGuiCol_Button, GUI_TERTIARY_COLOR_LIGHT);
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, GUI_TERTIARY_COLOR_BRIGHT);
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, GUI_TERTIARY_COLOR);
-    ImGui::PushStyleColor(ImGuiCol_FrameBg, GUI_TERTIARY_COLOR_DARK);
-    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, GUI_TERTIARY_COLOR);
-    ImGui::PushStyleColor(ImGuiCol_FrameBgActive, GUI_TERTIARY_COLOR);
-    ImGui::PushStyleColor(ImGuiCol_PopupBg, GUI_TERTIARY_COLOR_DARK);
-    ImGui::PushStyleColor(ImGuiCol_Header, GUI_TERTIARY_COLOR_DARK);
-    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, GUI_TERTIARY_COLOR);
-    ImGui::PushStyleColor(ImGuiCol_HeaderActive, GUI_TERTIARY_COLOR);
+    ImGui::PushStyleColor(ImGuiCol_CheckMark, theme.get_vec4_color(ThemeItem::TertiaryLight));
+    ImGui::PushStyleColor(ImGuiCol_SliderGrab, theme.get_vec4_color(ThemeItem::TertiaryLight));
+    ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, theme.get_vec4_color(ThemeItem::TertiaryLight));
+    ImGui::PushStyleColor(ImGuiCol_Button, theme.get_vec4_color(ThemeItem::TertiaryLight));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, theme.get_vec4_color(ThemeItem::TertiaryBright));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, theme.get_vec4_color(ThemeItem::Tertiary));
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, theme.get_vec4_color(ThemeItem::TertiaryDark));
+    ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, theme.get_vec4_color(ThemeItem::Tertiary));
+    ImGui::PushStyleColor(ImGuiCol_FrameBgActive, theme.get_vec4_color(ThemeItem::Tertiary));
+    ImGui::PushStyleColor(ImGuiCol_PopupBg, theme.get_vec4_color(ThemeItem::TertiaryDark));
+    ImGui::PushStyleColor(ImGuiCol_Header, theme.get_vec4_color(ThemeItem::TertiaryDark));
+    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, theme.get_vec4_color(ThemeItem::Tertiary));
+    ImGui::PushStyleColor(ImGuiCol_HeaderActive, theme.get_vec4_color(ThemeItem::Tertiary));
 }
 
 void pop_tertiary_style() {
