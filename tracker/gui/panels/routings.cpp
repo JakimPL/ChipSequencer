@@ -356,10 +356,7 @@ void GUIRoutingsPanel::draw_nodes() {
 
 void GUIRoutingsPanel::draw_link(const InputKey &source_key, const OutputKey &target_key, uint8_t alpha) {
     const float line_thickness = GUI_ROUTING_LINK_THICKNESS;
-    const ImU32 audio_color_base = theme.get_u32_color(ThemeItem::RoutingAudioLink);
-    const ImU32 parameter_color_base = theme.get_u32_color(ThemeItem::RoutingParameterLink);
     const ImU32 dragging_color = theme.get_u32_color(ThemeItem::RoutingDraggingLink);
-
     const ImU32 audio_color = theme.get_color(ThemeItem::RoutingAudioLink).with_alpha(alpha).to_u32();
     const ImU32 parameter_color = theme.get_color(ThemeItem::RoutingParameterLink).with_alpha(alpha).to_u32();
 

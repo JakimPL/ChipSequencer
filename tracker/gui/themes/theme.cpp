@@ -1,3 +1,4 @@
+#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -430,17 +431,8 @@ ThemeItem Theme::get_item_from_name(const std::string &str) {
     return ThemeItem::Count;
 }
 
-std::string Theme::color_to_hex(const ThemeColor &color) const {
-    const uint8_t r = static_cast<uint8_t>(color.r * 255.0 + 0.5);
-    const uint8_t g = static_cast<uint8_t>(color.g * 255.0 + 0.5);
-    const uint8_t b = static_cast<uint8_t>(color.b * 255.0 + 0.5);
-    const uint8_t a = static_cast<uint8_t>(color.a * 255.0 + 0.5);
-
-    const ImU32 u32_color = (r << 24) | (g << 16) | (b << 8) | a;
-
-    std::stringstream ss;
-    ss << "#" << std::hex << std::setfill('0') << std::setw(8) << std::uppercase << u32_color;
-    return ss.str();
+std::string Theme::color_to_hex(const ThemeColor &color) {
+    return color.to_hex();
 }
 
 ThemeColor Theme::hex_to_color(const std::string &hex) {
@@ -481,10 +473,10 @@ void Theme::from_json(const nlohmann::json &json) {
         colors.clear();
 
         for (auto it = json.begin(); it != json.end(); ++it) {
-            const std::string key = it.key();
-            const std::string hex_value = it.value();
+            const std::string &key = it.key();
+            const std::string &hex_value = it.value();
 
-            const ThemeItem item = get_item_from_name(key);
+            const ThemeItem &item = get_item_from_name(key);
             if (item != ThemeItem::Count) {
                 colors[item] = hex_to_color(hex_value);
             }

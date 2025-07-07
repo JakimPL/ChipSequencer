@@ -271,7 +271,7 @@ void GUIEditorPanel::draw_theme() {
             ImGui::TextUnformatted(item_name.c_str());
 
             ImGui::TableSetColumnIndex(1);
-            const std::string hex_color = theme.color_to_hex(current_color);
+            const std::string hex_color = current_color.to_hex();
             char hex_buffer[64];
             copy_string_to_buffer(hex_color, hex_buffer, sizeof(hex_buffer));
 

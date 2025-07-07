@@ -1,3 +1,7 @@
+#include <cmath>
+#include <iomanip>
+#include <sstream>
+
 #include "color.hpp"
 
 ThemeColor::ThemeColor(double r, double g, double b, double a)
@@ -28,6 +32,19 @@ ThemeColor ThemeColor::with_alpha(const double alpha) const {
 
 ThemeColor ThemeColor::with_alpha(const uint8_t alpha) const {
     return with_alpha(static_cast<double>(alpha) / 255.0);
+}
+
+std::string ThemeColor::to_hex() const {
+    const uint8_t r = static_cast<uint8_t>(std::round(r * 255.0));
+    const uint8_t g = static_cast<uint8_t>(std::round(g * 255.0));
+    const uint8_t b = static_cast<uint8_t>(std::round(b * 255.0));
+    const uint8_t a = static_cast<uint8_t>(std::round(a * 255.0));
+
+    const ImU32 u32_color = (r << 24) | (g << 16) | (b << 8) | a;
+
+    std::stringstream ss;
+    ss << "#" << std::hex << std::setfill('0') << std::setw(8) << std::uppercase << u32_color;
+    return ss.str();
 }
 
 ImU32 ThemeColor::to_u32() const {

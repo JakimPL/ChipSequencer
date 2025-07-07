@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 
 #include "../init.hpp"
 
@@ -19,6 +20,7 @@ struct ThemeColor {
     ThemeColor with_alpha(double alpha) const;
     ThemeColor with_alpha(uint8_t alpha) const;
 
+    std::string to_hex() const;
     ImU32 to_u32() const;
     ImVec4 to_vec4() const;
     bool operator==(const ThemeColor &other) const;

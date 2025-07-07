@@ -39,7 +39,7 @@ class Theme {
 
     static std::string get_item_name(ThemeItem item);
     static ThemeItem get_item_from_name(const std::string &str);
-    std::string color_to_hex(const ThemeColor &color) const;
+    static std::string color_to_hex(const ThemeColor &color);
     ThemeColor hex_to_color(const std::string &hex);
 
     void load_current_theme();
