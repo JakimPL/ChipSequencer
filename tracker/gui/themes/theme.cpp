@@ -328,9 +328,15 @@ ThemeItem Theme::get_item_from_name(const std::string &str) {
 }
 
 std::string Theme::color_to_hex(const ThemeColor &color) {
-    const ImU32 u32_color = color.to_u32();
+    const uint8_t r = static_cast<uint8_t>(color.r * 255.0 + 0.5);
+    const uint8_t g = static_cast<uint8_t>(color.g * 255.0 + 0.5);
+    const uint8_t b = static_cast<uint8_t>(color.b * 255.0 + 0.5);
+    const uint8_t a = static_cast<uint8_t>(color.a * 255.0 + 0.5);
+
+    const ImU32 u32_color = (r << 24) | (g << 16) | (b << 8) | a;
+
     std::stringstream ss;
-    ss << "#" << std::hex << std::setfill('0') << std::setw(8) << u32_color;
+    ss << "#" << std::hex << std::setfill('0') << std::setw(8) << std::uppercase << u32_color;
     return ss.str();
 }
 
@@ -339,9 +345,19 @@ ThemeColor Theme::hex_to_color(const std::string &hex) {
         return ThemeColor(0.0, 0.0, 0.0, 1.0);
     }
 
-    const std::string hex_digits = hex.substr(1);
-    const ImU32 u32_color = std::stoul(hex_digits, nullptr, 16);
-    return ThemeColor(u32_color);
+    try {
+        const std::string hex_digits = hex.substr(1);
+        const ImU32 u32_color = std::stoul(hex_digits, nullptr, 16);
+
+        const uint8_t r = (u32_color >> 24) & 0xFF;
+        const uint8_t g = (u32_color >> 16) & 0xFF;
+        const uint8_t b = (u32_color >> 8) & 0xFF;
+        const uint8_t a = u32_color & 0xFF;
+
+        return ThemeColor(r / 255.0, g / 255.0, b / 255.0, a / 255.0);
+    } catch (const std::exception &e) {
+        return ThemeColor(0.0, 0.0, 0.0, 1.0);
+    }
 }
 
 nlohmann::json Theme::to_json() const {
