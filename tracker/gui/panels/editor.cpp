@@ -339,7 +339,19 @@ void GUIEditorPanel::load_theme() {
             theme.from_json(theme_json);
         } catch (const std::exception &e) {
             std::cerr << "Failed to load theme: " << e.what() << std::endl;
+            load_theme_error = true;
         }
+    }
+}
+
+void GUIEditorPanel::draw_dialog_box() {
+    if (load_theme_error.has_value()) {
+        ImGui::OpenPopup("Load theme error");
+        load_theme_error.reset();
+    }
+
+    if (ImGui::BeginPopupModal("Load theme error", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        draw_popup("Failed to load the theme!");
     }
 }
 

@@ -1,20 +1,24 @@
 #pragma once
 
 #include <functional>
+#include <optional>
 
 #include "panel.hpp"
 
 class GUIEditorPanel : public GUIPanel {
   private:
+    std::optional<bool> load_theme_error;
+
     void draw_tabs();
     void draw_options();
     static void draw_history();
     static void draw_clipboard();
-    static void draw_theme();
+    void draw_theme();
     static void save_theme();
-    static void load_theme();
+    void load_theme();
 
     void draw() override;
+    void draw_dialog_box() override;
     void check_keyboard_input() override;
 
   public:

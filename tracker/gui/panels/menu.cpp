@@ -249,17 +249,17 @@ void GUIMenu::file_exit_confirm() {
 void GUIMenu::draw_dialog_box() {
     if (compilation_status.has_value()) {
         ImGui::OpenPopup(compilation_status.value() ? "Compilation success" : "Compilation failure");
-        compilation_status = std::nullopt;
+        compilation_status.reset();
     }
 
     if (render_status.has_value()) {
         ImGui::OpenPopup(render_status.value() ? "Render success" : "Render failure");
-        render_status = std::nullopt;
+        render_status.reset();
     }
 
     if (load_error.has_value()) {
         ImGui::OpenPopup("Load error");
-        load_error = std::nullopt;
+        load_error.reset();
     }
 
     if (open_new_song_confirmation_popup) {

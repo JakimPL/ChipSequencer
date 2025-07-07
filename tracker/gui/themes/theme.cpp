@@ -1,5 +1,3 @@
-#include <cmath>
-#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -450,7 +448,7 @@ ThemeColor Theme::hex_to_color(const std::string &hex) {
         const uint8_t a = u32_color & 0xFF;
 
         return ThemeColor(r, g, b, a);
-    } catch (const std::exception &e) {
+    } catch (const std::exception &) {
         return default_color;
     }
 }
