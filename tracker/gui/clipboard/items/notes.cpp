@@ -46,7 +46,7 @@ void ClipboardNotes::generate_name() {
             }
 
             ++count;
-            stream << get_full_note_name(notes[0]);
+            stream << get_full_note_name(notes[i]);
             if (i < notes.size() - 1 || channel < pattern_notes.size() - 1) {
                 stream << ", ";
             }
