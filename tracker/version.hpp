@@ -1,3 +1,3 @@
 #pragma once
 
-#define TRACKER_VERSION "0.1.0"
+constexpr char TRACKER_VERSION[] = "0.2.1";

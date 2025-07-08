@@ -7,6 +7,7 @@
 #include <string>
 
 #include "general.hpp"
+#include "version.hpp"
 #include "audio/engine.hpp"
 #include "driver/file.hpp"
 #include "driver/port.hpp"
@@ -49,6 +50,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    std::cout << "ChipSequencer " << TRACKER_VERSION << " started" << std::endl;
     while (!gui.is_done()) {
         gui.render();
     }
