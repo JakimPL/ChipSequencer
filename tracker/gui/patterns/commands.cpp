@@ -148,13 +148,16 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
     uint8_t duration = 1;
 
     std::vector<Command> command_vector;
-    for (int i = steps - 1; i >= 0; --i) {
+    int i = steps - 1;
+    while (i >= 0) {
         if (i >= commands.size()) {
+            const int size = i - commands.size();
             if (command_vector.empty()) {
                 Command empty_command;
-                empty_command.duration = 1;
+                empty_command.duration = size + 1;
                 command_vector.push_back(empty_command);
             }
+            i = commands.size() - 1;
             continue;
         }
 
@@ -163,6 +166,7 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
 
         if (command.empty() && i > 0) {
             ++duration;
+            i--;
             continue;
         }
 
@@ -289,6 +293,7 @@ std::vector<Command> CommandsPattern::to_command_vector() const {
         }
 
         duration = 1;
+        i--;
     }
 
     std::reverse(command_vector.begin(), command_vector.end());

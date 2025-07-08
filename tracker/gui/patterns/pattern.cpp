@@ -59,11 +59,14 @@ std::vector<Note> Pattern::to_note_vector() const {
 
     uint8_t duration = 1;
     uint8_t pitch;
-    for (int i = steps - 1; i >= 0; --i) {
+    int i = steps - 1;
+    while (i >= 0) {
         if (i >= notes.size()) {
+            const int size = i - notes.size();
             if (note_vector.empty()) {
-                note_vector.push_back({NOTE_REST, 1});
+                note_vector.push_back({NOTE_REST, static_cast<uint8_t>(size + 1)});
             }
+            i = notes.size() - 1;
             continue;
         }
 
@@ -75,6 +78,8 @@ std::vector<Note> Pattern::to_note_vector() const {
             note_vector.push_back(note);
             duration = 1;
         }
+
+        i--;
     }
 
     std::reverse(note_vector.begin(), note_vector.end());
