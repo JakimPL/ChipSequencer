@@ -136,6 +136,7 @@ void GUIPanel::frame() {
     ImGui::BeginDisabled(is_disabled());
 
     focus = false;
+    save = false;
     if (select_item()) {
         from();
         pre_actions();
