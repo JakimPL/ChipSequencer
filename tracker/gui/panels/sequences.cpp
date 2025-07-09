@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <utility>
 
 #include "../../general.hpp"
 #include "../../maps/keys.hpp"
@@ -428,6 +429,15 @@ void GUISequencesPanel::check_keyboard_input() {
         const uint8_t new_note = current_sequence.pattern.get_note(old_row);
         perform_note_action(old_row, old_note, new_note);
     }
+}
+
+void GUISequencesPanel::set_sequence(const int index, std::vector<uint8_t> sequence) {
+    if (index < 0 || index >= sequences.size()) {
+        return;
+    }
+
+    current_sequence.pattern.steps = sequence.size();
+    current_sequence.pattern.notes = std::move(sequence);
 }
 
 void GUISequencesPanel::set_notes(const std::map<PatternRow, uint8_t> &notes) {

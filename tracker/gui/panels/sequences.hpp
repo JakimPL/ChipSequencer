@@ -3,6 +3,7 @@
 #include <string>
 
 #include "../../constants.hpp"
+#include "../history/changes/selection.hpp"
 #include "../patterns/pattern.hpp"
 #include "../patterns/selection.hpp"
 #include "panel.hpp"
@@ -59,6 +60,7 @@ class GUISequencesPanel : public GUIPanel {
 
     void update() override;
 
+    void set_sequence(int index, std::vector<uint8_t> sequence);
     void set_notes(const std::map<PatternRow, uint8_t> &notes);
     void set_note(const PatternRow &pattern_row, uint8_t note);
     void set_note(int row, uint8_t note);

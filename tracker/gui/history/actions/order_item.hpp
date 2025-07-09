@@ -5,7 +5,7 @@
 
 class ChangeOrderItemAction : public Action {
   private:
-    OrderItemChange sequence_change;
+    OrderItemChange order_item_change;
 
   public:
     ChangeOrderItemAction(
