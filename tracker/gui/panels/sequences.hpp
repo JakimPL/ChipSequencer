@@ -60,6 +60,7 @@ class GUISequencesPanel : public GUIPanel {
 
     void update() override;
 
+    std::vector<uint8_t> get_sequence() const;
     void set_sequence(int index, std::vector<uint8_t> sequence);
     void set_notes(const std::map<PatternRow, uint8_t> &notes);
     void set_note(const PatternRow &pattern_row, uint8_t note);

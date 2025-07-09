@@ -377,10 +377,10 @@ void GUISequencesPanel::draw_dialog_box() {
 
 void GUISequencesPanel::draw_sequence_length() {
     const size_t old_size = current_sequence.pattern.steps;
-    const LinkKey key = {Target::SPECIAL, sequence_index, SPECIAL_SEQUENCE_LENGTH};
-    const std::vector<uint8_t> old_sequence = current_sequence.pattern.notes;
+    const LinkKey key = {Target::SPECIAL, sequence_index, 0};
+    const std::vector<uint8_t> old_sequence = get_sequence();
     if (draw_number_of_items("##SequenceLength", current_sequence.pattern.steps, 1, MAX_STEPS)) {
-        std::vector<uint8_t> new_sequence = current_sequence.pattern.notes;
+        std::vector<uint8_t> new_sequence = get_sequence();
         new_sequence.resize(current_sequence.pattern.steps, NOTE_REST);
         perform_action_sequence(this, key, old_sequence, new_sequence);
     }
@@ -434,6 +434,10 @@ void GUISequencesPanel::check_keyboard_input() {
         const uint8_t new_note = current_sequence.pattern.get_note(old_row);
         perform_note_action(old_row, old_note, new_note);
     }
+}
+
+std::vector<uint8_t> GUISequencesPanel::get_sequence() const {
+    return current_sequence.pattern.notes;
 }
 
 void GUISequencesPanel::set_sequence(const int index, std::vector<uint8_t> sequence) {

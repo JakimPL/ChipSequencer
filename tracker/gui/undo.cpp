@@ -2,6 +2,8 @@
 #include "../song/song.hpp"
 #include "../utils/math.hpp"
 #include "../utils/string.hpp"
+#include "names.hpp"
+#include "undo.hpp"
 #include "history/manager.hpp"
 #include "history/actions/add.hpp"
 #include "history/actions/command.hpp"
@@ -14,8 +16,9 @@
 #include "history/actions/text.hpp"
 #include "history/actions/value.hpp"
 #include "history/actions/wavetable.hpp"
-#include "names.hpp"
-#include "undo.hpp"
+
+class GUISequencesPanel;
+class GUICommandsSequencesPanel;
 
 template <typename T>
 void perform_action(
@@ -408,7 +411,20 @@ void perform_action_sequence(
     const std::string label = "Sequence " + std::to_string(key.index);
     SequenceChange sequence_change = {static_cast<size_t>(key.index), old_sequence, new_sequence};
     history_manager.add_action(
-        std::make_unique<ChangeSequenceAction>(label, owner, key, sequence_change)
+        std::make_unique<ChangeSequenceAction<uint8_t, GUISequencesPanel>>(label, owner, key, sequence_change)
+    );
+}
+
+void perform_action_commands_sequence(
+    GUIPanel *owner,
+    const LinkKey key,
+    std::vector<CommandValue> old_sequence,
+    std::vector<CommandValue> new_sequence
+) {
+    const std::string label = "Commands sequence " + std::to_string(key.index);
+    SequenceChange sequence_change = {static_cast<size_t>(key.index), old_sequence, new_sequence};
+    history_manager.add_action(
+        std::make_unique<ChangeSequenceAction<CommandValue, GUICommandsSequencesPanel>>(label, owner, key, sequence_change)
     );
 }
 

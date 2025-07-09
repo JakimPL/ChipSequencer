@@ -3,11 +3,12 @@
 #include <cstddef>
 #include <vector>
 
+template <typename T>
 struct SequenceChange {
     size_t sequence_index;
-    std::vector<uint8_t> old_sequence;
-    std::vector<uint8_t> new_sequence;
+    std::vector<T> old_sequence;
+    std::vector<T> new_sequence;
 
-    SequenceChange(size_t index, const std::vector<uint8_t> &old_seq, const std::vector<uint8_t> &new_seq)
+    SequenceChange(size_t index, const std::vector<T> &old_seq, const std::vector<T> &new_seq)
         : sequence_index(index), old_sequence(old_seq), new_sequence(new_seq) {}
 };

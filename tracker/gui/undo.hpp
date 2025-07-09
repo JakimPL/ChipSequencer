@@ -4,6 +4,7 @@
 #include <string>
 
 #include "../song/links/key.hpp"
+#include "node.hpp"
 #include "history/actions/selection.hpp"
 #include "panels/panel.hpp"
 #include "patterns/commands.hpp"
@@ -105,4 +106,11 @@ void perform_action_sequence(
     LinkKey key,
     std::vector<uint8_t> old_sequence,
     std::vector<uint8_t> new_sequence
+);
+
+void perform_action_commands_sequence(
+    GUIPanel *owner,
+    LinkKey key,
+    std::vector<CommandValue> old_sequence,
+    std::vector<CommandValue> new_sequence
 );

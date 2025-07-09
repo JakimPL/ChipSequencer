@@ -3,16 +3,17 @@
 #include "../changes/sequence.hpp"
 #include "action.hpp"
 
+template <typename T, typename Panel>
 class ChangeSequenceAction : public Action {
   private:
-    SequenceChange sequence_change;
+    SequenceChange<T> sequence_change;
 
   public:
     ChangeSequenceAction(
         const std::string &nm,
         GUIPanel *own,
         LinkKey k,
-        SequenceChange seq_ch
+        SequenceChange<T> seq_ch
     );
 
     void redo() override;

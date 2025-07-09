@@ -277,8 +277,12 @@ void GUICommandsSequencesPanel::perform_command_action(const int row, const Comm
 
 void GUICommandsSequencesPanel::draw_sequence_length() {
     const size_t old_size = current_sequence.pattern.steps;
-    const LinkKey key = {Target::SPECIAL, sequence_index, SPECIAL_COMMANDS_SEQUENCE_LENGTH};
+    const LinkKey key = {Target::SPECIAL, sequence_index, 0};
+    const std::vector<CommandValue> old_sequence = get_sequence();
     if (draw_number_of_items("##SequenceLength", current_sequence.pattern.steps, 1, MAX_STEPS)) {
+        std::vector<CommandValue> new_sequence = get_sequence();
+        new_sequence.resize(current_sequence.pattern.steps, {"", ""});
+        perform_action_commands_sequence(this, key, old_sequence, new_sequence);
     }
 
     if (old_size != current_sequence.pattern.steps) {
@@ -588,6 +592,29 @@ void GUICommandsSequencesPanel::check_keyboard_input() {
     current_sequence.pattern.handle_input();
     const CommandValue new_command = current_sequence.pattern.get_command(old_row);
     perform_command_action(old_row, old_command, new_command);
+}
+
+std::vector<CommandValue> GUICommandsSequencesPanel::get_sequence() const {
+    std::vector<CommandValue> sequence;
+    sequence.reserve(current_sequence.pattern.steps);
+    for (size_t i = 0; i < current_sequence.pattern.steps; ++i) {
+        sequence.emplace_back(current_sequence.pattern.commands[i], current_sequence.pattern.values[i]);
+    }
+    return sequence;
+}
+
+void GUICommandsSequencesPanel::set_sequence(const int index, std::vector<CommandValue> sequence) {
+    if (index < 0 || index >= commands_sequences.size()) {
+        return;
+    }
+
+    current_sequence.pattern.steps = sequence.size();
+    current_sequence.pattern.commands.resize(current_sequence.pattern.steps);
+    current_sequence.pattern.values.resize(current_sequence.pattern.steps);
+    for (size_t i = 0; i < sequence.size(); ++i) {
+        current_sequence.pattern.commands[i] = sequence[i].first;
+        current_sequence.pattern.values[i] = sequence[i].second;
+    }
 }
 
 void GUICommandsSequencesPanel::set_commands(const std::map<PatternRow, CommandValue> &commands_values) {
