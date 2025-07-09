@@ -393,7 +393,8 @@ std::pair<size_t, bool> draw_pattern(
             }
 
             ImGui::TableSetColumnIndex(0);
-            const std::string displayed_row = get_displayed_row(i, j, gui.row_display);
+            const RowDisplayStyle display_style = pattern_view ? gui.row_display : RowDisplayStyle::Absolute;
+            const std::string displayed_row = get_displayed_row(i, j, display_style);
             if (ImGui::Selectable(displayed_row.c_str(), is_current, ImGuiSelectableFlags_SpanAllColumns)) {
                 pattern.current_row = i;
                 current = true;
@@ -522,7 +523,8 @@ std::pair<size_t, bool> draw_commands_pattern(
             }
 
             ImGui::TableSetColumnIndex(0);
-            const std::string displayed_row = get_displayed_row(i, j, gui.row_display);
+            const RowDisplayStyle display_style = pattern_view ? gui.row_display : RowDisplayStyle::Absolute;
+            const std::string displayed_row = get_displayed_row(i, j, display_style);
             if (ImGui::Selectable(displayed_row.c_str(), false, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)) {
             }
 
