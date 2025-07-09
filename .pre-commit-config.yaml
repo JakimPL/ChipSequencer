@@ -12,6 +12,12 @@ repos:
         language: system
         always_run: true
         files: "tracker/constants.hpp tracker/sizes.hpp"
+      - id: make-pragma
+        name: make pragma
+        entry: python scripts/pragma.py
+        language: system
+        files: "tracker/.*\\.hpp$"
+        types: [text]
       - id: nasmfmt-hook
         name: nasmfmt formatting
         entry: nasmfmt

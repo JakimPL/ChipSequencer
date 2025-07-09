@@ -1,3 +1,5 @@
+#pragma once
+
 #define TRACKER
 
 #define SIZE_CHANNEL 16

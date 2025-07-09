@@ -64,6 +64,10 @@ consts:
 	@echo "Generating constants..."
 	@$(VENV_PYTHON) scripts/constants.py
 
+pragma:
+	@echo "Checking #pragma once compliance in .hpp files..."
+	@$(VENV_PYTHON) scripts/pragma.py
+
 nasmfmt:
 ifeq ($(GO_CHECK),)
 	@echo "Go is not installed. Installation of nasmfmt is skipped."

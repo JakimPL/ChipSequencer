@@ -56,9 +56,10 @@ class ConstantManager:
 
     @staticmethod
     def convert_asm_to_cpp(data: str) -> str:
+        pragma = "#pragma once\n\n"
         output = data.replace(";", "//").replace("%", "#")
         output = re.sub(r"^[ \t]+", "", output, flags=re.MULTILINE)
-        return "#define TRACKER\n\n" + output
+        return pragma + "#define TRACKER\n\n" + output
 
     @staticmethod
     def parse(string: str) -> Union[float, int]:
