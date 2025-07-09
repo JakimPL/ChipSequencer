@@ -135,16 +135,9 @@ void GUIWavetablesPanel::remove() {
 
 void GUIWavetablesPanel::draw_wavetable_length() {
     const size_t old_size = current_wavetable.size;
-    const LinkKey key = {Target::WAVETABLE, wavetable_index, WAVETABLE_SIZE};
+    const LinkKey key = {Target::WAVETABLE, wavetable_index, WAVETABLE_DATA};
     const std::vector<float> old_wave = get_sequence();
-    if (draw_number_of_items("##WavetableLength", current_wavetable.size, 1, MAX_WAVETABLE_SIZE)) {
-        std::vector<float> new_wave = get_sequence();
-        new_wave.resize(current_wavetable.size, 0.0f);
-        for (size_t i = 0; i < new_wave.size(); ++i) {
-            new_wave[i] = cast_to_float(buffers.wavetables[wavetable_index][i]);
-        }
-        perform_action_wavetable(this, key, old_wave, new_wave);
-    }
+    draw_number_of_items("##WavetableLength", current_wavetable.size, 1, MAX_WAVETABLE_SIZE);
 
     if (old_size != current_wavetable.size) {
         current_wavetable.wave.resize(current_wavetable.size);
@@ -153,6 +146,9 @@ void GUIWavetablesPanel::draw_wavetable_length() {
                 current_wavetable.wave[i] = cast_to_float(buffers.wavetables[wavetable_index][i]);
             }
         }
+
+        std::vector<float> new_wave = get_sequence();
+        perform_action_wavetable(this, key, old_wave, new_wave);
     }
 }
 
@@ -396,6 +392,6 @@ void GUIWavetablesPanel::prepare_wave_from_load(Samples samples) {
         current_wavetable.wave.push_back(samples.data[i][0]);
     }
 
-    const LinkKey key = {Target::WAVETABLE, wavetable_index, WAVETABLE_DATA};
+    const LinkKey key = {Target::WAVETABLE, wavetable_index, WAVETABLE_DATA + 1};
     perform_action_wavetable(this, key, old_wave, current_wavetable.wave);
 }

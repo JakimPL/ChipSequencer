@@ -279,11 +279,7 @@ void GUICommandsSequencesPanel::draw_sequence_length() {
     const size_t old_size = current_sequence.pattern.steps;
     const LinkKey key = {Target::SPECIAL, sequence_index, 0};
     const std::vector<CommandValue> old_sequence = get_sequence();
-    if (draw_number_of_items("##SequenceLength", current_sequence.pattern.steps, 1, MAX_STEPS)) {
-        std::vector<CommandValue> new_sequence = get_sequence();
-        new_sequence.resize(current_sequence.pattern.steps, {"", ""});
-        perform_action_commands_sequence(this, key, old_sequence, new_sequence);
-    }
+    draw_number_of_items("##SequenceLength", current_sequence.pattern.steps, 1, MAX_STEPS);
 
     if (old_size != current_sequence.pattern.steps) {
         current_sequence.pattern.commands.resize(current_sequence.pattern.steps);
@@ -295,6 +291,9 @@ void GUICommandsSequencesPanel::draw_sequence_length() {
                 current_sequence.pattern.values[i] = value;
             }
         }
+
+        std::vector<CommandValue> new_sequence = get_sequence();
+        perform_action_commands_sequence(this, key, old_sequence, new_sequence);
     }
 }
 

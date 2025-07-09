@@ -133,11 +133,7 @@ void GUIOrdersPanel::draw_order_length() {
     const size_t old_size = current_order.length;
     const LinkKey key = {Target::ORDER, order_index, 0};
     const std::vector<int> old_order = get_sequence();
-    if (draw_number_of_items("##SequenceLength", current_order.length, 1, MAX_ORDER_ITEMS)) {
-        std::vector<int> new_order = get_sequence();
-        new_order.resize(current_order.length, 0);
-        perform_action_order(this, key, old_order, new_order);
-    }
+    draw_number_of_items("##SequenceLength", current_order.length, 1, MAX_ORDER_ITEMS);
 
     if (old_size != current_order.length) {
         current_order.sequences.resize(current_order.length);
@@ -146,6 +142,9 @@ void GUIOrdersPanel::draw_order_length() {
                 current_order.sequences[i] = buffers.orders[order_index][i];
             }
         }
+
+        std::vector<int> new_order = get_sequence();
+        perform_action_order(this, key, old_order, new_order);
     }
 }
 
