@@ -19,6 +19,7 @@
 
 class GUISequencesPanel;
 class GUICommandsSequencesPanel;
+class GUIOrdersPanel;
 
 template <typename T>
 void perform_action(
@@ -425,6 +426,19 @@ void perform_action_commands_sequence(
     SequenceChange sequence_change = {static_cast<size_t>(key.index), old_sequence, new_sequence};
     history_manager.add_action(
         std::make_unique<ChangeSequenceAction<CommandValue, GUICommandsSequencesPanel>>(label, owner, key, sequence_change)
+    );
+}
+
+void perform_action_order(
+    GUIPanel *owner,
+    const LinkKey key,
+    std::vector<int> old_order,
+    std::vector<int> new_order
+) {
+    const std::string label = "Order " + std::to_string(key.index);
+    SequenceChange order_change = {static_cast<size_t>(key.index), old_order, new_order};
+    history_manager.add_action(
+        std::make_unique<ChangeSequenceAction<int, GUIOrdersPanel>>(label, owner, key, order_change)
     );
 }
 

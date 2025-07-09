@@ -603,11 +603,7 @@ std::vector<CommandValue> GUICommandsSequencesPanel::get_sequence() const {
     return sequence;
 }
 
-void GUICommandsSequencesPanel::set_sequence(const int index, std::vector<CommandValue> sequence) {
-    if (index < 0 || index >= commands_sequences.size()) {
-        return;
-    }
-
+void GUICommandsSequencesPanel::set_sequence(std::vector<CommandValue> sequence) {
     current_sequence.pattern.steps = sequence.size();
     current_sequence.pattern.commands.resize(current_sequence.pattern.steps);
     current_sequence.pattern.values.resize(current_sequence.pattern.steps);

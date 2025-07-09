@@ -440,11 +440,7 @@ std::vector<uint8_t> GUISequencesPanel::get_sequence() const {
     return current_sequence.pattern.notes;
 }
 
-void GUISequencesPanel::set_sequence(const int index, std::vector<uint8_t> sequence) {
-    if (index < 0 || index >= sequences.size()) {
-        return;
-    }
-
+void GUISequencesPanel::set_sequence(std::vector<uint8_t> sequence) {
     current_sequence.pattern.steps = sequence.size();
     current_sequence.pattern.notes = std::move(sequence);
 }

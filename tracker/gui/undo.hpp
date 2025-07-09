@@ -114,3 +114,10 @@ void perform_action_commands_sequence(
     std::vector<CommandValue> old_sequence,
     std::vector<CommandValue> new_sequence
 );
+
+void perform_action_order(
+    GUIPanel *owner,
+    LinkKey key,
+    std::vector<int> old_order,
+    std::vector<int> new_order
+);

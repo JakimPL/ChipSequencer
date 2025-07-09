@@ -14,12 +14,12 @@ ChangeOrderItemAction::ChangeOrderItemAction(
 
 void ChangeOrderItemAction::redo() {
     GUIOrdersPanel *panel = dynamic_cast<GUIOrdersPanel *>(owner);
-    panel->set_sequence(order_item_change.sequence_index, order_item_change.new_sequence);
+    panel->set_item(order_item_change.sequence_index, order_item_change.new_sequence);
 }
 
 void ChangeOrderItemAction::undo() {
     GUIOrdersPanel *panel = dynamic_cast<GUIOrdersPanel *>(owner);
-    panel->set_sequence(order_item_change.sequence_index, order_item_change.old_sequence);
+    panel->set_item(order_item_change.sequence_index, order_item_change.old_sequence);
 }
 
 bool ChangeOrderItemAction::can_merge(const Action *other) const {

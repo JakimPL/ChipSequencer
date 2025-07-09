@@ -35,9 +35,12 @@ class GUIOrdersPanel : public GUIPanel {
     explicit GUIOrdersPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 
+    std::vector<int> get_sequence() const;
+    void set_sequence(std::vector<int> sequence);
+
     void update() override;
     void set_index(int index) override;
-    void set_sequence(size_t sequence_index, size_t new_sequence);
+    void set_item(size_t sequence_index, int new_sequence);
 
     void from() override;
     void to() const override;

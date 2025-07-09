@@ -129,8 +129,12 @@ void GUIOrdersPanel::update() {
 
 void GUIOrdersPanel::draw_order_length() {
     const size_t old_size = current_order.length;
-    const LinkKey key = {Target::ORDER, order_index, ORDER_LENGTH};
+    const LinkKey key = {Target::ORDER, order_index, 0};
+    const std::vector<int> old_order = get_sequence();
     if (draw_number_of_items("##SequenceLength", current_order.length, 1, MAX_ORDER_ITEMS)) {
+        std::vector<int> new_order = get_sequence();
+        new_order.resize(current_order.length, 0);
+        perform_action_order(this, key, old_order, new_order);
     }
 
     if (old_size != current_order.length) {
@@ -214,11 +218,20 @@ void GUIOrdersPanel::check_keyboard_input() {
     }
 }
 
+std::vector<int> GUIOrdersPanel::get_sequence() const {
+    return current_order.sequences;
+}
+
+void GUIOrdersPanel::set_sequence(std::vector<int> sequence) {
+    current_order.length = sequence.size();
+    current_order.sequences = std::move(sequence);
+}
+
 void GUIOrdersPanel::set_index(const int index) {
     order_index = clamp_index(index, orders.size());
 }
 
-void GUIOrdersPanel::set_sequence(const size_t sequence_index, const size_t new_sequence) {
+void GUIOrdersPanel::set_item(const size_t sequence_index, const int new_sequence) {
     if (sequence_index >= current_order.sequences.size()) {
         return;
     }

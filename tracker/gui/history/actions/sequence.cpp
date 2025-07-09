@@ -1,6 +1,7 @@
 #include <sstream>
 #include <utility>
 
+#include "../../panels/orders.hpp"
 #include "../../panels/sequences.hpp"
 #include "../../panels/commands/sequences.hpp"
 #include "../../patterns/commands.hpp"
@@ -20,7 +21,7 @@ template <typename T, typename Panel>
 void ChangeSequenceAction<T, Panel>::redo() {
     Panel *panel = dynamic_cast<Panel *>(owner);
     if (panel != nullptr) {
-        panel->set_sequence(sequence_change.sequence_index, sequence_change.new_sequence);
+        panel->set_sequence(sequence_change.new_sequence);
     }
 }
 
@@ -28,7 +29,7 @@ template <typename T, typename Panel>
 void ChangeSequenceAction<T, Panel>::undo() {
     Panel *panel = dynamic_cast<Panel *>(owner);
     if (panel != nullptr) {
-        panel->set_sequence(sequence_change.sequence_index, sequence_change.old_sequence);
+        panel->set_sequence(sequence_change.old_sequence);
     }
 }
 
@@ -57,3 +58,4 @@ std::string ChangeSequenceAction<T, Panel>::get_name() const {
 
 template class ChangeSequenceAction<uint8_t, GUISequencesPanel>;
 template class ChangeSequenceAction<CommandValue, GUICommandsSequencesPanel>;
+template class ChangeSequenceAction<int, GUIOrdersPanel>;
