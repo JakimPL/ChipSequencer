@@ -22,7 +22,6 @@ set(TRACKER_SOURCES
     tracker/gui/history/actions/sequence.cpp
     tracker/gui/history/actions/text.cpp
     tracker/gui/history/actions/value.cpp
-    tracker/gui/history/actions/wavetable.cpp
     tracker/gui/history/manager.cpp
     tracker/gui/inputs/input.cpp
     tracker/gui/inputs/numeric.cpp

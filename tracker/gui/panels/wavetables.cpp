@@ -1,4 +1,5 @@
 #include <iostream>
+#include <utility>
 
 #include "nfd.h"
 
@@ -135,7 +136,14 @@ void GUIWavetablesPanel::remove() {
 void GUIWavetablesPanel::draw_wavetable_length() {
     const size_t old_size = current_wavetable.size;
     const LinkKey key = {Target::WAVETABLE, wavetable_index, WAVETABLE_SIZE};
+    const std::vector<float> old_wave = get_sequence();
     if (draw_number_of_items("##WavetableLength", current_wavetable.size, 1, MAX_WAVETABLE_SIZE)) {
+        std::vector<float> new_wave = get_sequence();
+        new_wave.resize(current_wavetable.size, 0.0f);
+        for (size_t i = 0; i < new_wave.size(); ++i) {
+            new_wave[i] = cast_to_float(buffers.wavetables[wavetable_index][i]);
+        }
+        perform_action_wavetable(this, key, old_wave, new_wave);
     }
 
     if (old_size != current_wavetable.size) {
@@ -233,10 +241,10 @@ void GUIWavetablesPanel::draw_waveform() {
             normalized = clamp(normalized, 0.0f, 1.0f);
             const float value = (normalized * 2.0f) - 1.0f;
             if (value != current_wavetable.wave[current_point]) {
-                const std::vector<float> old_wave = current_wavetable.wave;
+                const std::vector<float> old_wave = get_sequence();
                 current_wavetable.wave[current_point] = value;
-                const LinkKey key = {Target::WAVETABLE, wavetable_index, WAVETABLE_DATA};
-                perform_action_wavetable(this, key, current_wavetable.size, current_wavetable.wave, old_wave);
+                const LinkKey key = {Target::WAVETABLE, wavetable_index, 0};
+                perform_action_wavetable(this, key, old_wave, current_wavetable.wave);
             }
         }
     }
@@ -306,6 +314,15 @@ void GUIWavetablesPanel::update() {
     gui.update(GUIElement::Oscillators);
 }
 
+std::vector<float> GUIWavetablesPanel::get_sequence() const {
+    return current_wavetable.wave;
+}
+
+void GUIWavetablesPanel::set_sequence(std::vector<float> wave) {
+    current_wavetable.wave = std::move(wave);
+    current_wavetable.size = static_cast<int>(current_wavetable.wave.size());
+}
+
 void GUIWavetablesPanel::set_index(const int index) {
     wavetable_index = clamp_index(index, wavetables.size());
 };
@@ -370,7 +387,7 @@ void GUIWavetablesPanel::prepare_wave_from_load(Samples samples) {
         return;
     }
 
-    const std::vector<float> old_wave = current_wavetable.wave;
+    const std::vector<float> old_wave = get_sequence();
     const size_t size = std::min(samples.data.size(), static_cast<size_t>(MAX_WAVETABLE_SIZE));
     current_wavetable.size = static_cast<int>(size);
     current_wavetable.wave.clear();
@@ -380,5 +397,5 @@ void GUIWavetablesPanel::prepare_wave_from_load(Samples samples) {
     }
 
     const LinkKey key = {Target::WAVETABLE, wavetable_index, WAVETABLE_DATA};
-    perform_action_wavetable(this, key, current_wavetable.size, current_wavetable.wave, old_wave);
+    perform_action_wavetable(this, key, old_wave, current_wavetable.wave);
 }

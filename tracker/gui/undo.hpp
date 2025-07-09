@@ -84,14 +84,6 @@ void perform_action_remove(
     const T *pointer
 );
 
-void perform_action_wavetable(
-    GUIPanel *owner,
-    LinkKey key,
-    int &wavetable_size,
-    std::vector<float> &wavetable,
-    const std::vector<float> &old_wavetable
-);
-
 template <typename T>
 void perform_action_pattern_selection(
     GUIPanel *owner,
@@ -120,4 +112,11 @@ void perform_action_order(
     LinkKey key,
     std::vector<int> old_order,
     std::vector<int> new_order
+);
+
+void perform_action_wavetable(
+    GUIPanel *owner,
+    LinkKey key,
+    std::vector<float> old_wave,
+    std::vector<float> new_wave
 );

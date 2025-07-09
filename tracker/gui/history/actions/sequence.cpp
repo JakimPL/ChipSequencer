@@ -3,6 +3,7 @@
 
 #include "../../panels/orders.hpp"
 #include "../../panels/sequences.hpp"
+#include "../../panels/wavetables.hpp"
 #include "../../panels/commands/sequences.hpp"
 #include "../../patterns/commands.hpp"
 #include "sequence.hpp"
@@ -59,3 +60,4 @@ std::string ChangeSequenceAction<T, Panel>::get_name() const {
 template class ChangeSequenceAction<uint8_t, GUISequencesPanel>;
 template class ChangeSequenceAction<CommandValue, GUICommandsSequencesPanel>;
 template class ChangeSequenceAction<int, GUIOrdersPanel>;
+template class ChangeSequenceAction<float, GUIWavetablesPanel>;

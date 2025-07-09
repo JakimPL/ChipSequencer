@@ -43,6 +43,9 @@ class GUIWavetablesPanel : public GUIPanel {
     explicit GUIWavetablesPanel(bool visible = true, bool windowed = true);
     GUIElement get_element() const override;
 
+    std::vector<float> get_sequence() const;
+    void set_sequence(std::vector<float> wave);
+
     void update();
     void set_index(int index) override;
 

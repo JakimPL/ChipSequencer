@@ -15,11 +15,11 @@
 #include "history/actions/sequence.hpp"
 #include "history/actions/text.hpp"
 #include "history/actions/value.hpp"
-#include "history/actions/wavetable.hpp"
 
 class GUISequencesPanel;
 class GUICommandsSequencesPanel;
 class GUIOrdersPanel;
+class GUIWavetablesPanel;
 
 template <typename T>
 void perform_action(
@@ -372,20 +372,6 @@ void perform_action_remove(
     );
 }
 
-void perform_action_wavetable(
-    GUIPanel *owner,
-    const LinkKey key,
-    int &wavetable_size,
-    std::vector<float> &wavetable,
-    const std::vector<float> &old_wavetable
-) {
-    const std::string label = "Wavetable " + std::to_string(key.index);
-    const WavetableChange value_change = WavetableChange(wavetable_size, wavetable, old_wavetable);
-    history_manager.add_action(
-        std::make_unique<ChangeWavetableAction>(label, owner, key, value_change)
-    );
-}
-
 template <typename T>
 void perform_action_pattern_selection(
     GUIPanel *owner,
@@ -439,6 +425,19 @@ void perform_action_order(
     SequenceChange order_change = {static_cast<size_t>(key.index), old_order, new_order};
     history_manager.add_action(
         std::make_unique<ChangeSequenceAction<int, GUIOrdersPanel>>(label, owner, key, order_change)
+    );
+}
+
+void perform_action_wavetable(
+    GUIPanel *owner,
+    const LinkKey key,
+    std::vector<float> old_wave,
+    std::vector<float> new_wave
+) {
+    const std::string label = "Wavetable " + std::to_string(key.index);
+    SequenceChange wavetable_change = {static_cast<size_t>(key.index), old_wave, new_wave};
+    history_manager.add_action(
+        std::make_unique<ChangeSequenceAction<float, GUIWavetablesPanel>>(label, owner, key, wavetable_change)
     );
 }
 
