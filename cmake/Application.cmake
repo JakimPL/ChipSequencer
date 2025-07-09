@@ -15,6 +15,7 @@ set(TRACKER_SOURCES
     tracker/gui/history/actions/command.cpp
     tracker/gui/history/actions/lock.cpp
     tracker/gui/history/actions/note.cpp
+    tracker/gui/history/actions/order_item.cpp
     tracker/gui/history/actions/remove.cpp
     tracker/gui/history/actions/routing.cpp
     tracker/gui/history/actions/selection.cpp

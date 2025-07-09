@@ -2,7 +2,7 @@
 
 #include <cstddef>
 
-struct OrderSequenceChange {
+struct OrderItemChange {
     size_t sequence_index;
     size_t old_sequence;
     size_t new_sequence;

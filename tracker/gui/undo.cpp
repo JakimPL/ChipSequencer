@@ -7,9 +7,9 @@
 #include "history/actions/command.hpp"
 #include "history/actions/lock.hpp"
 #include "history/actions/note.hpp"
+#include "history/actions/order_item.hpp"
 #include "history/actions/remove.hpp"
 #include "history/actions/routing.hpp"
-#include "history/actions/sequence.hpp"
 #include "history/actions/text.hpp"
 #include "history/actions/value.hpp"
 #include "history/actions/wavetable.hpp"
@@ -88,9 +88,9 @@ void perform_action_order_sequence(
 ) {
     if (old_sequence != new_sequence) {
         const std::string label = "Order " + std::to_string(key.index);
-        const OrderSequenceChange value_change = {sequence_index, old_sequence, new_sequence};
+        const OrderItemChange value_change = {sequence_index, old_sequence, new_sequence};
         history_manager.add_action(
-            std::make_unique<ChangeOrderSequenceAction>(label, owner, key, value_change)
+            std::make_unique<ChangeOrderItemAction>(label, owner, key, value_change)
         );
     }
 }
