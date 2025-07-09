@@ -24,7 +24,7 @@ int clamp_index(int index, const int size) {
     return clamp(index, 0, size - 1);
 }
 
-void draw_number_of_items(GUIPanel *owner, const char *label_id, int &value, int min, int max, const LinkKey key, float label_length) {
+bool draw_number_of_items(const char *label_id, int &value, int min, int max, float label_length) {
     const int old_value = value;
 
     ImGui::PushID(label_id);
@@ -33,9 +33,7 @@ void draw_number_of_items(GUIPanel *owner, const char *label_id, int &value, int
     ImGui::PopID();
 
     value = clamp(value, min, max);
-    if (action) {
-        perform_action(owner, key, value, old_value);
-    }
+    return action;
 }
 
 template <size_t n>

@@ -130,7 +130,8 @@ void GUIOrdersPanel::update() {
 void GUIOrdersPanel::draw_order_length() {
     const size_t old_size = current_order.length;
     const LinkKey key = {Target::ORDER, order_index, ORDER_LENGTH};
-    draw_number_of_items(this, "##SequenceLength", current_order.length, 1, MAX_ORDER_ITEMS, key);
+    if (draw_number_of_items("##SequenceLength", current_order.length, 1, MAX_ORDER_ITEMS)) {
+    }
 
     if (old_size != current_order.length) {
         current_order.sequences.resize(current_order.length);
@@ -207,7 +208,7 @@ void GUIOrdersPanel::check_keyboard_input() {
     input_handler.handle_input(current_order.sequences, selected_sequence);
     if (old_sequence_index == selected_sequence) {
         const LinkKey key = {Target::ORDER, order_index, static_cast<uint16_t>(ORDER_SEQUENCES + selected_sequence)};
-        perform_action_order_sequence(
+        perform_action_order_item(
             this, key, selected_sequence, old_sequence, current_order.sequences[selected_sequence]
         );
     }

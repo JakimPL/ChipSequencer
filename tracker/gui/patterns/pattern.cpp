@@ -45,11 +45,9 @@ void Pattern::to_buffer(const size_t sequence_index) const {
 
     const Sequence *sequence = sequences[sequence_index];
     const size_t sequence_length = sequence->size / sizeof(Note);
-    for (size_t i = 0; i < sequence_length; ++i) {
+    size_t size = std::min(notes.size(), sequence_length);
+    for (size_t i = 0; i < size; ++i) {
         const uint8_t pitch = notes[i];
-        if (pitch == NOTE_OFF) {
-            continue;
-        }
         buffers.sequences[sequence_index][i] = pitch;
     }
 }

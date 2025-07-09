@@ -378,7 +378,12 @@ void GUISequencesPanel::draw_dialog_box() {
 void GUISequencesPanel::draw_sequence_length() {
     const size_t old_size = current_sequence.pattern.steps;
     const LinkKey key = {Target::SPECIAL, sequence_index, SPECIAL_SEQUENCE_LENGTH};
-    draw_number_of_items(this, "##SequenceLength", current_sequence.pattern.steps, 1, MAX_STEPS, key);
+    const std::vector<uint8_t> old_sequence = current_sequence.pattern.notes;
+    if (draw_number_of_items("##SequenceLength", current_sequence.pattern.steps, 1, MAX_STEPS)) {
+        std::vector<uint8_t> new_sequence = current_sequence.pattern.notes;
+        new_sequence.resize(current_sequence.pattern.steps, NOTE_REST);
+        perform_action_sequence(this, key, old_sequence, new_sequence);
+    }
 
     if (old_size != current_sequence.pattern.steps) {
         current_sequence.pattern.notes.resize(current_sequence.pattern.steps);

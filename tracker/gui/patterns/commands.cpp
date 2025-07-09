@@ -306,7 +306,7 @@ void CommandsPattern::to_buffer(const size_t sequence_index) const {
     }
 
     const CommandsSequence *sequence = commands_sequences[sequence_index];
-    const size_t sequence_length = sequence->length;
+    const size_t sequence_length = std::min<size_t>(commands.size(), sequence->length);
     for (size_t i = 0; i < sequence_length; ++i) {
         const std::string command = commands[i];
         const std::string value = values[i];

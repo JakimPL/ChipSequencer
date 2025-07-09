@@ -10,6 +10,7 @@
 #include "history/actions/order_item.hpp"
 #include "history/actions/remove.hpp"
 #include "history/actions/routing.hpp"
+#include "history/actions/sequence.hpp"
 #include "history/actions/text.hpp"
 #include "history/actions/value.hpp"
 #include "history/actions/wavetable.hpp"
@@ -79,7 +80,7 @@ void perform_action_routing(
     }
 }
 
-void perform_action_order_sequence(
+void perform_action_order_item(
     GUIPanel *owner,
     const LinkKey key,
     const size_t sequence_index,
@@ -395,6 +396,19 @@ void perform_action_pattern_selection(
 
     history_manager.add_action(
         std::make_unique<ChangePatternSelectionAction<T>>(label, owner, key, changes, function)
+    );
+}
+
+void perform_action_sequence(
+    GUIPanel *owner,
+    const LinkKey key,
+    std::vector<uint8_t> old_sequence,
+    std::vector<uint8_t> new_sequence
+) {
+    const std::string label = "Sequence " + std::to_string(key.index);
+    SequenceChange sequence_change = {static_cast<size_t>(key.index), old_sequence, new_sequence};
+    history_manager.add_action(
+        std::make_unique<ChangeSequenceAction>(label, owner, key, sequence_change)
     );
 }
 

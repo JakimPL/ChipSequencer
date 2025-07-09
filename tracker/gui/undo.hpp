@@ -39,7 +39,7 @@ void perform_action_routing(
     const LinkKey &old_value
 );
 
-void perform_action_order_sequence(
+void perform_action_order_item(
     GUIPanel *owner,
     LinkKey key,
     size_t sequence_index,
@@ -98,4 +98,11 @@ void perform_action_pattern_selection(
     const std::string &label,
     const PatternSelectionChange<T> &changes,
     SetItemsFunction<T> function
+);
+
+void perform_action_sequence(
+    GUIPanel *owner,
+    LinkKey key,
+    std::vector<uint8_t> old_sequence,
+    std::vector<uint8_t> new_sequence
 );

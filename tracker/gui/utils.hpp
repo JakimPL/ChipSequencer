@@ -34,7 +34,7 @@ extern std::unordered_map<LinkKey, bool> slider_states;
 extern std::unordered_map<LinkKey, float> slider_float_values;
 
 int clamp_index(int index, int size);
-void draw_number_of_items(GUIPanel *owner, const char *label_id, int &value, int min, int max, LinkKey key = {}, float label_length = 50.0f);
+bool draw_number_of_items(const char *label_id, int &value, int min, int max, float label_length = 50.0f);
 
 template <size_t n>
 void draw_text(GUIPanel *owner, const char *label, char (&text)[n], LinkKey key);

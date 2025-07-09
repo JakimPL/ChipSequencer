@@ -43,6 +43,6 @@ void ChangeSequenceAction::merge(const Action *other) {
 
 std::string ChangeSequenceAction::get_name() const {
     std::ostringstream stream;
-    stream << "Change Sequence " << key.index;
+    stream << "Change " << name;
     return stream.str();
 }

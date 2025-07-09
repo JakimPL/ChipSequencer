@@ -135,7 +135,8 @@ void GUIWavetablesPanel::remove() {
 void GUIWavetablesPanel::draw_wavetable_length() {
     const size_t old_size = current_wavetable.size;
     const LinkKey key = {Target::WAVETABLE, wavetable_index, WAVETABLE_SIZE};
-    draw_number_of_items(this, "##WavetableLength", current_wavetable.size, 1, MAX_WAVETABLE_SIZE, key);
+    if (draw_number_of_items("##WavetableLength", current_wavetable.size, 1, MAX_WAVETABLE_SIZE)) {
+    }
 
     if (old_size != current_wavetable.size) {
         current_wavetable.wave.resize(current_wavetable.size);
