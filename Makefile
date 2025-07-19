@@ -59,6 +59,7 @@ install:
 	@$(MAKE) fftw
 	@$(MAKE) venv
 	@$(MAKE) activate
+	@$(MAKE) pre-commit
 
 consts:
 	@echo "Generating constants..."
