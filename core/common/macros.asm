@@ -13,7 +13,14 @@
     %endmacro
 
     %macro SEGMENT_BSS 0
+    %ifndef DEBUG
+    %ifdef TRACKER
     section .bss
+    %endif
+
+    %else
+    section .bss
+    %endif
     %endmacro
 
     %macro LOAD_FUNCTION 2

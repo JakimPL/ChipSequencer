@@ -96,11 +96,11 @@ constexpr size_t DSP_DELAY_FEEDBACK = offsetof(DSPDelay, feedback);
 constexpr size_t DSP_DELAY_TIME = offsetof(DSPDelay, delay_time);
 
 /* padding is necessary for 32-bit systems */
-static_assert(sizeof(DSP) == SIZE_DSP + 1 + sizeof(DSP::alignment), "DSP must be of 12 bytes.");
-static_assert(sizeof(DSPGainer) == SIZE_DSP_GAINER + 1 + sizeof(DSPGainer::alignment), "DSPGainer must be of 12 bytes.");
-static_assert(sizeof(DSPDistortion) == SIZE_DSP_DISTORTION + 1 + sizeof(DSPDistortion::alignment), "DSPDistortion must be of 12 bytes.");
-static_assert(sizeof(DSPFilter) == SIZE_DSP_FILTER + 1 + sizeof(DSPFilter::alignment), "DSPFilter must be of 12 bytes.");
-static_assert(sizeof(DSPDelay) == SIZE_DSP_DELAY + 1 + sizeof(DSPDelay::alignment), "DSPDelay must be of 16 bytes.");
+static_assert(sizeof(DSP) == SIZE_DSP + 1, "DSP must be of 16 bytes.");
+static_assert(sizeof(DSPGainer) == SIZE_DSP_GAINER + 1, "DSPGainer must be of 16 bytes.");
+static_assert(sizeof(DSPDistortion) == SIZE_DSP_DISTORTION + 1, "DSPDistortion must be of 16 bytes.");
+static_assert(sizeof(DSPFilter) == SIZE_DSP_FILTER + 1, "DSPFilter must be of 16 bytes.");
+static_assert(sizeof(DSPDelay) == SIZE_DSP_DELAY + 1, "DSPDelay must be of 16 bytes.");
 
 static_assert(sizeof(DSP) == sizeof(DSPGainer), "DSP and DSPGainer must be of the same size.");
 static_assert(sizeof(DSP) == sizeof(DSPDistortion), "DSP and DSPDistortion must be of the same size.");

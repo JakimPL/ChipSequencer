@@ -13,10 +13,10 @@ constexpr size_t SIZE_OSCILLATOR_SAW = 2;
 constexpr size_t SIZE_OSCILLATOR_WAVETABLE = 3;
 constexpr size_t SIZE_OSCILLATOR_NOISE = 1;
 
-constexpr size_t SIZE_DSP = 11;
-constexpr size_t SIZE_DSP_GAINER = 11;
-constexpr size_t SIZE_DSP_DISTORTION = 11;
-constexpr size_t SIZE_DSP_FILTER = 11;
+constexpr size_t SIZE_DSP = 15;
+constexpr size_t SIZE_DSP_GAINER = 15;
+constexpr size_t SIZE_DSP_DISTORTION = 15;
+constexpr size_t SIZE_DSP_FILTER = 15;
 constexpr size_t SIZE_DSP_DELAY = 15;
 
 constexpr size_t SIZE_COMMAND_EMPTY = 2;

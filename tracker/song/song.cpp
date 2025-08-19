@@ -1384,7 +1384,7 @@ std::string Song::get_element_path(const std::filesystem::path &directory, const
 
 void Song::serialize_dsp(std::ofstream &file, void *dsp) {
     const DSP *generic = static_cast<DSP *>(dsp);
-    uint8_t dsp_size = DSP_SIZE;
+    uint8_t dsp_size = SIZE_DSP;
     write_data(file, &dsp_size, sizeof(dsp_size));
     write_data(file, &generic->effect_index, sizeof(generic->effect_index));
     write_data(file, &generic->output_flag, sizeof(generic->output_flag));

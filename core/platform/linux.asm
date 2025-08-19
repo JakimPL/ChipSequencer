@@ -9,9 +9,12 @@
     %else
     global CDECL(output)
     %define PHDR_FILE_SIZE {file_size}
-    %define PHDR_MEMORY_SIZE 0xD00000
+    %define PHDR_MEMORY_SIZE 0x4000
     %define PHDR_PERMISSION 0x7
     %define PHDR_ALIGN 0x1000
+
+    %define BASE_ADDRESS 0x8048000
+    %define BSS_ADDRESS (BASE_ADDRESS + PHDR_MEMORY_SIZE)
     %endif
 
     %define SYS_EXIT 0x01
@@ -27,34 +30,49 @@
     %define TCSETS_CMD 0x5402
 
     %ifndef DEBUG
-    org 0x10000
-program_start:
-    db $7F, "ELF", 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0
-    dw 2
-    dw 3
-    dd 1
-    dd _start
-    dd phdr - program_start
-    dd 0
-    dd 0
-    dw ehdr_size
-    dw phdr_size
-    dw 1
-    dw 0
-    dw 0
-    dw 0
-    ehdr_size equ $ - program_start
+    org 0x8048000
+    db 0x7F, "ELF"           ; e_ident[EI_MAG0-3]
+    db 1                     ; e_ident[EI_CLASS]
+    db 1                     ; e_ident[EI_DATA]
+    db 1                     ; e_ident[EI_VERSION]
+    db 0                     ; e_ident[EI_OSABI]
+    db 0                     ; e_ident[EI_ABIVERSION]
+    times 7 db 0             ; e_ident[EI_PAD]
+
+    dw 2                     ; e_type
+    dw 3                     ; e_machine
+    dd 1                     ; e_version
+    dd _start                ; e_entry
+    dd phdr - $$             ; e_phoff
+    dd 0                     ; e_shoff
+    dd 0                     ; e_flags
+    dw 52                    ; e_ehsize
+    dw 32                    ; e_phentsize
+    dw 2                     ; e_phnum
+    dw 0                     ; e_shentsize
+    dw 0                     ; e_shnum
+    dw 0                     ; e_shstrndx
 
 phdr:
-    dd 1
-    dd 0
-    dd program_start
-    dd program_start
-    dd PHDR_FILE_SIZE
-    dd PHDR_MEMORY_SIZE
-    dd PHDR_PERMISSION
-    dd PHDR_ALIGN
-    phdr_size equ $ - phdr
+    dd 1                     ; p_type
+    dd 0                     ; p_offset
+    dd 0x8048000             ; p_vaddr
+    dd 0x8048000             ; p_paddr
+    dd {file_size}           ; p_filesz
+    dd {file_size}           ; p_memsz
+    dd 7                     ; p_flags
+    dd 0x1000                ; p_align
+
+phdr_bss:
+    dd 1                     ; p_type
+    dd 0                     ; p_offset
+    dd 0x8048000+0xD000000   ; p_vaddr
+    dd 0x8048000+0xD000000   ; p_paddr
+    dd 0                     ; p_filesz
+    dd 0x1000000             ; p_memsz
+    dd 6                     ; p_flags
+    dd 0x1000                ; p_align
+
     %endif
 
 message:
@@ -200,7 +218,7 @@ child:
     %include "core/player.asm"
     %include "core/song/data.asm"
 
-    section .bss
+    SEGMENT_BSS
     pipe_fds resd 2
     termios resb 32
     key resb 1

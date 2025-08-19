@@ -64,7 +64,8 @@ class Compiler:
 
     def measure_file_size(self, main_path: Path) -> int:
         file_size = main_path.stat().st_size
-        return math.ceil(file_size / PAGE_SIZE) * PAGE_SIZE
+        return file_size
+        # return math.ceil(file_size / PAGE_SIZE) * PAGE_SIZE
 
     @staticmethod
     def substitute_values(path: Path, message: str, sample_rate: int, output_channels: int, file_size: int = PAGE_SIZE):
