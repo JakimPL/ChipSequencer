@@ -46,7 +46,11 @@ endif
 
 clean:
 	@echo "Cleaning the project..."
+ifeq ($(OS),Windows_NT)
 	@if exist build (cmake --build build --target clean) || (echo No build directory.)
+else
+	@if [ -d build ]; then cmake --build build --target clean; else echo "No build directory."; fi
+endif
 
 install:
 	@echo "Downloading dependencies..."

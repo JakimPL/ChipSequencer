@@ -1384,7 +1384,8 @@ std::string Song::get_element_path(const std::filesystem::path &directory, const
 
 void Song::serialize_dsp(std::ofstream &file, void *dsp) {
     const DSP *generic = static_cast<DSP *>(dsp);
-    write_data(file, &generic->dsp_size, sizeof(generic->dsp_size));
+    uint8_t dsp_size = DSP_SIZE;
+    write_data(file, &dsp_size, sizeof(dsp_size));
     write_data(file, &generic->effect_index, sizeof(generic->effect_index));
     write_data(file, &generic->output_flag, sizeof(generic->output_flag));
     write_data(file, &generic->flag, sizeof(generic->flag));
@@ -1397,12 +1398,14 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) {
         DSPGainer *gainer = reinterpret_cast<DSPGainer *>(dsp);
         write_data(file, &gainer->volume, sizeof(gainer->volume));
         write_data(file, &gainer->pad, sizeof(gainer->pad));
+        write_data(file, &gainer->alignment, sizeof(gainer->alignment));
         return;
     }
     case Effect::Distortion: {
         DSPDistortion *distortion = reinterpret_cast<DSPDistortion *>(dsp);
         write_data(file, &distortion->pad, sizeof(distortion->pad));
         write_data(file, &distortion->level, sizeof(distortion->level));
+        write_data(file, &distortion->alignment, sizeof(distortion->alignment));
         return;
     }
     case Effect::Filter: {
@@ -1410,6 +1413,7 @@ void Song::serialize_dsp(std::ofstream &file, void *dsp) {
         write_data(file, &filter->frequency, sizeof(filter->frequency));
         write_data(file, &filter->mode, sizeof(filter->mode));
         write_data(file, &filter->pad, sizeof(filter->pad));
+        write_data(file, &filter->alignment, sizeof(filter->alignment));
         return;
     }
     case Effect::Delay: {

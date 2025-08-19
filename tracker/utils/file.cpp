@@ -122,6 +122,7 @@ template void write_data<uint8_t[0]>(std::ofstream &file, const uint8_t (*data)[
 template void write_data<uint8_t[1]>(std::ofstream &file, const uint8_t (*data)[1], const size_t size);
 template void write_data<uint8_t[2]>(std::ofstream &file, const uint8_t (*data)[2], const size_t size);
 template void write_data<uint8_t[4]>(std::ofstream &file, const uint8_t (*data)[4], const size_t size);
+template void write_data<uint32_t[1]>(std::ofstream &file, const uint32_t (*data)[1], const size_t size);
 
 template void read_data<uint8_t[4]>(std::ifstream &file, uint8_t (*data)[4], const size_t size);
 

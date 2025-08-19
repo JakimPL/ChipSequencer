@@ -74,10 +74,10 @@ CDECL(calculate):
     db 1
 
     SEGMENT_BSS
-    CDECL(output) resd MAX_OUTPUT_CHANNELS
+    CDECL(output) resd (MAX_OUTPUT_CHANNELS + 3)
     %ifdef TRACKER
-    CDECL(dsp_buffer) resd MAX_DSPS * MAX_DSP_BUFFER_SIZE
+    CDECL(dsp_buffer) resd (MAX_DSPS + 3) * MAX_DSP_BUFFER_SIZE
     %else
-    CDECL(dsp_buffer) resd DSPS * MAX_DSP_BUFFER_SIZE
+    CDECL(dsp_buffer) resd (DSPS + 3) * MAX_DSP_BUFFER_SIZE
     %endif
     dividend resd 1
